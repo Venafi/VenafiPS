@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Get certificate information
 
@@ -39,16 +39,16 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasCertificate/
 https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-VaasCertificate.ps1
 
 #>
-function Get-VaasZone {
+function Get-VaasCertificate {
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [guid] $ZoneId,
+        [guid] $CertificateId,
 
-        [Parameter(ParameterSetName = 'Id')]
-        [switch] $DevOps,
+        [Parameter(Mandatory, ParameterSetName = 'Zone')]
+        [guid] $ZoneId,
 
         [Parameter()]
         [TppSession] $TppSession = $Script:TppSession
@@ -60,35 +60,42 @@ function Get-VaasZone {
         $params = @{
             TppSession   = $TppSession
             Method       = 'Get'
-            CloudUriLeaf = 'projectzones'
+            CloudUriLeaf = 'certificaterequests'
         }
     }
 
     process {
 
-        if ( $ZoneId ) {
-            $params.CloudUriLeaf += "/$ZoneId"
-            if ( $DevOps.IsPresent ) {
-                $params.CloudUriLeaf += '/devopsintegrations'
+        switch ($PSCmdLet.ParameterSetName) {
+            'Id' {
+                $params.CloudUriLeaf += "/$CertificateId"
+            }
+
+            'Zone' {
+                $params.CloudUriLeaf += "/zone/$ZoneId"
+            }
+
+            Default {
             }
         }
 
         $response = Invoke-TppRestMethod @params
-
-        if ( $response.PSObject.Properties.Name -contains 'zones' ) {
-            $zones = $response | Select-Object -ExpandProperty zones
+        if ( $response.PSObject.Properties.Name -contains 'certificaterequests' ) {
+            $certs = $response | Select-Object -ExpandProperty certificaterequests
         } else {
-            $zones = $response
+            $certs = $response
         }
 
-        if ( $zones ) {
-            $zones | Select-Object *,
-            @{
-                'n' = 'zoneId'
-                'e' = {
-                    $_.Id
-                }
-            } -ExcludeProperty Id
-        }
+        $certs = $certs | Select-Object *,
+        @{
+            'n' = 'certificateId'
+            'e' = {
+                $_.id
+            }
+        } -ExcludeProperty id
+
+        $certs | ForEach-Object { $_.PSObject.TypeNames.Insert(0, 'VenafiPS.Vaas.Certificate') }
+        $certs
+
     }
 }
