@@ -1,4 +1,4 @@
-<#
+﻿<#
 .SYNOPSIS
 Get certificate information
 
@@ -39,16 +39,13 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasCertificate/
 https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-VaasCertificate.ps1
 
 #>
-function Get-VaasZone {
+function Get-VaasProject {
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [guid] $ZoneId,
-
-        [Parameter(ParameterSetName = 'Id')]
-        [switch] $DevOps,
+        [guid] $ProjectId,
 
         [Parameter()]
         [TppSession] $TppSession = $Script:TppSession
@@ -60,35 +57,63 @@ function Get-VaasZone {
         $params = @{
             TppSession   = $TppSession
             Method       = 'Get'
-            CloudUriLeaf = 'projectzones'
+            CloudUriLeaf = 'devopsprojects'
+            Body         = @{
+                userDetails = $true
+                zoneDetails = $true
+            }
         }
     }
 
     process {
 
-        if ( $ZoneId ) {
+        if ( $ProjectId ) {
             $params.CloudUriLeaf += "/$ZoneId"
-            if ( $DevOps.IsPresent ) {
-                $params.CloudUriLeaf += '/devopsintegrations'
-            }
         }
 
         $response = Invoke-TppRestMethod @params
 
-        if ( $response.PSObject.Properties.Name -contains 'zones' ) {
-            $zones = $response | Select-Object -ExpandProperty zones
+        if ( $response.PSObject.Properties.Name -contains 'devopsProjects' ) {
+            $projects = $response | Select-Object -ExpandProperty devopsProjects
         } else {
-            $zones = $response
+            $projects = $response
         }
 
-        if ( $zones ) {
-            $zones | Select-Object *,
-            @{
-                'n' = 'zoneId'
-                'e' = {
-                    $_.Id
+        if ( $projects ) {
+
+            # update all 'id' to their specific name, eg. zoneId, projectId
+
+            $projects | ForEach-Object {
+                $thisProject = $_
+
+                $thisProject.users = $thisProject.users | ForEach-Object {
+                    $_ | Select-Object -Property *,
+                    @{
+                        'n' = 'userId'
+                        'e' = { $_.id }
+                    } -ExcludeProperty id
                 }
-            } -ExcludeProperty Id
+
+                $thisProject.zones = $thisProject.zones | ForEach-Object {
+                    $_ | Select-Object -Property *,
+                    @{
+                        'n' = 'zoneId'
+                        'e' = { $_.id }
+                    } -ExcludeProperty id
+                }
+            }
+
+            $projects = $projects | Select-Object *,
+            @{
+                'n' = 'projectId'
+                'e' = {
+                    $_.id
+                }
+            } -ExcludeProperty id
+
+            $projects | ForEach-Object { $_.PSObject.TypeNames.Insert(0, 'VenafiPS.Vaas.Project') }
+            $projects
+
         }
     }
 }
