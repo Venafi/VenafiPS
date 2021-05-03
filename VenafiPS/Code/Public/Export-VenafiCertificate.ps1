@@ -109,57 +109,38 @@ function Export-VenafiCertificate {
         if ( $authType -eq 'vaas' ) {
             $params.UriLeaf = "certificaterequests/$CertificateId/certificate"
             $params.Method = 'Get'
-            $response = Invoke-TppRestMethod @params
-            if ( $response.PSObject.Properties.Name -contains 'certificaterequests' ) {
-                $certs = $response | Select-Object -ExpandProperty certificaterequests
-            } else {
-                $certs = $response
-            }
+            Invoke-TppRestMethod @params
+            # $response = Invoke-TppRestMethod @params
+            # if ( $response.PSObject.Properties.Name -contains 'certificaterequests' ) {
+            #     $certs = $response | Select-Object -ExpandProperty certificaterequests
+            # } else {
+            #     $certs = $response
+            # }
 
-            $certs | Select-Object *,
-            @{
-                'n' = 'certificateId'
-                'e' = {
-                    $_.id
-                }
-            } -ExcludeProperty id
+            # $certs | Select-Object *,
+            # @{
+            #     'n' = 'certificateId'
+            #     'e' = {
+            #         $_.id
+            #     }
+            # } -ExcludeProperty id
         } else {
-            $params.Method = 'Post'
-            $params.UriLeaf = 'certificates/retrieve'
+            $params.Body.CertificateDN = $Path
 
-            try {
-                $thisGuid = [guid] $CertificateId
-            } catch {
-                $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
-            }
-            # $thisGuid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
-            $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
-            $response = Invoke-VenafiRestMethod @params
+            $response = Invoke-TppRestMethod @params
 
-            $selectProps = @{
-                Property        =
-                @{
-                    n = 'Name'
-                    e = { $_.Name }
-                },
-                @{
-                    n = 'TypeName'
-                    e = { $_.SchemaClass }
-                },
-                @{
-                    n = 'Path'
-                    e = { $_.DN }
-                }, @{
-                    n = 'Guid'
-                    e = { [guid]$_.guid }
-                }, @{
-                    n = 'ParentPath'
-                    e = { $_.ParentDN }
-                },
-                '*'
-                ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name'
+            Write-Verbose ($response | Format-List | Out-String)
+
+            if ( $PSBoundParameters.ContainsKey('OutPath') ) {
+                if ( $response.PSobject.Properties.name -contains "CertificateData" ) {
+                    $outFile = Join-Path -Path $OutPath -ChildPath ($response.FileName.Trim('"'))
+                    $bytes = [Convert]::FromBase64String($response.CertificateData)
+                    [IO.File]::WriteAllBytes($outFile, $bytes)
+                    Write-Verbose ('Saved {0} with format {1}' -f $outFile, $response.Format)
+                }
+            } else {
+                $response
             }
-            $response | Select-Object @selectProps
         }
     }
 }

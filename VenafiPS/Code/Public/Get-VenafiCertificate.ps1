@@ -41,47 +41,31 @@ https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-VaasCert
 #>
 function Get-VenafiCertificate {
 
-    [CmdletBinding(DefaultParameterSetName = 'Tpp')]
+    [CmdletBinding()]
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'Vaas', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [guid] $CertificateId,
-
-        [Parameter(Mandatory, ParameterSetName = 'Tpp', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                if ( $_ | Test-TppDnPath ) {
-                    $true
-                } else {
-                    throw "'$_' is not a valid DN path"
-                }
-            })]
-        [Alias('DN')]
-        [String] $Path,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
+
+        $authType = $VenafiSession.Validate()
+
         $params = @{
-            VenafiSession   = $VenafiSession
-            Method       = 'Get'
+            VenafiSession = $VenafiSession
+            Method        = 'Get'
         }
-
-        if ( $CertificateId ) {
-            $VenafiSession.Validate('vaas')
-        } else {
-            $VenafiSession.Validate('key')
-        }
-
     }
 
     process {
 
-        switch ($PSCmdLet.ParameterSetName) {
-            'Vaas' {
-                $params.CloudUriLeaf += "certificaterequests/$CertificateId"
+        switch ($authType) {
+            'vaas' {
+                $params.UriLeaf = "certificaterequests/$CertificateId"
                 $response = Invoke-TppRestMethod @params
                 if ( $response.PSObject.Properties.Name -contains 'certificaterequests' ) {
                     $certs = $response | Select-Object -ExpandProperty certificaterequests
@@ -98,10 +82,18 @@ function Get-VenafiCertificate {
                 } -ExcludeProperty id
             }
 
-            'Tpp' {
-                $thisGuid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
+            Default {
+                $params.Method = 'Post'
+                $params.UriLeaf = 'certificates/retrieve'
+
+                try {
+                    $thisGuid = [guid] $CertificateId
+                } catch {
+                    $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                }
+                # $thisGuid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
                 $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 $selectProps = @{
                     Property        =
@@ -127,9 +119,6 @@ function Get-VenafiCertificate {
                     ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name'
                 }
                 $response | Select-Object @selectProps
-            }
-
-            Default {
             }
         }
     }
