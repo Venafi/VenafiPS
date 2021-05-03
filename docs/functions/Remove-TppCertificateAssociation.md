@@ -7,26 +7,26 @@ Remove certificate associations
 
 ### RemoveAllByObject
 ```
-Remove-TppCertificateAssociation -InputObject <TppObject> [-OrphanCleanup] [-All] [-TppSession <TppSession>]
+Remove-TppCertificateAssociation -InputObject <TppObject> [-OrphanCleanup] [-All] [-VenafiSession <VenafiSession>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RemoveOneByObject
 ```
 Remove-TppCertificateAssociation -InputObject <TppObject> -ApplicationPath <String[]> [-OrphanCleanup]
- [-TppSession <TppSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RemoveAllByPath
 ```
-Remove-TppCertificateAssociation -Path <String> [-OrphanCleanup] [-All] [-TppSession <TppSession>] [-WhatIf]
+Remove-TppCertificateAssociation -Path <String> [-OrphanCleanup] [-All] [-VenafiSession <VenafiSession>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
 ### RemoveOneByPath
 ```
 Remove-TppCertificateAssociation -Path <String> -ApplicationPath <String[]> [-OrphanCleanup]
- [-TppSession <TppSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -135,18 +135,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

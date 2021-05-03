@@ -38,8 +38,8 @@ You can provide more than 1 of the same SAN type with multiple hashtables.
 .PARAMETER PassThru
 Return a TppObject representing the newly created certificate.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 None
@@ -122,12 +122,12 @@ function New-TppCertificate {
         [switch] $PassThru,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         if ( $PSBoundParameters.ContainsKey('SubjectAltName') ) {
 
@@ -180,7 +180,7 @@ function New-TppCertificate {
         }
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'certificates/request'
             Body       = @{

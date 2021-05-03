@@ -7,13 +7,13 @@ Remove permissions from TPP objects
 
 ### ByGuid (Default)
 ```
-Remove-TppPermission -Guid <Guid[]> [-IdentityId <String[]>] [-TppSession <TppSession>] [-WhatIf] [-Confirm]
+Remove-TppPermission -Guid <Guid[]> [-IdentityId <String[]>] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Remove-TppPermission -Path <String[]> [-IdentityId <String[]>] [-TppSession <TppSession>] [-WhatIf] [-Confirm]
+Remove-TppPermission -Path <String[]> [-IdentityId <String[]>] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -40,7 +40,7 @@ Remove all permissions for a specific user
 ## PARAMETERS
 
 ### -Path
-Full path to an object. 
+Full path to an object.
 You can also pipe in a TppObject
 
 ```yaml
@@ -85,18 +85,18 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

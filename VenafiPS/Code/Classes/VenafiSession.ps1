@@ -1,4 +1,4 @@
-class TppSession {
+class VenafiSession {
 
     [string] $ServerUrl
     [datetime] $Expires
@@ -7,15 +7,15 @@ class TppSession {
     [PSCustomObject] $CustomField
     [string] $Version
 
-    TppSession () {
+    VenafiSession () {
     }
 
-    TppSession ([Hashtable] $initHash) {
+    VenafiSession ([Hashtable] $initHash) {
         $this._init($initHash)
     }
 
-    [void] Validate() {
-        $this.Validate('key')
+    [string] Validate() {
+        return $this.Validate(($this | Get-VenafiAuthType))
     }
 
     # AuthType can be key, token or vaas
@@ -23,18 +23,18 @@ class TppSession {
     # token is TPP and some functions require it
     # vaas is Venafi as a Service
 
-    [void] Validate(
+    [string] Validate(
         [string] $AuthType
     ) {
 
         if ( -not $this.Key -and -not $this.Token ) {
             switch ($AuthType) {
                 'vaas' {
-                    throw "You must first connect to Venafi as a Service with New-TppSession -VaasKey"
+                    throw "You must first connect to Venafi as a Service with New-VenafiSession -VaasKey"
                 }
 
                 Default {
-                    throw "You must first connect to the TPP server with New-TppSession"
+                    throw "You must first connect to the TPP server with New-VenafiSession"
                 }
             }
 
@@ -109,6 +109,7 @@ class TppSession {
                 # We have to assume a good token here and ensure Invoke-TPPRestMethod catches and handles the condition where a token expires
             }
         }
+        return $AuthType
     }
 
     # connect for key based

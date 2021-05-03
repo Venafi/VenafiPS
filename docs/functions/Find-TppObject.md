@@ -7,28 +7,28 @@ Find objects by path, class, or pattern
 
 ### FindByClassAndPath
 ```
-Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] -Class <String[]> [-TppSession <TppSession>]
+Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] -Class <String[]> [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ### FindByPath
 ```
-Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] [-TppSession <TppSession>] [<CommonParameters>]
+Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### FindByAttribute
 ```
-Find-TppObject -Pattern <String> -Attribute <String[]> [-TppSession <TppSession>] [<CommonParameters>]
+Find-TppObject -Pattern <String> -Attribute <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### FindByClass
 ```
-Find-TppObject [-Pattern <String>] -Class <String[]> [-TppSession <TppSession>] [<CommonParameters>]
+Find-TppObject [-Pattern <String>] -Class <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### FindByPattern
 ```
-Find-TppObject -Pattern <String> [-TppSession <TppSession>] [<CommonParameters>]
+Find-TppObject -Pattern <String> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -83,7 +83,7 @@ Get all objects of the type iis6 or capi
 Find-TppObject -Pattern 'test*'
 ```
 
-Find objects with the specific name. 
+Find objects with the specific name.
 All objects will be searched.
 
 ### EXAMPLE 8
@@ -178,7 +178,7 @@ Accept wildcard characters: False
 ```
 
 ### -Attribute
-A list of attribute names to limit the search against. 
+A list of attribute names to limit the search against.
 Only valid when searching by pattern.
 
 ```yaml
@@ -193,18 +193,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

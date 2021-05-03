@@ -7,17 +7,17 @@ Get workflow ticket
 
 ### ByObject
 ```
-Get-TppWorkflowTicket -InputObject <TppObject> [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppWorkflowTicket -InputObject <TppObject> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Get-TppWorkflowTicket -Path <String[]> [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppWorkflowTicket -Path <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppWorkflowTicket -Guid <Guid[]> [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppWorkflowTicket -Guid <Guid[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -86,18 +86,18 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

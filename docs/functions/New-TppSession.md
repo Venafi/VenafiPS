@@ -1,4 +1,4 @@
-# New-TppSession
+# New-VenafiSession
 
 ## SYNOPSIS
 Create a new Venafi TPP session
@@ -7,41 +7,41 @@ Create a new Venafi TPP session
 
 ### KeyIntegrated (Default)
 ```
-New-TppSession -Server <String> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VenafiSession -Server <String> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### TppToken
 ```
-New-TppSession [-Server <String>] -TppToken <PSObject> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VenafiSession [-Server <String>] -TppToken <PSObject> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### AccessToken
 ```
-New-TppSession -Server <String> -AccessToken <String> [-AuthServer <String>] [-PassThru] [-WhatIf] [-Confirm]
+New-VenafiSession -Server <String> -AccessToken <String> [-AuthServer <String>] [-PassThru] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### TokenCertificate
 ```
-New-TppSession -Server <String> -Certificate <X509Certificate> [-PassThru] [-WhatIf] [-Confirm]
+New-VenafiSession -Server <String> -Certificate <X509Certificate> [-PassThru] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### TokenIntegrated
 ```
-New-TppSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>] [-AuthServer <String>]
+New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>] [-AuthServer <String>]
  [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### TokenOAuth
 ```
-New-TppSession -Server <String> -Credential <PSCredential> -ClientId <String> -Scope <Hashtable>
+New-VenafiSession -Server <String> -Credential <PSCredential> -ClientId <String> -Scope <Hashtable>
  [-State <String>] [-AuthServer <String>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### KeyCredential
 ```
-New-TppSession -Server <String> -Credential <PSCredential> [-PassThru] [-WhatIf] [-Confirm]
+New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -54,35 +54,35 @@ Note, key-based authentication will be fully deprecated in v20.4.
 
 ### EXAMPLE 1
 ```
-New-TppSession -Server venafitpp.mycompany.com
+New-VenafiSession -Server venafitpp.mycompany.com
 ```
 
 Create key-based session using Windows Integrated authentication
 
 ### EXAMPLE 2
 ```
-New-TppSession -Server venafitpp.mycompany.com -Credential $cred
+New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred
 ```
 
 Create key-based session using Windows Integrated authentication
 
 ### EXAMPLE 3
 ```
-New-TppSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
+New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
 ```
 
 Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 
 ### EXAMPLE 4
 ```
-New-TppSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
+New-VenafiSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
 ```
 
 Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 
 ### EXAMPLE 5
 ```
-$sess = New-TppSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
+$sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
 ```
 
 Create session and return the session object instead of setting to script scope variable
@@ -119,7 +119,7 @@ Accept wildcard characters: False
 ```
 
 ### -Credential
-Username and password used for key and token-based authentication. 
+Username and password used for key and token-based authentication.
 Not required for integrated authentication.
 
 ```yaml
@@ -298,14 +298,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### TppSession, if PassThru is provided
+### VenafiSession, if PassThru is provided
 ## NOTES
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/New-TppSession/](http://venafitppps.readthedocs.io/en/latest/functions/New-TppSession/)
+[http://venafitppps.readthedocs.io/en/latest/functions/New-VenafiSession/](http://venafitppps.readthedocs.io/en/latest/functions/New-VenafiSession/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppSession.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppSession.ps1)
+[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-VenafiSession.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-VenafiSession.ps1)
 
 [https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____1](https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____1)
 

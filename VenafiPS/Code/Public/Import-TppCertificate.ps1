@@ -42,8 +42,8 @@ See https://github.com/gdbarron/VenafiPS/issues/88#issuecomment-600134145 for a 
 .PARAMETER PassThru
 Return a TppObject representing the newly imported object.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .EXAMPLE
 Import-TppCertificate -PolicyPath \ved\policy\mycerts -CertificatePath c:\www.VenafiPS.com.cer
@@ -110,12 +110,12 @@ function Import-TppCertificate {
         [switch] $PassThru,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
             # get cert data from file
@@ -123,7 +123,7 @@ function Import-TppCertificate {
         }
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'certificates/import'
             Body       = @{

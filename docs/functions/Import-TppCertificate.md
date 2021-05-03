@@ -8,27 +8,27 @@ Import a certificate
 ### ByFile (Default)
 ```
 Import-TppCertificate -PolicyPath <String> -CertificatePath <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-TppSession <TppSession>] [<CommonParameters>]
+ [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByFileWithPrivateKey
 ```
 Import-TppCertificate -PolicyPath <String> -CertificatePath <String> [-Name <String>]
  [-EnrollmentAttribute <Hashtable>] -PrivateKey <String> -Password <SecureString> [-Reconcile] [-PassThru]
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByDataWithPrivateKey
 ```
 Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <String>]
  [-EnrollmentAttribute <Hashtable>] -PrivateKey <String> -Password <SecureString> [-Reconcile] [-PassThru]
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByData
 ```
 Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-TppSession <TppSession>] [<CommonParameters>]
+ [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -61,7 +61,7 @@ Accept wildcard characters: False
 ```
 
 ### -CertificatePath
-Path to a certificate file. 
+Path to a certificate file.
 Provide either this or CertificateData.
 
 ```yaml
@@ -77,7 +77,7 @@ Accept wildcard characters: False
 ```
 
 ### -CertificateData
-Contents of a certificate to import. 
+Contents of a certificate to import.
 Provide either this or CertificatePath.
 
 ```yaml
@@ -197,18 +197,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

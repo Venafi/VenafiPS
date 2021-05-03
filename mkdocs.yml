@@ -42,7 +42,7 @@ pages:
     - New-TppDevice: functions/New-TppDevice.md
     - New-TppObject: functions/New-TppObject.md
     - New-TppPolicy: functions/New-TppPolicy.md
-    - New-TppSession: functions/New-TppSession.md
+    - New-VenafiSession: functions/New-VenafiSession.md
     - New-TppToken: functions/New-TppToken.md
     - Read-TppLog: functions/Read-TppLog.md
     - Remove-TppCertificate: functions/Remove-TppCertificate.md

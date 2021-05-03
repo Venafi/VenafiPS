@@ -1,4 +1,4 @@
-﻿<#
+<#
 .SYNOPSIS
 Find certificates based on various attributes
 

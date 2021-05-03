@@ -11,8 +11,8 @@ Full path to an object in TPP
 .PARAMETER TargetPath
 New path
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 none
@@ -64,23 +64,23 @@ function Move-TppObject {
         [String] $TargetPath,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $TppSession.Validate()
+    $VenafiSession.Validate()
 
     # ensure the object to rename already exists
-    if ( -not (Test-TppObject -Path $SourcePath -ExistOnly -TppSession $TppSession) ) {
+    if ( -not (Test-TppObject -Path $SourcePath -ExistOnly -VenafiSession $VenafiSession) ) {
         throw ("Source path '{0}' does not exist" -f $SourcePath)
     }
 
     # ensure the new object doesn't already exist
-    if ( Test-TppObject -Path $TargetPath -ExistOnly -TppSession $TppSession) {
+    if ( Test-TppObject -Path $TargetPath -ExistOnly -VenafiSession $VenafiSession) {
         throw ("Target path '{0}' already exists" -f $TargetPath)
     }
 
     $params = @{
-        TppSession = $TppSession
+        VenafiSession = $VenafiSession
         Method     = 'Post'
         UriLeaf    = 'config/RenameObject'
         Body       = @{

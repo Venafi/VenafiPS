@@ -32,8 +32,8 @@ Provide this switch to mark the certificate as disabled and no new certificate w
 .PARAMETER Wait
 Wait for the requested revocation to be complete
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 TppObject or Path
@@ -96,14 +96,14 @@ function Revoke-TppCertificate {
         [Switch] $Wait,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'Certificates/Revoke'
             Body       = ''

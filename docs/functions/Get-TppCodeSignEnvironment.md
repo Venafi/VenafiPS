@@ -6,7 +6,7 @@ Get a code sign environment
 ## SYNTAX
 
 ```
-Get-TppCodeSignEnvironment [-Path] <String> [[-TppSession] <TppSession>] [<CommonParameters>]
+Get-TppCodeSignEnvironment [-Path] <String> [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -45,18 +45,18 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 2
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

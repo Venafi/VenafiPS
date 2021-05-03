@@ -11,8 +11,8 @@ Get certificate information for a specific id
 .PARAMETER ZoneId
 Get certificate information for all within a specific zone
 
-.PARAMETER TppSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Id
@@ -48,14 +48,14 @@ function Get-VaasProject {
         [guid] $ProjectId,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate('vaas')
+        $VenafiSession.Validate('vaas')
 
         $params = @{
-            TppSession   = $TppSession
+            VenafiSession   = $VenafiSession
             Method       = 'Get'
             CloudUriLeaf = 'devopsprojects'
             Body         = @{
@@ -103,7 +103,7 @@ function Get-VaasProject {
                 }
             }
 
-            $projects = $projects | Select-Object *,
+            $projects | Select-Object *,
             @{
                 'n' = 'projectId'
                 'e' = {
@@ -111,8 +111,8 @@ function Get-VaasProject {
                 }
             } -ExcludeProperty id
 
-            $projects | ForEach-Object { $_.PSObject.TypeNames.Insert(0, 'VenafiPS.Vaas.Project') }
-            $projects
+            # $projects | ForEach-Object { $_.PSObject.TypeNames.Insert(0, 'VenafiPS.Vaas.Project') }
+            # $projects
 
         }
     }

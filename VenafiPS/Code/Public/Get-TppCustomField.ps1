@@ -8,8 +8,8 @@ Get details about custom fields for either certificates or devices
 .PARAMETER Class
 Class to get details on.  Value can be either Device or X509 Certificate
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 None
@@ -45,7 +45,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCustomField/
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php?tocpath=Web%20SDK%7CMetadata%20custom%20fields%20programming%20interface%7C_____10
 
 .NOTES
-All custom fields are retrieved upon inital connect to the server and a property of TppSession
+All custom fields are retrieved upon inital connect to the server and a property of VenafiSession
 #>
 function Get-TppCustomField {
 
@@ -56,16 +56,16 @@ function Get-TppCustomField {
         [string] $Class,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
     }
 
     process {
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'Metadata/GetItemsForClass'
             Body       = @{

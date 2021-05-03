@@ -8,7 +8,7 @@ Read entries from the TPP log
 ### Default (Default)
 ```
 Read-TppLog [-Severity <TppEventSeverity>] [-StartTime <DateTime>] [-EndTime <DateTime>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-Limit <Int32>] [-TppSession <TppSession>]
+ [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-Limit <Int32>] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
@@ -16,14 +16,14 @@ Read-TppLog [-Severity <TppEventSeverity>] [-StartTime <DateTime>] [-EndTime <Da
 ```
 Read-TppLog -InputObject <TppObject> [-Severity <TppEventSeverity>] [-StartTime <DateTime>]
  [-EndTime <DateTime>] [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-Limit <Int32>]
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
 Read-TppLog -Path <String> [-Severity <TppEventSeverity>] [-StartTime <DateTime>] [-EndTime <DateTime>]
  [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-Limit <Int32>]
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -184,7 +184,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-Specify the number of items to retrieve, starting with most recent. 
+Specify the number of items to retrieve, starting with most recent.
 The default is 100 and there is no maximum.
 
 ```yaml
@@ -199,18 +199,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

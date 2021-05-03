@@ -22,8 +22,8 @@ Otherwise retain the Device DN and its children.
 .PARAMETER All
 Remove all associated application objects
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject, Path
@@ -102,14 +102,14 @@ function Remove-TppCertificateAssociation {
         [switch] $All,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'Certificates/Dissociate'
             Body       = @{ }
@@ -125,7 +125,7 @@ function Remove-TppCertificateAssociation {
         # foreach ( $Path in $Path ) {
         $shouldProcessAction = "Remove associations"
 
-        if ( -not ($Path | Test-TppObject -ExistOnly -TppSession $TppSession) ) {
+        if ( -not ($Path | Test-TppObject -ExistOnly -VenafiSession $VenafiSession) ) {
             Write-Error ("Certificate path {0} does not exist" -f $Path)
             Continue
         }
@@ -146,7 +146,7 @@ function Remove-TppCertificateAssociation {
 
             'RemoveAll*' {
                 $associatedApps = $Path |
-                Get-TppAttribute -Attribute "Consumers" -EffectivePolicy -TppSession $TppSession |
+                Get-TppAttribute -Attribute "Consumers" -EffectivePolicy -VenafiSession $VenafiSession |
                 Select-Object -ExpandProperty Value
 
                 if ( $associatedApps ) {

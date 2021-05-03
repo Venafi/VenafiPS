@@ -29,8 +29,8 @@ $script:CloudUrl = 'https://api.venafi.cloud'
 $Script:TppSupportedVersion = ConvertFrom-Json (Get-Content "$PSScriptRoot\Config\SupportedVersion.json" -Raw)
 Export-ModuleMember -Variable TppSupportedVersion
 
-$Script:TppSession = New-Object 'TppSession'
-Export-ModuleMember -Variable TppSession
+$Script:VenafiSession = New-Object 'VenafiSession'
+Export-ModuleMember -Variable VenafiSession
 
 $aliases = @{
     'ConvertTo-TppDN'        = 'ConvertTo-TppPath'
@@ -42,6 +42,7 @@ $aliases = @{
     'ftc'                    = 'Find-TppCertificate'
     'itcr'                   = 'Invoke-TppCertificateRenewal'
     'New-TppSession'         = 'New-VenafiSession'
+    'Invoke-TppRestMethod'   = 'Invoke-VenafiRestMethod'
 }
 $aliases.GetEnumerator() | ForEach-Object {
     Set-Alias -Name $_.Key -Value $_.Value

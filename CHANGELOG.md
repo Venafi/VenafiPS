@@ -1,4 +1,4 @@
-## 1.0
+## 3.0
 - Rebrand from VenafiTppPS to VenafiPS as the module will now support Venafi products other than TPP
 
 

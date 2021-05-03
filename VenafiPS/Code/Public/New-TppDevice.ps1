@@ -24,8 +24,8 @@ Hostname or IP Address of the device
 .PARAMETER PassThru
 Return a TppObject representing the newly created policy.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path
@@ -100,7 +100,7 @@ function New-TppDevice {
         [switch] $PassThru,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
@@ -111,7 +111,7 @@ function New-TppDevice {
             Path       = ''
             Class      = 'Device'
             PassThru   = $true
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Attribute  = @{ }
         }
 

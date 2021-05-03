@@ -6,7 +6,7 @@ Get the TPP system status
 ## SYNTAX
 
 ```
-Get-TppSystemStatus [[-TppSession] <TppSession>] [<CommonParameters>]
+Get-TppSystemStatus [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -23,18 +23,18 @@ Get the status
 
 ## PARAMETERS
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 1
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

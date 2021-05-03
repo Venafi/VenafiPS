@@ -9,7 +9,7 @@ Create a new CAPI application
 ```
 New-TppCapiApplication -Path <String> [-ApplicationName <String[]>] [-CertificatePath <String>]
  [-CredentialPath <String>] [-FriendlyName <String>] [-Description <String>] [-WinRmPort <Int32>] [-Disable]
- [-PushCertificate] [-SkipExistenceCheck] [-PassThru] [-TppSession <TppSession>] [-WhatIf] [-Confirm]
+ [-PushCertificate] [-SkipExistenceCheck] [-PassThru] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -18,7 +18,7 @@ New-TppCapiApplication -Path <String> [-ApplicationName <String[]>] [-Certificat
 New-TppCapiApplication -Path <String> [-ApplicationName <String[]>] [-CertificatePath <String>]
  [-CredentialPath <String>] [-FriendlyName <String>] [-Description <String>] [-WinRmPort <Int32>] [-Disable]
  -WebSiteName <String> [-BindingIp <IPAddress>] [-BindingPort <Int32>] [-BindingHostName <String>]
- [-CreateBinding <Boolean>] [-PushCertificate] [-SkipExistenceCheck] [-PassThru] [-TppSession <TppSession>]
+ [-CreateBinding <Boolean>] [-PushCertificate] [-SkipExistenceCheck] [-PassThru] [-VenafiSession <VenafiSession>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -58,7 +58,7 @@ Create a new application and return a TppObject for the newly created app
 ## PARAMETERS
 
 ### -Path
-Full path, including name, to the application to be created. 
+Full path, including name, to the application to be created.
 The application must be created under a device.
 Alternatively, provide the path to the device and provide ApplicationName.
 
@@ -75,7 +75,7 @@ Accept wildcard characters: False
 ```
 
 ### -ApplicationName
-1 or more application names to create. 
+1 or more application names to create.
 Path property must be a path to a device.
 
 ```yaml
@@ -166,7 +166,7 @@ Accept wildcard characters: False
 ```
 
 ### -Disable
-Set processing to disabled. 
+Set processing to disabled.
 It is enabled by default.
 
 ```yaml
@@ -259,7 +259,7 @@ Accept wildcard characters: False
 ```
 
 ### -PushCertificate
-Push the certificate to the application. 
+Push the certificate to the application.
 CertificatePath must be provided.
 
 ```yaml
@@ -305,18 +305,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

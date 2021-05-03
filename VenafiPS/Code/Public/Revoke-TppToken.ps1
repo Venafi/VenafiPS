@@ -15,8 +15,8 @@ Access token to be revoked
 .PARAMETER TppToken
 Token object obtained from New-TppToken
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 TppToken
@@ -26,7 +26,7 @@ Version
 
 .EXAMPLE
 Revoke-TppToken
-Revoke token stored in session variable from New-TppSession
+Revoke token stored in session variable from New-VenafiSession
 
 .EXAMPLE
 Revoke-TppToken -AuthServer venafi.company.com -AccessToken x7xc8h4387dkgheysk
@@ -65,7 +65,7 @@ function Revoke-TppToken {
         [pscustomobject] $TppToken,
 
         [Parameter(ParameterSetName = 'Session')]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
@@ -82,8 +82,8 @@ function Revoke-TppToken {
 
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
-                $params.TppSession = $TppSession
-                $target = $TppSession.ServerUrl
+                $params.VenafiSession = $VenafiSession
+                $target = $VenafiSession.ServerUrl
             }
 
             'AccessToken' {

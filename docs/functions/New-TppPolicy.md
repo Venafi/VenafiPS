@@ -6,7 +6,7 @@ Add a new policy folder
 ## SYNTAX
 
 ```
-New-TppPolicy [-Path] <String> [[-Description] <String>] [-PassThru] [[-TppSession] <TppSession>] [-WhatIf]
+New-TppPolicy [-Path] <String> [[-Description] <String>] [-PassThru] [[-VenafiSession] <VenafiSession>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -76,18 +76,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 3
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

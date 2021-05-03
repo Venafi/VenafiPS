@@ -7,12 +7,12 @@ Test if an object exists
 
 ### DN (Default)
 ```
-Test-TppObject -Path <String[]> [-ExistOnly] [-TppSession <TppSession>] [<CommonParameters>]
+Test-TppObject -Path <String[]> [-ExistOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### GUID
 ```
-Test-TppObject -Guid <Guid[]> [-ExistOnly] [-TppSession <TppSession>] [<CommonParameters>]
+Test-TppObject -Guid <Guid[]> [-ExistOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -42,8 +42,8 @@ Retrieve existence for only one object
 ## PARAMETERS
 
 ### -Path
-DN path to object. 
-Provide either this or Guid. 
+DN path to object.
+Provide either this or Guid.
 This is the default if both are provided.
 
 ```yaml
@@ -59,7 +59,7 @@ Accept wildcard characters: False
 ```
 
 ### -Guid
-Guid which represents a unqiue object. 
+Guid which represents a unqiue object.
 Provide either this or Path.
 
 ```yaml
@@ -75,7 +75,7 @@ Accept wildcard characters: False
 ```
 
 ### -ExistOnly
-Only return boolean instead of Object and Exists list. 
+Only return boolean instead of Object and Exists list.
 Helpful when validating just 1 object.
 
 ```yaml
@@ -90,18 +90,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

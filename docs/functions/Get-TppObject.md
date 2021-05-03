@@ -7,16 +7,16 @@ Get object information
 
 ### ByPath
 ```
-Get-TppObject -Path <String[]> [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppObject -Path <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppObject -Guid <Guid[]> [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppObject -Guid <Guid[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Return object information by either path or guid. 
+Return object information by either path or guid.
 This will return a TppObject which can be used with many other functions.
 
 ## EXAMPLES
@@ -67,18 +67,18 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

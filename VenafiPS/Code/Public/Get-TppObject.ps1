@@ -11,8 +11,8 @@ The full path to the object
 .PARAMETER Guid
 Guid of the object
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path, Guid
@@ -60,11 +60,11 @@ function Get-TppObject {
         [guid[]] $Guid,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
     }
 
     process {
@@ -76,7 +76,7 @@ function Get-TppObject {
         }
 
         foreach ($thisInputObject in $inputObject) {
-            [TppObject]::new($thisInputObject, $TppSession)
+            [TppObject]::new($thisInputObject, $VenafiSession)
         }
     }
 }

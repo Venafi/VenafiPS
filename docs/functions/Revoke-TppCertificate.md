@@ -8,13 +8,13 @@ Revoke a certificate
 ### ByObject (Default)
 ```
 Revoke-TppCertificate -InputObject <TppObject> [-Reason <Int32>] [-Comments <String>] [-Disable] [-Wait]
- [-TppSession <TppSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
 Revoke-TppCertificate -Path <String> [-Reason <Int32>] [-Comments <String>] [-Disable] [-Wait]
- [-TppSession <TppSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -137,18 +137,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

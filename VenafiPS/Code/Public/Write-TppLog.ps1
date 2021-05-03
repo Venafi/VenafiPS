@@ -39,8 +39,8 @@ Integer data to write to log.  See link for event ID messages for more info.
 .PARAMETER Value2
 Integer data to write to log.  See link for event ID messages for more info.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 none
@@ -110,14 +110,14 @@ function Write-TppLog {
         [int] $Value2,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     if ( $PSCmdlet.ParameterSetName -eq 'DefaultGroup' ) {
         throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.'
     }
 
-    $TppSession.Validate()
+    $VenafiSession.Validate()
 
     # the event id is the group id coupled with the event id
     $fullEventId = "$CustomEventGroup$EventId"
@@ -126,7 +126,7 @@ function Write-TppLog {
     $decEventId = [System.Convert]::ToInt64($fullEventId, 16)
 
     $params = @{
-        TppSession = $TppSession
+        VenafiSession = $VenafiSession
         Method     = 'Post'
         UriLeaf    = 'Log/'
         Body       = @{

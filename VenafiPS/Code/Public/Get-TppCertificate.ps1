@@ -40,8 +40,8 @@ Password required to retrieve the certificate in JKS format.  You must adhere to
     - Numeric characters
     - Special characters
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .EXAMPLE
 $certs | Get-TppCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
@@ -116,15 +116,15 @@ function Get-TppCertificate {
         [Security.SecureString] $KeystorePassword,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'certificates/retrieve'
             Body       = @{

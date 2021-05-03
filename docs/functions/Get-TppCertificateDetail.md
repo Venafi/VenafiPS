@@ -7,17 +7,17 @@ Get detailed certificate information
 
 ### ByObject
 ```
-Get-TppCertificateDetail -InputObject <TppObject> [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppCertificateDetail -InputObject <TppObject> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Get-TppCertificateDetail -Path <String> [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppCertificateDetail -Path <String> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppCertificateDetail -Guid <Guid> [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppCertificateDetail -Guid <Guid> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -79,18 +79,18 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -7,40 +7,40 @@ Get attributes for a given object
 
 ### ByObject (Default)
 ```
-Get-TppAttribute -InputObject <TppObject> [-Attribute <String[]>] [-TppSession <TppSession>]
+Get-TppAttribute -InputObject <TppObject> [-Attribute <String[]>] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ### EffectiveByObject
 ```
-Get-TppAttribute -InputObject <TppObject> -Attribute <String[]> [-Effective] [-TppSession <TppSession>]
+Get-TppAttribute -InputObject <TppObject> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Get-TppAttribute -Path <String[]> [-Attribute <String[]>] [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppAttribute -Path <String[]> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### EffectiveByPath
 ```
-Get-TppAttribute -Path <String[]> -Attribute <String[]> [-Effective] [-TppSession <TppSession>]
+Get-TppAttribute -Path <String[]> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppAttribute -Guid <Guid[]> [-Attribute <String[]>] [-TppSession <TppSession>] [<CommonParameters>]
+Get-TppAttribute -Guid <Guid[]> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### EffectiveByGuid
 ```
-Get-TppAttribute -Guid <Guid[]> -Attribute <String[]> [-Effective] [-TppSession <TppSession>]
+Get-TppAttribute -Guid <Guid[]> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Retrieves object attributes. 
+Retrieves object attributes.
 You can either retrieve all attributes or individual ones.
 By default, the attributes returned are not the effective policy, but that can be requested with the
 EffectivePolicy switch.
@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -Path
-Path to the object to retrieve configuration attributes. 
+Path to the object to retrieve configuration attributes.
 Just providing DN will return all attributes.
 
 ```yaml
@@ -102,7 +102,7 @@ Accept wildcard characters: False
 ```
 
 ### -Guid
-Object Guid. 
+Object Guid.
 Just providing Guid will return all attributes.
 
 ```yaml
@@ -159,18 +159,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

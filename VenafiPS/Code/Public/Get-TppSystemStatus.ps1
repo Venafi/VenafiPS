@@ -5,8 +5,8 @@ Get the TPP system status
 .DESCRIPTION
 Returns service module statuses for Trust Protection Platform, Log Server, and Trust Protection Platform services that run on Microsoft Internet Information Services (IIS)
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 none
@@ -32,15 +32,15 @@ function Get-TppSystemStatus {
     [CmdletBinding()]
     param (
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     Write-Warning "Possible bug with Venafi TPP API causing this to fail"
 
-    $TppSession.Validate()
+    $VenafiSession.Validate()
 
     $params = @{
-        TppSession = $TppSession
+        VenafiSession = $VenafiSession
         Method     = 'Get'
         UriLeaf    = 'SystemStatus/'
     }

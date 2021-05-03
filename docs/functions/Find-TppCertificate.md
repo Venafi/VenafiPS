@@ -17,7 +17,7 @@ Find-TppCertificate [-Limit <Int32>] [-Offset <Int32>] [-Country <String>] [-Com
  [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-ManagementType <TppManagementType[]>]
  [-PendingWorkflow] [-Stage <TppCertificateStage[]>] [-StageGreaterThan <TppCertificateStage>]
  [-StageLessThan <TppCertificateStage>] [-ValidationEnabled] [-ValidationState <String[]>]
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByObject
@@ -32,7 +32,7 @@ Find-TppCertificate -InputObject <TppObject> [-Recursive] [-Limit <Int32>] [-Off
  [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-TppSession <TppSession>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByPath
@@ -47,7 +47,7 @@ Find-TppCertificate -Path <String> [-Recursive] [-Limit <Int32>] [-Offset <Int32
  [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-TppSession <TppSession>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByGuid
@@ -62,7 +62,7 @@ Find-TppCertificate -Guid <Guid> [-Recursive] [-Limit <Int32>] [-Offset <Int32>]
  [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-TppSession <TppSession>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -189,7 +189,7 @@ Accept wildcard characters: False
 ```
 
 ### -Limit
-Limit how many items are returned. 
+Limit how many items are returned.
 Default is 0 for no limit.
 It is definitely recommended to filter on another property when searching with no limit.
 
@@ -766,18 +766,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

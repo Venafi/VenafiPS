@@ -7,16 +7,16 @@ Search for code sign environments
 
 ### All (Default)
 ```
-Find-TppCodeSignEnvironment [-TppSession <TppSession>] [<CommonParameters>]
+Find-TppCodeSignEnvironment [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### Name
 ```
-Find-TppCodeSignEnvironment -Name <String> [-TppSession <TppSession>] [<CommonParameters>]
+Find-TppCodeSignEnvironment -Name <String> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Search for specific code sign environments that match a name you provide or get all. 
+Search for specific code sign environments that match a name you provide or get all.
 This will search across projects.
 
 ## EXAMPLES
@@ -52,18 +52,18 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

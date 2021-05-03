@@ -5,8 +5,8 @@ Get CodeSign Protect project settings
 .DESCRIPTION
 Get CodeSign Protect project settings.  Must have token with scope codesign:manage.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 None
@@ -42,14 +42,14 @@ function Get-TppCodeSignConfig {
 
     param (
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate('token')
+        $VenafiSession.Validate('token')
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Get'
             UriLeaf    = 'Codesign/GetGlobalConfiguration'
         }

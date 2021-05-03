@@ -6,12 +6,12 @@ Delete a code sign project
 ## SYNTAX
 
 ```
-Remove-TppCodeSignProject [-Path] <String> [[-TppSession] <TppSession>] [-WhatIf] [-Confirm]
+Remove-TppCodeSignProject [-Path] <String> [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Delete a code sign project. 
+Delete a code sign project.
 You must be a code sign admin or owner of the project.
 
 ## EXAMPLES
@@ -28,7 +28,7 @@ Delete a project
 $projectObj | Remove-TppCodeSignProject
 ```
 
-Remove 1 or more projects. 
+Remove 1 or more projects.
 Get projects with Find-TppCodeSignProject
 
 ## PARAMETERS
@@ -48,18 +48,18 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 2
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
