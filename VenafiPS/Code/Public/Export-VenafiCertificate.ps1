@@ -40,18 +40,6 @@ function Export-VenafiCertificate {
         [Alias('Path')]
         [guid] $CertificateId,
 
-        # [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        # [ValidateNotNullOrEmpty()]
-        # [ValidateScript( {
-        #         if ( $_ | Test-TppDnPath ) {
-        #             $true
-        #         } else {
-        #             throw "'$_' is not a valid path"
-        #         }
-        #     })]
-        # [Alias('DN')]
-        # [String] $Path,
-
         [Parameter(Mandatory)]
         [ValidateSet("Base64", "Base64 (PKCS #8)", "DER", "JKS", "PKCS #7", "PKCS #12", "PEM")]
         [string] $Format,
@@ -98,10 +86,53 @@ function Export-VenafiCertificate {
 
         $authType = $VenafiSession.Validate()
 
-        # check format
-        # if ( $Format -notin 'PEM', 'DER') {
-        #     throw 'Venafi as a Service only supports PEM and DER formats'
-        # }
+        if ( $authType -eq 'vaas' ) {
+
+            if ( $Format -notin 'PEM', 'DER') {
+                throw 'Venafi as a Service only supports PEM and DER formats'
+            }
+        } else {
+
+            if ($PrivateKeyPassword) {
+
+                # validate format to be able to export the private key
+                if ( $Format -in @("DER", "PKCS #7") ) {
+                    throw "Format '$Format' does not support private keys"
+                }
+
+                $params.Body.IncludePrivateKey = $true
+                $plainTextPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($PrivateKeyPassword))
+                $params.Body.Password = $plainTextPassword
+            }
+
+            if ($Format -in @("Base64 (PKCS #8)", "DER", "PKCS #7")) {
+                if (-not ([string]::IsNullOrEmpty($FriendlyName))) {
+                    throw "Only Base64, JKS, PKCS #12 formats support FriendlyName parameter"
+                }
+            }
+
+            if ( $KeystorePassword ) {
+                if ( $Format -and $Format -ne 'JKS' ) {
+                    Write-Warning "Changing format from $Format to JKS as KeystorePassword was provided"
+                }
+                $params.Body.Format = 'JKS'
+                $plainTextPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($KeystorePassword))
+                $params.Body.KeystorePassword = $plainTextPassword
+
+            }
+
+            if (-not [string]::IsNullOrEmpty($FriendlyName)) {
+                $params.Body.FriendlyName = $FriendlyName
+            }
+
+            if ($IncludeChain) {
+                if ( $Format -in @('DER') ) {
+                    throw "IncludeChain is not supported with the DER Format"
+                }
+
+                $params.Body.IncludeChain = $true
+            }
+        }
     }
 
     process {
@@ -110,22 +141,8 @@ function Export-VenafiCertificate {
             $params.UriLeaf = "certificaterequests/$CertificateId/certificate"
             $params.Method = 'Get'
             Invoke-TppRestMethod @params
-            # $response = Invoke-TppRestMethod @params
-            # if ( $response.PSObject.Properties.Name -contains 'certificaterequests' ) {
-            #     $certs = $response | Select-Object -ExpandProperty certificaterequests
-            # } else {
-            #     $certs = $response
-            # }
-
-            # $certs | Select-Object *,
-            # @{
-            #     'n' = 'certificateId'
-            #     'e' = {
-            #         $_.id
-            #     }
-            # } -ExcludeProperty id
         } else {
-            $params.Body.CertificateDN = $Path
+            $params.Body.CertificateDN = $CertificateId
 
             $response = Invoke-TppRestMethod @params
 
