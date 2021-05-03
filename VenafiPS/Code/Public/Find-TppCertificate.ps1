@@ -132,8 +132,8 @@ Only include certificates with validation enabled or disabled
 .PARAMETER ValidationState
 Find certificates with a validation state of Blank, Success, or Failure
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject, Path, Guid
@@ -357,14 +357,14 @@ function Find-TppCertificate {
         [String[]] $ValidationState,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Get'
             UriLeaf    = 'certificates/'
             Body       = @{
@@ -495,7 +495,7 @@ function Find-TppCertificate {
             $thisPath = $Path
         } elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
             # guid provided, get path
-            $thisPath = $Guid | ConvertTo-TppPath -TppSession $TppSession
+            $thisPath = $Guid | ConvertTo-TppPath -VenafiSession $VenafiSession
         }
 
         if ( $thisPath ) {

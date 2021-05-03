@@ -19,8 +19,8 @@ List of application object paths to associate
 Push the certificate after associating it to the Application objects.
 This will only be successful if the certificate management type is Provisioning and is not disabled, in error, or a push is already in process.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject, Path
@@ -86,14 +86,14 @@ function Add-TppCertificateAssociation {
         [switch] $PushCertificate,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'Certificates/Associate'
             Body       = @{

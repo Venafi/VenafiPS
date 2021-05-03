@@ -8,8 +8,8 @@ Delete a code sign certificate environment and related objects such as keys and 
 .PARAMETER Path
 Path of the environment to delete
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path
@@ -51,14 +51,14 @@ function Remove-TppCodeSignEnvironment {
         [String] $Path,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate('token')
+        $VenafiSession.Validate('token')
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'Codesign/DeleteEnvironment'
             Body       = @{ }

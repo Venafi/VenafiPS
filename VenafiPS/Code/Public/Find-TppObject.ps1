@@ -27,8 +27,8 @@ A list of attribute names to limit the search against.  Only valid when searchin
 .PARAMETER Recursive
 Searches the subordinates of the object specified in Path.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path
@@ -127,17 +127,17 @@ function Find-TppObject {
         [String[]] $Attribute,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         Write-Verbose $PsCmdlet.ParameterSetName
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'placeholder'
             Body       = @{ }

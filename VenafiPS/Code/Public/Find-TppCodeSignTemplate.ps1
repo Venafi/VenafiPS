@@ -8,8 +8,8 @@ Search for specific code sign projects or return all
 .PARAMETER Name
 Name of the project to search for
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 None
@@ -43,14 +43,14 @@ function Find-TppCodeSignTemplate {
         [String] $Name,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate('token')
+        $VenafiSession.Validate('token')
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'Codesign/EnumerateTemplates'
             Body       = @{ }

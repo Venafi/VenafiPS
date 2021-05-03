@@ -22,8 +22,8 @@ Only retrieve the value/values for this attribute
 .PARAMETER Effective
 Get the effective values of the attribute
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject, Path, Guid
@@ -102,12 +102,12 @@ function Get-TppAttribute {
         [Switch] $Effective,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         if ( $PSBoundParameters.ContainsKey('Attribute') ) {
             if ( $PSBoundParameters.ContainsKey('Effective') ) {
@@ -122,7 +122,7 @@ function Get-TppAttribute {
         }
 
         $baseParams = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = $uriLeaf
             Body       = @{
@@ -143,7 +143,7 @@ function Get-TppAttribute {
             }
 
             '*Guid' {
-                $pathToProcess = $Guid | ConvertTo-TppPath -TppSession $TppSession
+                $pathToProcess = $Guid | ConvertTo-TppPath -VenafiSession $VenafiSession
             }
         }
 
@@ -193,7 +193,7 @@ function Get-TppAttribute {
                 # convert custom field guids to names
                 foreach ($thisConfigValue in $configValues) {
 
-                    $customField = $TppSession.CustomField | Where-Object {$_.Guid -eq $thisConfigValue.Name}
+                    $customField = $VenafiSession.CustomField | Where-Object {$_.Guid -eq $thisConfigValue.Name}
                     $thisConfigValue | Add-Member @{
                         'IsCustomField' = $null -ne $customField
                         'CustomName'    = $null

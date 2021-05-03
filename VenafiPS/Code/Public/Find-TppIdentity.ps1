@@ -24,8 +24,8 @@ Include distribution group identity type in search
 .PARAMETER Me
 Returns the identity of the authenticated user and all associated identities.  Will be deprecated in a future release, use Get-TppIdentity -Me instead.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Name
@@ -79,11 +79,11 @@ function Find-TppIdentity {
         [Switch] $Me,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $identityType = 0
         # determine settings to use
@@ -105,7 +105,7 @@ function Find-TppIdentity {
         Switch ($PsCmdlet.ParameterSetName)	{
             'Find' {
                 $params = @{
-                    TppSession = $TppSession
+                    VenafiSession = $VenafiSession
                     Method     = 'Post'
                     UriLeaf    = 'Identity/Browse'
                     Body       = @{
@@ -119,7 +119,7 @@ function Find-TppIdentity {
             'Me' {
                 Write-Warning 'The -Me parameter will be deprecated in a future release.  Please update your code to use Get-TppIdentity -Me.'
                 $params = @{
-                    TppSession = $TppSession
+                    VenafiSession = $VenafiSession
                     Method     = 'Get'
                     UriLeaf    = 'Identity/Self'
                 }
