@@ -14,8 +14,8 @@ Path to a certificate
 .PARAMETER Guid
 Guid representing a certificate
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject, Path, Guid
@@ -81,14 +81,14 @@ function Get-TppCertificateDetail {
         [guid] $Guid,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Get'
         }
     }
@@ -99,7 +99,7 @@ function Get-TppCertificateDetail {
             $thisGuid = $InputObject.Guid
         }
         elseif ( $PSBoundParameters.ContainsKey('Path') ) {
-            $thisGuid = $Path | ConvertTo-TppGuid -TppSession $TppSession
+            $thisGuid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
         }
         else {
             $thisGuid = $Guid

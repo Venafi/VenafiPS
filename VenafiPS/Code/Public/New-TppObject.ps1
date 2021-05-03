@@ -24,8 +24,8 @@ Please note, this feature was added in v18.3.
 .PARAMETER PassThru
 Return a TppObject representing the newly created object.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .EXAMPLE
 New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}
@@ -93,18 +93,18 @@ function New-TppObject {
         [switch] $PassThru,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $TppSession.Validate()
+    $VenafiSession.Validate()
 
     # ensure the object doesn't already exist
-    # if ( Test-TppObject -Path $Path -ExistOnly -TppSession $TppSession ) {
+    # if ( Test-TppObject -Path $Path -ExistOnly -VenafiSession $VenafiSession ) {
     #     throw ("New object to be created, {0}, already exists" -f $Path)
     # }
 
     # ensure the parent folder exists
-    # if ( -not (Test-TppObject -Path (Split-Path -Path $Path -Parent) -ExistOnly -TppSession $TppSession) ) {
+    # if ( -not (Test-TppObject -Path (Split-Path -Path $Path -Parent) -ExistOnly -VenafiSession $VenafiSession) ) {
     #     throw ("The parent folder, {0}, of your new object does not exist" -f (Split-Path -Path $Path -Parent))
     # }
 
@@ -113,7 +113,7 @@ function New-TppObject {
     }
 
     $params = @{
-        TppSession = $TppSession
+        VenafiSession = $VenafiSession
         Method     = 'Post'
         UriLeaf    = 'config/create'
         Body       = @{
@@ -149,7 +149,7 @@ function New-TppObject {
                 $associateParams.Add('PushCertificate', $true)
             }
 
-            Add-TppCertificateAssociation @associateParams -TppSession $TppSession
+            Add-TppCertificateAssociation @associateParams -VenafiSession $VenafiSession
         }
 
         if ( $PassThru ) {
