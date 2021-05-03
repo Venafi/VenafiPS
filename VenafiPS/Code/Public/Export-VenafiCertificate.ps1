@@ -33,12 +33,12 @@ https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Export-VaasC
 #>
 function Export-VenafiCertificate {
 
-    [CmdletBinding(DefaultParameterSetName = 'Tpp')]
+    [CmdletBinding(DefaultParameterSetName = 'Vaas')]
     param (
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('Path')]
-        [guid] $CertificateId,
+        [string] $CertificateId,
 
         [Parameter(Mandatory)]
         [ValidateSet("Base64", "Base64 (PKCS #8)", "DER", "JKS", "PKCS #7", "PKCS #12", "PEM")]
@@ -80,7 +80,7 @@ function Export-VenafiCertificate {
         $params = @{
             VenafiSession = $VenafiSession
             Body          = @{
-                format = $Format
+                Format = $Format
             }
         }
 
@@ -142,6 +142,9 @@ function Export-VenafiCertificate {
             $params.Method = 'Get'
             Invoke-TppRestMethod @params
         } else {
+            $params.Method     = 'Post'
+            $params.UriLeaf    = 'certificates/retrieve'
+
             $params.Body.CertificateDN = $CertificateId
 
             $response = Invoke-TppRestMethod @params

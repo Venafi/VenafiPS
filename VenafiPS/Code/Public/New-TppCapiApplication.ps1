@@ -195,7 +195,7 @@ function New-TppCapiApplication {
 
     begin {
 
-        $VenafiSession.Validate()
+        $VenafiSession.Validate() | Out-Null
 
         if ( $PushCertificate.IsPresent -and (-not $PSBoundParameters.ContainsKey('CertificatePath')) ) {
             throw 'A CertificatePath must be provided when using PushCertificate'

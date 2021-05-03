@@ -23,6 +23,7 @@ class VenafiSession {
     # token is TPP and some functions require it
     # vaas is Venafi as a Service
 
+    # return $AuthType so functions know what we're working with
     [string] Validate(
         [string] $AuthType
     ) {
@@ -61,30 +62,17 @@ class VenafiSession {
         # add a couple of seconds so we don't get caught making the call as it expires
         Write-Verbose ("Expires: {0}, Current (+2s): {1}" -f $this.Expires, (Get-Date).ToUniversalTime().AddSeconds(2))
         if ( $this.Expires -lt (Get-Date).ToUniversalTime().AddSeconds(2) ) {
-            if ( $this.Key -and $this.ServerUrl -ne $script:CloudUrl ) {
-
-                $params = @{
-                    Method      = 'Get'
-                    ContentType = 'application/json'
-                }
-                $params.Uri = ("{0}/vedsdk/authorize/checkvalid" -f $this.ServerUrl)
-                $params.Headers = @{
-                    "X-Venafi-Api-Key" = $this.Key.ApiKey
-                }
-
-                # if ( $this.ServerUrl -eq $script:CloudUrl ) {
-                #     $params.Uri = '{0}/v1/preferences' -f $this.ServerUrl
-                #     $params.Headers = @{
-                #         "tppl-api-key" = $this.Key
-                #     }
-                # } else {
-                #     $params.Uri = ("{0}/vedsdk/authorize/checkvalid" -f $this.ServerUrl)
-                #     $params.Headers = @{
-                #         "X-Venafi-Api-Key" = $this.Key.ApiKey
-                #     }
-                # }
+            if ( $this.Key ) {
 
                 try {
+                    $params = @{
+                        Method      = 'Get'
+                        Uri         = ("{0}/vedsdk/authorize/checkvalid" -f $this.ServerUrl)
+                        Headers     = @{
+                            "X-Venafi-Api-Key" = $this.Key.ApiKey
+                        }
+                        ContentType = 'application/json'
+                    }
                     Invoke-RestMethod @params
                 } catch {
                     # tpp sessions timeout after 3 mins of inactivity
@@ -100,7 +88,6 @@ class VenafiSession {
                         throw ('"{0} {1}: {2}' -f $_.Exception.Response.StatusCode.value__, $_.Exception.Response.StatusDescription, $_ | Out-String )
                     }
                 }
-
             } else {
                 # token
                 # By default, access tokens are long-lived (90 day default). Refreshing the token should be handled outside of this class, so that the

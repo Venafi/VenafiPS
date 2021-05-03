@@ -126,7 +126,7 @@ function Read-TppLog {
 
     begin {
 
-        $VenafiSession.Validate()
+        $VenafiSession.Validate() | Out-Null
 
         $params = @{
             VenafiSession = $VenafiSession

@@ -76,7 +76,7 @@ function Remove-TppCertificate {
     )
 
     begin {
-        $VenafiSession.Validate()
+        $VenafiSession.Validate() | Out-Null
 
         $params = @{
             VenafiSession = $VenafiSession

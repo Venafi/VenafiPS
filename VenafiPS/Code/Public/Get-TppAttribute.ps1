@@ -107,7 +107,7 @@ function Get-TppAttribute {
 
     begin {
 
-        $VenafiSession.Validate()
+        $VenafiSession.Validate() | Out-Null
 
         if ( $PSBoundParameters.ContainsKey('Attribute') ) {
             if ( $PSBoundParameters.ContainsKey('Effective') ) {

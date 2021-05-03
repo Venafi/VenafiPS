@@ -79,13 +79,13 @@ function Invoke-VenafiRestMethod {
                 }
                 'token' {
                     $hdr = @{
-                        'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken
+                        'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
                     }
                     $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
                 }
                 'vaas' {
                     $hdr = @{
-                        "tppl-api-key" = $VenafiSession.Key
+                        "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
                     }
                     $uri = '{0}/v1/{1}' -f $ServerUrl, $UriLeaf
                 }

@@ -76,7 +76,7 @@ function Remove-TppPermission {
     )
 
     begin {
-        $VenafiSession.Validate()
+        $VenafiSession.Validate() | Out-Null
 
         $params = @{
             VenafiSession = $VenafiSession

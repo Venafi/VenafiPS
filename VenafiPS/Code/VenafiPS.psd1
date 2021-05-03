@@ -33,7 +33,7 @@ Copyright = '(c) 2018-2021 Greg Brownstein. All rights reserved.'
 Description = 'Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!'
 
 # Minimum version of the Windows PowerShell engine required by this module
-PowerShellVersion = '5.0'
+PowerShellVersion = '5.1'
 
 # Name of the Windows PowerShell host required by this module
 # PowerShellHostName = ''
@@ -94,7 +94,7 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'ConvertTo-TppGuid',
 CmdletsToExport = @()
 
 # Variables to export from this module
-VariablesToExport = 'VenafiSession', 'TppSupportedVersion'
+VariablesToExport = 'VenafiSession'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = 'fto', 'itcr'

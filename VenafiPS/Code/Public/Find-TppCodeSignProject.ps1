@@ -47,7 +47,7 @@ function Find-TppCodeSignProject {
     )
 
     begin {
-        $VenafiSession.Validate('token')
+        $VenafiSession.Validate('token') | Out-Null
 
         $params = @{
             VenafiSession = $VenafiSession
