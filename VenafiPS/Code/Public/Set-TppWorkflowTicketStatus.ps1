@@ -23,8 +23,8 @@ ScheduledStart must be specified when the "Approved After" or "Approved Between"
 Specifies the time before which the ticket should be processed.
 ScheduledStop must be specified when the "Approved Between" status is set
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 TicketGuid
@@ -73,7 +73,7 @@ function Set-TppWorkflowTicketStatus {
         [DateTime] $ScheduledStop,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
@@ -96,14 +96,14 @@ function Set-TppWorkflowTicketStatus {
             }
         }
 
-        $TppSession.Validate()
+        $VenafiSession.Validate()
     }
 
     process {
 
         foreach ($thisGuid in $TicketGuid) {
             $params = @{
-                TppSession = $TppSession
+                VenafiSession = $VenafiSession
                 Method     = 'Post'
                 UriLeaf    = 'Workflow/Ticket/UpdateStatus'
                 Body       = @{

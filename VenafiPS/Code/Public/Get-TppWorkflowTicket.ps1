@@ -14,8 +14,8 @@ Path to the certificate
 .PARAMETER Guid
 Certificate guid
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject, Path, or Guid
@@ -81,11 +81,11 @@ function Get-TppWorkflowTicket {
         [Guid[]] $Guid,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
         Write-Verbose ("Parameter set {0}" -f $PsCmdlet.ParameterSetName)
     }
 
@@ -95,7 +95,7 @@ function Get-TppWorkflowTicket {
             $Path = $InputObject.Path
         }
         elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
-            $Path = $Guid | ConvertTo-TppPath -TppSession $TppSession
+            $Path = $Guid | ConvertTo-TppPath -VenafiSession $VenafiSession
         }
         else {
             # we have the cert path we need to get the workflow tickets
@@ -104,7 +104,7 @@ function Get-TppWorkflowTicket {
         $ticketGuid = foreach ($thisDn in $Path) {
 
             $params = @{
-                TppSession = $TppSession
+                VenafiSession = $VenafiSession
                 Method     = 'Post'
                 UriLeaf    = 'Workflow/Ticket/Enumerate'
                 Body       = @{
@@ -122,7 +122,7 @@ function Get-TppWorkflowTicket {
 
         foreach ($thisGuid in $ticketGuid) {
             $params = @{
-                TppSession = $TppSession
+                VenafiSession = $VenafiSession
                 Method     = 'Post'
                 UriLeaf    = 'Workflow/Ticket/Details'
                 Body       = @{

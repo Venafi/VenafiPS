@@ -11,8 +11,8 @@ Path of the project to update
 .PARAMETER Status
 New project status, must have the appropriate perms.  Status can be Disabled, Enabled, Draft, or Pending.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path
@@ -53,14 +53,14 @@ function Set-TppCodeSignProjectStatus {
         [TppCodeSignProjectStatus] $Status,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate('token')
+        $VenafiSession.Validate('token')
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'Codesign/UpdateProjectStatus'
             Body       = @{

@@ -55,8 +55,8 @@ Specify this switch to bypass this check.
 .PARAMETER PassThru
 Return a TppObject representing the newly created capi app.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path
@@ -190,12 +190,12 @@ function New-TppCapiApplication {
         [switch] $PassThru,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         if ( $PushCertificate.IsPresent -and (-not $PSBoundParameters.ContainsKey('CertificatePath')) ) {
             throw 'A CertificatePath must be provided when using PushCertificate'
@@ -206,7 +206,7 @@ function New-TppCapiApplication {
             if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
                 $certPath = (Split-Path $CertificatePath -Parent)
                 $certName = (Split-Path $CertificatePath -Leaf)
-                $certObject = Find-TppCertificate -Path $certPath -TppSession $TppSession
+                $certObject = Find-TppCertificate -Path $certPath -VenafiSession $VenafiSession
 
                 if ( -not $certObject -or ($certName -notin $certObject.Name) ) {
                     throw ('A certificate object could not be found at ''{0}''' -f $CertificatePath)
@@ -216,7 +216,7 @@ function New-TppCapiApplication {
             # ensure the credential exists and is actually of type credential
             if ( $PSBoundParameters.ContainsKey('CredentialPath') ) {
 
-                $credObject = Get-TppObject -Path $CredentialPath -TppSession $TppSession
+                $credObject = Get-TppObject -Path $CredentialPath -VenafiSession $VenafiSession
 
                 if ( -not $credObject -or $credObject.TypeName -notlike '*credential*' ) {
                     throw ('A credential object could not be found at ''{0}''' -f $CredentialPath)
@@ -231,7 +231,7 @@ function New-TppCapiApplication {
                 'Driver Name' = 'appcapi'
             }
             PassThru   = $true
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
         }
 
         if ( $PSBoundParameters.ContainsKey('FriendlyName') ) {
@@ -287,7 +287,7 @@ function New-TppCapiApplication {
                 $devicePath = (Split-Path $Path -Parent)
             }
 
-            $device = Get-TppObject -Path $devicePath -TppSession $TppSession
+            $device = Get-TppObject -Path $devicePath -VenafiSession $VenafiSession
 
             if ( $device ) {
                 if ( $device.TypeName -ne 'Device' ) {
@@ -323,7 +323,7 @@ function New-TppCapiApplication {
                 $params = @{
                     CertificatePath = $CertificatePath
                     ApplicationPath = $appPaths
-                    TppSession      = $TppSession
+                    VenafiSession      = $VenafiSession
                 }
 
                 Invoke-TppCertificatePush @params

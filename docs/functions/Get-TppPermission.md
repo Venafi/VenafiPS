@@ -8,19 +8,19 @@ Get permissions for TPP objects
 ### ByObject (Default)
 ```
 Get-TppPermission -InputObject <TppObject> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
 Get-TppPermission -Path <String[]> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
 Get-TppPermission -Guid <Guid[]> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -147,18 +147,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

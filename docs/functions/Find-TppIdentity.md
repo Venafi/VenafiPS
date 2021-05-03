@@ -8,12 +8,12 @@ Search for identity details
 ### Find (Default)
 ```
 Find-TppIdentity -Name <String[]> [-Limit <Int32>] [-IncludeUsers] [-IncludeSecurityGroups]
- [-IncludeDistributionGroups] [-TppSession <TppSession>] [<CommonParameters>]
+ [-IncludeDistributionGroups] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### Me
 ```
-Find-TppIdentity [-Me] [-TppSession <TppSession>] [<CommonParameters>]
+Find-TppIdentity [-Me] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -Me
-Returns the identity of the authenticated user and all associated identities. 
+Returns the identity of the authenticated user and all associated identities.
 Will be deprecated in a future release, use Get-TppIdentity -Me instead.
 
 ```yaml
@@ -129,18 +129,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

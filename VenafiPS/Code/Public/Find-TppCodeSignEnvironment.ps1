@@ -8,8 +8,8 @@ Search for specific code sign environments that match a name you provide or get 
 .PARAMETER Name
 Name of the environment to search for
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 None
@@ -42,11 +42,11 @@ function Find-TppCodeSignEnvironment {
         [String] $Name,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate('token')
+        $VenafiSession.Validate('token')
         $projects = Find-TppCodeSignProject | Get-TppCodeSignProject
     }
 

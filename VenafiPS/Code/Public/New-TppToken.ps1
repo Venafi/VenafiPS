@@ -3,7 +3,7 @@
 Get an API Access and Refresh Token from TPP
 
 .DESCRIPTION
-Get an api access and refresh token to be used with New-TppSession or other scripts/utilities that take such a token.
+Get an api access and refresh token to be used with New-VenafiSession or other scripts/utilities that take such a token.
 Accepts username/password credential, scope, and ClientId to get a token grant from specified TPP server.
 
 .PARAMETER AuthServer
@@ -162,7 +162,7 @@ function New-TppToken {
 
  Write-Verbose ("RefreshUntil: {0}, Current: {1}" -f $this.Token.RefreshUntil, (Get-Date).ToUniversalTime())
                 if ( $this.Token.RefreshUntil -and $this.Token.RefreshUntil -lt (Get-Date) ) {
-                    throw "The refresh token has expired.  You must create a new session with New-TppSession."
+                    throw "The refresh token has expired.  You must create a new session with New-VenafiSession."
                 }
 
                 if ( $this.Token.RefreshToken ) {
@@ -193,6 +193,6 @@ function New-TppToken {
                     }
 
                 } else {
-                    throw "The token has expired and no refresh token exists.  You must create a new session with New-TppSession."
+                    throw "The token has expired and no refresh token exists.  You must create a new session with New-VenafiSession."
                 }
 #>

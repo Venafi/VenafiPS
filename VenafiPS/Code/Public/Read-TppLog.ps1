@@ -35,8 +35,8 @@ Filter matching results of Value2
 .PARAMETER Limit
 Specify the number of items to retrieve, starting with most recent.  The default is 100 and there is no maximum.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject
@@ -121,15 +121,15 @@ function Read-TppLog {
         [Int] $Limit,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Get'
             UriLeaf    = 'Log/'
             Body       = @{ }

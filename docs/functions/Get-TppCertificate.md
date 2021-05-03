@@ -8,14 +8,14 @@ Get a certificate
 ### NonJKS (Default)
 ```
 Get-TppCertificate -Path <String> -Format <String> [-OutPath <String>] [-IncludeChain] [-FriendlyName <String>]
- [-IncludePrivateKey] [-PrivateKeyPassword <SecureString>] [-TppSession <TppSession>] [<CommonParameters>]
+ [-IncludePrivateKey] [-PrivateKeyPassword <SecureString>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### JKS
 ```
 Get-TppCertificate -Path <String> [-Format <String>] [-OutPath <String>] [-IncludeChain] -FriendlyName <String>
  [-IncludePrivateKey] [-PrivateKeyPassword <SecureString>] -KeystorePassword <SecureString>
- [-TppSession <TppSession>] [<CommonParameters>]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -70,7 +70,7 @@ Accept wildcard characters: False
 ```
 
 ### -Format
-The format of the returned certificate. 
+The format of the returned certificate.
 Valid formats include Base64, Base64 (PKCS #8), DER, JKS, PKCS #7, PKCS #12.
 
 ```yaml
@@ -98,7 +98,7 @@ Accept wildcard characters: False
 ```
 
 ### -OutPath
-Folder path to save the certificate to. 
+Folder path to save the certificate to.
 The name of the file will be determined automatically.
 
 ```yaml
@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -IncludeChain
-Include the certificate chain with the exported certificate. 
+Include the certificate chain with the exported certificate.
 Not supported with DER format.
 
 ```yaml
@@ -130,8 +130,8 @@ Accept wildcard characters: False
 ```
 
 ### -FriendlyName
-Label or alias to use. 
-Permitted with Base64 and PKCS #12 formats. 
+Label or alias to use.
+Permitted with Base64 and PKCS #12 formats.
 Required when Format is JKS.
 
 ```yaml
@@ -174,7 +174,7 @@ Accept wildcard characters: False
 ```
 
 ### -PrivateKeyPassword
-Password required to include the private key. 
+Password required to include the private key.
 Not supported with DER or PKCS #7 formats.
 You must adhere to the following rules:
 - Password is at least 12 characters.
@@ -197,7 +197,7 @@ Accept wildcard characters: False
 ```
 
 ### -KeystorePassword
-Password required to retrieve the certificate in JKS format. 
+Password required to retrieve the certificate in JKS format.
 You must adhere to the following rules:
 - Password is at least 12 characters.
 - Comprised of at least three of the following:
@@ -218,18 +218,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

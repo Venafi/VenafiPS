@@ -6,7 +6,7 @@ Delete a code sign certificate environment
 ## SYNTAX
 
 ```
-Remove-TppCodeSignEnvironment [-Path] <String> [[-TppSession] <TppSession>] [-WhatIf] [-Confirm]
+Remove-TppCodeSignEnvironment [-Path] <String> [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -28,7 +28,7 @@ Delete an environment
 $envObj | Remove-TppCodeSignEnvironment
 ```
 
-Remove 1 or more environments. 
+Remove 1 or more environments.
 Get environments with Find-TppCodeSignEnvironment
 
 ## PARAMETERS
@@ -48,18 +48,18 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 2
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -5,8 +5,8 @@ Get the TPP version
 .DESCRIPTION
 Returns the TPP version
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 none
@@ -34,13 +34,13 @@ function Get-TppVersion {
 
     param (
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $TppSession.Validate()
+    $VenafiSession.Validate()
 
     $params = @{
-        TppSession = $TppSession
+        VenafiSession = $VenafiSession
         Method     = 'Get'
         UriLeaf    = 'SystemStatus/Version'
     }

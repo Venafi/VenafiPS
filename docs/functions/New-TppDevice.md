@@ -7,7 +7,7 @@ Add a new device
 
 ```
 New-TppDevice [-Path] <String> [[-DeviceName] <String[]>] [[-Description] <String>]
- [[-CredentialPath] <String>] [[-Hostname] <String>] [-PassThru] [[-TppSession] <TppSession>] [-WhatIf]
+ [[-CredentialPath] <String>] [[-Hostname] <String>] [-PassThru] [[-VenafiSession] <VenafiSession>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -DeviceName
-Name of 1 or more devices to create. 
+Name of 1 or more devices to create.
 Path must be of type Policy to use this.
 
 ```yaml
@@ -124,18 +124,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 6
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

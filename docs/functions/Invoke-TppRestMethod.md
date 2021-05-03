@@ -7,7 +7,7 @@ Generic REST API call
 
 ### Session (Default)
 ```
-Invoke-TppRestMethod -TppSession <TppSession> -Method <String> [-UriRoot <String>] -UriLeaf <String>
+Invoke-TppRestMethod -VenafiSession <VenafiSession> -Method <String> [-UriRoot <String>] -UriLeaf <String>
  [-Header <Hashtable>] [-Body <Hashtable>] [<CommonParameters>]
 ```
 
@@ -29,13 +29,13 @@ Generic REST API call
 
 ## PARAMETERS
 
-### -TppSession
-TppSession object from New-TppSession.
-For typical calls to New-TppSession, the object will be stored as a session object named $TppSession.
+### -VenafiSession
+VenafiSession object from New-VenafiSession.
+For typical calls to New-VenafiSession, the object will be stored as a session object named $VenafiSession.
 Otherwise, if -PassThru was used, provide the resulting object.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: Session
 Aliases:
 
@@ -123,7 +123,7 @@ Accept wildcard characters: False
 ```
 
 ### -Header
-Optional additional headers. 
+Optional additional headers.
 The authorization header will be included automatically.
 
 ```yaml

@@ -17,8 +17,8 @@ Path to the certificate to remove
 .PARAMETER Force
 Provide this switch to force all associations to be removed prior to certificate removal
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject or Path
@@ -72,14 +72,14 @@ function Remove-TppCertificate {
         [switch] $Force,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Delete'
             UriLeaf    = 'placeholder'
         }
@@ -91,12 +91,12 @@ function Remove-TppCertificate {
             $path = $InputObject.Path
             $guid = $InputObject.Guid
         } else {
-            $guid = $Path | ConvertTo-TppGuid -TppSession $TppSession
+            $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
         }
 
         # ensure either there are no associations or the force flag was provided
         $associatedApps = $Guid |
-        Get-TppAttribute -Attribute "Consumers" -EffectivePolicy -TppSession $TppSession |
+        Get-TppAttribute -Attribute "Consumers" -EffectivePolicy -VenafiSession $VenafiSession |
         Select-Object -ExpandProperty Value
 
         if ( $associatedApps ) {
@@ -111,7 +111,7 @@ function Remove-TppCertificate {
         $params.UriLeaf = "Certificates/$Guid"
 
         if ( $PSCmdlet.ShouldProcess($Path, 'Remove certificate and all associations') ) {
-            Remove-TppCertificateAssociation -Path $Path -All -TppSession $TppSession
+            Remove-TppCertificateAssociation -Path $Path -All -VenafiSession $VenafiSession
             Invoke-TppRestMethod @params
         }
     }

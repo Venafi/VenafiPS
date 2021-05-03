@@ -6,11 +6,11 @@ Get CodeSign Protect project settings
 ## SYNTAX
 
 ```
-Get-TppCodeSignConfig [[-TppSession] <TppSession>] [<CommonParameters>]
+Get-TppCodeSignConfig [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get CodeSign Protect project settings. 
+Get CodeSign Protect project settings.
 Must have token with scope codesign:manage.
 
 ## EXAMPLES
@@ -24,18 +24,18 @@ Get settings
 
 ## PARAMETERS
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 1
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

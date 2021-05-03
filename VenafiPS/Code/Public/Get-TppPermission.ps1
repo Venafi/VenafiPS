@@ -28,8 +28,8 @@ Retrieve identity attribute values for the users and groups.
 Attributes include Group Membership, Name, Internet Email Address, Given Name, Surname.
 This parameter will be deprecated in a future release.
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 InputObject, Path, Guid, IdentityId
@@ -130,14 +130,14 @@ function Get-TppPermission {
         [string[]] $Attribute,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Get'
             UriLeaf    = 'placeholder'
         }
@@ -171,7 +171,7 @@ function Get-TppPermission {
                 }
 
                 Default {
-                    $thisTppObject = [TppObject]::new($thisInputObject, $TppSession)
+                    $thisTppObject = [TppObject]::new($thisInputObject, $VenafiSession)
                 }
             }
 
@@ -234,7 +234,7 @@ function Get-TppPermission {
 
                         $attribParams = @{
                             IdentityId = $thisReturnObject.IdentityId
-                            TppSession = $TppSession
+                            VenafiSession = $VenafiSession
                         }
                         try {
                             $attribResponse = Get-TppIdentityAttribute @attribParams

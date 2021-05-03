@@ -12,8 +12,8 @@ Full path to an object.  You can also pipe in a TppObject
 .PARAMETER IdentityId
 Prefixed Universal Id of the user or group to have their permissions removed
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path, Guid, IdentityId
@@ -72,14 +72,14 @@ function Remove-TppPermission {
         [string[]] $IdentityId,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Delete'
             UriLeaf    = 'placeholder'
         }

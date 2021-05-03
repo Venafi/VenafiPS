@@ -12,13 +12,13 @@
 RootModule = 'VenafiPS.psm1'
 
 # Version number of this module.
-ModuleVersion = '2.2.4'
+ModuleVersion = '3.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
 
 # ID used to uniquely identify this module
-GUID = 'c753bf91-13c0-4ae0-9e43-dbf40b22c3be'
+GUID = 'a1c0ef7c-8499-4ac4-9659-52ca91258d13'
 
 # Author of this module
 Author = 'Greg Brownstein'
@@ -30,7 +30,7 @@ CompanyName = 'Greg Brownstein'
 Copyright = '(c) 2018-2021 Greg Brownstein. All rights reserved.'
 
 # Description of the functionality provided by this module
-Description = 'PowerShell module to access the features of Venafi Trust Protection Platform REST API'
+Description = 'Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!'
 
 # Minimum version of the Windows PowerShell engine required by this module
 PowerShellVersion = '5.0'
@@ -63,7 +63,7 @@ PowerShellVersion = '5.0'
 # TypesToProcess = @()
 
 # Format files (.ps1xml) to be loaded when importing this module
-    FormatsToProcess = @('VenafiPS.format.ps1xml')
+    # FormatsToProcess = @('VenafiPS.format.ps1xml')
 
 # Modules to import as nested modules of the module specified in RootModule/ModuleToProcess
 # NestedModules = @()
@@ -79,7 +79,7 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'ConvertTo-TppGuid',
                'Get-TppIdentityAttribute', 'Get-TppObject', 'Get-TppPermission',
                'Get-TppSystemStatus', 'Get-TppVersion', 'Get-TppWorkflowTicket',
                'Import-TppCertificate', 'Invoke-TppCertificatePush',
-               'Invoke-TppCertificateRenewal', 'Invoke-TppRestMethod',
+               'Invoke-TppCertificateRenewal', 'Invoke-VenafiRestMethod',
                'Move-TppObject', 'New-TppCapiApplication', 'New-TppCertificate',
                'New-TppCodeSignProject', 'New-TppDevice', 'New-TppObject',
                'New-TppPolicy', 'New-VenafiSession', 'New-TppToken', 'Read-TppLog',
@@ -88,13 +88,13 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'ConvertTo-TppGuid',
                'Remove-TppPermission', 'Rename-TppObject', 'Revoke-TppCertificate',
                'Revoke-TppToken', 'Set-TppAttribute', 'Set-TppCodeSignProjectStatus',
                'Set-TppPermission', 'Set-TppWorkflowTicketStatus',
-               'Test-TppIdentity', 'Test-TppObject', 'Write-TppLog', 'Get-VaasCertificate', 'Export-VaasCertificate', 'Get-VaasZone', 'Get-VaasProject'
+               'Test-TppIdentity', 'Test-TppObject', 'Write-TppLog', 'Get-VenafiCertificate', 'Export-VenafiCertificate', 'Get-VaasZone', 'Get-VaasProject'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
 
 # Variables to export from this module
-VariablesToExport = 'TppSession', 'TppSupportedVersion'
+VariablesToExport = 'VenafiSession', 'TppSupportedVersion'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = 'fto', 'itcr'
@@ -114,7 +114,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = 'Venafi','TPP','TrustProtectionPlatform','API'
+        Tags = 'Venafi','TPP','TrustProtectionPlatform','API','devsecops'
 
         # A URL to the license for this module.
         LicenseUri = 'https://github.com/gdbarron/VenafiPS/blob/main/LICENSE'

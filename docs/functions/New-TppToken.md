@@ -24,7 +24,7 @@ New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Certifi
 ```
 
 ## DESCRIPTION
-Get an api access and refresh token to be used with New-TppSession or other scripts/utilities that take such a token.
+Get an api access and refresh token to be used with New-VenafiSession or other scripts/utilities that take such a token.
 Accepts username/password credential, scope, and ClientId to get a token grant from specified TPP server.
 
 ## EXAMPLES

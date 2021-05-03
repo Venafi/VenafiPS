@@ -7,13 +7,13 @@ Remove a certificate
 
 ### ByObject
 ```
-Remove-TppCertificate -InputObject <TppObject> [-Force] [-TppSession <TppSession>] [-WhatIf] [-Confirm]
+Remove-TppCertificate -InputObject <TppObject> [-Force] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Remove-TppCertificate -Path <String> [-Force] [-TppSession <TppSession>] [-WhatIf] [-Confirm]
+Remove-TppCertificate -Path <String> [-Force] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -93,18 +93,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

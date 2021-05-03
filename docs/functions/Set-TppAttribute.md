@@ -7,13 +7,13 @@ Adds a value to an attribute
 
 ```
 Set-TppAttribute [-Path] <String[]> [-AttributeName] <String> [-Value] <String[]> [-NoClobber]
- [[-TppSession] <TppSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Write a value to the object's configuration. 
-This function will append by default. 
-Attributes can have multiple values which may not be the intended use. 
+Write a value to the object's configuration.
+This function will append by default.
+Attributes can have multiple values which may not be the intended use.
 To ensure you only have one value for an attribute, use the Overwrite switch.
 
 ## EXAMPLES
@@ -23,7 +23,7 @@ To ensure you only have one value for an attribute, use the Overwrite switch.
 Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com -AttributeName 'My custom field Label' -Value 'new custom value'
 ```
 
-Set value on custom field. 
+Set value on custom field.
 This will add to any existing value.
 
 ### EXAMPLE 2
@@ -51,7 +51,7 @@ Accept wildcard characters: False
 ```
 
 ### -AttributeName
-Name of the attribute to modify. 
+Name of the attribute to modify.
 If modifying a custom field, use the Label.
 
 ```yaml
@@ -96,18 +96,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 4
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

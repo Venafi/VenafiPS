@@ -66,13 +66,13 @@ This can be helpful to determine the difference between what different users can
 $user2Cred = Get-Credential # specify credentials for a different/limited user
 
 # get a session as user2 and save the session in a variable
-$user2Session = New-TppSession -ServerUrl 'https://venafi.mycompany.com' -Credential $user2Cred -PassThru
+$user2Session = New-VenafiSession -ServerUrl 'https://venafi.mycompany.com' -Credential $user2Cred -PassThru
 
 # get all objects in the Policy folder for the first user
 $all = Find-TppObject -Path '\ved\policy' -Recursive
 
 # get all objects in the Policy folder for user2
-$all2 = Find-TppObject -Path '\ved\policy' -Recursive -TppSession $user2Session
+$all2 = Find-TppObject -Path '\ved\policy' -Recursive -VenafiSession $user2Session
 
 Compare-Object -ReferenceObject $all -DifferenceObject $all2 -Property Path
 ```

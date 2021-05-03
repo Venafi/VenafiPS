@@ -17,8 +17,8 @@ Value or list of values to write to the attribute.
 .PARAMETER NoClobber
 Append existing values as opposed to replacing which is the default
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path
@@ -75,14 +75,14 @@ function Set-TppAttribute {
         [Switch] $NoClobber,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
         }
 
@@ -103,7 +103,7 @@ function Set-TppAttribute {
         foreach ($thisDn in $Path) {
 
             $realAttributeName = $AttributeName
-            $field = $TppSession.CustomField | Where-Object {$_.Label -eq $AttributeName}
+            $field = $VenafiSession.CustomField | Where-Object {$_.Label -eq $AttributeName}
             if ( $field ) {
                 $realAttributeName = $field.Guid
                 Write-Verbose ("Updating custom field.  Name: {0}, Guid: {1}" -f $AttributeName, $field.Guid)

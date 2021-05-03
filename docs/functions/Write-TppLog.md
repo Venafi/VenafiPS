@@ -9,7 +9,7 @@ Write entries to the TPP log
 ```
 Write-TppLog -EventGroup <String> -EventId <String> -Component <String> [-Severity <TppEventSeverity>]
  [-SourceIp <IPAddress>] [-ComponentID <Int32>] [-ComponentSubsystem <String>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-TppSession <TppSession>] [-WhatIf] [-Confirm]
+ [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -17,7 +17,7 @@ Write-TppLog -EventGroup <String> -EventId <String> -Component <String> [-Severi
 ```
 Write-TppLog -CustomEventGroup <String> -EventId <String> -Component <String> [-Severity <TppEventSeverity>]
  [-SourceIp <IPAddress>] [-ComponentID <Int32>] [-ComponentSubsystem <String>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-TppSession <TppSession>] [-WhatIf] [-Confirm]
+ [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -67,7 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -EventId
-Event ID from within the EventGroup provided. 
+Event ID from within the EventGroup provided.
 Only provide the 4 character event id, do not precede with group ID.
 
 ```yaml
@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -Text1
-String data to write to log. 
+String data to write to log.
 See link for event ID messages for more info.
 
 ```yaml
@@ -175,7 +175,7 @@ Accept wildcard characters: False
 ```
 
 ### -Text2
-String data to write to log. 
+String data to write to log.
 See link for event ID messages for more info.
 
 ```yaml
@@ -191,7 +191,7 @@ Accept wildcard characters: False
 ```
 
 ### -Value1
-Integer data to write to log. 
+Integer data to write to log.
 See link for event ID messages for more info.
 
 ```yaml
@@ -207,7 +207,7 @@ Accept wildcard characters: False
 ```
 
 ### -Value2
-Integer data to write to log. 
+Integer data to write to log.
 See link for event ID messages for more info.
 
 ```yaml
@@ -222,18 +222,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -46,33 +46,33 @@ If just the server name is provided, https:// will be appended.
 Optionally, send the session object to the pipeline instead of script scope.
 
 .OUTPUTS
-TppSession, if PassThru is provided
+VenafiSession, if PassThru is provided
 
 .EXAMPLE
-New-TppSession -Server venafitpp.mycompany.com
+New-VenafiSession -Server venafitpp.mycompany.com
 Create key-based session using Windows Integrated authentication
 
 .EXAMPLE
-New-TppSession -Server venafitpp.mycompany.com -Credential $cred
+New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred
 Create key-based session using Windows Integrated authentication
 
 .EXAMPLE
-New-TppSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
+New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
 Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 
 .EXAMPLE
-New-TppSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
+New-VenafiSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
 Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 
 .EXAMPLE
-$sess = New-TppSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
+$sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
 Create session and return the session object instead of setting to script scope variable
 
 .LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/New-TppSession/
+http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppSession.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-VenafiSession.ps1
 
 .LINK
 https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____1
@@ -158,7 +158,7 @@ function New-VenafiSession {
         )]
         [string] $AuthServer,
 
-        [Parameter(Mandatory, ParameterSetName = 'VaasKey')]
+        [Parameter(Mandatory, ParameterSetName = 'Vaas')]
         [guid] $VaasKey,
 
         [Parameter()]
@@ -173,7 +173,7 @@ function New-VenafiSession {
         $serverUrl = 'https://{0}' -f $serverUrl
     }
 
-    $newSession = [TppSession] @{
+    $newSession = [VenafiSession] @{
         ServerUrl = $serverUrl
     }
 
@@ -239,10 +239,10 @@ function New-VenafiSession {
                 }
             }
 
-            'VaasKey' {
+            'Vaas' {
                 $newSession.ServerUrl = $script:CloudUrl
                 $newSession.Key = $VaasKey.ToString()
-        # $newSession.Version = (Get-TppVersion -TppSession $newSession)
+        # $newSession.Version = (Get-TppVersion -VenafiSession $newSession)
             }
 
             Default {
@@ -255,9 +255,9 @@ function New-VenafiSession {
         # this isn't required so bypass on failure
 
         if ( $PSCmdlet.ParameterSetName -ne 'VaasKey' ) {
-            $newSession.Version = (Get-TppVersion -TppSession $newSession -ErrorAction SilentlyContinue)
-            $certFields = Get-TppCustomField -TppSession $newSession -Class 'X509 Certificate' -ErrorAction SilentlyContinue
-            $deviceFields = Get-TppCustomField -TppSession $newSession -Class 'Device' -ErrorAction SilentlyContinue
+            $newSession.Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue)
+            $certFields = Get-TppCustomField -VenafiSession $newSession -Class 'X509 Certificate' -ErrorAction SilentlyContinue
+            $deviceFields = Get-TppCustomField -VenafiSession $newSession -Class 'Device' -ErrorAction SilentlyContinue
             $allFields = $certFields.Items
             $allFields += $deviceFields.Items | Where-Object { $_.Guid -notin $allFields.Guid }
             $newSession.CustomField = $allFields
@@ -266,7 +266,7 @@ function New-VenafiSession {
         if ( $PassThru ) {
             $newSession
         } else {
-            $Script:TppSession = $newSession
+            $Script:VenafiSession = $newSession
         }
     }
 }

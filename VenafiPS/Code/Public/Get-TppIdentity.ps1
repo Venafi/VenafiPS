@@ -11,8 +11,8 @@ The individual identity, group identity, or distribution group prefixed universa
 .PARAMETER Me
 Returns the identity of the authenticated user
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 ID
@@ -60,16 +60,16 @@ function Get-TppIdentity {
         [Switch] $Me,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         Switch ($PsCmdlet.ParameterSetName)	{
             'Id' {
                 $params = @{
-                    TppSession = $TppSession
+                    VenafiSession = $VenafiSession
                     Method     = 'Post'
                     UriLeaf    = 'Identity/Validate'
                     Body       = @{
@@ -82,7 +82,7 @@ function Get-TppIdentity {
 
             'Me' {
                 $params = @{
-                    TppSession = $TppSession
+                    VenafiSession = $VenafiSession
                     Method     = 'Get'
                     UriLeaf    = 'Identity/Self'
                 }

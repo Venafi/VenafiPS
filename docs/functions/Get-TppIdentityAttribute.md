@@ -6,7 +6,7 @@ Get attribute values for TPP identity objects
 ## SYNTAX
 
 ```
-Get-TppIdentityAttribute [-ID] <String[]> [[-Attribute] <String[]>] [[-TppSession] <TppSession>]
+Get-TppIdentityAttribute [-ID] <String[]> [[-Attribute] <String[]>] [[-VenafiSession] <VenafiSession>]
  [<CommonParameters>]
 ```
 
@@ -32,7 +32,7 @@ Get specific attribute for user
 ## PARAMETERS
 
 ### -ID
-The id that represents the user or group. 
+The id that represents the user or group.
 Use Find-TppIdentity to get the id.
 
 ```yaml
@@ -62,18 +62,18 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: (All)
 Aliases:
 
 Required: False
 Position: 3
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

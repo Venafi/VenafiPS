@@ -5,9 +5,9 @@ Generic REST API call
 .DESCRIPTION
 Generic REST API call
 
-.PARAMETER TppSession
-TppSession object from New-TppSession.
-For typical calls to New-TppSession, the object will be stored as a session object named $TppSession.
+.PARAMETER VenafiSession
+VenafiSession object from New-VenafiSession.
+For typical calls to New-VenafiSession, the object will be stored as a session object named $VenafiSession.
 Otherwise, if -PassThru was used, provide the resulting object.
 
 .PARAMETER Method
@@ -31,12 +31,12 @@ PSCustomObject
 .EXAMPLE
 
 #>
-function Invoke-TppRestMethod {
+function Invoke-VenafiRestMethod {
     [CmdletBinding(DefaultParameterSetName = 'Session')]
     param (
         [Parameter(Mandatory, ParameterSetName = 'Session')]
         [ValidateNotNullOrEmpty()]
-        [TppSession] $TppSession,
+        [VenafiSession] $VenafiSession,
 
         [Parameter(Mandatory, ParameterSetName = 'URL')]
         [ValidateNotNullOrEmpty()]
@@ -52,15 +52,12 @@ function Invoke-TppRestMethod {
         [Parameter()]
         [String] $UriRoot = 'vedsdk',
 
-        [Parameter()]
+        [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
         [String] $UriLeaf,
 
         [Parameter(Mandatory, ParameterSetName = 'CloudKey')]
         [guid] $CloudKey,
-
-        [Parameter()]
-        [string] $CloudUriLeaf,
 
         [Parameter()]
         [hashtable] $Header,
@@ -72,33 +69,55 @@ function Invoke-TppRestMethod {
     # ensure this api is supported for the current version
     # $supportedVersion = $TppSupportedVersion.Where{$_.UriLeaf -eq $UriLeaf}
     # if ( $supportedVersion ) {
-    #     if ( $TppSession.Version -lt ([Version] $supportedVersion.Version) ) {
-    #         throw ("{0} is not a supported api call for this version (v{1}) of TPP" -f $UriLeaf, $TppSession.Version)
+    #     if ( $VenafiSession.Version -lt ([Version] $supportedVersion.Version) ) {
+    #         throw ("{0} is not a supported api call for this version (v{1}) of TPP" -f $UriLeaf, $VenafiSession.Version)
     #     }
     # }
 
     switch ($PSCmdLet.ParameterSetName) {
         'Session' {
-            $ServerUrl = $TppSession.ServerUrl
-            $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
+            $ServerUrl = $VenafiSession.ServerUrl
 
-            if ( $TppSession.Key ) {
-                if ( $ServerUrl -eq $script:CloudUrl ) {
+            switch ($VenafiSession | Get-VenafiAuthType) {
+                'key' {
                     $hdr = @{
-                        "tppl-api-key" = $TppSession.Key
+                        "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
                     }
-                    $uri = '{0}/v1/{1}' -f $ServerUrl, $CloudUriLeaf
-                } else {
+                    $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
+                }
+                'token' {
                     $hdr = @{
-                        "X-Venafi-Api-Key" = $TppSession.Key.ApiKey
+                        'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken
                     }
+                    $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
                 }
-            } else {
-                # token
-                $hdr = @{
-                    'Authorization' = 'Bearer {0}' -f $TppSession.Token.AccessToken
+                'vaas' {
+                    $hdr = @{
+                        "tppl-api-key" = $VenafiSession.Key
+                    }
+                    $uri = '{0}/v1/{1}' -f $ServerUrl, $UriLeaf
                 }
+                Default {}
             }
+
+
+            # if ( $VenafiSession.Key ) {
+            #     if ( $ServerUrl -eq $script:CloudUrl ) {
+            #         $hdr = @{
+            #             "tppl-api-key" = $VenafiSession.Key
+            #         }
+            #         $uri = '{0}/v1/{1}' -f $ServerUrl, $CloudUriLeaf
+            #     } else {
+            #         $hdr = @{
+            #             "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
+            #         }
+            #     }
+            # } else {
+            #     # token
+            #     $hdr = @{
+            #         'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken
+            #     }
+            # }
 
         }
 
@@ -111,7 +130,7 @@ function Invoke-TppRestMethod {
             $hdr = @{
                 "tppl-api-key" = $CloudKey
             }
-            $uri = '{0}/v1/{2}' -f $ServerUrl, $CloudUriLeaf
+            $uri = '{0}/v1/{2}' -f $ServerUrl, $UriLeaf
         }
 
         Default {}

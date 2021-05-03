@@ -20,8 +20,8 @@ TppPermission object.  You can create a new object or get existing object from G
 .PARAMETER Force
 Overwrite an existing permission if one exists
 
-.PARAMETER TppSession
-Session object created from New-TppSession method.  The value defaults to the script session object $TppSession.
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
 Path, Guid, IdentityId
@@ -99,14 +99,14 @@ function Set-TppPermission {
         [switch] $Force,
 
         [Parameter()]
-        [TppSession] $TppSession = $Script:TppSession
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $TppSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
-            TppSession = $TppSession
+            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'placeholder'
             Body       = $Permission.ToHashtable()

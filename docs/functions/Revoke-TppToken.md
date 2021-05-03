@@ -7,7 +7,7 @@ Revoke a token
 
 ### Session (Default)
 ```
-Revoke-TppToken [-TppSession <TppSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Revoke-TppToken [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### AccessToken
@@ -31,7 +31,7 @@ This could be an access token retrieved from this module or from other means.
 Revoke-TppToken
 ```
 
-Revoke token stored in session variable from New-TppSession
+Revoke token stored in session variable from New-VenafiSession
 
 ### EXAMPLE 2
 ```
@@ -87,18 +87,18 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -TppSession
-Session object created from New-TppSession method. 
-The value defaults to the script session object $TppSession.
+### -VenafiSession
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: TppSession
+Type: VenafiSession
 Parameter Sets: Session
 Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:TppSession
+Default value: $Script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
