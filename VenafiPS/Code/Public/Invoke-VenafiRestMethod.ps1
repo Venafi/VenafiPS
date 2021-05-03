@@ -66,14 +66,6 @@ function Invoke-VenafiRestMethod {
         [Hashtable] $Body
     )
 
-    # ensure this api is supported for the current version
-    # $supportedVersion = $TppSupportedVersion.Where{$_.UriLeaf -eq $UriLeaf}
-    # if ( $supportedVersion ) {
-    #     if ( $VenafiSession.Version -lt ([Version] $supportedVersion.Version) ) {
-    #         throw ("{0} is not a supported api call for this version (v{1}) of TPP" -f $UriLeaf, $VenafiSession.Version)
-    #     }
-    # }
-
     switch ($PSCmdLet.ParameterSetName) {
         'Session' {
             $ServerUrl = $VenafiSession.ServerUrl
@@ -99,26 +91,6 @@ function Invoke-VenafiRestMethod {
                 }
                 Default {}
             }
-
-
-            # if ( $VenafiSession.Key ) {
-            #     if ( $ServerUrl -eq $script:CloudUrl ) {
-            #         $hdr = @{
-            #             "tppl-api-key" = $VenafiSession.Key
-            #         }
-            #         $uri = '{0}/v1/{1}' -f $ServerUrl, $CloudUriLeaf
-            #     } else {
-            #         $hdr = @{
-            #             "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
-            #         }
-            #     }
-            # } else {
-            #     # token
-            #     $hdr = @{
-            #         'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken
-            #     }
-            # }
-
         }
 
         'URL' {
