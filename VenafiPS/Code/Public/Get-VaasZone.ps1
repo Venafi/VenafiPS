@@ -55,7 +55,7 @@ function Get-VaasZone {
     )
 
     begin {
-        $VenafiSession.Validate('vaas')
+        $VenafiSession.Validate('vaas') | Out-Null
 
         $params = @{
             VenafiSession   = $VenafiSession

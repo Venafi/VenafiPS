@@ -96,7 +96,7 @@ function Set-TppWorkflowTicketStatus {
             }
         }
 
-        $VenafiSession.Validate()
+        $VenafiSession.Validate() | Out-Null
     }
 
     process {

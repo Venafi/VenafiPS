@@ -96,7 +96,7 @@ function New-TppObject {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate()
+    $VenafiSession.Validate() | Out-Null
 
     # ensure the object doesn't already exist
     # if ( Test-TppObject -Path $Path -ExistOnly -VenafiSession $VenafiSession ) {

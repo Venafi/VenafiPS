@@ -1,42 +1,29 @@
 ﻿<#
 .SYNOPSIS
-Get certificate information
+Get project info
 
 .DESCRIPTION
-Get certificate information, either all available to the api key provided or by id or zone.
+Get info for either a specific project or all projects.  Venafi as a Service only, not for TPP.
 
-.PARAMETER Id
-Get certificate information for a specific id
-
-.PARAMETER ZoneId
-Get certificate information for all within a specific zone
+.PARAMETER ProjectId
+Id to get info for a specific project
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-Id
+ProjectId
 
 .OUTPUTS
 PSCustomObject
 
 .EXAMPLE
-Get-VaasCertificate
-Get certificate info for all certs
+Get-VaasProject
+Get info for all projects
 
 .EXAMPLE
-Get-VaasCertificate -Id 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-Get certificate info for a specific cert
-
-.EXAMPLE
-Get-VaasCertificate -ZoneId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-Get certificate info for all certs within a specific zone
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasCertificate/
-
-.LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-VaasCertificate.ps1
+Get-VaasProject -Id 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get info for a specific project
 
 #>
 function Get-VaasProject {
@@ -52,7 +39,7 @@ function Get-VaasProject {
     )
 
     begin {
-        $VenafiSession.Validate('vaas')
+        $VenafiSession.Validate('vaas') | Out-Null
 
         $params = @{
             VenafiSession   = $VenafiSession

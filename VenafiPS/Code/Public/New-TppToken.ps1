@@ -67,6 +67,7 @@ function New-TppToken {
                 }
             }
         )]
+        [Alias('Server')]
         [string] $AuthServer,
 
         [Parameter(Mandatory)]
@@ -146,9 +147,9 @@ function New-TppToken {
         $response | Write-VerboseWithSecret
 
         [PSCustomObject] @{
-            AuthUrl      = $AuthUrl
-            AccessToken  = $response.access_token
-            RefreshToken = $response.refresh_token
+            Server       = $AuthUrl
+            AccessToken  = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
+            RefreshToken = New-Object System.Management.Automation.PSCredential('RefreshToken', ($response.refresh_token | ConvertTo-SecureString -AsPlainText -Force))
             Scope        = $response.scope
             Identity     = $response.identity
             TokenType    = $response.token_type

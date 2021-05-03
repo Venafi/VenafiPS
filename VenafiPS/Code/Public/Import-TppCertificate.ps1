@@ -115,7 +115,7 @@ function Import-TppCertificate {
 
     begin {
 
-        $VenafiSession.Validate()
+        $VenafiSession.Validate() | Out-Null
 
         if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
             # get cert data from file

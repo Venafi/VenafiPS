@@ -41,11 +41,14 @@ https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-VaasCert
 #>
 function Get-VenafiCertificate {
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
     param (
 
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [guid] $CertificateId,
+
+        [Parameter(ParameterSetName = 'All')]
+        [switch] $All,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -65,8 +68,14 @@ function Get-VenafiCertificate {
 
         switch ($authType) {
             'vaas' {
-                $params.UriLeaf = "certificaterequests/$CertificateId"
+                $params.UriLeaf = "certificaterequests"
+
+                if ( $PSCmdlet.ParameterSetName -eq 'Id' ) {
+                    $params.UriLeaf += "/$CertificateId"
+                }
+
                 $response = Invoke-TppRestMethod @params
+
                 if ( $response.PSObject.Properties.Name -contains 'certificaterequests' ) {
                     $certs = $response | Select-Object -ExpandProperty certificaterequests
                 } else {
@@ -83,42 +92,45 @@ function Get-VenafiCertificate {
             }
 
             Default {
-                $params.Method = 'Post'
-                $params.UriLeaf = 'certificates/retrieve'
+                # $params.Method = 'Post'
+                # $params.UriLeaf = 'certificates/retrieve'
 
-                try {
-                    $thisGuid = [guid] $CertificateId
-                } catch {
-                    $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                if ( $PSCmdlet.ParameterSetName -eq 'Id' ) {
+                    try {
+                        $thisGuid = [guid] $CertificateId
+                    } catch {
+                        $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                    }
+                    # $thisGuid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                    $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
+                    $response = Invoke-VenafiRestMethod @params
+                    $selectProps = @{
+                        Property        =
+                        @{
+                            n = 'Name'
+                            e = { $_.Name }
+                        },
+                        @{
+                            n = 'TypeName'
+                            e = { $_.SchemaClass }
+                        },
+                        @{
+                            n = 'Path'
+                            e = { $_.DN }
+                        }, @{
+                            n = 'Guid'
+                            e = { [guid]$_.guid }
+                        }, @{
+                            n = 'ParentPath'
+                            e = { $_.ParentDN }
+                        },
+                        '*'
+                        ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name'
+                    }
+                    $response | Select-Object @selectProps
+                } else {
+                    Find-TppCertificate -Path '\ved' -Recursive
                 }
-                # $thisGuid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
-                $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
-                $response = Invoke-VenafiRestMethod @params
-
-                $selectProps = @{
-                    Property        =
-                    @{
-                        n = 'Name'
-                        e = { $_.Name }
-                    },
-                    @{
-                        n = 'TypeName'
-                        e = { $_.SchemaClass }
-                    },
-                    @{
-                        n = 'Path'
-                        e = { $_.DN }
-                    }, @{
-                        n = 'Guid'
-                        e = { [guid]$_.guid }
-                    }, @{
-                        n = 'ParentPath'
-                        e = { $_.ParentDN }
-                    },
-                    '*'
-                    ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name'
-                }
-                $response | Select-Object @selectProps
             }
         }
     }

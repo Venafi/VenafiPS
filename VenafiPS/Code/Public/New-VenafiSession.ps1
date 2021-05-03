@@ -31,14 +31,11 @@ For a scope to privilege mapping, see https://docs.venafi.com/Docs/20.4SDK/TopNa
 .PARAMETER State
 A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
-.PARAMETER TppToken
-Token object obtained from New-TppToken
-
 .PARAMETER AccessToken
-Access token retrieved from TPP
+Access token retrieved outside this module.  Provide a credential object with the access token as the password.
 
 .PARAMETER AuthServer
-Optional server or url to access vedauth, venafi.company.com or https://venafi.company.com.
+If you host your authentication service, vedauth, on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
 If AuthServer is not provided, the value provided for Server will be used.
 If just the server name is provided, https:// will be appended.
 
@@ -67,6 +64,10 @@ Create token-based session using oauth authentication where the vedauth and veds
 .EXAMPLE
 $sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
 Create session and return the session object instead of setting to script scope variable
+
+.EXAMPLE
+New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $cred
+Create session using an access token obtained outside this module
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
@@ -100,7 +101,7 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
-        [Parameter(ParameterSetName = 'TppToken')]
+        # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -118,36 +119,38 @@ function New-VenafiSession {
 
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
+        # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
         [string] $ClientId,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
+        # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
         [hashtable] $Scope,
 
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [string] $State,
 
-        [Parameter(Mandatory, ParameterSetName = 'TppToken')]
-        [ValidateScript( {
-                if ( $_.AccessToken -and $_.AuthUrl -and $_.ClientId  ) {
-                    $true
-                } else {
-                    throw 'Object provided for TppToken is not valid.  Please request a new token with New-TppToken.'
-                }
-            }
-        )]
-        [pscustomobject] $TppToken,
+        # [Parameter(Mandatory, ParameterSetName = 'TppToken')]
+        # [ValidateScript( {
+        #         if ( $_.AccessToken -and $_.AuthUrl -and $_.ClientId  ) {
+        #             $true
+        #         } else {
+        #             throw 'Object provided for TppToken is not valid.  Please request a new token with New-TppToken.'
+        #         }
+        #     }
+        # )]
+        # [pscustomobject] $TppToken,
 
-        [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
-        [string] $AccessToken,
+        # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'AccessToken', ValueFromPipelineByPropertyName)]
+        [PSCredential] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [X509Certificate] $Certificate,
 
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenIntegrated')]
-        [Parameter(ParameterSetName = 'AccessToken')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -225,11 +228,10 @@ function New-VenafiSession {
             }
 
             'TppToken' {
-                $newSession.Token = $TppToken
-                $newSession.Expires = $TppToken.Expires
-
-                if ( -not $Server ) {
-                    $newSession.ServerUrl = $TppToken.AuthUrl
+                $newSession.Token = [PSCustomObject]@{
+                    AccessToken = $AccessToken
+                    ClientId    = $ClientId
+                    Scope       = $Scope
                 }
             }
 
@@ -241,8 +243,9 @@ function New-VenafiSession {
 
             'Vaas' {
                 $newSession.ServerUrl = $script:CloudUrl
-                $newSession.Key = $VaasKey.ToString()
-        # $newSession.Version = (Get-TppVersion -VenafiSession $newSession)
+                # $newSession.Key = $VaasKey.ToString() | ConvertTo-SecureString -AsPlainText -Force
+                $newSession.Key = New-Object System.Management.Automation.PSCredential('vaas', ($VaasKey.ToString() | ConvertTo-SecureString -AsPlainText -Force))
+                # $newSession.Version = (Get-TppVersion -VenafiSession $newSession)
             }
 
             Default {

@@ -132,7 +132,7 @@ function Find-TppObject {
 
     begin {
 
-        $VenafiSession.Validate()
+        $VenafiSession.Validate() | Out-Null
 
         Write-Verbose $PsCmdlet.ParameterSetName
 

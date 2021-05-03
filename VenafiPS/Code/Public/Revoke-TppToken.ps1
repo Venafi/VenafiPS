@@ -10,7 +10,7 @@ This could be an access token retrieved from this module or from other means.
 Server name or URL for the vedauth service
 
 .PARAMETER AccessToken
-Access token to be revoked
+Access token to be revoked.  Provide a credential object with the access token as the password.
 
 .PARAMETER TppToken
 Token object obtained from New-TppToken
@@ -29,7 +29,7 @@ Revoke-TppToken
 Revoke token stored in session variable from New-VenafiSession
 
 .EXAMPLE
-Revoke-TppToken -AuthServer venafi.company.com -AccessToken x7xc8h4387dkgheysk
+Revoke-TppToken -AuthServer venafi.company.com -AccessToken $cred
 Revoke a token obtained from TPP, not necessarily via VenafiPS
 
 .LINK
@@ -56,10 +56,11 @@ function Revoke-TppToken {
                 }
             }
         )]
+        [Alias('Server')]
         [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
-        [string] $AccessToken,
+        [PSCredential] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipeline)]
         [pscustomobject] $TppToken,
@@ -98,12 +99,12 @@ function Revoke-TppToken {
             }
 
             'TppToken' {
-                if ( -not $TppToken.AuthUrl -or -not $TppToken.AccessToken ) {
+                if ( -not $TppToken.Server -or -not $TppToken.AccessToken ) {
                     throw 'Not a valid TppToken'
                 }
 
-                $params.ServerUrl = $target = $TppToken.AuthUrl
-                $params.Header = @{'Authorization' = 'Bearer {0}' -f $TppToken.AccessToken }
+                $params.ServerUrl = $target = $TppToken.Server
+                $params.Header = @{'Authorization' = 'Bearer {0}' -f $TppToken.AccessToken.GetNetworkCredential().password }
             }
 
             Default {

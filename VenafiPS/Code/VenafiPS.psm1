@@ -26,23 +26,22 @@ foreach ( $folder in $folders) {
 
 $script:CloudUrl = 'https://api.venafi.cloud'
 
-$Script:TppSupportedVersion = ConvertFrom-Json (Get-Content "$PSScriptRoot\Config\SupportedVersion.json" -Raw)
-Export-ModuleMember -Variable TppSupportedVersion
-
 $Script:VenafiSession = New-Object 'VenafiSession'
 Export-ModuleMember -Variable VenafiSession
 
 $aliases = @{
-    'ConvertTo-TppDN'        = 'ConvertTo-TppPath'
-    'Get-TppWorkflowDetail'  = 'Get-TppWorkflowTicket'
-    'Get-TppIdentity'        = 'Find-TppIdentity'
-    'Restore-TppCertificate' = 'Invoke-TppCertificateRenewal'
-    'Get-TppLog'             = 'Read-TppLog'
-    'fto'                    = 'Find-TppObject'
-    'ftc'                    = 'Find-TppCertificate'
-    'itcr'                   = 'Invoke-TppCertificateRenewal'
-    'New-TppSession'         = 'New-VenafiSession'
-    'Invoke-TppRestMethod'   = 'Invoke-VenafiRestMethod'
+    'ConvertTo-TppDN'          = 'ConvertTo-TppPath'
+    'Get-TppWorkflowDetail'    = 'Get-TppWorkflowTicket'
+    'Get-TppIdentity'          = 'Find-TppIdentity'
+    'Restore-TppCertificate'   = 'Invoke-TppCertificateRenewal'
+    'Get-TppLog'               = 'Read-TppLog'
+    'fto'                      = 'Find-TppObject'
+    'ftc'                      = 'Find-TppCertificate'
+    'itcr'                     = 'Invoke-TppCertificateRenewal'
+    'New-TppSession'           = 'New-VenafiSession'
+    'Invoke-TppRestMethod'     = 'Invoke-VenafiRestMethod'
+    'Get-TppCertificate'       = 'Export-VenafiCertificate'
+    'Get-TppCertificateDetail' = 'Get-VenafiCertificate'
 }
 $aliases.GetEnumerator() | ForEach-Object {
     Set-Alias -Name $_.Key -Value $_.Value

@@ -67,7 +67,7 @@ function Move-TppObject {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate()
+    $VenafiSession.Validate() | Out-Null
 
     # ensure the object to rename already exists
     if ( -not (Test-TppObject -Path $SourcePath -ExistOnly -VenafiSession $VenafiSession) ) {

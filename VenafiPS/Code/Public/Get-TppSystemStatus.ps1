@@ -37,7 +37,7 @@ function Get-TppSystemStatus {
 
     Write-Warning "Possible bug with Venafi TPP API causing this to fail"
 
-    $VenafiSession.Validate()
+    $VenafiSession.Validate() | Out-Null
 
     $params = @{
         VenafiSession = $VenafiSession
