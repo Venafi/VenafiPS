@@ -1,7 +1,7 @@
 # VenafiPS - Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!
 
-[![Build status](https://gd-barron.visualstudio.com/VenafiPS/_apis/build/status/VenafiPS)](https://dev.azure.com/gd-barron/VenafiPS/_build/latest?definitionId=1)
-[![Documentation Status](https://readthedocs.org/projects/VenafiPS/badge/?version=latest)](https://VenafiPS.readthedocs.io/en/latest/?badge=latest)
+[![Build Status](https://dev.azure.com/gd-barron/VenafiTppPS/_apis/build/status/VenafiPS?branchName=main)](https://dev.azure.com/gd-barron/VenafiTppPS/_build/latest?definitionId=6&branchName=main)
+[![Documentation Status](https://readthedocs.org/projects/venafips/badge/?version=latest)](https://venafips.readthedocs.io/en/latest/?badge=latest)
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
