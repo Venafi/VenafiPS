@@ -60,9 +60,10 @@ class VenafiSession {
 
         # if we know the session is still valid, don't bother checking with the server
         # add a couple of seconds so we don't get caught making the call as it expires
-        Write-Verbose ("Expires: {0}, Current (+2s): {1}" -f $this.Expires, (Get-Date).ToUniversalTime().AddSeconds(2))
-        if ( $this.Expires -lt (Get-Date).ToUniversalTime().AddSeconds(2) ) {
-            if ( $this.Key ) {
+        if ( $AuthType -eq 'key' ) {
+
+            Write-Verbose ("Expires: {0}, Current (+2s): {1}" -f $this.Expires, (Get-Date).ToUniversalTime().AddSeconds(2))
+            if ( $this.Expires -lt (Get-Date).ToUniversalTime().AddSeconds(2) ) {
 
                 try {
                     $params = @{
@@ -88,13 +89,13 @@ class VenafiSession {
                         throw ('"{0} {1}: {2}' -f $_.Exception.Response.StatusCode.value__, $_.Exception.Response.StatusDescription, $_ | Out-String )
                     }
                 }
-            } else {
-                # token
-                # By default, access tokens are long-lived (90 day default). Refreshing the token should be handled outside of this class, so that the
-                #  refresh token and access token can be properly maintained and passed to the script.
-
-                # We have to assume a good token here and ensure Invoke-TPPRestMethod catches and handles the condition where a token expires
             }
+        } else {
+            # token
+            # By default, access tokens are long-lived (90 day default). Refreshing the token should be handled outside of this class, so that the
+            #  refresh token and access token can be properly maintained and passed to the script.
+
+            # We have to assume a good token here and ensure Invoke-TPPRestMethod catches and handles the condition where a token expires
         }
         return $AuthType
     }

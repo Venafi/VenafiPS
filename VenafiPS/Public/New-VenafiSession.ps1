@@ -15,9 +15,6 @@ If just the server name is provided, https:// will be appended.
 .PARAMETER Credential
 Username and password used for key and token-based authentication.  Not required for integrated authentication.
 
-.PARAMETER Certificate
-Certificate for token-based authentication
-
 .PARAMETER ClientId
 Applcation Id configured in Venafi for token-based authentication
 
@@ -34,10 +31,17 @@ A session state, redirect URL, or random string to prevent Cross-Site Request Fo
 .PARAMETER AccessToken
 Access token retrieved outside this module.  Provide a credential object with the access token as the password.
 
+.PARAMETER Certificate
+Certificate for token-based authentication
+
 .PARAMETER AuthServer
 If you host your authentication service, vedauth, on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
 If AuthServer is not provided, the value provided for Server will be used.
 If just the server name is provided, https:// will be appended.
+
+.PARAMETER VaasKey
+Api key from your Venafi as a Service instance.  The api key can be found under your user profile->preferences.
+Provide a credential object with the api key as the password.
 
 .PARAMETER PassThru
 Optionally, send the session object to the pipeline instead of script scope.
@@ -68,6 +72,10 @@ Create session and return the session object instead of setting to script scope 
 .EXAMPLE
 New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $cred
 Create session using an access token obtained outside this module
+
+.EXAMPLE
+New-VenafiSession -VaasKey $cred
+Create session against Venafi as a Service
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
@@ -227,13 +235,13 @@ function New-VenafiSession {
                 $newSession.Expires = $token.Expires
             }
 
-            'TppToken' {
-                $newSession.Token = [PSCustomObject]@{
-                    AccessToken = $AccessToken
-                    ClientId    = $ClientId
-                    Scope       = $Scope
-                }
-            }
+            # 'TppToken' {
+            #     $newSession.Token = [PSCustomObject]@{
+            #         AccessToken = $AccessToken
+            #         ClientId    = $ClientId
+            #         Scope       = $Scope
+            #     }
+            # }
 
             'AccessToken' {
                 $newSession.Token = [PSCustomObject]@{

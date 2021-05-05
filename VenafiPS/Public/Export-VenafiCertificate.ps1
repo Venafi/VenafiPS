@@ -1,34 +1,72 @@
 <#
 .SYNOPSIS
-Get a certificate
+Get certificate data
 
 .DESCRIPTION
-Get a certificate
+Get certificate data from either Venafi as a Service or TPP.
 
-.PARAMETER Id
-Id of the certificate
+.PARAMETER CertificateId
+Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
 
 .PARAMETER Format
-Certificate format, either PEM or DER
+Certificate format.  For Venafi as a Service, you can provide either PEM or DER.  For TPP, Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
+
+.PARAMETER OutPath
+Folder path to save the certificate to.  The name of the file will be determined automatically.  TPP Only...for now.
+
+.PARAMETER IncludeChain
+Include the certificate chain with the exported certificate.  Not supported with DER format.  TPP Only.
+
+.PARAMETER FriendlyName
+Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when Format is JKS.  TPP Only.
+
+.PARAMETER PrivateKeyPassword
+Password required to include the private key.  Not supported with DER or PKCS #7 formats.  TPP Only.
+You must adhere to the following rules:
+- Password is at least 12 characters.
+- Comprised of at least three of the following:
+    - Uppercase alphabetic letters
+    - Lowercase alphabetic letters
+    - Numeric characters
+    - Special characters
+
+.PARAMETER KeystorePassword
+Password required to retrieve the certificate in JKS format.  TPP Only.  You must adhere to the following rules:
+- Password is at least 12 characters.
+- Comprised of at least three of the following:
+    - Uppercase alphabetic letters
+    - Lowercase alphabetic letters
+    - Numeric characters
+    - Special characters
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-Id
+CertificateId/Path from TppObject
 
 .OUTPUTS
-System.String
+Vaas, System.String.  TPP, PSCustomObject.
 
 .EXAMPLE
-$certId | Export-VaasCertificate
-Get a certificate
+$certId | Export-VenafiCertificate -Format PEM
+Get certificate data from Venafi as a Service
 
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Export-VaasCertificate/
+.EXAMPLE
+$cert | Get-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
+Get certificate data and save to a file, TPP
 
-.LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Export-VaasCertificate.ps1
+.EXAMPLE
+$cert | Get-VenafiCertificate -Format 'PKCS #7' -IncludeChain
+Get one or more certificates with the certificate chain included, TPP
+
+.EXAMPLE
+$cert | Get-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
+Get one or more certificates with private key included, TPP
+
+.EXAMPLE
+$cert | Get-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
+Get certificates in JKS format, TPP
 
 #>
 function Export-VenafiCertificate {
@@ -44,7 +82,7 @@ function Export-VenafiCertificate {
         [ValidateSet("Base64", "Base64 (PKCS #8)", "DER", "JKS", "PKCS #7", "PKCS #12", "PEM")]
         [string] $Format,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Tpp')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if (Test-Path $_ -PathType Container) {
@@ -138,12 +176,13 @@ function Export-VenafiCertificate {
     process {
 
         if ( $authType -eq 'vaas' ) {
-            $params.UriLeaf = "certificaterequests/$CertificateId/certificate"
+            $params.UriRoot = 'outagedetection/v1'
+            $params.UriLeaf = "certificates/$CertificateId/contents"
             $params.Method = 'Get'
             Invoke-TppRestMethod @params
         } else {
-            $params.Method     = 'Post'
-            $params.UriLeaf    = 'certificates/retrieve'
+            $params.Method = 'Post'
+            $params.UriLeaf = 'certificates/retrieve'
 
             $params.Body.CertificateDN = $CertificateId
 
