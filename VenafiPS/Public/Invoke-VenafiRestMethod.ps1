@@ -56,8 +56,8 @@ function Invoke-VenafiRestMethod {
         [ValidateNotNullOrEmpty()]
         [String] $UriLeaf,
 
-        [Parameter(Mandatory, ParameterSetName = 'CloudKey')]
-        [guid] $CloudKey,
+        # [Parameter(Mandatory, ParameterSetName = 'Vaas')]
+        # [PSCredential] $VaasKey,
 
         [Parameter()]
         [hashtable] $Header,
@@ -75,35 +75,35 @@ function Invoke-VenafiRestMethod {
                     $hdr = @{
                         "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
                     }
-                    $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
                 }
                 'token' {
                     $hdr = @{
                         'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
                     }
-                    $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
                 }
                 'vaas' {
                     $hdr = @{
                         "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
                     }
-                    $uri = '{0}/v1/{1}' -f $ServerUrl, $UriLeaf
                 }
                 Default {}
             }
+
+            $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
+
         }
 
         'URL' {
             $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
         }
 
-        'CloudKey' {
-            $ServerUrl = $script:CloudUrl
-            $hdr = @{
-                "tppl-api-key" = $CloudKey
-            }
-            $uri = '{0}/v1/{2}' -f $ServerUrl, $UriLeaf
-        }
+        # 'Vaas' {
+        #     $ServerUrl = $script:CloudUrl
+        #     $hdr = @{
+        #         "tppl-api-key" = $VaasKey.GetNetworkCredential().password
+        #     }
+        #     $uri = '{0}/v1/{2}' -f $ServerUrl, $UriLeaf
+        # }
 
         Default {}
     }

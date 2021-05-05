@@ -1,20 +1,14 @@
 <#
 .SYNOPSIS
-Get an API Access and Refresh Token from TPP
+Get an OAuth Access and Refresh Token from TPP
 
 .DESCRIPTION
-Get an api access and refresh token to be used with New-VenafiSession or other scripts/utilities that take such a token.
+Get an OAuth access and refresh token to be used with New-VenafiSession or other scripts/utilities that take such a token.
 Accepts username/password credential, scope, and ClientId to get a token grant from specified TPP server.
 
 .PARAMETER AuthServer
 Auth server or url, venafi.company.com or https://venafi.company.com.
 If just the server name is provided, https:// will be appended.
-
-.PARAMETER Credential
-Username / password credential used to request API Token
-
-.PARAMETER Certificate
-Certificate used to request API token
 
 .PARAMETER ClientId
 Applcation Id configured in Venafi for token-based authentication
@@ -25,6 +19,15 @@ The key is the scope and the value is one or more privilege restrictions separat
 A privilege restriction of none or read, use a value of $null.
 Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
 See https://docs.venafi.com/Docs/20.1/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CAuth%20SDK%20reference%20for%20token%20management%7C_____6 for more info.
+
+.PARAMETER Credential
+Username / password credential used to request API Token
+
+.PARAMETER State
+A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
+
+.PARAMETER Certificate
+Certificate used to request API token
 
 .EXAMPLE
 New-TppToken -AuthServer 'https://mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Credential $credential

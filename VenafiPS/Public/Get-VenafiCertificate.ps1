@@ -12,7 +12,7 @@ Certificate identifier.  For Venafi as a Service, this is the unique guid.  For 
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-Id
+CertificateId/Path from TppObject
 
 .OUTPUTS
 PSCustomObject
@@ -36,7 +36,8 @@ function Get-VenafiCertificate {
     param (
 
         [Parameter(ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [guid] $CertificateId,
+        [Alias('Path')]
+        [string] $CertificateId,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -56,7 +57,8 @@ function Get-VenafiCertificate {
 
         switch ($authType) {
             'vaas' {
-                $params.UriLeaf = "certificaterequests"
+                $params.UriRoot = 'outagedetection/v1'
+                $params.UriLeaf = "certificates"
 
                 if ( $PSCmdlet.ParameterSetName -eq 'Id' ) {
                     $params.UriLeaf += "/$CertificateId"
@@ -64,8 +66,8 @@ function Get-VenafiCertificate {
 
                 $response = Invoke-TppRestMethod @params
 
-                if ( $response.PSObject.Properties.Name -contains 'certificaterequests' ) {
-                    $certs = $response | Select-Object -ExpandProperty certificaterequests
+                if ( $response.PSObject.Properties.Name -contains 'certificates' ) {
+                    $certs = $response | Select-Object -ExpandProperty certificates
                 } else {
                     $certs = $response
                 }
@@ -80,18 +82,14 @@ function Get-VenafiCertificate {
             }
 
             Default {
-                # $params.Method = 'Post'
-                # $params.UriLeaf = 'certificates/retrieve'
 
                 if ( $PSCmdlet.ParameterSetName -eq 'Id' ) {
-                    try {
-                        $thisGuid = [guid] $CertificateId
-                    } catch {
-                        $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
-                    }
-                    # $thisGuid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                    $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
+
                     $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
+
                     $response = Invoke-VenafiRestMethod @params
+
                     $selectProps = @{
                         Property        =
                         @{
