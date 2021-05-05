@@ -182,7 +182,7 @@ try {
     if ( $env:BUILD_REASON -eq 'PullRequest') {
         Write-Output "Bypassing git push given this build is for pull request validation"
     } else {
-        git.exe push https://$($GitHubPat)@github.com/gdbarron/VenafiTppPS.git ('HEAD:{0}' -f $branch)
+        git.exe push https://$($GitHubPat)@github.com/gdbarron/VenafiPS.git ('HEAD:{0}' -f $branch)
         Write-Output ("Updated {0} branch source" -f $branch)
     }
 
