@@ -1,5 +1,5 @@
 # VenafiPS
 
-PowerShell module to access the features of Venafi Trust Protection Platform REST API
+Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!
 
-Automate everything in your certificate world!
+
