@@ -10,7 +10,7 @@ $failure = $false
 $tests = @{
     OutputFile   = 'TestResults.xml'
     OutputFormat = 'NUnitXml'
-    Script       = '.\Tests'
+    Script       = '.'
     PassThru     = $true
 }
 $results = Invoke-Pester @tests
