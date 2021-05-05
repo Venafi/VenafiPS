@@ -1,9 +1,10 @@
 $here = $PSScriptRoot
+Write-Output "module path: $here"
 # $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $modulePath = $here
 $moduleName = Split-Path -Path $modulePath -Leaf
-
+Write-Output "module name: $moduleName"
 Describe "'$moduleName' Module Analysis with PSScriptAnalyzer" {
     Context 'Standard Rules' {
         # Define PSScriptAnalyzer rules
