@@ -42,7 +42,7 @@ $projectRoot = $env:BUILD_SOURCESDIRECTORY
 $changeLogPath = "$projectRoot\changelog.md"
 
 
-$manifestPath = '{0}\{1}\code\{1}.psd1' -f $projectRoot, $ModuleName
+$manifestPath = '{0}\{1}\{1}.psd1' -f $projectRoot, $ModuleName
 Write-Output "Processing module path $manifestPath"
 
 try {
@@ -61,7 +61,7 @@ Write-Output "New Version - $NewVersion"
 
 
 # Load the module, read the exported functions and aliases, update the psd1
-$FunctionFiles = Get-ChildItem ".\$ModuleName\code\Public\*.ps1" |
+$FunctionFiles = Get-ChildItem ".\$ModuleName\Public\*.ps1" |
 Where-Object { $_.name -notmatch 'Tests' }
 $ExportFunctions = @()
 $ExportAliases = @()
