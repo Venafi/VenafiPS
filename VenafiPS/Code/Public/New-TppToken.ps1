@@ -56,13 +56,16 @@ function New-TppToken {
 
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Integrated')]
     [OutputType([PSCustomObject])]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Generating cred from api call response data')]
+
 
     param (
         [Parameter(Mandatory)]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
-                } else {
+                }
+                else {
                     throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
                 }
             }
@@ -97,7 +100,8 @@ function New-TppToken {
         $scope.GetEnumerator() | ForEach-Object {
             if ($_.Value) {
                 '{0}:{1}' -f $_.Key, $_.Value
-            } else {
+            }
+            else {
                 $_.Key
             }
         }

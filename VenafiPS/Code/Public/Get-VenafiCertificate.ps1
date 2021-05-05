@@ -5,11 +5,8 @@ Get certificate information
 .DESCRIPTION
 Get certificate information, either all available to the api key provided or by id or zone.
 
-.PARAMETER Id
-Get certificate information for a specific id
-
-.PARAMETER ZoneId
-Get certificate information for all within a specific zone
+.PARAMETER CertificateId
+Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -21,22 +18,16 @@ Id
 PSCustomObject
 
 .EXAMPLE
-Get-VaasCertificate
+Get-VenafiCertificate
 Get certificate info for all certs
 
 .EXAMPLE
-Get-VaasCertificate -Id 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-Get certificate info for a specific cert
+Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get certificate info for a specific cert on Venafi as a Serivce
 
 .EXAMPLE
-Get-VaasCertificate -ZoneId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-Get certificate info for all certs within a specific zone
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasCertificate/
-
-.LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-VaasCertificate.ps1
+Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
+Get certificate info for a specific cert on TPP
 
 #>
 function Get-VenafiCertificate {
@@ -46,9 +37,6 @@ function Get-VenafiCertificate {
 
         [Parameter(ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [guid] $CertificateId,
-
-        [Parameter(ParameterSetName = 'All')]
-        [switch] $All,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
