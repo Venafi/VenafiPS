@@ -59,7 +59,7 @@ If just the server name is provided, https:// will be appended.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: Server
 
 Required: True
 Position: Named

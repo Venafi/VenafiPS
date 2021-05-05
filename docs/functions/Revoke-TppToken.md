@@ -12,7 +12,7 @@ Revoke-TppToken [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonPa
 
 ### AccessToken
 ```
-Revoke-TppToken -AuthServer <String> -AccessToken <String> [-WhatIf] [-Confirm] [<CommonParameters>]
+Revoke-TppToken -AuthServer <String> -AccessToken <PSCredential> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### TppToken
@@ -35,10 +35,10 @@ Revoke token stored in session variable from New-VenafiSession
 
 ### EXAMPLE 2
 ```
-Revoke-TppToken -AuthServer venafi.company.com -AccessToken x7xc8h4387dkgheysk
+Revoke-TppToken -AuthServer venafi.company.com -AccessToken $cred
 ```
 
-Revoke a token obtained from TPP, not necessarily via VenafiTppPS
+Revoke a token obtained from TPP, not necessarily via VenafiPS
 
 ## PARAMETERS
 
@@ -48,7 +48,7 @@ Server name or URL for the vedauth service
 ```yaml
 Type: String
 Parameter Sets: AccessToken
-Aliases:
+Aliases: Server
 
 Required: True
 Position: Named
@@ -58,10 +58,11 @@ Accept wildcard characters: False
 ```
 
 ### -AccessToken
-Access token to be revoked
+Access token to be revoked. 
+Provide a credential object with the access token as the password.
 
 ```yaml
-Type: String
+Type: PSCredential
 Parameter Sets: AccessToken
 Aliases:
 
@@ -88,7 +89,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -98,7 +99,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -147,9 +148,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Revoke-TppToken/](http://venafitppps.readthedocs.io/en/latest/functions/Revoke-TppToken/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppToken/](http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppToken/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Revoke-TppToken.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Revoke-TppToken.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Revoke-TppToken.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Revoke-TppToken.ps1)
 
 [https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Revoke-Token.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13](https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Revoke-Token.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13)
 

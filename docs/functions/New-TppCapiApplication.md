@@ -18,8 +18,8 @@ New-TppCapiApplication -Path <String> [-ApplicationName <String[]>] [-Certificat
 New-TppCapiApplication -Path <String> [-ApplicationName <String[]>] [-CertificatePath <String>]
  [-CredentialPath <String>] [-FriendlyName <String>] [-Description <String>] [-WinRmPort <Int32>] [-Disable]
  -WebSiteName <String> [-BindingIp <IPAddress>] [-BindingPort <Int32>] [-BindingHostName <String>]
- [-CreateBinding <Boolean>] [-PushCertificate] [-SkipExistenceCheck] [-PassThru] [-VenafiSession <VenafiSession>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-CreateBinding <Boolean>] [-PushCertificate] [-SkipExistenceCheck] [-PassThru]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -58,7 +58,7 @@ Create a new application and return a TppObject for the newly created app
 ## PARAMETERS
 
 ### -Path
-Full path, including name, to the application to be created.
+Full path, including name, to the application to be created. 
 The application must be created under a device.
 Alternatively, provide the path to the device and provide ApplicationName.
 
@@ -75,7 +75,7 @@ Accept wildcard characters: False
 ```
 
 ### -ApplicationName
-1 or more application names to create.
+1 or more application names to create. 
 Path property must be a path to a device.
 
 ```yaml
@@ -166,7 +166,7 @@ Accept wildcard characters: False
 ```
 
 ### -Disable
-Set processing to disabled.
+Set processing to disabled. 
 It is enabled by default.
 
 ```yaml
@@ -244,7 +244,7 @@ Accept wildcard characters: False
 ```
 
 ### -CreateBinding
-Specify that Trust Protection Platform should create an IIS web site binding if the one specified doesn't already exist.
+Specify that Trust Protection Platform should create an IIS web site binding if the one specified doesnâ€™t already exist.
 
 ```yaml
 Type: Boolean
@@ -259,7 +259,7 @@ Accept wildcard characters: False
 ```
 
 ### -PushCertificate
-Push the certificate to the application.
+Push the certificate to the application. 
 CertificatePath must be provided.
 
 ```yaml
@@ -306,7 +306,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -316,7 +316,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -365,15 +365,15 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/New-TppCapiApplication/](http://venafitppps.readthedocs.io/en/latest/functions/New-TppCapiApplication/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppCapiApplication.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppCapiApplication.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCapiApplication.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCapiApplication.ps1)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppObject.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1)
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Find-TppCertificate/](http://venafitppps.readthedocs.io/en/latest/functions/Find-TppCertificate/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/)
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Get-TppObject/](http://venafitppps.readthedocs.io/en/latest/functions/Get-TppObject/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9)
 

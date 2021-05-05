@@ -1,7 +1,7 @@
 # New-VenafiSession
 
 ## SYNOPSIS
-Create a new Venafi TPP session
+Create a new Venafi TPP or Venafi as a Service session
 
 ## SYNTAX
 
@@ -10,14 +10,9 @@ Create a new Venafi TPP session
 New-VenafiSession -Server <String> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
-### TppToken
-```
-New-VenafiSession [-Server <String>] -TppToken <PSObject> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
-```
-
 ### AccessToken
 ```
-New-VenafiSession -Server <String> -AccessToken <String> [-AuthServer <String>] [-PassThru] [-WhatIf] [-Confirm]
+New-VenafiSession -Server <String> -AccessToken <PSCredential> [-PassThru] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -29,8 +24,8 @@ New-VenafiSession -Server <String> -Certificate <X509Certificate> [-PassThru] [-
 
 ### TokenIntegrated
 ```
-New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>] [-AuthServer <String>]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>]
+ [-AuthServer <String>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### TokenOAuth
@@ -43,6 +38,11 @@ New-VenafiSession -Server <String> -Credential <PSCredential> -ClientId <String>
 ```
 New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [-WhatIf] [-Confirm]
  [<CommonParameters>]
+```
+
+### Vaas
+```
+New-VenafiSession -VaasKey <PSCredential> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -87,6 +87,13 @@ $sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -Pas
 
 Create session and return the session object instead of setting to script scope variable
 
+### EXAMPLE 6
+```
+New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $cred
+```
+
+Create session using an access token obtained outside this module
+
 ## PARAMETERS
 
 ### -Server
@@ -106,20 +113,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-```yaml
-Type: String
-Parameter Sets: TppToken
-Aliases: ServerUrl, Url
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -Credential
-Username and password used for key and token-based authentication.
+Username and password used for key and token-based authentication. 
 Not required for integrated authentication.
 
 ```yaml
@@ -183,33 +178,19 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -TppToken
-Token object obtained from New-TppToken
-
-```yaml
-Type: PSObject
-Parameter Sets: TppToken
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -AccessToken
-Access token retrieved from TPP
+Access token retrieved outside this module. 
+Provide a credential object with the access token as the password.
 
 ```yaml
-Type: String
+Type: PSCredential
 Parameter Sets: AccessToken
 Aliases:
 
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -229,16 +210,31 @@ Accept wildcard characters: False
 ```
 
 ### -AuthServer
-Optional server or url to access vedauth, venafi.company.com or https://venafi.company.com.
+If you host your authentication service, vedauth, on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
 If AuthServer is not provided, the value provided for Server will be used.
 If just the server name is provided, https:// will be appended.
 
 ```yaml
 Type: String
-Parameter Sets: AccessToken, TokenIntegrated, TokenOAuth
+Parameter Sets: TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -VaasKey
+{{ Fill VaasKey Description }}
+
+```yaml
+Type: PSCredential
+Parameter Sets: Vaas
+Aliases:
+
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -303,9 +299,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/New-VenafiSession/](http://venafitppps.readthedocs.io/en/latest/functions/New-VenafiSession/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/](http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-VenafiSession.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-VenafiSession.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-VenafiSession.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-VenafiSession.ps1)
 
 [https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____1](https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____1)
 

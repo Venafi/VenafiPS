@@ -16,7 +16,7 @@ Get-TppObject -Guid <Guid[]> [-VenafiSession <VenafiSession>] [<CommonParameters
 ```
 
 ## DESCRIPTION
-Return object information by either path or guid.
+Return object information by either path or guid. 
 This will return a TppObject which can be used with many other functions.
 
 ## EXAMPLES
@@ -68,7 +68,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -78,7 +78,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -96,7 +96,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Get-TppObject/](http://venafitppps.readthedocs.io/en/latest/functions/Get-TppObject/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Get-TppObject.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Get-TppObject.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppObject.ps1)
 

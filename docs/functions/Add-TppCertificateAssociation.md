@@ -55,7 +55,7 @@ Accept wildcard characters: False
 ```
 
 ### -CertificatePath
-Path to the certificate.
+Path to the certificate. 
 Required if InputObject not provided.
 
 ```yaml
@@ -102,7 +102,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -112,7 +112,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -164,9 +164,9 @@ You must have:
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Add-TppCertificateAssociation/](http://venafitppps.readthedocs.io/en/latest/functions/Add-TppCertificateAssociation/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppCertificateAssociation/](http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppCertificateAssociation/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Add-TppCertificateAssociation.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Add-TppCertificateAssociation.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Add-TppCertificateAssociation.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Add-TppCertificateAssociation.ps1)
 
 [https://docs.venafi.com/Docs/19.2SDK/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php?tocpath=REST%20API%20reference%7CCertificates%20programming%20interface%7C_____6](https://docs.venafi.com/Docs/19.2SDK/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php?tocpath=REST%20API%20reference%7CCertificates%20programming%20interface%7C_____6)
 

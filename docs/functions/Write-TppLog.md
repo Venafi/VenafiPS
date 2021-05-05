@@ -67,7 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -EventId
-Event ID from within the EventGroup provided.
+Event ID from within the EventGroup provided. 
 Only provide the 4 character event id, do not precede with group ID.
 
 ```yaml
@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -Text1
-String data to write to log.
+String data to write to log. 
 See link for event ID messages for more info.
 
 ```yaml
@@ -175,7 +175,7 @@ Accept wildcard characters: False
 ```
 
 ### -Text2
-String data to write to log.
+String data to write to log. 
 See link for event ID messages for more info.
 
 ```yaml
@@ -191,7 +191,7 @@ Accept wildcard characters: False
 ```
 
 ### -Value1
-Integer data to write to log.
+Integer data to write to log. 
 See link for event ID messages for more info.
 
 ```yaml
@@ -207,7 +207,7 @@ Accept wildcard characters: False
 ```
 
 ### -Value2
-Integer data to write to log.
+Integer data to write to log. 
 See link for event ID messages for more info.
 
 ```yaml
@@ -223,7 +223,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -233,7 +233,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -282,9 +282,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Write-TppLog/](http://venafitppps.readthedocs.io/en/latest/functions/Write-TppLog/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Write-TppLog/](http://VenafiPS.readthedocs.io/en/latest/functions/Write-TppLog/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Write-TppLog.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Write-TppLog.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Write-TppLog.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Write-TppLog.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____3](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____3)
 

@@ -1,4 +1,4 @@
-# Invoke-TppRestMethod
+# Invoke-VenafiRestMethod
 
 ## SYNOPSIS
 Generic REST API call
@@ -7,14 +7,20 @@ Generic REST API call
 
 ### Session (Default)
 ```
-Invoke-TppRestMethod -VenafiSession <VenafiSession> -Method <String> [-UriRoot <String>] -UriLeaf <String>
+Invoke-VenafiRestMethod -VenafiSession <VenafiSession> [-Method <String>] [-UriRoot <String>] -UriLeaf <String>
  [-Header <Hashtable>] [-Body <Hashtable>] [<CommonParameters>]
 ```
 
 ### URL
 ```
-Invoke-TppRestMethod -ServerUrl <String> [-UseDefaultCredentials] -Method <String> [-UriRoot <String>]
+Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredentials] [-Method <String>] [-UriRoot <String>]
  -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>] [<CommonParameters>]
+```
+
+### CloudKey
+```
+Invoke-VenafiRestMethod [-Method <String>] [-UriRoot <String>] -UriLeaf <String> -CloudKey <Guid>
+ [-Header <Hashtable>] [-Body <Hashtable>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -84,9 +90,9 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: Named
-Default value: None
+Default value: Get
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -122,8 +128,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -CloudKey
+{{ Fill CloudKey Description }}
+
+```yaml
+Type: Guid
+Parameter Sets: CloudKey
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Header
-Optional additional headers.
+Optional additional headers. 
 The authorization header will be included automatically.
 
 ```yaml

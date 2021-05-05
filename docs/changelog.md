@@ -1,3 +1,7 @@
+## 3.0
+- Rebrand from VenafiTppPS to VenafiPS as the module will now support Venafi products other than TPP
+
+
 ## 2.2.4
 - Add `-KeystorePassword` option to `Get-TppCertificate`.  [#147](https://github.com/gdbarron/VenafiTppPS/issues/147).  Thanks @Curtmcgirt!
 
