@@ -28,7 +28,7 @@ Delete an environment
 $envObj | Remove-TppCodeSignEnvironment
 ```
 
-Remove 1 or more environments.
+Remove 1 or more environments. 
 Get environments with Find-TppCodeSignEnvironment
 
 ## PARAMETERS
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -59,7 +59,7 @@ Aliases:
 
 Required: False
 Position: 2
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -108,9 +108,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Remove-TppCodeSignEnvironment/](http://venafitppps.readthedocs.io/en/latest/functions/Remove-TppCodeSignEnvironment/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCodeSignEnvironment/](http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCodeSignEnvironment/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Remove-TppCodeSignEnvironment.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Remove-TppCodeSignEnvironment.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCodeSignEnvironment.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCodeSignEnvironment.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteEnvironment.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____6](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteEnvironment.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____6)
 

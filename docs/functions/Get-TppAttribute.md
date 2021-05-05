@@ -40,7 +40,7 @@ Get-TppAttribute -Guid <Guid[]> -Attribute <String[]> [-Effective] [-VenafiSessi
 ```
 
 ## DESCRIPTION
-Retrieves object attributes.
+Retrieves object attributes. 
 You can either retrieve all attributes or individual ones.
 By default, the attributes returned are not the effective policy, but that can be requested with the
 EffectivePolicy switch.
@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -Path
-Path to the object to retrieve configuration attributes.
+Path to the object to retrieve configuration attributes. 
 Just providing DN will return all attributes.
 
 ```yaml
@@ -102,7 +102,7 @@ Accept wildcard characters: False
 ```
 
 ### -Guid
-Object Guid.
+Object Guid. 
 Just providing Guid will return all attributes.
 
 ```yaml
@@ -160,7 +160,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -170,7 +170,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -188,9 +188,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Get-TppAttribute/](http://venafitppps.readthedocs.io/en/latest/functions/Get-TppAttribute/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Get-TppAttribute.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Get-TppAttribute.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppAttribute.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____27](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____27)
 

@@ -7,13 +7,14 @@ Find objects by path, class, or pattern
 
 ### FindByClassAndPath
 ```
-Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] -Class <String[]> [-VenafiSession <VenafiSession>]
- [<CommonParameters>]
+Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] -Class <String[]>
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### FindByPath
 ```
-Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ### FindByAttribute
@@ -83,7 +84,7 @@ Get all objects of the type iis6 or capi
 Find-TppObject -Pattern 'test*'
 ```
 
-Find objects with the specific name.
+Find objects with the specific name. 
 All objects will be searched.
 
 ### EXAMPLE 8
@@ -178,7 +179,7 @@ Accept wildcard characters: False
 ```
 
 ### -Attribute
-A list of attribute names to limit the search against.
+A list of attribute names to limit the search against. 
 Only valid when searching by pattern.
 
 ```yaml
@@ -194,7 +195,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -204,7 +205,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -222,9 +223,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Find-TppObject/](http://venafitppps.readthedocs.io/en/latest/functions/Find-TppObject/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Find-TppObject.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Find-TppObject.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppObject.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____17](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____17)
 

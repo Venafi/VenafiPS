@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -DeviceName
-Name of 1 or more devices to create.
+Name of 1 or more devices to create. 
 Path must be of type Policy to use this.
 
 ```yaml
@@ -125,7 +125,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -135,7 +135,7 @@ Aliases:
 
 Required: False
 Position: 6
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -184,11 +184,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/New-TppDevice/](http://venafitppps.readthedocs.io/en/latest/functions/New-TppDevice/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/New-TppDevice/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppDevice/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppDevice.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppDevice.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppDevice.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppDevice.ps1)
 
-[http://venafitppps.readthedocs.io/en/latest/functions/New-TppObject/](http://venafitppps.readthedocs.io/en/latest/functions/New-TppObject/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppObject.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1)
 

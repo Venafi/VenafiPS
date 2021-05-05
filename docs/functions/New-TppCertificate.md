@@ -36,7 +36,7 @@ Create certificate by name
 New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -PassThru
 ```
 
-Create certificate using common name.
+Create certificate using common name. 
 Return the created object.
 
 ### EXAMPLE 3
@@ -65,7 +65,7 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-Name of the certifcate.
+Name of the certifcate. 
 If not provided, the name will be the same as the subject.
 
 ```yaml
@@ -81,7 +81,7 @@ Accept wildcard characters: False
 ```
 
 ### -CommonName
-Subject Common Name.
+Subject Common Name. 
 If Name isn't provided, CommonName will be used.
 
 ```yaml
@@ -197,7 +197,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -207,7 +207,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -256,9 +256,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/New-TppCertificate/](http://venafitppps.readthedocs.io/en/latest/functions/New-TppCertificate/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppCertificate.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/New-TppCertificate.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCertificate.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCertificate.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7CPOST%20Certificates%252FRequest%7C_____0](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7CPOST%20Certificates%252FRequest%7C_____0)
 

@@ -7,8 +7,8 @@ Set workflow ticket status
 
 ```
 Set-TppWorkflowTicketStatus [-TicketGuid] <Guid[]> [-Status] <String> [[-Explanation] <String>]
- [[-ScheduledStart] <DateTime>] [[-ScheduledStop] <DateTime>] [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [[-ScheduledStart] <DateTime>] [[-ScheduledStop] <DateTime>] [[-VenafiSession] <VenafiSession>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -111,7 +111,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -121,7 +121,7 @@ Aliases:
 
 Required: False
 Position: 6
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -170,9 +170,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/](http://venafitppps.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Set-TppWorkflowTicketStatus.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Set-TppWorkflowTicketStatus.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppWorkflowTicketStatus.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppWorkflowTicketStatus.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____10](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____10)
 

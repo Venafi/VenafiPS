@@ -8,7 +8,8 @@ Import a certificate
 ### ByFile (Default)
 ```
 Import-TppCertificate -PolicyPath <String> -CertificatePath <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ### ByFileWithPrivateKey
@@ -28,7 +29,8 @@ Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <Str
 ### ByData
 ```
 Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -38,7 +40,7 @@ Import a certificate with or without private key.
 
 ### EXAMPLE 1
 ```
-Import-TppCertificate -PolicyPath \ved\policy\mycerts -CertificatePath c:\www.venafitppps.com.cer
+Import-TppCertificate -PolicyPath \ved\policy\mycerts -CertificatePath c:\www.VenafiPS.com.cer
 ```
 
 Import a certificate
@@ -61,7 +63,7 @@ Accept wildcard characters: False
 ```
 
 ### -CertificatePath
-Path to a certificate file.
+Path to a certificate file. 
 Provide either this or CertificateData.
 
 ```yaml
@@ -77,7 +79,7 @@ Accept wildcard characters: False
 ```
 
 ### -CertificateData
-Contents of a certificate to import.
+Contents of a certificate to import. 
 Provide either this or CertificatePath.
 
 ```yaml
@@ -168,7 +170,7 @@ By using this parameter, this function will import, but use newest.
 Only import the certificate when no Certificate object exists with a past, present, or current version of the imported certificate.
 If a match is found between the Certificate object and imported certificate, activate the certificate with the most current 'Valid From' date.
 Archive the unused certificate, even if it is the imported certificate, to the History tab.
-See https://github.com/gdbarron/VenafiTppPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
+See https://github.com/gdbarron/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
 
 ```yaml
 Type: SwitchParameter
@@ -198,7 +200,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -208,7 +210,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

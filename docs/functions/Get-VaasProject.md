@@ -1,53 +1,54 @@
-# ConvertTo-TppGuid
+# Get-VaasProject
 
 ## SYNOPSIS
-Convert DN path to GUID
+Get project info
 
 ## SYNTAX
 
+### All (Default)
 ```
-ConvertTo-TppGuid [-Path] <String> [-IncludeType] [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
+Get-VaasProject [-VenafiSession <VenafiSession>] [<CommonParameters>]
+```
+
+### Id
+```
+Get-VaasProject -ProjectId <Guid> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Convert DN path to GUID
+Get info for either a specific project or all projects. 
+Venafi as a Service only, not for TPP.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-ConvertTo-TppGuid -Path '\ved\policy\convertme'
+Get-VaasProject
 ```
+
+Get info for all projects
+
+### EXAMPLE 2
+```
+Get-VaasProject -Id 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+```
+
+Get info for a specific project
 
 ## PARAMETERS
 
-### -Path
-DN path representing an object
+### -ProjectId
+Id to get info for a specific project
 
 ```yaml
-Type: String
-Parameter Sets: (All)
-Aliases: DN
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -IncludeType
-{{ Fill IncludeType Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
+Type: Guid
+Parameter Sets: Id
 Aliases:
 
-Required: False
+Required: True
 Position: Named
-Default value: False
-Accept pipeline input: False
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -61,7 +62,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: Named
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -72,10 +73,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Path
+### ProjectId
 ## OUTPUTS
 
-### Guid
+### PSCustomObject
 ## NOTES
 
 ## RELATED LINKS

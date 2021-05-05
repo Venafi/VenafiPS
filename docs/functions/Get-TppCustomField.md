@@ -24,7 +24,7 @@ Get custom fields for certificates
 ## PARAMETERS
 
 ### -Class
-Class to get details on.
+Class to get details on. 
 Value can be either Device or X509 Certificate
 
 ```yaml
@@ -40,7 +40,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -50,7 +50,7 @@ Aliases:
 
 Required: False
 Position: 2
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -86,7 +86,7 @@ All custom fields are retrieved upon inital connect to the server and a property
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Get-TppCustomField/](http://venafitppps.readthedocs.io/en/latest/functions/Get-TppCustomField/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCustomField/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCustomField/)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php?tocpath=Web%20SDK%7CMetadata%20custom%20fields%20programming%20interface%7C_____10](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php?tocpath=Web%20SDK%7CMetadata%20custom%20fields%20programming%20interface%7C_____10)
 

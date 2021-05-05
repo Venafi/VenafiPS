@@ -7,8 +7,8 @@ Remove certificate associations
 
 ### RemoveAllByObject
 ```
-Remove-TppCertificateAssociation -InputObject <TppObject> [-OrphanCleanup] [-All] [-VenafiSession <VenafiSession>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+Remove-TppCertificateAssociation -InputObject <TppObject> [-OrphanCleanup] [-All]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RemoveOneByObject
@@ -19,8 +19,8 @@ Remove-TppCertificateAssociation -InputObject <TppObject> -ApplicationPath <Stri
 
 ### RemoveAllByPath
 ```
-Remove-TppCertificateAssociation -Path <String> [-OrphanCleanup] [-All] [-VenafiSession <VenafiSession>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Remove-TppCertificateAssociation -Path <String> [-OrphanCleanup] [-All] [-VenafiSession <VenafiSession>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RemoveOneByPath
@@ -136,7 +136,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -146,7 +146,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -199,9 +199,9 @@ You must have:
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociation/](http://venafitppps.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociation/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociation/](http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociation/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Remove-TppCertificateAssociation.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Remove-TppCertificateAssociation.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCertificateAssociation.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCertificateAssociation.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Dissociate.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____8](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Dissociate.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____8)
 

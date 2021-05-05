@@ -7,14 +7,14 @@ Remove permissions from TPP objects
 
 ### ByGuid (Default)
 ```
-Remove-TppPermission -Guid <Guid[]> [-IdentityId <String[]>] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-TppPermission -Guid <Guid[]> [-IdentityId <String[]>] [-VenafiSession <VenafiSession>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Remove-TppPermission -Path <String[]> [-IdentityId <String[]>] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-TppPermission -Path <String[]> [-IdentityId <String[]>] [-VenafiSession <VenafiSession>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -40,7 +40,7 @@ Remove all permissions for a specific user
 ## PARAMETERS
 
 ### -Path
-Full path to an object.
+Full path to an object. 
 You can also pipe in a TppObject
 
 ```yaml
@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -96,7 +96,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: $Script:VenafiSession
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -145,9 +145,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://venafitppps.readthedocs.io/en/latest/functions/Remove-TppPermission/](http://venafitppps.readthedocs.io/en/latest/functions/Remove-TppPermission/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppPermission/](http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppPermission/)
 
-[https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Remove-TppPermission.ps1](https://github.com/gdbarron/VenafiTppPS/blob/main/VenafiTppPS/Code/Public/Remove-TppPermission.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppPermission.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppPermission.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Permissions-object-guid-principal.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____6](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Permissions-object-guid-principal.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____6)
 
