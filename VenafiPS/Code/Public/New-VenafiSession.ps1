@@ -162,7 +162,7 @@ function New-VenafiSession {
         [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'Vaas')]
-        [guid] $VaasKey,
+        [PSCredential] $VaasKey,
 
         [Parameter()]
         [switch] $PassThru
@@ -243,9 +243,7 @@ function New-VenafiSession {
 
             'Vaas' {
                 $newSession.ServerUrl = $script:CloudUrl
-                # $newSession.Key = $VaasKey.ToString() | ConvertTo-SecureString -AsPlainText -Force
-                $newSession.Key = New-Object System.Management.Automation.PSCredential('vaas', ($VaasKey.ToString() | ConvertTo-SecureString -AsPlainText -Force))
-                # $newSession.Version = (Get-TppVersion -VenafiSession $newSession)
+                $newSession.Key = $VaasKey
             }
 
             Default {
