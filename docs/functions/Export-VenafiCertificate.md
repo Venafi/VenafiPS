@@ -1,14 +1,14 @@
 # Export-VenafiCertificate
 
 ## SYNOPSIS
-Get a certificate
+Get certificate data
 
 ## SYNTAX
 
 ### Vaas (Default)
 ```
-Export-VenafiCertificate -CertificateId <String> -Format <String> [-OutPath <String>]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Export-VenafiCertificate -CertificateId <String> -Format <String> [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ### Tpp
@@ -20,26 +20,56 @@ Export-VenafiCertificate -CertificateId <String> -Format <String> [-OutPath <Str
 
 ### TppJks
 ```
-Export-VenafiCertificate -CertificateId <String> -Format <String> [-OutPath <String>] -FriendlyName <String>
+Export-VenafiCertificate -CertificateId <String> -Format <String> -FriendlyName <String>
  -KeystorePassword <SecureString> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get a certificate
+Get certificate data from either Venafi as a Service or TPP.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-$certId | Export-VaasCertificate
+$certId | Export-VenafiCertificate -Format PEM
 ```
 
-Get a certificate
+Get certificate data from Venafi as a Service
+
+### EXAMPLE 2
+```
+$cert | Get-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
+```
+
+Get certificate data and save to a file, TPP
+
+### EXAMPLE 3
+```
+$cert | Get-VenafiCertificate -Format 'PKCS #7' -IncludeChain
+```
+
+Get one or more certificates with the certificate chain included, TPP
+
+### EXAMPLE 4
+```
+$cert | Get-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
+```
+
+Get one or more certificates with private key included, TPP
+
+### EXAMPLE 5
+```
+$cert | Get-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
+```
+
+Get certificates in JKS format, TPP
 
 ## PARAMETERS
 
 ### -CertificateId
-{{ Fill CertificateId Description }}
+Certificate identifier. 
+For Venafi as a Service, this is the unique guid. 
+For TPP, use the full path.
 
 ```yaml
 Type: String
@@ -54,7 +84,9 @@ Accept wildcard characters: False
 ```
 
 ### -Format
-Certificate format, either PEM or DER
+Certificate format. 
+For Venafi as a Service, you can provide either PEM or DER. 
+For TPP, Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
 
 ```yaml
 Type: String
@@ -69,11 +101,13 @@ Accept wildcard characters: False
 ```
 
 ### -OutPath
-{{ Fill OutPath Description }}
+Folder path to save the certificate to. 
+The name of the file will be determined automatically. 
+TPP Only...for now.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: Tpp
 Aliases:
 
 Required: False
@@ -84,7 +118,9 @@ Accept wildcard characters: False
 ```
 
 ### -IncludeChain
-{{ Fill IncludeChain Description }}
+Include the certificate chain with the exported certificate. 
+Not supported with DER format. 
+TPP Only.
 
 ```yaml
 Type: SwitchParameter
@@ -99,7 +135,10 @@ Accept wildcard characters: False
 ```
 
 ### -FriendlyName
-{{ Fill FriendlyName Description }}
+Label or alias to use. 
+Permitted with Base64 and PKCS #12 formats. 
+Required when Format is JKS. 
+TPP Only.
 
 ```yaml
 Type: String
@@ -141,7 +180,16 @@ Accept wildcard characters: False
 ```
 
 ### -PrivateKeyPassword
-{{ Fill PrivateKeyPassword Description }}
+Password required to include the private key. 
+Not supported with DER or PKCS #7 formats. 
+TPP Only.
+You must adhere to the following rules:
+- Password is at least 12 characters.
+- Comprised of at least three of the following:
+    - Uppercase alphabetic letters
+    - Lowercase alphabetic letters
+    - Numeric characters
+    - Special characters
 
 ```yaml
 Type: SecureString
@@ -156,7 +204,15 @@ Accept wildcard characters: False
 ```
 
 ### -KeystorePassword
-{{ Fill KeystorePassword Description }}
+Password required to retrieve the certificate in JKS format. 
+TPP Only. 
+You must adhere to the following rules:
+- Password is at least 12 characters.
+- Comprised of at least three of the following:
+    - Uppercase alphabetic letters
+    - Lowercase alphabetic letters
+    - Numeric characters
+    - Special characters
 
 ```yaml
 Type: SecureString
@@ -191,15 +247,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Id
+### CertificateId/Path from TppObject
 ## OUTPUTS
 
-### System.String
+### Vaas, System.String.  TPP, PSCustomObject.
 ## NOTES
 
 ## RELATED LINKS
-
-[http://VenafiPS.readthedocs.io/en/latest/functions/Export-VaasCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Export-VaasCertificate/)
-
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Export-VaasCertificate.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Export-VaasCertificate.ps1)
-

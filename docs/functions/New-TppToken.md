@@ -1,7 +1,7 @@
 # New-TppToken
 
 ## SYNOPSIS
-Get an API Access and Refresh Token from TPP
+Get an OAuth Access and Refresh Token from TPP
 
 ## SYNTAX
 
@@ -24,7 +24,7 @@ New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Certifi
 ```
 
 ## DESCRIPTION
-Get an api access and refresh token to be used with New-VenafiSession or other scripts/utilities that take such a token.
+Get an OAuth access and refresh token to be used with New-VenafiSession or other scripts/utilities that take such a token.
 Accepts username/password credential, scope, and ClientId to get a token grant from specified TPP server.
 
 ## EXAMPLES
@@ -118,7 +118,7 @@ Accept wildcard characters: False
 ```
 
 ### -State
-{{ Fill State Description }}
+A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
 ```yaml
 Type: String

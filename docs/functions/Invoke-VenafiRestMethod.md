@@ -17,12 +17,6 @@ Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredentials] [-Method <S
  -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>] [<CommonParameters>]
 ```
 
-### CloudKey
-```
-Invoke-VenafiRestMethod [-Method <String>] [-UriRoot <String>] -UriLeaf <String> -CloudKey <Guid>
- [-Header <Hashtable>] [-Body <Hashtable>] [<CommonParameters>]
-```
-
 ## DESCRIPTION
 Generic REST API call
 
@@ -119,21 +113,6 @@ certificates/import
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -CloudKey
-{{ Fill CloudKey Description }}
-
-```yaml
-Type: Guid
-Parameter Sets: CloudKey
 Aliases:
 
 Required: True

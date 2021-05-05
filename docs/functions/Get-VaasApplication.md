@@ -1,44 +1,44 @@
-# Get-VaasProject
+# Get-VaasApplication
 
 ## SYNOPSIS
-Get project info
+Get application info
 
 ## SYNTAX
 
 ### All (Default)
 ```
-Get-VaasProject [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VaasApplication [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### Id
 ```
-Get-VaasProject -ProjectId <Guid> [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VaasApplication -ApplicationId <Guid> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get info for either a specific project or all projects. 
+Get info for either a specific application or all applications. 
 Venafi as a Service only, not for TPP.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VaasProject
+Get-VaasApplication
 ```
 
-Get info for all projects
+Get info for all applications
 
 ### EXAMPLE 2
 ```
-Get-VaasProject -Id 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get-VaasApplication -ApplicationId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
-Get info for a specific project
+Get info for a specific application
 
 ## PARAMETERS
 
-### -ProjectId
-Id to get info for a specific project
+### -ApplicationId
+Id to get info for a specific application
 
 ```yaml
 Type: Guid
@@ -73,7 +73,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### ProjectId
+### ApplicationId
 ## OUTPUTS
 
 ### PSCustomObject
