@@ -94,6 +94,13 @@ New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $cred
 
 Create session using an access token obtained outside this module
 
+### EXAMPLE 7
+```
+New-VenafiSession -VaasKey $cred
+```
+
+Create session against Venafi as a Service
+
 ## PARAMETERS
 
 ### -Server
@@ -227,7 +234,9 @@ Accept wildcard characters: False
 ```
 
 ### -VaasKey
-{{ Fill VaasKey Description }}
+Api key from your Venafi as a Service instance. 
+The api key can be found under your user profile-\>preferences.
+Provide a credential object with the api key as the password.
 
 ```yaml
 Type: PSCredential

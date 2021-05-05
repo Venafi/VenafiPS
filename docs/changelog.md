@@ -1,6 +1,12 @@
 ## 3.0
-- Rebrand from VenafiTppPS to VenafiPS as the module will now support Venafi products other than TPP
-
+- Rebrand from VenafiTppPS to VenafiPS as the module will now support Venafi products other than TPP.  Functions with -Tpp in the name will now be TPP only, -Vaas will be for Venafi as a Service only, and -Venafi will be both
+- Rename `New-TppSession` to `New-VenafiSession` and add support for Venafi as a Service.  Use the parameter `-VaasKey`
+- Rename `Get-TppCertificate` to `Export-VenafiCertificate` and now supports Venafi as a Service.  Alias added so existing scripts don't break.
+- Rename `Get-TppCertificateDetail` to `Get-VenafiCertificate` and now supports Venafi as a Service.  Alias added so existing scripts don't break.
+- Add `Get-VaasOrgUnit` for OutagePREDICT
+- Add `Get-VaasApplication` for OutagePREDICT
+- Rename `Invoke-TppRestMethod` to `Invoke-VenafiRestMethod`
+- All tokens and keys have been changed from plaintext to PSCredential for added security
 
 ## 2.2.4
 - Add `-KeystorePassword` option to `Get-TppCertificate`.  [#147](https://github.com/gdbarron/VenafiTppPS/issues/147).  Thanks @Curtmcgirt!

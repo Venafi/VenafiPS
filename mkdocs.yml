@@ -30,8 +30,8 @@ pages:
     - Get-TppSystemStatus: functions/Get-TppSystemStatus.md
     - Get-TppVersion: functions/Get-TppVersion.md
     - Get-TppWorkflowTicket: functions/Get-TppWorkflowTicket.md
-    - Get-VaasProject: functions/Get-VaasProject.md
-    - Get-VaasZone: functions/Get-VaasZone.md
+    - Get-VaasApplication: functions/Get-VaasApplication.md
+    - Get-VaasOrgUnit: functions/Get-VaasOrgUnit.md
     - Get-VenafiCertificate: functions/Get-VenafiCertificate.md
     - Import-TppCertificate: functions/Import-TppCertificate.md
     - Invoke-TppCertificatePush: functions/Invoke-TppCertificatePush.md

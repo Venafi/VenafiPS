@@ -1,59 +1,51 @@
-# Get-VenafiCertificate
+# Get-VaasOrgUnit
 
 ## SYNOPSIS
-Get certificate information
+Get OrgUnit info
 
 ## SYNTAX
 
 ### All (Default)
 ```
-Get-VenafiCertificate [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VaasOrgUnit [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### Id
 ```
-Get-VenafiCertificate [-CertificateId <String>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VaasOrgUnit -OrgUnitId <Guid> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get certificate information, either all available to the api key provided or by id or zone.
+Get info for either a specific org unit or all org units. 
+Venafi as a Service only, not for TPP.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VenafiCertificate
+Get-VaasOrgUnit
 ```
 
-Get certificate info for all certs
+Get info for all org units
 
 ### EXAMPLE 2
 ```
-Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get-VaasOrgUnit -OrgUnitId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
-Get certificate info for a specific cert on Venafi as a Serivce
-
-### EXAMPLE 3
-```
-Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
-```
-
-Get certificate info for a specific cert on TPP
+Get info for a specific org unit
 
 ## PARAMETERS
 
-### -CertificateId
-Certificate identifier. 
-For Venafi as a Service, this is the unique guid. 
-For TPP, use the full path.
+### -OrgUnitId
+Id to get info for a specific OrgUnit
 
 ```yaml
-Type: String
+Type: Guid
 Parameter Sets: Id
-Aliases: Path
+Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
@@ -81,7 +73,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### CertificateId/Path from TppObject
+### OrgUnitId
 ## OUTPUTS
 
 ### PSCustomObject
