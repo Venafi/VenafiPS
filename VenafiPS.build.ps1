@@ -38,7 +38,7 @@ Enter-Build {
     Invoke-PSDepend -Force
 
     # Setting build script variables
-    $script:moduleName = 'SampleModule'
+    $script:moduleName = 'VenafiPS'
     $script:moduleSourcePath = Join-Path -Path $BuildRoot -ChildPath $moduleName
     $script:moduleManifestPath = Join-Path -Path $moduleSourcePath -ChildPath "$moduleName.psd1"
     $script:nuspecPath = Join-Path -Path $moduleSourcePath -ChildPath "$moduleName.nuspec"
