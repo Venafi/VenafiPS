@@ -1,4 +1,5 @@
-$here = Split-Path -Parent $MyInvocation.MyCommand.Path
+$here = $PSScriptRoot
+# $here = Split-Path -Parent $MyInvocation.MyCommand.Path
 
 $modulePath = $here
 $moduleName = Split-Path -Path $modulePath -Leaf
