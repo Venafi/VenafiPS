@@ -1,3 +1,6 @@
+## 3.0.1
+- Fix [#6](https://github.com/gdbarron/VenafiPS/issues/6), truncation on json conversion.
+
 ## 3.0
 - Rebrand from VenafiTppPS to VenafiPS as the module will now support Venafi products other than TPP.  Functions with -Tpp in the name will now be TPP only, -Vaas will be for Venafi as a Service only, and -Venafi will be both
 - Rename `New-TppSession` to `New-VenafiSession` and add support for Venafi as a Service.  Use the parameter `-VaasKey`

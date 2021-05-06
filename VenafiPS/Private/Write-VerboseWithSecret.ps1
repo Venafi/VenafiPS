@@ -54,7 +54,7 @@ function Write-VerboseWithSecret {
         $processMe = $InputObject
         if ($InputObject.GetType().FullName -ne 'System.String') {
             # if hashtable or other object, convert to json first
-            $processMe = $InputObject | ConvertTo-Json -Depth 5
+            $processMe = $InputObject | ConvertTo-Json -Depth 20
         }
 
         foreach ($prop in $PropertyName) {
