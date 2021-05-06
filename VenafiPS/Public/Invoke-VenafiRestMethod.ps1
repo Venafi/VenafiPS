@@ -123,7 +123,7 @@ function Invoke-VenafiRestMethod {
     if ( $Body ) {
         $restBody = $Body
         if ( $Method -ne 'Get' ) {
-            $restBody = ConvertTo-Json $Body -Depth 5
+            $restBody = ConvertTo-Json $Body -Depth 20
         }
         $params.Body = $restBody
     }
