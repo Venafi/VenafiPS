@@ -33,7 +33,7 @@ New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'My
 
 This will create a session which will be used by default in other functions.
 You can also use integrated authentication, simply exclude `-Credential $cred`.
-Beginning with v3.0, you can connect to Venafi as a Service as well with `New-VenafiSession -Server 'venafi.mycompany.com' -VaasKey $apikeyCred`.  Your API key can be found in your user profile->preferences.
+Beginning with v3.0, you can connect to Venafi as a Service as well with `New-VenafiSession -VaasKey $apikeyCred`.  Your API key can be found in your user profile->preferences.
 View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.
 
 One of the easiest ways to get started is to use `Find-TppObject`:
