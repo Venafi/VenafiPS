@@ -5,6 +5,8 @@
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
+Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform core functionality as well as code signing.  Support for Venafi as a Service has also recently been added.  Please let me know how you are using this module and what I can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to submit an issue.
+
 ## Documentation
 
 Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.readthedocs.io) or by using built-in PowerShell help.  Every effort has been made to document each parameter and provide good examples.
@@ -24,6 +26,8 @@ VenafiPS is published to the PowerShell Gallery.  The most recent version is lis
 
 ## Usage
 
+As the module supports both TPP and Venafi as a Service, you will note different names for the functions.  Functions with `-Tpp` are for TPP only, `-Vaas` are for Venafi as a Service only, and `-Venafi` are for both.
+
 Start a new PowerShell prompt (even if you have one from the Install Module step) and create a new VenafiPS session with
 
 ```powershell
@@ -33,9 +37,16 @@ New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'My
 
 This will create a session which will be used by default in other functions.
 You can also use integrated authentication, simply exclude `-Credential $cred`.
-Beginning with v3.0, you can connect to Venafi as a Service as well with `New-VenafiSession -VaasKey $apikeyCred`.  Your API key can be found in your user profile->preferences.
-View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.
 
+Beginning with v3.0, you can connect to Venafi as a Service; simply provide a credential with your api key as the password:
+
+```
+New-VenafiSession -VaasKey $apikeyCred
+```
+
+Your API key can be found in your user profile->preferences.  View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.
+
+### Examples
 One of the easiest ways to get started is to use `Find-TppObject`:
 
 ```powershell
