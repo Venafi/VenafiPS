@@ -59,6 +59,7 @@ pages:
     - Set-TppCodeSignProjectStatus: functions/Set-TppCodeSignProjectStatus.md
     - Set-TppPermission: functions/Set-TppPermission.md
     - Set-TppWorkflowTicketStatus: functions/Set-TppWorkflowTicketStatus.md
+    - Test-ModuleHash: functions/Test-ModuleHash.md
     - Test-TppIdentity: functions/Test-TppIdentity.md
     - Test-TppObject: functions/Test-TppObject.md
     - Write-TppLog: functions/Write-TppLog.md
