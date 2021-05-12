@@ -25,6 +25,7 @@ foreach ( $folder in $folders) {
 }
 
 $script:CloudUrl = 'https://api.venafi.cloud'
+$script:ModuleVersion = '((NEW_VERSION))'
 
 $Script:VenafiSession = New-Object 'VenafiSession'
 Export-ModuleMember -Variable VenafiSession
