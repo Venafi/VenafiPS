@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Test module script file hash
+    Validate module files
 .DESCRIPTION
     Validate all module files against the cryptographic hash created when the module was published.
     A file containing all hashes will be downloaded from the GitHub release and compared to the module files currently in use.
@@ -35,7 +35,7 @@ function Test-ModuleHash {
     }
 
     if ( $hashFailed ) {
-        Write-Error ('hash failed for the following files: {0}' -f ($hashFailed -join ', '))
+        Write-Error ('hash check failed for the following files: {0}' -f ($hashFailed -join ', '))
     }
 
     -not $hashFailed
