@@ -1,3 +1,6 @@
+## 3.0.3
+- Fix [#10](https://github.com/gdbarron/VenafiPS/issues/10), Get-VenafiCertificate not recognizing session.
+
 ## 3.0.2
 - Add `Test-ModuleHash` to validate the script files in the module.  The release pipeline has been updated to create a GitHub release with a file which stores the file hashes with SHA256.  This function will validate the current module against these hashes and provide true/false for success or failure.
 
