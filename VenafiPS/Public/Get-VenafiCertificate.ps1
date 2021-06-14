@@ -115,7 +115,7 @@ function Get-VenafiCertificate {
                     }
                     $response | Select-Object @selectProps
                 } else {
-                    Find-TppCertificate -Path '\ved' -Recursive
+                    Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession
                 }
             }
         }
