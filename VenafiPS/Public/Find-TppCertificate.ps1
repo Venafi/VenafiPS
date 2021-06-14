@@ -5,9 +5,6 @@ Find certificates based on various attributes
 .DESCRIPTION
 Find certificates based on various attributes
 
-.PARAMETER InputObject
-TppObject of type 'Policy' which represents a starting path
-
 .PARAMETER Path
 Starting path to search from
 
@@ -136,7 +133,7 @@ Find certificates with a validation state of Blank, Success, or Failure
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-InputObject, Path, Guid
+Path, Guid
 
 .OUTPUTS
 TppObject
@@ -195,22 +192,13 @@ function Find-TppCertificate {
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [ValidateScript( {
-                if ( $_.TypeName -eq 'Policy' ) {
-                    $true
-                } else {
-                    throw ("You provided an InputObject of type '{0}', but must be of type 'Policy'." -f $_.TypeName)
-                }
-            })]
-        [TppObject] $InputObject,
-
-        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline)]
+        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath -AllowRoot ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -221,7 +209,6 @@ function Find-TppCertificate {
         [ValidateNotNullOrEmpty()]
         [guid] $Guid,
 
-        [Parameter(ParameterSetName = 'ByObject')]
         [Parameter(ParameterSetName = 'ByPath')]
         [Parameter(ParameterSetName = 'ByGuid')]
         [Switch] $Recursive,
@@ -357,6 +344,9 @@ function Find-TppCertificate {
         [String[]] $ValidationState,
 
         [Parameter()]
+        [Switch] $CountOnly,
+
+        [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
@@ -365,13 +355,18 @@ function Find-TppCertificate {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Get'
-            UriLeaf    = 'certificates/'
-            Body       = @{
+            Method        = 'Get'
+            UriLeaf       = 'certificates/'
+            Body          = @{
                 Limit = $Limit
             }
         }
 
+        if ( $CountOnly.IsPresent ) {
+            $params.Method = 'Head'
+            $params['FullResponse'] = $true
+        }
+        
         switch ($PSBoundParameters.Keys) {
             'CreatedDate' {
                 $params.Body.Add( 'CreatedOn', ($CreatedDate | ConvertTo-UtcIso8601) )
@@ -489,31 +484,36 @@ function Find-TppCertificate {
 
     process {
 
-        if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-            $thisPath = $InputObject.Path
-        } elseif ( $PSBoundParameters.ContainsKey('Path') ) {
+        if ( $PSBoundParameters.ContainsKey('Path') ) {
             $thisPath = $Path
-        } elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
+        }
+        elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
             # guid provided, get path
             $thisPath = $Guid | ConvertTo-TppPath -VenafiSession $VenafiSession
         }
 
         if ( $thisPath ) {
-            if ( $PSBoundParameters.ContainsKey('Recursive') ) {
+            if ( $Recursive.IsPresent ) {
                 $params.Body.ParentDnRecursive = $thisPath
-            } else {
+            }
+            else {
                 $params.Body.ParentDn = $thisPath
             }
         }
 
         $response = Invoke-TppRestMethod @params
 
-        $response.Certificates.ForEach{
-            [TppObject] @{
-                Name     = $_.Name
-                TypeName = $_.SchemaClass
-                Path     = $_.DN
-                Guid     = [guid] $_.Guid
+        if ( $CountOnly.IsPresent ) {
+            $response.Headers.'X-Record-Count'
+        }
+        else {
+            $response.Certificates.ForEach{
+                [TppObject] @{
+                    Name     = $_.Name
+                    TypeName = $_.SchemaClass
+                    Path     = $_.DN
+                    Guid     = [guid] $_.Guid
+                }
             }
         }
     }
