@@ -129,6 +129,9 @@ Only include certificates with validation enabled or disabled
 .PARAMETER ValidationState
 Find certificates with a validation state of Blank, Success, or Failure
 
+.PARAMETER CountOnly
+Return the count of certificates found from the query as opposed to the certificates themselves
+
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
@@ -136,7 +139,7 @@ Session object created from New-VenafiSession method.  The value defaults to the
 Path, Guid
 
 .OUTPUTS
-TppObject
+TppObject, Int when CountOnly provided
 
 .EXAMPLE
 Find-TppCertificate -ExpireBefore "2018-01-01"
