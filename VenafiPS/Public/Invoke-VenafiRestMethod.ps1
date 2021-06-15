@@ -116,6 +116,8 @@ function Invoke-VenafiRestMethod {
         $restBody = $Body
         switch ($Method.ToLower()) {
             'head' {
+                # a head method requires the params be provided as a query string, not body
+                # invoke-webrequest does not do this so we have to build the string manually
                 $newUri = New-HttpQueryString -Uri $uri -QueryParameter $Body
                 $params.Uri = $newUri
                 $params.Body = $null
