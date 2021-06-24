@@ -32,7 +32,7 @@ Filter matching results of Value1
 .PARAMETER Value2
 Filter matching results of Value2
 
-.PARAMETER Limit
+.PARAMETER First
 Specify the number of items to retrieve, starting with most recent.  The default is 100 and there is no maximum.
 
 .PARAMETER VenafiSession
@@ -60,7 +60,7 @@ PSCustomObject with properties:
     Value2
 
 .EXAMPLE
-Read-TppLog -Limit 10
+Read-TppLog -First 10
 Get the most recent 10 log items
 
 .EXAMPLE
@@ -118,7 +118,8 @@ function Read-TppLog {
         [int] $Value2,
 
         [Parameter()]
-        [Int] $Limit,
+        [Alias('Limit')]
+        [Int] $First,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -165,8 +166,8 @@ function Read-TppLog {
                 $params.Body.Add('Value2', $Value2)
             }
 
-            'Limit' {
-                $params.Body.Add('Limit', $Limit)
+            'First' {
+                $params.Body.Add('Limit', $First)
             }
         }
     }

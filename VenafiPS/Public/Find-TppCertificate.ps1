@@ -14,7 +14,7 @@ Guid which represents a starting path
 .PARAMETER Recursive
 Search recursively starting from the search path.
 
-.PARAMETER Limit
+.PARAMETER First
 Limit how many items are returned.  Default is 0 for no limit.
 It is definitely recommended to filter on another property when searching with no limit.
 
@@ -146,11 +146,11 @@ Find-TppCertificate -ExpireBefore "2018-01-01"
 Find all certificates expiring before a certain date
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5
 Find 5 certificates expiring before a certain date
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5 -Offset 2
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Offset 2
 Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
 
 .EXAMPLE
@@ -166,7 +166,7 @@ Find-TppCertificate -Path '\VED\Policy\My Policy' -Recursive
 Find all certificates in a specific path and all subfolders
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5 | Get-TppCertificateDetail
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 | Get-TppCertificateDetail
 Get detailed certificate info on the first 5 certificates expiring before a certain date
 
 .EXAMPLE
@@ -217,7 +217,8 @@ function Find-TppCertificate {
         [Switch] $Recursive,
 
         [Parameter()]
-        [int] $Limit = 0,
+        [Alias('Limit')]
+        [int] $First = 0,
 
         [Parameter()]
         [int] $Offset,
@@ -361,7 +362,7 @@ function Find-TppCertificate {
             Method        = 'Get'
             UriLeaf       = 'certificates/'
             Body          = @{
-                Limit = $Limit
+                Limit = $First
             }
         }
 
