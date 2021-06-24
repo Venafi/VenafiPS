@@ -7,7 +7,7 @@ Search for identity details
 
 ### Find (Default)
 ```
-Find-TppIdentity -Name <String[]> [-Limit <Int32>] [-IncludeUsers] [-IncludeSecurityGroups]
+Find-TppIdentity -Name <String[]> [-First <Int32>] [-IncludeUsers] [-IncludeSecurityGroups]
  [-IncludeDistributionGroups] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
@@ -53,13 +53,13 @@ Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
-### -Limit
-Limit how many items are returned, the default is 500, but is limited by the provider.
+### -First
+First how many items are returned, the default is 500, but is limited by the provider.
 
 ```yaml
 Type: Int32
 Parameter Sets: Find
-Aliases:
+Aliases: Limit
 
 Required: False
 Position: Named
