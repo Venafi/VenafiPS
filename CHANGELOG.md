@@ -1,3 +1,10 @@
+## 3.1.0
+- Add `-CountOnly` to `Find-TppCertificate` to return the number of certificates found based on the filters provided, [#12](https://github.com/gdbarron/VenafiPS/issues/12)
+- Move from `Invoke-RestMethod` to `Invoke-WebRequest` in `Invoke-VenafiRestMethod` so we get response headers, to be used with `-CountOnly` above.  `Invoke-VenafiRestMethod` has a new parameter, `-FullResponse`, to retrieve the complete response, not just content value.
+- Add `New-HttpQueryString` private function to support HEAD api calls which require a query string and not body.
+- Fix `Test-TppIdentityFormat` which was failing when the identity guid was surrounded with curly braces
+- Replace `-Limit` parameter and standardize on `-First`
+
 ## 3.0.3
 - Fix [#10](https://github.com/gdbarron/VenafiPS/issues/10), Get-VenafiCertificate not recognizing session.
 

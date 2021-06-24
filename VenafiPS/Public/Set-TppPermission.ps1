@@ -40,7 +40,7 @@ Set-TppPermission -Path '\ved\policy\my folder' -IdentityId 'AD+mydomain.com:azs
 Permission a user/group on an object specified by path
 
 .EXAMPLE
-$id = Find-TppIdentity -Name 'brownstein' | Select-Object -ExpandProperty IdentityId
+$id = Find-TppIdentity -Name 'brownstein' | Select-Object -ExpandProperty Id
 Find-TppObject -Path '\VED' -Recursive | Get-TppPermission -IdentityId $id | Set-TppPermission -Permission $TppPermObject -Force
 
 Reset permissions for a specific user/group for all objects.  Note the use of -Force to overwrite existing permissions.
@@ -69,7 +69,8 @@ function Set-TppPermission {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -85,7 +86,8 @@ function Set-TppPermission {
         [ValidateScript( {
                 if ( $_ | Test-TppIdentityFormat ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid Prefixed Universal Id format.  See https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-IdentityInformation.php."
                 }
             })]
@@ -107,9 +109,10 @@ function Set-TppPermission {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = 'placeholder'
-            Body       = $Permission.ToHashtable()
+            Method        = 'Post'
+            UriLeaf       = 'placeholder'
+            Body          = $Permission.ToHashtable()
+            FullResponse  = $true
         }
     }
 
@@ -117,18 +120,20 @@ function Set-TppPermission {
 
         if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
             $inputObject = $Path
-        } else {
+        }
+        else {
             $inputObject = $Guid
         }
 
         foreach ($thisInputObject in $inputObject) {
             if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
                 $thisGuid = $thisInputObject | ConvertTo-TppGuid
-            } else {
+            }
+            else {
                 $thisGuid = $thisInputObject
             }
 
-            $params.UriLeaf = "Permissions/object/{$thisGuid}"
+            $params.UriLeaf = "Permissions/Object/{$thisGuid}"
 
             foreach ( $thisId in $IdentityId ) {
 
@@ -136,7 +141,8 @@ function Set-TppPermission {
                     # format of local is local:universalId
                     $type, $id = $thisId.Split(':')
                     $params.UriLeaf += "/$type/$id"
-                } else {
+                }
+                else {
                     # external source, eg. AD, LDAP
                     # format is type+name:universalId
                     $type, $name, $id = $thisId -Split { $_ -in '+', ':' }
@@ -147,8 +153,7 @@ function Set-TppPermission {
                     try {
 
                         $response = Invoke-TppRestMethod @params
-
-                        switch ($response.StatusCode.value__) {
+                        switch ([int]$response.StatusCode) {
 
                             '201' {
                                 # success
@@ -157,26 +162,27 @@ function Set-TppPermission {
                             '409' {
                                 # user/group already has permissions defined on this object
                                 # need to use a put method instead
-                                if ( $Force ) {
+                                if ( $Force.IsPresent ) {
 
                                     Write-Verbose "Existing user/group found and Force option provided, updating existing permissions"
                                     $params.Method = 'Put'
                                     $response = Invoke-TppRestMethod @params
-                                    if ( $response.StatusCode.value__ -ne '200' ) {
+                                    if ( [int]$response.StatusCode -ne '200' ) {
                                         Write-Error ('Failed to update permission with error {0}' -f $response.StatusDescription)
                                     }
-                                } else {
+                                }
+                                else {
                                     # force option not provided, let the user know what's up
-                                    Write-Error ('Permission for {0} already exists.  To override, provide the Force option.' -f $thisId)
+                                    Write-Error ('Permission for {0} already exists.  To override, provide the -Force option.' -f $thisId)
                                 }
                             }
 
                             default {
-                                # Write-Error ($response | ConvertTo-Json)
-                                Write-Error ('Failed to create permission with error {0}, URL {1}' -f $response.StatusDescription, $response.ResponseUri)
+                                Write-Error ('Failed to create permission with error {0}, {1}' -f [int]$response.StatusCode, $response.ReasonPhrase)
                             }
                         }
-                    } catch {
+                    }
+                    catch {
                         Write-Error ("Failed to set permissions on object $thisInputObject, user/group $thisId.  $_")
                     }
                 }

@@ -98,7 +98,8 @@ function Get-TppPermission {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -114,7 +115,8 @@ function Get-TppPermission {
         [ValidateScript( {
                 if ( $_ | Test-TppIdentityFormat ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid Identity format.  See https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-IdentityInformation.php."
                 }
             })]
@@ -138,8 +140,8 @@ function Get-TppPermission {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Get'
-            UriLeaf    = 'placeholder'
+            Method        = 'Get'
+            UriLeaf       = 'placeholder'
         }
     }
 
@@ -181,8 +183,9 @@ function Get-TppPermission {
             try {
                 # get list of identities permissioned to this object
                 $identities = Invoke-TppRestMethod @params
-            } catch {
-                Write-Error ("Couldn't obtain list of permissions for {0}.  $_" -f $thisTppObject.Path)
+            }
+            catch {
+                Write-Error ('Couldn''t obtain list of permissions for {0}.  {1}' -f $thisTppObject.Path, $_ | Out-String)
                 continue
             }
 
@@ -200,7 +203,8 @@ function Get-TppPermission {
                     # format of local is local:universalId
                     $type, $id = $thisId.Split(':')
                     $params.UriLeaf += "/local/$id"
-                } else {
+                }
+                else {
                     # external source, eg. AD, LDAP
                     # format is type+name:universalId
                     $type, $name, $id = $thisId -Split { $_ -in '+', ':' }
@@ -233,14 +237,15 @@ function Get-TppPermission {
                         }
 
                         $attribParams = @{
-                            IdentityId = $thisReturnObject.IdentityId
+                            IdentityId    = $thisReturnObject.IdentityId
                             VenafiSession = $VenafiSession
                         }
                         try {
                             $attribResponse = Get-TppIdentityAttribute @attribParams
                             $thisReturnObject.IdentityPath = $attribResponse.Attributes.FullName
                             $thisReturnObject.IdentityName = $attribResponse.Attributes.Name
-                        } catch {
+                        }
+                        catch {
                             Write-Error "Couldn't obtain identity attributes for $($attribParams.IdentityId).  $_"
                         }
 
@@ -264,7 +269,8 @@ function Get-TppPermission {
                                 ExplicitPermissions = [TppPermission] $response.ExplicitPermissions
                                 ImplicitPermissions = [TppPermission] $response.ImplicitPermissions
                             }
-                        } else {
+                        }
+                        else {
                             $thisReturnObject | Add-Member @{
                                 EffectivePermissions = [TppPermission] $response.EffectivePermissions
                             }
@@ -272,7 +278,8 @@ function Get-TppPermission {
 
                         $thisReturnObject
                     }
-                } catch {
+                }
+                catch {
                     Write-Error ('Couldn''t obtain permission set for path {0}, identity {1}.  {2}' -f $thisTppObject.Path, $thisId, $_)
                 }
             }

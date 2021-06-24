@@ -5,9 +5,6 @@ Find certificates based on various attributes
 .DESCRIPTION
 Find certificates based on various attributes
 
-.PARAMETER InputObject
-TppObject of type 'Policy' which represents a starting path
-
 .PARAMETER Path
 Starting path to search from
 
@@ -17,7 +14,7 @@ Guid which represents a starting path
 .PARAMETER Recursive
 Search recursively starting from the search path.
 
-.PARAMETER Limit
+.PARAMETER First
 Limit how many items are returned.  Default is 0 for no limit.
 It is definitely recommended to filter on another property when searching with no limit.
 
@@ -132,25 +129,28 @@ Only include certificates with validation enabled or disabled
 .PARAMETER ValidationState
 Find certificates with a validation state of Blank, Success, or Failure
 
+.PARAMETER CountOnly
+Return the count of certificates found from the query as opposed to the certificates themselves
+
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-InputObject, Path, Guid
+Path, Guid
 
 .OUTPUTS
-TppObject
+TppObject, Int when CountOnly provided
 
 .EXAMPLE
 Find-TppCertificate -ExpireBefore "2018-01-01"
 Find all certificates expiring before a certain date
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5
 Find 5 certificates expiring before a certain date
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5 -Offset 2
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Offset 2
 Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
 
 .EXAMPLE
@@ -166,7 +166,7 @@ Find-TppCertificate -Path '\VED\Policy\My Policy' -Recursive
 Find all certificates in a specific path and all subfolders
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5 | Get-TppCertificateDetail
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 | Get-TppCertificateDetail
 Get detailed certificate info on the first 5 certificates expiring before a certain date
 
 .EXAMPLE
@@ -195,22 +195,13 @@ function Find-TppCertificate {
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [ValidateScript( {
-                if ( $_.TypeName -eq 'Policy' ) {
-                    $true
-                } else {
-                    throw ("You provided an InputObject of type '{0}', but must be of type 'Policy'." -f $_.TypeName)
-                }
-            })]
-        [TppObject] $InputObject,
-
-        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline)]
+        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath -AllowRoot ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -221,13 +212,13 @@ function Find-TppCertificate {
         [ValidateNotNullOrEmpty()]
         [guid] $Guid,
 
-        [Parameter(ParameterSetName = 'ByObject')]
         [Parameter(ParameterSetName = 'ByPath')]
         [Parameter(ParameterSetName = 'ByGuid')]
         [Switch] $Recursive,
 
         [Parameter()]
-        [int] $Limit = 0,
+        [Alias('Limit')]
+        [int] $First = 0,
 
         [Parameter()]
         [int] $Offset,
@@ -357,6 +348,9 @@ function Find-TppCertificate {
         [String[]] $ValidationState,
 
         [Parameter()]
+        [Switch] $CountOnly,
+
+        [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
@@ -365,13 +359,18 @@ function Find-TppCertificate {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Get'
-            UriLeaf    = 'certificates/'
-            Body       = @{
-                Limit = $Limit
+            Method        = 'Get'
+            UriLeaf       = 'certificates/'
+            Body          = @{
+                Limit = $First
             }
         }
 
+        if ( $CountOnly.IsPresent ) {
+            $params.Method = 'Head'
+            $params['FullResponse'] = $true
+        }
+        
         switch ($PSBoundParameters.Keys) {
             'CreatedDate' {
                 $params.Body.Add( 'CreatedOn', ($CreatedDate | ConvertTo-UtcIso8601) )
@@ -489,31 +488,36 @@ function Find-TppCertificate {
 
     process {
 
-        if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-            $thisPath = $InputObject.Path
-        } elseif ( $PSBoundParameters.ContainsKey('Path') ) {
+        if ( $PSBoundParameters.ContainsKey('Path') ) {
             $thisPath = $Path
-        } elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
+        }
+        elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
             # guid provided, get path
             $thisPath = $Guid | ConvertTo-TppPath -VenafiSession $VenafiSession
         }
 
         if ( $thisPath ) {
-            if ( $PSBoundParameters.ContainsKey('Recursive') ) {
+            if ( $Recursive.IsPresent ) {
                 $params.Body.ParentDnRecursive = $thisPath
-            } else {
+            }
+            else {
                 $params.Body.ParentDn = $thisPath
             }
         }
 
         $response = Invoke-TppRestMethod @params
 
-        $response.Certificates.ForEach{
-            [TppObject] @{
-                Name     = $_.Name
-                TypeName = $_.SchemaClass
-                Path     = $_.DN
-                Guid     = [guid] $_.Guid
+        if ( $CountOnly.IsPresent ) {
+            $response.Headers.'X-Record-Count'
+        }
+        else {
+            $response.Certificates.ForEach{
+                [TppObject] @{
+                    Name     = $_.Name
+                    TypeName = $_.SchemaClass
+                    Path     = $_.DN
+                    Guid     = [guid] $_.Guid
+                }
             }
         }
     }

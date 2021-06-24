@@ -46,7 +46,7 @@ function Invoke-VenafiRestMethod {
         [switch] $UseDefaultCredentials,
 
         [Parameter()]
-        [ValidateSet("Get", "Post", "Patch", "Put", "Delete")]
+        [ValidateSet("Get", "Post", "Patch", "Put", "Delete", 'Head')]
         [String] $Method = 'Get',
 
         [Parameter()]
@@ -56,14 +56,14 @@ function Invoke-VenafiRestMethod {
         [ValidateNotNullOrEmpty()]
         [String] $UriLeaf,
 
-        # [Parameter(Mandatory, ParameterSetName = 'Vaas')]
-        # [PSCredential] $VaasKey,
-
         [Parameter()]
         [hashtable] $Header,
 
         [Parameter()]
-        [Hashtable] $Body
+        [Hashtable] $Body,
+
+        [Parameter()]
+        [switch] $FullResponse
     )
 
     switch ($PSCmdLet.ParameterSetName) {
@@ -97,14 +97,6 @@ function Invoke-VenafiRestMethod {
             $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
         }
 
-        # 'Vaas' {
-        #     $ServerUrl = $script:CloudUrl
-        #     $hdr = @{
-        #         "tppl-api-key" = $VaasKey.GetNetworkCredential().password
-        #     }
-        #     $uri = '{0}/v1/{2}' -f $ServerUrl, $UriLeaf
-        # }
-
         Default {}
     }
 
@@ -122,10 +114,25 @@ function Invoke-VenafiRestMethod {
 
     if ( $Body ) {
         $restBody = $Body
-        if ( $Method -ne 'Get' ) {
-            $restBody = ConvertTo-Json $Body -Depth 20
+        switch ($Method.ToLower()) {
+            'head' {
+                # a head method requires the params be provided as a query string, not body
+                # invoke-webrequest does not do this so we have to build the string manually
+                $newUri = New-HttpQueryString -Uri $uri -QueryParameter $Body
+                $params.Uri = $newUri
+                $params.Body = $null
+                Write-Verbose $newUri
+            }
+
+            'get' {
+                $params.Body = $restBody
+            }
+
+            Default {
+                $restBody = ConvertTo-Json $Body -Depth 20
+                $params.Body = $restBody
+            }
         }
-        $params.Body = $restBody
     }
 
     if ( $UseDefaultCredentials ) {
@@ -134,17 +141,22 @@ function Invoke-VenafiRestMethod {
 
     $params | Write-VerboseWithSecret
 
+    $oldProgressPreference = $ProgressPreference
+    $ProgressPreference = 'SilentlyContinue'
+
     try {
-        $verboseOutput = $($response = Invoke-RestMethod @params) 4>&1
+        $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
         $verboseOutput.Message | Write-VerboseWithSecret
-    } catch {
+    }
+    catch {
 
         # if trying with a slash below doesn't work, we want to provide the original error
         $originalError = $_
+        $originalStatusCode = $originalError.Exception.Response.StatusCode.value__
 
-        Write-Verbose ('Response status code {0}' -f $originalError.Exception.Response.StatusCode.value__)
+        Write-Verbose ('Response status code {0}' -f $originalStatusCode)
 
-        switch ($originalError.Exception.Response.StatusCode.value__) {
+        switch ($originalStatusCode) {
 
             '409' {
                 # item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
@@ -155,26 +167,36 @@ function Invoke-VenafiRestMethod {
                 # try with trailing slash as some GETs return a 307/401 without it
                 if ( -not $uri.EndsWith('/') ) {
 
-                    Write-Verbose "$Method call failed, trying again with a trailing slash"
+                    Write-Verbose "'$Method' call failed, trying again with a trailing slash"
 
                     $params.Uri += '/'
 
                     try {
-                        $verboseOutput = $($response = Invoke-RestMethod @params) 4>&1
+                        $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
                         $verboseOutput.Message | Write-VerboseWithSecret
-                        Write-Warning ('{0} call requires a trailing slash, please create an issue at https://github.com/gdbarron/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{1}/{2}' -f $UriRoot, $UriLeaf))
-                    } catch {
+                        Write-Warning ('This ''{0}'' call requires a trailing slash, please create an issue at https://github.com/gdbarron/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{0}/{1}' -f $UriRoot, $UriLeaf))
+                    }
+                    catch {
                         # this didn't work, provide details from pre slash call
-                        throw $originalError
+                        throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )                    
                     }
                 }
             }
 
             Default {
-                throw ('"{0} {1}: {2}' -f $originalError.Exception.Response.StatusCode.value__, $originalError.Exception.Response.StatusDescription, $originalError | Out-String )
+                throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )
             }
         }
     }
 
-    $response
+    $ProgressPreference = $oldProgressPreference
+
+    if ( $FullResponse.IsPresent ) {
+        $response
+    }
+    else {
+        if ( $response.Content ) {
+            $response.Content | ConvertFrom-Json
+        }
+    }
 }
