@@ -8,13 +8,13 @@ Generic REST API call
 ### Session (Default)
 ```
 Invoke-VenafiRestMethod -VenafiSession <VenafiSession> [-Method <String>] [-UriRoot <String>] -UriLeaf <String>
- [-Header <Hashtable>] [-Body <Hashtable>] [<CommonParameters>]
+ [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
 ```
 
 ### URL
 ```
 Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredentials] [-Method <String>] [-UriRoot <String>]
- -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>] [<CommonParameters>]
+ -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -149,6 +149,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -FullResponse
+{{ Fill FullResponse Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

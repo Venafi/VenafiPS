@@ -38,7 +38,7 @@ Permission a user/group on an object specified by path
 
 ### EXAMPLE 3
 ```
-$id = Find-TppIdentity -Name 'brownstein' | Select-Object -ExpandProperty IdentityId
+$id = Find-TppIdentity -Name 'brownstein' | Select-Object -ExpandProperty Id
 ```
 
 Find-TppObject -Path '\VED' -Recursive | Get-TppPermission -IdentityId $id | Set-TppPermission -Permission $TppPermObject -Force

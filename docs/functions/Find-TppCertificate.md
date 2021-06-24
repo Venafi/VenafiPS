@@ -7,7 +7,7 @@ Find certificates based on various attributes
 
 ### NoPath (Default)
 ```
-Find-TppCertificate [-Limit <Int32>] [-Offset <Int32>] [-Country <String>] [-CommonName <String>]
+Find-TppCertificate [-First <Int32>] [-Offset <Int32>] [-Country <String>] [-CommonName <String>]
  [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>] [-KeySizeGreaterThan <Int32>]
  [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>] [-OrganizationUnit <String[]>]
  [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>] [-SanUpn <String>]
@@ -16,28 +16,13 @@ Find-TppCertificate [-Limit <Int32>] [-Offset <Int32>] [-Country <String>] [-Com
  [-Enabled] [-InError <Boolean>] [-NetworkValidationEnabled <Boolean>] [-CreatedDate <DateTime>]
  [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-ManagementType <TppManagementType[]>]
  [-PendingWorkflow] [-Stage <TppCertificateStage[]>] [-StageGreaterThan <TppCertificateStage>]
- [-StageLessThan <TppCertificateStage>] [-ValidationEnabled] [-ValidationState <String[]>]
+ [-StageLessThan <TppCertificateStage>] [-ValidationEnabled] [-ValidationState <String[]>] [-CountOnly]
  [-VenafiSession <VenafiSession>] [<CommonParameters>]
-```
-
-### ByObject
-```
-Find-TppCertificate -InputObject <TppObject> [-Recursive] [-Limit <Int32>] [-Offset <Int32>]
- [-Country <String>] [-CommonName <String>] [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>]
- [-KeySizeGreaterThan <Int32>] [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>]
- [-OrganizationUnit <String[]>] [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>]
- [-SanUpn <String>] [-SanUri <String>] [-SerialNumber <String>] [-SignatureAlgorithm <String>]
- [-Thumbprint <String>] [-IssueDate <DateTime>] [-ExpireDate <DateTime>] [-ExpireAfter <DateTime>]
- [-ExpireBefore <DateTime>] [-Enabled] [-InError <Boolean>] [-NetworkValidationEnabled <Boolean>]
- [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>]
- [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
- [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Find-TppCertificate -Path <String> [-Recursive] [-Limit <Int32>] [-Offset <Int32>] [-Country <String>]
+Find-TppCertificate -Path <String> [-Recursive] [-First <Int32>] [-Offset <Int32>] [-Country <String>]
  [-CommonName <String>] [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>]
  [-KeySizeGreaterThan <Int32>] [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>]
  [-OrganizationUnit <String[]>] [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>]
@@ -47,12 +32,12 @@ Find-TppCertificate -Path <String> [-Recursive] [-Limit <Int32>] [-Offset <Int32
  [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Find-TppCertificate -Guid <Guid> [-Recursive] [-Limit <Int32>] [-Offset <Int32>] [-Country <String>]
+Find-TppCertificate -Guid <Guid> [-Recursive] [-First <Int32>] [-Offset <Int32>] [-Country <String>]
  [-CommonName <String>] [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>]
  [-KeySizeGreaterThan <Int32>] [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>]
  [-OrganizationUnit <String[]>] [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>]
@@ -62,7 +47,7 @@ Find-TppCertificate -Guid <Guid> [-Recursive] [-Limit <Int32>] [-Offset <Int32>]
  [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -79,14 +64,14 @@ Find all certificates expiring before a certain date
 
 ### EXAMPLE 2
 ```
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5
 ```
 
 Find 5 certificates expiring before a certain date
 
 ### EXAMPLE 3
 ```
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5 -Offset 2
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Offset 2
 ```
 
 Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
@@ -114,7 +99,7 @@ Find all certificates in a specific path and all subfolders
 
 ### EXAMPLE 7
 ```
-Find-TppCertificate -ExpireBefore "2018-01-01" -Limit 5 | Get-TppCertificateDetail
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 | Get-TppCertificateDetail
 ```
 
 Get detailed certificate info on the first 5 certificates expiring before a certain date
@@ -128,21 +113,6 @@ Renew all certificates expiring before a certain date
 
 ## PARAMETERS
 
-### -InputObject
-TppObject of type 'Policy' which represents a starting path
-
-```yaml
-Type: TppObject
-Parameter Sets: ByObject
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
 ### -Path
 Starting path to search from
 
@@ -154,7 +124,7 @@ Aliases: DN
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -178,7 +148,7 @@ Search recursively starting from the search path.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: ByObject, ByPath, ByGuid
+Parameter Sets: ByPath, ByGuid
 Aliases:
 
 Required: False
@@ -188,7 +158,7 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Limit
+### -First
 Limit how many items are returned. 
 Default is 0 for no limit.
 It is definitely recommended to filter on another property when searching with no limit.
@@ -196,7 +166,7 @@ It is definitely recommended to filter on another property when searching with n
 ```yaml
 Type: Int32
 Parameter Sets: (All)
-Aliases:
+Aliases: Limit
 
 Required: False
 Position: Named
@@ -766,6 +736,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -CountOnly
+Return the count of certificates found from the query as opposed to the certificates themselves
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VenafiSession
 Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
@@ -787,10 +772,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### InputObject, Path, Guid
+### Path, Guid
 ## OUTPUTS
 
-### TppObject
+### TppObject, Int when CountOnly provided
 ## NOTES
 
 ## RELATED LINKS

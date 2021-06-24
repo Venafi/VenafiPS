@@ -8,21 +8,21 @@ Read entries from the TPP log
 ### Default (Default)
 ```
 Read-TppLog [-Severity <TppEventSeverity>] [-StartTime <DateTime>] [-EndTime <DateTime>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-Limit <Int32>] [-VenafiSession <VenafiSession>]
+ [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-First <Int32>] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ### ByObject
 ```
 Read-TppLog -InputObject <TppObject> [-Severity <TppEventSeverity>] [-StartTime <DateTime>]
- [-EndTime <DateTime>] [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-Limit <Int32>]
+ [-EndTime <DateTime>] [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-First <Int32>]
  [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
 Read-TppLog -Path <String> [-Severity <TppEventSeverity>] [-StartTime <DateTime>] [-EndTime <DateTime>]
- [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-Limit <Int32>]
+ [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-First <Int32>]
  [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
@@ -33,7 +33,7 @@ Read entries from the TPP log
 
 ### EXAMPLE 1
 ```
-Read-TppLog -Limit 10
+Read-TppLog -First 10
 ```
 
 Get the most recent 10 log items
@@ -183,14 +183,14 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Limit
+### -First
 Specify the number of items to retrieve, starting with most recent. 
 The default is 100 and there is no maximum.
 
 ```yaml
 Type: Int32
 Parameter Sets: (All)
-Aliases:
+Aliases: Limit
 
 Required: False
 Position: Named
