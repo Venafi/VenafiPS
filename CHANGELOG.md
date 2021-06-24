@@ -1,3 +1,7 @@
+## 3.1.0
+- Add `-CountOnly` to `Find-TppCertificate` to return the number of certificates found based on the filters provided, [#12](https://github.com/gdbarron/VenafiPS/issues/12)
+- Move from `Invoke-RestMethod` to `Invoke-WebRequest` in `Invoke-VenafiRestMethod` so we get response headers used with `-CountOnly` above.
+
 ## 3.0.3
 - Fix [#10](https://github.com/gdbarron/VenafiPS/issues/10), Get-VenafiCertificate not recognizing session.
 
