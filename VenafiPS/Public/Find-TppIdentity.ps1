@@ -9,8 +9,8 @@ You can specify individual identity types to search for or all
 .PARAMETER Name
 The individual identity, group identity, or distribution group name to search for
 
-.PARAMETER Limit
-Limit how many items are returned, the default is 500, but is limited by the provider.
+.PARAMETER First
+First how many items are returned, the default is 500, but is limited by the provider.
 
 .PARAMETER IncludeUsers
 Include user identity type in search
@@ -64,7 +64,8 @@ function Find-TppIdentity {
         [String[]] $Name,
 
         [Parameter(ParameterSetName = 'Find')]
-        [int] $Limit = 500,
+        [Alias('Limit')]
+        [int] $First = 500,
 
         [Parameter(ParameterSetName = 'Find')]
         [Switch] $IncludeUsers,
@@ -110,7 +111,7 @@ function Find-TppIdentity {
                     UriLeaf    = 'Identity/Browse'
                     Body       = @{
                         Filter       = 'placeholder'
-                        Limit        = $Limit
+                        Limit        = $First
                         IdentityType = $identityType
                     }
                 }
