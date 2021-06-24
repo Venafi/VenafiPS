@@ -177,7 +177,7 @@ function Get-TppPermission {
                 }
             }
 
-            $uriBase = ('Permissions/object/{{{0}}}' -f $thisTppObject.Guid )
+            $uriBase = ('Permissions/Object/{{{0}}}' -f $thisTppObject.Guid )
             $params.UriLeaf = $uriBase
 
             try {
