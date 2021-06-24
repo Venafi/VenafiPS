@@ -141,60 +141,22 @@ function Invoke-VenafiRestMethod {
 
     $params | Write-VerboseWithSecret
 
-    # $verboseOutput = $($response = Invoke-WebRequest @params) 4>&1
+    $oldProgressPreference = $ProgressPreference
+    $ProgressPreference = 'SilentlyContinue'
+
     try {
-        # return Invoke-WebRequest @params
-        
-        $oldProgressPreference = $ProgressPreference
-        $ProgressPreference = 'SilentlyContinue'
-
-        $verboseOutput = $($response = Invoke-WebRequest @params) 4>&1
-
-        $ProgressPreference = $oldProgressPreference
-
-        # $verboseOutput = $($response = Invoke-RestMethod @params) 4>&1
+        $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
         $verboseOutput.Message | Write-VerboseWithSecret
-
-        # switch ($Response.StatusCode) {
-
-        #     '409' {
-        #         # item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
-        #         $response = $originalError.Exception.Response
-        #     }
-
-        #     { $_ -in '307', '401' } {
-        #         # try with trailing slash as some GETs return a 307/401 without it
-        #         if ( -not $uri.EndsWith('/') ) {
-
-        #             Write-Verbose "$Method call failed, trying again with a trailing slash"
-
-        #             $params.Uri += '/'
-
-        #             try {
-        #                 $verboseOutput = $($response = Invoke-WebRequest @params) 4>&1
-        #                 $verboseOutput.Message | Write-VerboseWithSecret
-        #                 Write-Warning ('{0} call requires a trailing slash, please create an issue at https://github.com/gdbarron/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{1}/{2}' -f $UriRoot, $UriLeaf))
-        #             }
-        #             catch {
-        #                 # this didn't work, provide details from pre slash call
-        #                 throw $originalError
-        #             }
-        #         }
-        #     }
-
-        #     Default {
-        #     }
-        # }
-
     }
     catch {
 
         # if trying with a slash below doesn't work, we want to provide the original error
         $originalError = $_
+        $originalStatusCode = $originalError.Exception.Response.StatusCode.value__
 
-        Write-Verbose ('Response status code in catch {0}' -f $originalError.Exception.Response.StatusCode.value__)
+        Write-Verbose ('Response status code {0}' -f $originalStatusCode)
 
-        switch ($originalError.Exception.Response.StatusCode.value__) {
+        switch ($originalStatusCode) {
 
             '409' {
                 # item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
@@ -205,33 +167,36 @@ function Invoke-VenafiRestMethod {
                 # try with trailing slash as some GETs return a 307/401 without it
                 if ( -not $uri.EndsWith('/') ) {
 
-                    Write-Verbose "$Method call failed, trying again with a trailing slash"
+                    Write-Verbose "'$Method' call failed, trying again with a trailing slash"
 
                     $params.Uri += '/'
 
                     try {
-                        $response = Invoke-WebRequest @params
-                        # $verboseOutput = $($response = Invoke-WebRequest @params) 4>&1
+                        $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
                         $verboseOutput.Message | Write-VerboseWithSecret
-                        Write-Warning ('{0} call requires a trailing slash, please create an issue at https://github.com/gdbarron/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{1}/{2}' -f $UriRoot, $UriLeaf))
+                        Write-Warning ('This ''{0}'' call requires a trailing slash, please create an issue at https://github.com/gdbarron/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{0}/{1}' -f $UriRoot, $UriLeaf))
                     }
                     catch {
                         # this didn't work, provide details from pre slash call
-                        throw $originalError
+                        throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )                    
                     }
                 }
             }
 
             Default {
-                throw ('"{0} {1}: {2}' -f $originalError.Exception.Response.StatusCode.value__, $originalError.Exception.Response.StatusDescription, $originalError | Out-String )
+                throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )
             }
         }
     }
+
+    $ProgressPreference = $oldProgressPreference
 
     if ( $FullResponse.IsPresent ) {
         $response
     }
     else {
-        $response.Content | ConvertFrom-Json
+        if ( $response.Content ) {
+            $response.Content | ConvertFrom-Json
+        }
     }
 }
