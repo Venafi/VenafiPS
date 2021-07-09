@@ -54,6 +54,7 @@ PSCustomObject with the following properties:
     TokenType
     ClientId
     Expires
+    RefreshExpires
 #>
 function New-TppToken {
 
@@ -154,14 +155,15 @@ function New-TppToken {
         $response | Write-VerboseWithSecret
 
         [PSCustomObject] @{
-            Server       = $AuthUrl
-            AccessToken  = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
-            RefreshToken = New-Object System.Management.Automation.PSCredential('RefreshToken', ($response.refresh_token | ConvertTo-SecureString -AsPlainText -Force))
-            Scope        = $response.scope
-            Identity     = $response.identity
-            TokenType    = $response.token_type
-            ClientId     = $ClientId
-            Expires      = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.Expires)
+            Server         = $AuthUrl
+            AccessToken    = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
+            RefreshToken   = New-Object System.Management.Automation.PSCredential('RefreshToken', ($response.refresh_token | ConvertTo-SecureString -AsPlainText -Force))
+            Scope          = $response.scope
+            Identity       = $response.identity
+            TokenType      = $response.token_type
+            ClientId       = $ClientId
+            Expires        = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.Expires)
+            RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.refresh_until)
         }
     }
 }
