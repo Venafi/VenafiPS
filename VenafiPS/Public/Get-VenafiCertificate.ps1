@@ -8,6 +8,9 @@ Get certificate information, either all available to the api key provided or by 
 .PARAMETER CertificateId
 Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
 
+.PARAMETER PreviousVersions
+Returns details about previous (historical) versions of a certificate from TPP.
+
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
@@ -38,6 +41,15 @@ function Get-VenafiCertificate {
         [Parameter(ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('Path')]
         [string] $CertificateId,
+
+        [Parameter()]
+        [switch] $IncludePreviousVersions,
+
+        [Parameter()]
+        [switch] $ExcludeExpired,
+
+        [Parameter()]
+        [switch] $ExcludeRevoked,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -113,7 +125,26 @@ function Get-VenafiCertificate {
                         '*'
                         ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name'
                     }
+
+                    if ( $PSBoundParameters.ContainsKey('IncludePreviousVersions') ) {
+                        $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}/PreviousVersions")
+                        $params.Body    = @{}
+
+                        switch ($PSBoundParameters.Keys) {
+                            'ExcludeExpired' {
+                                $params.Body.Add( 'ExcludeExpired', $ExcludeExpired )
+                            }            
+                            'ExcludeRevoked' {
+                                $params.Body.Add( 'ExcludeRevoked', $ExcludeRevoked )
+                            }            
+                        }
+
+                        $previous = Invoke-VenafiRestMethod @params
+
+                        $response | Add-Member NoteProperty PreviousVersions $previous.PreviousVersions
+                    }
                     $response | Select-Object @selectProps
+                    
                 } else {
                     Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession
                 }
