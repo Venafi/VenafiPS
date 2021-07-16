@@ -154,6 +154,12 @@ function New-TppToken {
 
         $response | Write-VerboseWithSecret
 
+        $refreshExpires = $null
+
+        if ($response.refresh_until) {
+            $refreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.refresh_until)
+        }
+
         [PSCustomObject] @{
             Server         = $AuthUrl
             AccessToken    = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
@@ -163,7 +169,7 @@ function New-TppToken {
             TokenType      = $response.token_type
             ClientId       = $ClientId
             Expires        = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.Expires)
-            RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.refresh_until)
+            RefreshExpires = $refreshExpires
         }
     }
 }
