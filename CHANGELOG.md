@@ -1,3 +1,6 @@
+## 3.1.1
+- Add -UseBasicParsing to `Invoke-WebRequest` to avoid IE profile error
+
 ## 3.1.0
 - Add `-CountOnly` to `Find-TppCertificate` to return the number of certificates found based on the filters provided, [#12](https://github.com/gdbarron/VenafiPS/issues/12)
 - Move from `Invoke-RestMethod` to `Invoke-WebRequest` in `Invoke-VenafiRestMethod` so we get response headers, to be used with `-CountOnly` above.  `Invoke-VenafiRestMethod` has a new parameter, `-FullResponse`, to retrieve the complete response, not just content value.
