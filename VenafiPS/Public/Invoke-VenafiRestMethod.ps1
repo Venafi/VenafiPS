@@ -106,10 +106,11 @@ function Invoke-VenafiRestMethod {
     }
 
     $params = @{
-        Method      = $Method
-        Uri         = $uri
-        Headers     = $hdr
-        ContentType = 'application/json'
+        Method          = $Method
+        Uri             = $uri
+        Headers         = $hdr
+        ContentType     = 'application/json'
+        UseBasicParsing = $true
     }
 
     if ( $Body ) {
