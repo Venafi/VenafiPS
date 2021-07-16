@@ -16,7 +16,7 @@ Access token retrieved outside this module.  Provide a credential object with th
 Accesstoken
 
 .OUTPUTS
-PSCustomObject with the following properties:
+Boolean or PSCustomObject with the following properties:
     AuthUrl
     AccessToken
     RefreshToken
@@ -57,41 +57,60 @@ function Test-TppToken {
         [Alias('Server')]
         [string] $AuthServer,
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [PSCredential] $AccessToken
+        [Parameter(Mandatory)]
+        [PSCredential] $AccessToken,
+
+        [Parameter()]
+        [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
+        $authType = $VenafiSession.Validate()
+
         $AuthUrl = $AuthServer
         # add prefix if just server url was provided
         if ( $AuthServer -notlike 'https://*') {
             $AuthUrl = 'https://{0}' -f $AuthUrl
         }
 
-        $hdr = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().password }
+        if ($authType -eq 'token') {
+            $hdr = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().password }
 
-        $params = @{
-            Method  = 'Get'
-            UriRoot = 'vedauth'
-            UriLeaf = 'Authorize/Verify'
-            ServerUrl = $AuthUrl
-            Header = $hdr
+            $params = @{
+                Method  = 'Get'
+                UriRoot = 'vedauth'
+                UriLeaf = 'Authorize/Verify'
+                ServerUrl = $AuthUrl
+                Header = $hdr
+            }
         }
     }
 
     process {
 
-        $response = Invoke-VenafiRestMethod @params
+        try {
+            if ($authType -eq 'token') {
+                $response = Invoke-VenafiRestMethod @params
 
-        [PSCustomObject] @{
-            Server         = $AuthUrl
-            Application    = $response.application
-            AccessIssued   = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.access_issued_on_unix_time)
-            GrantIssued    = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.grant_issued_on_unix_time)
-            Scope          = $response.scope
-            Identity       = $response.identity
-            RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.expires_unix_time)
-            ValidFor       = $response.valid_for
+                [PSCustomObject] @{
+                    Server         = $AuthUrl
+                    Application    = $response.application
+                    AccessIssued   = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.access_issued_on_unix_time)
+                    GrantIssued    = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.grant_issued_on_unix_time)
+                    Scope          = $response.scope
+                    Identity       = $response.identity
+                    RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.expires_unix_time)
+                    ValidFor       = $response.valid_for
+                }
+            } else {
+                Write-Error "No oauth token to check"
+            }
+        } catch {
+            if ($PSitem.Exception.Message -match 401) {
+                Write-Error $PSitem.Exception.Message
+            } else {
+                Write-Error "Grant has been revoked, has expired, or the refresh token is invalid"
+            }                    
         }
     }
 }
