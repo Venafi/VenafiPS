@@ -54,7 +54,7 @@ PSCustomObject with the following properties:
     TokenType
     ClientId
     Expires
-    RefreshExpires
+    RefreshExpires (This property is null <version 21.1)
 #>
 function New-TppToken {
 
