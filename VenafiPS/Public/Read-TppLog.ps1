@@ -5,11 +5,11 @@ Read entries from the TPP log
 .DESCRIPTION
 Read entries from the TPP log
 
-.PARAMETER InputObject
-TppObject which represents a unique object to search for related records
-
 .PARAMETER Path
 Path to search for related records
+
+.PARAMETER EventId
+Event ID as found in Logging->Event Definitions
 
 .PARAMETER Severity
 Filter records by severity
@@ -39,10 +39,11 @@ Specify the number of items to retrieve, starting with most recent.  The default
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-InputObject
+Path
 
 .OUTPUTS
 PSCustomObject with properties:
+    EventId
     ClientTimestamp
     Component
     ComponentId
@@ -67,6 +68,10 @@ Get the most recent 10 log items
 $capiObject | Read-TppLog
 Find all events for a specific object
 
+.EXAMPLE
+Read-TppLog -EventId '00130003'
+Find all events with event ID '00130003', Certificate Monitor - Certificate Expiration Notice
+
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Read-TppLog/
 
@@ -78,21 +83,23 @@ https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php
 
 #>
 function Read-TppLog {
-    [CmdletBinding(DefaultParameterSetName = 'Default')]
+    [CmdletBinding()]
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByObject')]
-        [TppObject] $InputObject,
 
-        [Parameter(Mandatory, ParameterSetName = 'ByPath')]
+        [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
         [Alias('DN')]
         [string] $Path,
+
+        [Parameter()]
+        [string] $EventId,
 
         [Parameter()]
         [TppEventSeverity] $Severity,
@@ -131,12 +138,16 @@ function Read-TppLog {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Get'
-            UriLeaf    = 'Log/'
-            Body       = @{ }
+            Method        = 'Get'
+            UriLeaf       = 'Log/'
+            Body          = @{ }
         }
 
         switch ($PSBoundParameters.Keys) {
+
+            'EventId' {
+                $params.Body.Add('Id', [uint32]('0x{0}' -f $EventId))
+            }
 
             'Severity' {
                 $params.Body.Add('Severity', $Severity)
@@ -174,16 +185,10 @@ function Read-TppLog {
 
     process {
 
-        switch ($PSCmdlet.ParameterSetName) {
-            'ByObject' {
-                $params.Body.Component = $InputObject.Path
-            }
-
-            'ByPath' {
-                $params.Body.Component = $Path
-            }
+        if ( $PSBoundParameters.ContainsKey('Path') ) {
+            $params.Body.Component = $Path
         }
 
-        Invoke-TppRestMethod @params | Select-Object -ExpandProperty LogEvents
+        Invoke-TppRestMethod @params | Select-Object -ExpandProperty LogEvents | Select-Object -Property @{'n' = 'EventId'; 'e' = { '{0:x8}' -f $_.Id } }, *
     }
 }
