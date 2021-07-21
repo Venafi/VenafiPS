@@ -2,6 +2,14 @@ name: PSScriptAnalyzer
 
 on: [pull_request]
 jobs:
+  env:
+    runs-on: ubuntu-latest
+    steps:
+      - name: directory listing
+      - uses: actions/checkout@master
+      - name: directory lsting
+        run: |
+          ls -R
   lint:
     name: Run PSSA
     runs-on: ubuntu-latest
@@ -10,8 +18,8 @@ jobs:
     - name: lint
       uses: devblackops/github-action-psscriptanalyzer@master
       with:
-        #rootPath: VenafiPS
-        #settingsPath: pssa_settings.psd1
+        rootPath: VenafiPS
+        settingsPath: /.github/workflows/pssa_settings.psd1
         sendComment: true
         repoToken: ${{ secrets.GITHUB_TOKEN }}
         failOnErrors: true
