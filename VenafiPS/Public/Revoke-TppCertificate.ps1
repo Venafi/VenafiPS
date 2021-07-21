@@ -33,7 +33,7 @@ Provide this switch to mark the certificate as disabled and no new certificate w
 Wait for the requested revocation to be complete
 
 .PARAMETER Force
-Override the confirmation prompt
+Bypass the confirmation prompt
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.

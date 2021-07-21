@@ -16,7 +16,7 @@ Access token to be revoked.  Provide a credential object with the access token a
 Token object obtained from New-TppToken
 
 .PARAMETER Force
-Override the confirmation prompt
+Bypass the confirmation prompt
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
