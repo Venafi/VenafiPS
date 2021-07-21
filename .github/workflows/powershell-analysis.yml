@@ -2,14 +2,6 @@ name: PSScriptAnalyzer
 
 on: [pull_request, workflow_dispatch]
 jobs:
-  env:
-    runs-on: ubuntu-latest
-    steps:
-      - name: directory listing
-      - uses: actions/checkout@master
-      - name: directory lsting
-        run: |
-          ls -R
   lint:
     name: Run PSSA
     runs-on: ubuntu-latest
