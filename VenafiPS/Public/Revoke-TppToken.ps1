@@ -29,7 +29,7 @@ none
 
 .EXAMPLE
 Revoke-TppToken
-Revoke token stored in session variable from New-VenafiSession
+Revoke token stored in session variable $VenafiSession from New-VenafiSession
 
 .EXAMPLE
 Revoke-TppToken -Force
