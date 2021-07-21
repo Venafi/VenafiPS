@@ -15,6 +15,9 @@ Access token to be revoked.  Provide a credential object with the access token a
 .PARAMETER TppToken
 Token object obtained from New-TppToken
 
+.PARAMETER Force
+Override the confirmation prompt
+
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
@@ -27,6 +30,10 @@ Version
 .EXAMPLE
 Revoke-TppToken
 Revoke token stored in session variable from New-VenafiSession
+
+.EXAMPLE
+Revoke-TppToken -Force
+Revoke token bypassing confirmation prompt
 
 .EXAMPLE
 Revoke-TppToken -AuthServer venafi.company.com -AccessToken $cred
@@ -64,6 +71,9 @@ function Revoke-TppToken {
 
         [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipeline)]
         [pscustomobject] $TppToken,
+
+        [Parameter()]
+        [switch] $Force,
 
         [Parameter(ParameterSetName = 'Session')]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -114,7 +124,11 @@ function Revoke-TppToken {
 
         Write-Verbose ($params | Out-String)
 
-        if ( $PSCmdlet.ShouldProcess($target, 'Revoke token') ) {
+        if ( $Force ) {
+            $ConfirmPreference = 'None'
+        }
+
+        if ( $PSCmdlet.ShouldProcess($target) ) {
             Invoke-TppRestMethod @params
         }
     }
