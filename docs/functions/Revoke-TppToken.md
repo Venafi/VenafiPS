@@ -7,17 +7,18 @@ Revoke a token
 
 ### Session (Default)
 ```
-Revoke-TppToken [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Revoke-TppToken [-Force] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### AccessToken
 ```
-Revoke-TppToken -AuthServer <String> -AccessToken <PSCredential> [-WhatIf] [-Confirm] [<CommonParameters>]
+Revoke-TppToken -AuthServer <String> -AccessToken <PSCredential> [-Force] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### TppToken
 ```
-Revoke-TppToken -TppToken <PSObject> [-WhatIf] [-Confirm] [<CommonParameters>]
+Revoke-TppToken -TppToken <PSObject> [-Force] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -31,9 +32,16 @@ This could be an access token retrieved from this module or from other means.
 Revoke-TppToken
 ```
 
-Revoke token stored in session variable from New-VenafiSession
+Revoke token stored in session variable $VenafiSession from New-VenafiSession
 
 ### EXAMPLE 2
+```
+Revoke-TppToken -Force
+```
+
+Revoke token bypassing confirmation prompt
+
+### EXAMPLE 3
 ```
 Revoke-TppToken -AuthServer venafi.company.com -AccessToken $cred
 ```
@@ -85,6 +93,21 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
+### -Force
+Bypass the confirmation prompt
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -143,7 +166,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### TppToken
 ## OUTPUTS
 
-### Version
+### none
 ## NOTES
 
 ## RELATED LINKS
