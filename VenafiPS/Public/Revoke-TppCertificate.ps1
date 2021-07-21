@@ -32,6 +32,9 @@ Provide this switch to mark the certificate as disabled and no new certificate w
 .PARAMETER Wait
 Wait for the requested revocation to be complete
 
+.PARAMETER Force
+Bypass the confirmation prompt
+
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
@@ -49,6 +52,10 @@ $cert | Revoke-TppCertificate -Reason 2
 Revoke the certificate with a reason of the CA being compromised
 
 .EXAMPLE
+$cert | Revoke-TppCertificate -Force
+Revoke the certificate bypassing the confirmation prompt
+
+.EXAMPLE
 Revoke-TppCertificate -Path '\VED\Policy\My folder\app.mycompany.com' -Reason 2 -Wait
 Revoke the certificate with a reason of the CA being compromised and wait for it to complete
 
@@ -63,13 +70,10 @@ https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certif
 
 #>
 function Revoke-TppCertificate {
-    [CmdletBinding(DefaultParameterSetName = 'ByObject', SupportsShouldProcess, ConfirmImpact = 'High')]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
-
-        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByPath')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -96,6 +100,9 @@ function Revoke-TppCertificate {
         [Switch] $Wait,
 
         [Parameter()]
+        [switch] $Force,
+
+        [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
@@ -111,12 +118,6 @@ function Revoke-TppCertificate {
     }
 
     process {
-
-        Write-Verbose $PsCmdlet.ParameterSetName
-
-        if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-            $path = $InputObject.Path
-        }
 
         Write-Verbose "Revoking $Path..."
 
@@ -134,6 +135,10 @@ function Revoke-TppCertificate {
 
         if ( $Disable ) {
             $params.Body.Disable = $true
+        }
+
+        if ( $Force ) {
+            $ConfirmPreference = 'None'
         }
 
         if ( $PSCmdlet.ShouldProcess($Path, 'Revoke certificate') ) {
