@@ -25,7 +25,7 @@ Session object created from New-VenafiSession method.  The value defaults to the
 TppToken
 
 .OUTPUTS
-Version
+none
 
 .EXAMPLE
 Revoke-TppToken
