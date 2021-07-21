@@ -11,7 +11,7 @@ jobs:
       uses: devblackops/github-action-psscriptanalyzer@master
       with:
         rootPath: VenafiPS
-        settingsPath: pssa_settings.psd1
+        settingsPath: /.github/workflows/pssa_settings.psd1
         sendComment: true
         repoToken: ${{ secrets.GITHUB_TOKEN }}
         failOnErrors: true
