@@ -12,11 +12,14 @@
     Boolean
 #>
 function Test-ModuleHash {
+
     [CmdletBinding()]
+    [OutputType([Boolean])]
+
     param (
-        
+
     )
-    
+
     try {
         Invoke-webrequest -Uri "https://github.com/gdbarron/VenafiPS/releases/download/v$ModuleVersion/hash.json" -OutFile ('{0}/hash.json' -f $env:TEMP) -UseBasicParsing
         $json = (Get-Content -Path ('{0}/hash.json' -f $env:TEMP) -Raw) | ConvertFrom-Json

@@ -105,7 +105,7 @@ function Revoke-TppToken {
                 }
 
                 $params.ServerUrl = $target = $AuthUrl
-                $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken }
+                $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().Password }
             }
 
             'TppToken' {
