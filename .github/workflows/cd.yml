@@ -14,16 +14,16 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Generate File Hash
-        env:
-          TEMP: ${{ runner.temp }}
-        run: |
-          $path = './VenafiPS'
-          $fullPath = Resolve-Path $path | Select-Object -ExpandProperty Path
-          Get-ChildItem -Path $path -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash, 
-          @{
-              'n' = 'File'
-              'e' = {
-                  $_.Path.Replace("$fullPath\", '')
-              }
-          } | ConvertTo-Json | Out-File -FilePath ../hash.json
-          gc ../hash.json -raw
+        uses: ./
+        with:
+          script: |
+            $path = './VenafiPS'
+            $fullPath = Resolve-Path $path | Select-Object -ExpandProperty Path
+            Get-ChildItem -Path $path -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash, 
+            @{
+                'n' = 'File'
+                'e' = {
+                    $_.Path.Replace("$fullPath\", '')
+                }
+            } | ConvertTo-Json | Out-File -FilePath ../hash.json
+            gc ../hash.json -raw
