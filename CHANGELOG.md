@@ -1,3 +1,6 @@
+## 3.1.4
+- Fix [#19](https://github.com/gdbarron/VenafiPS/issues/19), `Revoke-TppToken -AccessToken` not decrypting password
+
 ## 3.1.3
 - Add `-Force` parameter to `Revoke-TppToken` and `Revoke-TppCertificate` to bypass confirmation prompt
 
