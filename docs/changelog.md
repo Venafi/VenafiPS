@@ -1,3 +1,10 @@
+## 3.1.3
+- Add `-Force` parameter to `Revoke-TppToken` and `Revoke-TppCertificate` to bypass confirmation prompt
+
+## 3.1.2
+- Add `-EventId` parameter to `Read-TppLog` to filter by a specific event id.
+- Add EventId to `Read-TppLog` output.  The value matches the hex value seen in Event Definitions in TPP.
+
 ## 3.1.1
 - Add -UseBasicParsing to `Invoke-WebRequest` to avoid IE profile error
 

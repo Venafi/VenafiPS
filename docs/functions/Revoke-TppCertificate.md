@@ -5,16 +5,9 @@ Revoke a certificate
 
 ## SYNTAX
 
-### ByObject (Default)
 ```
-Revoke-TppCertificate -InputObject <TppObject> [-Reason <Int32>] [-Comments <String>] [-Disable] [-Wait]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
-```
-
-### ByPath
-```
-Revoke-TppCertificate -Path <String> [-Reason <Int32>] [-Comments <String>] [-Disable] [-Wait]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Revoke-TppCertificate [-Path] <String> [[-Reason] <Int32>] [[-Comments] <String>] [-Disable] [-Wait] [-Force]
+ [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -31,6 +24,13 @@ Revoke the certificate with a reason of the CA being compromised
 
 ### EXAMPLE 2
 ```
+$cert | Revoke-TppCertificate -Force
+```
+
+Revoke the certificate bypassing the confirmation prompt
+
+### EXAMPLE 3
+```
 Revoke-TppCertificate -Path '\VED\Policy\My folder\app.mycompany.com' -Reason 2 -Wait
 ```
 
@@ -38,33 +38,18 @@ Revoke the certificate with a reason of the CA being compromised and wait for it
 
 ## PARAMETERS
 
-### -InputObject
-TppObject which represents a certificate
-
-```yaml
-Type: TppObject
-Parameter Sets: ByObject
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
 ### -Path
 Full path to a certificate
 
 ```yaml
 Type: String
-Parameter Sets: ByPath
+Parameter Sets: (All)
 Aliases: DN, CertificateDN
 
 Required: True
-Position: Named
+Position: 1
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -84,7 +69,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 2
 Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -99,7 +84,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 3
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -137,6 +122,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Force
+Bypass the confirmation prompt
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VenafiSession
 Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
@@ -147,7 +147,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 4
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False

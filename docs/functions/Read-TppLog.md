@@ -5,25 +5,10 @@ Read entries from the TPP log
 
 ## SYNTAX
 
-### Default (Default)
 ```
-Read-TppLog [-Severity <TppEventSeverity>] [-StartTime <DateTime>] [-EndTime <DateTime>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-First <Int32>] [-VenafiSession <VenafiSession>]
- [<CommonParameters>]
-```
-
-### ByObject
-```
-Read-TppLog -InputObject <TppObject> [-Severity <TppEventSeverity>] [-StartTime <DateTime>]
- [-EndTime <DateTime>] [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-First <Int32>]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
-```
-
-### ByPath
-```
-Read-TppLog -Path <String> [-Severity <TppEventSeverity>] [-StartTime <DateTime>] [-EndTime <DateTime>]
- [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-First <Int32>]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Read-TppLog [[-Path] <String>] [[-EventId] <String>] [[-Severity] <TppEventSeverity>] [[-StartTime] <DateTime>]
+ [[-EndTime] <DateTime>] [[-Text1] <String>] [[-Text2] <String>] [[-Value1] <Int32>] [[-Value2] <Int32>]
+ [[-First] <Int32>] [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -45,33 +30,40 @@ $capiObject | Read-TppLog
 
 Find all events for a specific object
 
-## PARAMETERS
-
-### -InputObject
-TppObject which represents a unique object to search for related records
-
-```yaml
-Type: TppObject
-Parameter Sets: ByObject
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
+### EXAMPLE 3
 ```
+Read-TppLog -EventId '00130003'
+```
+
+Find all events with event ID '00130003', Certificate Monitor - Certificate Expiration Notice
+
+## PARAMETERS
 
 ### -Path
 Path to search for related records
 
 ```yaml
 Type: String
-Parameter Sets: ByPath
+Parameter Sets: (All)
 Aliases: DN
 
-Required: True
-Position: Named
+Required: False
+Position: 1
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -EventId
+Event ID as found in Logging-\>Event Definitions
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -87,7 +79,7 @@ Aliases:
 Accepted values: Emergency, Alert, Critical, Error, Warning, Notice, Info, Debug
 
 Required: False
-Position: Named
+Position: 3
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -102,7 +94,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 4
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -117,7 +109,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 5
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -132,7 +124,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 6
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -147,7 +139,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 7
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -162,7 +154,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 8
 Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -177,7 +169,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 9
 Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -193,7 +185,7 @@ Parameter Sets: (All)
 Aliases: Limit
 
 Required: False
-Position: Named
+Position: 10
 Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -209,7 +201,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 11
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -220,10 +212,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### InputObject
+### Path
 ## OUTPUTS
 
 ### PSCustomObject with properties:
+###     EventId
 ###     ClientTimestamp
 ###     Component
 ###     ComponentId

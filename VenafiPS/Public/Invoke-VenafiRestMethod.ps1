@@ -179,7 +179,7 @@ function Invoke-VenafiRestMethod {
                     }
                     catch {
                         # this didn't work, provide details from pre slash call
-                        throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )                    
+                        throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )
                     }
                 }
             }

@@ -377,7 +377,7 @@ function Find-TppCertificate {
             $params.Method = 'Head'
             $params['FullResponse'] = $true
         }
-        
+
         switch ($PSBoundParameters.Keys) {
             'CreatedDate' {
                 $params.Body.Add( 'CreatedOn', ($CreatedDate | ConvertTo-UtcIso8601) )
