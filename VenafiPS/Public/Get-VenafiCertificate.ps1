@@ -8,8 +8,16 @@ Get certificate information, either all available to the api key provided or by 
 .PARAMETER CertificateId
 Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
 
-.PARAMETER PreviousVersions
-Returns details about previous (historical) versions of a certificate from TPP.
+.PARAMETER IncludePreviousVersions
+Returns details about previous (historical) versions of a certificate (only from TPP).
+
+.PARAMETER ExcludeExpired
+Omits expired versions of the previous (historical) versions of a certificate (only from TPP).
+Can only be used with the IncludePreviousVersions parameter.
+
+.PARAMETER ExcludeRevoked
+Omits revoked versions of the previous (historical) versions of a certificate (only from TPP).
+Can only be used with the IncludePreviousVersions parameter.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -32,23 +40,32 @@ Get certificate info for a specific cert on Venafi as a Serivce
 Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
 Get certificate info for a specific cert on TPP
 
+.EXAMPLE
+Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions
+Get certificate info for a specific cert on TPP, including historical versions of the certificate.
+
+.EXAMPLE
+Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions -ExcludeRevoked -ExcludeExpired
+Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
+
 #>
 function Get-VenafiCertificate {
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
     param (
 
-        [Parameter(ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'OldVersions', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('Path')]
         [string] $CertificateId,
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'OldVersions')]
         [switch] $IncludePreviousVersions,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'OldVersions')]
         [switch] $ExcludeExpired,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'OldVersions')]
         [switch] $ExcludeRevoked,
 
         [Parameter()]
@@ -80,7 +97,8 @@ function Get-VenafiCertificate {
 
                 if ( $response.PSObject.Properties.Name -contains 'certificates' ) {
                     $certs = $response | Select-Object -ExpandProperty certificates
-                } else {
+                }
+                else {
                     $certs = $response
                 }
 
@@ -95,7 +113,7 @@ function Get-VenafiCertificate {
 
             Default {
 
-                if ( $PSCmdlet.ParameterSetName -eq 'Id' ) {
+                if ( $PSCmdlet.ParameterSetName -in 'Id', 'OldVersions' ) {
                     $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
 
                     $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
@@ -126,26 +144,25 @@ function Get-VenafiCertificate {
                         ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name'
                     }
 
-                    if ( $PSBoundParameters.ContainsKey('IncludePreviousVersions') ) {
+                    if ( $IncludePreviousVersions.IsPresent ) {
                         $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}/PreviousVersions")
-                        $params.Body    = @{}
+                        $params.Body = @{}
 
-                        switch ($PSBoundParameters.Keys) {
-                            'ExcludeExpired' {
-                                $params.Body.Add( 'ExcludeExpired', $ExcludeExpired )
-                            }            
-                            'ExcludeRevoked' {
-                                $params.Body.Add( 'ExcludeRevoked', $ExcludeRevoked )
-                            }            
+                        if ( $ExcludeExpired.IsPresent ) {
+                            $params.Body.ExcludeExpired = $ExcludeExpired
+                        }
+                        if ( $ExcludeRevoked.IsPresent ) {
+                            $params.Body.ExcludeRevoked = $ExcludeRevoked
                         }
 
                         $previous = Invoke-VenafiRestMethod @params
 
-                        $response | Add-Member NoteProperty PreviousVersions $previous.PreviousVersions
+                        $response | Add-Member @{'PreviousVersions' = $previous.PreviousVersions}
                     }
                     $response | Select-Object @selectProps
                     
-                } else {
+                }
+                else {
                     Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession
                 }
             }
