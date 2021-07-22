@@ -151,7 +151,7 @@ function New-VenafiSession {
         # [pscustomobject] $TppToken,
 
         # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'AccessToken', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [PSCredential] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
