@@ -12,7 +12,6 @@ jobs:
     runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v2
-      - name: Test with Pester
       - name: Invoke action
         env:
           TEMP: ${{ runner.temp }}
