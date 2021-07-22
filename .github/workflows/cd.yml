@@ -16,7 +16,7 @@ jobs:
         env:
           TEMP: ${{ runner.temp }}
         run: |
-          $path = '.'
+          $path = './VenafiPS'
           $fullPath = Resolve-Path $path | Select-Object -ExpandProperty Path
           Get-ChildItem -Path $path -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash, 
           @{
