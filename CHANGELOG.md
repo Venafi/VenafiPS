@@ -1,3 +1,9 @@
+## 3.1.5
+- Update `Set-TppAttribute`
+  - Change from name and value parameters to hashtable
+  - API calls were sending deprecated payloads, fix this
+  - Add custom field validation and `-BypassValidation` switch.  The validation is field type aware and will validate string, date, list, and identity.
+
 ## 3.1.4
 - Fix [#19](https://github.com/gdbarron/VenafiPS/issues/19), `Revoke-TppToken -AccessToken` not decrypting password
 
