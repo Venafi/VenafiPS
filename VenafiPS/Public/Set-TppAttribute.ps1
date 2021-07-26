@@ -51,6 +51,7 @@ https://docs.venafi.com/Docs/21.2/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-wr
 function Set-TppAttribute {
 
     [CmdletBinding(SupportsShouldProcess)]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Being flagged incorrectly')]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
