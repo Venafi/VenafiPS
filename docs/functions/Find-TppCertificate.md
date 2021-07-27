@@ -14,10 +14,10 @@ Find-TppCertificate [-First <Int32>] [-Offset <Int32>] [-Country <String>] [-Com
  [-SanUri <String>] [-SerialNumber <String>] [-SignatureAlgorithm <String>] [-Thumbprint <String>]
  [-IssueDate <DateTime>] [-ExpireDate <DateTime>] [-ExpireAfter <DateTime>] [-ExpireBefore <DateTime>]
  [-Enabled] [-InError <Boolean>] [-NetworkValidationEnabled <Boolean>] [-CreatedDate <DateTime>]
- [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-ManagementType <TppManagementType[]>]
- [-PendingWorkflow] [-Stage <TppCertificateStage[]>] [-StageGreaterThan <TppCertificateStage>]
- [-StageLessThan <TppCertificateStage>] [-ValidationEnabled] [-ValidationState <String[]>] [-CountOnly]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
+ [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
+ [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
+ [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByPath
@@ -29,7 +29,7 @@ Find-TppCertificate -Path <String> [-Recursive] [-First <Int32>] [-Offset <Int32
  [-SanUpn <String>] [-SanUri <String>] [-SerialNumber <String>] [-SignatureAlgorithm <String>]
  [-Thumbprint <String>] [-IssueDate <DateTime>] [-ExpireDate <DateTime>] [-ExpireAfter <DateTime>]
  [-ExpireBefore <DateTime>] [-Enabled] [-InError <Boolean>] [-NetworkValidationEnabled <Boolean>]
- [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>]
+ [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
  [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
@@ -44,7 +44,7 @@ Find-TppCertificate -Guid <Guid> [-Recursive] [-First <Int32>] [-Offset <Int32>]
  [-SanUpn <String>] [-SanUri <String>] [-SerialNumber <String>] [-SignatureAlgorithm <String>]
  [-Thumbprint <String>] [-IssueDate <DateTime>] [-ExpireDate <DateTime>] [-ExpireAfter <DateTime>]
  [-ExpireBefore <DateTime>] [-Enabled] [-InError <Boolean>] [-NetworkValidationEnabled <Boolean>]
- [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>]
+ [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
  [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
@@ -619,6 +619,22 @@ Find certificate created before this date and time
 Type: DateTime
 Parameter Sets: (All)
 Aliases: CreatedOnLess
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CertificateType
+Find certificate by category of usage.
+Use CodeSigning, Device, Server, and/or User.
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
 
 Required: False
 Position: Named
