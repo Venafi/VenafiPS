@@ -108,6 +108,9 @@ Find certificate created after this date and time
 .PARAMETER CreatedBefore
 Find certificate created before this date and time
 
+.PARAMETER CertificateType
+Find certificate by category of usage. Use CodeSigning, Device, Server, and/or User.
+
 .PARAMETER ManagementType
 Find certificates with a Management type of Unassigned, Monitoring, Enrollment, or Provisioning
 
@@ -324,6 +327,10 @@ function Find-TppCertificate {
         [datetime] $CreatedBefore,
 
         [Parameter()]
+        [ValidateSet('CodeSigning', 'Device', 'Server', 'User')]
+        [String[]] $CertificateType,
+
+        [Parameter()]
         [TppManagementType[]] $ManagementType,
 
         [Parameter()]
@@ -380,6 +387,9 @@ function Find-TppCertificate {
             }
             'CreatedAfter' {
                 $params.Body.Add( 'CreatedOnGreater', ($CreatedAfter | ConvertTo-UtcIso8601) )
+            }
+            'CertificateType' {
+                $params.Body.Add( 'CertificateType', $CertificateType  -join ',' )
             }
             'Offset' {
                 $params.Body.Add( 'Offset', $Offset )
