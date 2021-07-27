@@ -1,34 +1,38 @@
 # Set-TppAttribute
 
 ## SYNOPSIS
-Adds a value to an attribute
+Sets a value on an attribute
 
 ## SYNTAX
 
 ```
-Set-TppAttribute [-Path] <String[]> [-AttributeName] <String> [-Value] <String[]> [-NoClobber]
+Set-TppAttribute [-Path] <String[]> [-Attribute] <Hashtable> [-BypassValidation]
  [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Write a value to the object's configuration. 
-This function will append by default. 
-Attributes can have multiple values which may not be the intended use. 
-To ensure you only have one value for an attribute, use the Overwrite switch.
+Set a value on an attribute. 
+The attribute can either be built-in or custom.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com -AttributeName 'My custom field Label' -Value 'new custom value'
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com -Attribute @{'My custom field Label'='new custom value'}
 ```
 
-Set value on custom field. 
-This will add to any existing value.
+Set value on custom field
 
 ### EXAMPLE 2
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com -AttributeName 'Consumers' -Value '\VED\Policy\myappobject.company.com' -Overwrite
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com -Attribute @{'DateField'='hi'} -BypassValidation
+```
+
+Set value on custom field bypassing field validation
+
+### EXAMPLE 3
+```
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com -Attribute @{'Consumers'='\VED\Policy\myappobject.company.com'}
 ```
 
 Set value on a certificate by overwriting any existing values
@@ -36,7 +40,7 @@ Set value on a certificate by overwriting any existing values
 ## PARAMETERS
 
 ### -Path
-{{ Fill Path Description }}
+Path to the object to modify
 
 ```yaml
 Type: String[]
@@ -46,16 +50,16 @@ Aliases: DN
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -AttributeName
-Name of the attribute to modify. 
-If modifying a custom field, use the Label.
+### -Attribute
+Hashtable with names and values to be set. 
+If setting a custom field, you can use either the name or guid as the key.
 
 ```yaml
-Type: String
+Type: Hashtable
 Parameter Sets: (All)
 Aliases:
 
@@ -66,23 +70,9 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Value
-Value or list of values to write to the attribute.
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: 3
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -NoClobber
-Append existing values as opposed to replacing which is the default
+### -BypassValidation
+Bypass data validation. 
+Only appicable to custom fields.
 
 ```yaml
 Type: SwitchParameter
@@ -106,7 +96,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 4
+Position: 3
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -151,10 +141,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Path
 ## OUTPUTS
 
-### PSCustomObject with the following properties:
-###     DN = path to object
-###     Success = boolean indicating success or failure
-###     Error = Error message in case of failure
+### None
 ## NOTES
 
 ## RELATED LINKS
@@ -163,5 +150,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppAttribute.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addvalue.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____4](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addvalue.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____4)
+[https://docs.venafi.com/Docs/21.2/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php?tocpath=Platform%20SDK%7CWeb%20SDK%20REST%7CCertificate%20end%20points%20for%20TLS%7CMetadata%20custom%20fields%20API%7C_____17](https://docs.venafi.com/Docs/21.2/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php?tocpath=Platform%20SDK%7CWeb%20SDK%20REST%7CCertificate%20end%20points%20for%20TLS%7CMetadata%20custom%20fields%20API%7C_____17)
+
+[https://docs.venafi.com/Docs/21.2/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php?tocpath=Platform%20SDK%7CWeb%20SDK%20REST%7CConfiguration%20end%20points%7CConfig%20API%7C_____36](https://docs.venafi.com/Docs/21.2/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php?tocpath=Platform%20SDK%7CWeb%20SDK%20REST%7CConfiguration%20end%20points%7CConfig%20API%7C_____36)
 
