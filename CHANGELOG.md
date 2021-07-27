@@ -1,3 +1,12 @@
+## 3.1.5
+- Thanks to @wilddev65 for this contribution
+- Add `Test-TppToken` function to test if a TPP token is valid.
+  - Tests an AccessToken, TppToken, or VenafiSession
+  - `-GrantDetail` parameter returns detailed info about token from TPP server response
+- Update `New-TppToken` to capture the refresh token expiry if part of the response.
+- Update `Find-TppCertificate` to add `-CertificateType` as a parameter to filter results by type of certificate.  Can use CodeSigning, Device, Server, and/or User.
+- Update `Get-VenafiCertificate` to get historical certificate versions with `-IncludePreviousVersions`.  `-ExcludeExpired` and `-ExcludeRevoked` filters the results.
+
 ## 3.1.4
 - Fix [#19](https://github.com/gdbarron/VenafiPS/issues/19), `Revoke-TppToken -AccessToken` not decrypting password
 - Update `Set-TppAttribute`
