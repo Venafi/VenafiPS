@@ -34,7 +34,7 @@ PSCustomObject with the following properties:
 Accesstoken
 
 .OUTPUTS
-Boolean (default).
+Boolean (default). PSCustomObject (GrantDetail). Throws error if a 400 status is returned.
 
 .EXAMPLE
 Test-TppToken
@@ -105,7 +105,6 @@ function Test-TppToken {
 
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
-                $VenafiSession.Validate('token') | Out-Null
                 $params.VenafiSession = $VenafiSession
             }
 
@@ -137,16 +136,24 @@ function Test-TppToken {
         Write-Verbose ($params | Out-String)
 
         if ($GrantDetail) {
-            $response = Invoke-VenafiRestMethod @params
+            $response = Invoke-VenafiRestMethod @params -FullResponse
 
-            [PSCustomObject] @{
-                Application    = $response.application
-                AccessIssued   = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.access_issued_on_unix_time)
-                GrantIssued    = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.grant_issued_on_unix_time)
-                Scope          = $response.scope
-                Identity       = $response.identity
-                RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.expires_unix_time)
-                ValidFor       = $response.valid_for
+            switch ([int]$response.StatusCode) {
+                '200' {
+                    [PSCustomObject] @{
+                        Application    = $response.application
+                        AccessIssued   = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.access_issued_on_unix_time)
+                        GrantIssued    = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.grant_issued_on_unix_time)
+                        Scope          = $response.scope
+                        Identity       = $response.identity
+                        RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.expires_unix_time)
+                        ValidFor       = $response.valid_for
+                    }
+                }
+
+                Default {
+                    throw ('Grant has been revoked, has expired, or the refresh token is invalid')
+                }
             }
 
         } else {
