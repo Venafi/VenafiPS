@@ -1,5 +1,9 @@
 ## 3.1.4
 - Fix [#19](https://github.com/gdbarron/VenafiPS/issues/19), `Revoke-TppToken -AccessToken` not decrypting password
+- Update `Set-TppAttribute`
+  - Change from name and value parameters to hashtable
+  - API calls were sending deprecated payloads, fix this
+  - Add custom field validation and `-BypassValidation` switch.  The validation is field type aware and will validate string, date, list, and identity.
 
 ## 3.1.3
 - Add `-Force` parameter to `Revoke-TppToken` and `Revoke-TppCertificate` to bypass confirmation prompt
