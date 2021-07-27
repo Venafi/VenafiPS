@@ -195,6 +195,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ###     TokenType
 ###     ClientId
 ###     Expires
+###     RefreshExpires (This property is null <version 21.1)
 ## NOTES
 
 ## RELATED LINKS

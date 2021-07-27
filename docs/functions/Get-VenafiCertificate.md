@@ -10,9 +10,15 @@ Get certificate information
 Get-VenafiCertificate [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
+### OldVersions
+```
+Get-VenafiCertificate -CertificateId <String> [-IncludePreviousVersions] [-ExcludeExpired] [-ExcludeRevoked]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
+```
+
 ### Id
 ```
-Get-VenafiCertificate [-CertificateId <String>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VenafiCertificate -CertificateId <String> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -41,6 +47,20 @@ Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
 
 Get certificate info for a specific cert on TPP
 
+### EXAMPLE 4
+```
+Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions
+```
+
+Get certificate info for a specific cert on TPP, including historical versions of the certificate.
+
+### EXAMPLE 5
+```
+Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions -ExcludeRevoked -ExcludeExpired
+```
+
+Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
+
 ## PARAMETERS
 
 ### -CertificateId
@@ -50,13 +70,60 @@ For TPP, use the full path.
 
 ```yaml
 Type: String
-Parameter Sets: Id
+Parameter Sets: OldVersions, Id
 Aliases: Path
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -IncludePreviousVersions
+Returns details about previous (historical) versions of a certificate (only from TPP).
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: OldVersions
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ExcludeExpired
+Omits expired versions of the previous (historical) versions of a certificate (only from TPP).
+Can only be used with the IncludePreviousVersions parameter.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: OldVersions
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ExcludeRevoked
+Omits revoked versions of the previous (historical) versions of a certificate (only from TPP).
+Can only be used with the IncludePreviousVersions parameter.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: OldVersions
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

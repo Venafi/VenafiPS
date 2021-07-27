@@ -62,5 +62,6 @@ pages:
     - Test-ModuleHash: functions/Test-ModuleHash.md
     - Test-TppIdentity: functions/Test-TppIdentity.md
     - Test-TppObject: functions/Test-TppObject.md
+    - Test-TppToken: functions/Test-TppToken.md
     - Write-TppLog: functions/Write-TppLog.md
 
