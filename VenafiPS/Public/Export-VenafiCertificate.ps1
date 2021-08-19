@@ -94,6 +94,7 @@ function Export-VenafiCertificate {
         [String] $OutPath,
 
         [Parameter(ParameterSetName = 'Tpp')]
+        [Parameter(ParameterSetName = 'TppJks')]
         [switch] $IncludeChain,
 
         [Parameter(ParameterSetName = 'Tpp')]
