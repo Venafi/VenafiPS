@@ -46,7 +46,7 @@ Get ticket details for multiple certificates
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppWorkflowTicket/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppWorkflowTicket.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppWorkflowTicket.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____7

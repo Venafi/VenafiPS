@@ -34,7 +34,7 @@ Get an object by guid
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppObject.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1
 
 #>
 function Get-TppObject {
