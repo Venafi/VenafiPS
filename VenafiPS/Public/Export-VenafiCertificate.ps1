@@ -57,19 +57,19 @@ $certId | Export-VenafiCertificate -Format PEM
 Get certificate data from Venafi as a Service
 
 .EXAMPLE
-$cert | Get-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
+$cert | Export-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
 Get certificate data and save to a file, TPP
 
 .EXAMPLE
-$cert | Get-VenafiCertificate -Format 'PKCS #7' -IncludeChain
+$cert | Export-VenafiCertificate -Format 'PKCS #7' -IncludeChain
 Get one or more certificates with the certificate chain included, TPP
 
 .EXAMPLE
-$cert | Get-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
+$cert | Export-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
 Get one or more certificates with private key included, TPP
 
 .EXAMPLE
-$cert | Get-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
+$cert | Export-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
 Get certificates in JKS format, TPP
 
 #>
