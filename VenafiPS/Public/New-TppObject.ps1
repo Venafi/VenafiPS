@@ -49,10 +49,10 @@ TppObject, if PassThru provided
 http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Add-TppCertificateAssociation.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9

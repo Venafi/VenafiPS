@@ -56,7 +56,7 @@ Verify that accesstoken stored in $VenafiSession object is valid and return PsCu
 http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppToken/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Test-TppToken.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13
