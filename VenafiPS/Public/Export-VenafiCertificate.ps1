@@ -20,6 +20,9 @@ Include the certificate chain with the exported certificate.  Not supported with
 .PARAMETER FriendlyName
 Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when Format is JKS.  TPP Only.
 
+.PARAMETER IncludePrivateKey
+Include the private key with the exported certificate. Not supported with Base64, DER or PKCS #7 formats.  TPP Only. 
+
 .PARAMETER PrivateKeyPassword
 Password required to include the private key.  Not supported with DER or PKCS #7 formats.  TPP Only.
 You must adhere to the following rules:
@@ -31,7 +34,8 @@ You must adhere to the following rules:
     - Special characters
 
 .PARAMETER KeystorePassword
-Password required to retrieve the certificate in JKS format.  TPP Only.  You must adhere to the following rules:
+Password required to retrieve the certificate in JKS format.  TPP Only. 
+You must adhere to the following rules:
 - Password is at least 12 characters.
 - Comprised of at least three of the following:
     - Uppercase alphabetic letters
@@ -102,6 +106,7 @@ function Export-VenafiCertificate {
         [string] $FriendlyName,
 
         [Parameter(ParameterSetName = 'Tpp')]
+        [Parameter(ParameterSetName = 'TppJks')]
         [switch] $IncludePrivateKey,
 
         [Parameter(ParameterSetName = 'Tpp')]
@@ -157,7 +162,11 @@ function Export-VenafiCertificate {
                 $params.Body.Format = 'JKS'
                 $plainTextPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($KeystorePassword))
                 $params.Body.KeystorePassword = $plainTextPassword
-
+                
+                if ($IncludePrivateKey -eq $True) {
+                    $params.Body.IncludePrivateKey = $true
+                    $params.Body.Password = $plainTextPassword
+                }
             }
 
             if (-not [string]::IsNullOrEmpty($FriendlyName)) {
