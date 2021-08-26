@@ -49,7 +49,7 @@ Reset permissions for a specific user/group for all objects.  Note the use of -F
 http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppPermission/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppPermission.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppPermission.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Permissions-object-guid-principal.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____8

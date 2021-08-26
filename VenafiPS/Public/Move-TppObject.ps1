@@ -30,7 +30,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Move-TppObject/
 http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Move-TppObject.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Move-TppObject.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____35

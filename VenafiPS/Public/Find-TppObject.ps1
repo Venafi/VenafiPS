@@ -72,7 +72,7 @@ Find all objects where the specific attribute matches the pattern
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppObject.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____17
