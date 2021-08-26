@@ -47,7 +47,7 @@ Remove all certificate associations
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociation/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCertificateAssociation.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificateAssociation.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Dissociate.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____8

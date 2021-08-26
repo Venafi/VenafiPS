@@ -34,7 +34,7 @@ Get specific attribute for user
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppIdentityAttribute/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppIdentityAttribute.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppIdentityAttribute.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____15

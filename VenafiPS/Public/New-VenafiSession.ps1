@@ -81,7 +81,7 @@ Create session against Venafi as a Service
 http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-VenafiSession.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-VenafiSession.ps1
 
 .LINK
 https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____1

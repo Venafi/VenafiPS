@@ -67,10 +67,10 @@ Find assigned permissions for a specific user across all objects
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppPermission/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppPermission.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppPermission.ps1
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppIdentityAttribute.ps1
+https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppIdentityAttribute.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____3
