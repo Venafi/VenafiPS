@@ -131,7 +131,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/](http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Invoke-TppCertificateRenewal.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Invoke-TppCertificateRenewal.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-renew.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____16](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-renew.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____16)
 

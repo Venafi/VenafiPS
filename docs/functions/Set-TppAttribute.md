@@ -148,7 +148,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppAttribute.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1)
 
 [https://docs.venafi.com/Docs/21.2/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php?tocpath=Platform%20SDK%7CWeb%20SDK%20REST%7CCertificate%20end%20points%20for%20TLS%7CMetadata%20custom%20fields%20API%7C_____17](https://docs.venafi.com/Docs/21.2/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php?tocpath=Platform%20SDK%7CWeb%20SDK%20REST%7CCertificate%20end%20points%20for%20TLS%7CMetadata%20custom%20fields%20API%7C_____17)
 

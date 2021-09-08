@@ -367,9 +367,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCapiApplication.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCapiApplication.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/)
 

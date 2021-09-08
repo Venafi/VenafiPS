@@ -189,7 +189,7 @@ Confirmation impact is set to Medium, set ConfirmPreference accordingly.
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppPermission/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppPermission/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppPermission.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppPermission.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppPermission.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppPermission.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Permissions-object-guid-principal.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____8](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Permissions-object-guid-principal.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____8)
 
