@@ -186,9 +186,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppDevice/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppDevice/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppDevice.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppDevice.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1)
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppObject.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
 

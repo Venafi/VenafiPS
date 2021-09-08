@@ -1,5 +1,11 @@
+## 3.1.6
+- Thanks to @harrisonmeister for this contribution!
+- Add support to `Export-VenafiCertificate` for `-IncludeChain` and `-IncludePrivateKey` when using JKS format, [#24](https://github.com/gdbarron/VenafiPS/issues/24) and [#26](https://github.com/gdbarron/VenafiPS/issues/26)
+- Add 'CertificateData' to the list of values hidden with `Write-VerboseWithSecret`, [#25](https://github.com/gdbarron/VenafiPS/issues/25)
+- Help updates
+
 ## 3.1.5
-- Thanks to @wilddev65 for this contribution
+- Thanks to @wilddev65 for this contribution!
 - Add `Test-TppToken` function to test if a TPP token is valid.
   - Tests an AccessToken, TppToken, or VenafiSession
   - `-GrantDetail` parameter returns detailed info about token from TPP server response

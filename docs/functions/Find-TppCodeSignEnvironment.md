@@ -83,5 +83,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCodeSignEnvironment/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCodeSignEnvironment/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppCodeSignEnvironment.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppCodeSignEnvironment.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignEnvironment.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignEnvironment.ps1)
 

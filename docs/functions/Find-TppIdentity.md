@@ -163,7 +163,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppIdentity/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppIdentity/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppIdentity.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppIdentity.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____5](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____5)
 

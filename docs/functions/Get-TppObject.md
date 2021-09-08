@@ -98,5 +98,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppObject.ps1)
+[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1)
 
