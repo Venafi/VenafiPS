@@ -62,6 +62,10 @@ New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'cert
 Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 
 .EXAMPLE
+New-VenafiSession -Server venafitpp.mycompany.com -Certificate $myCert -ClientId MyApp -Scope @{'certificate'='manage'}
+Create token-based session using a client certificate
+
+.EXAMPLE
 New-VenafiSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
 Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 
@@ -90,13 +94,13 @@ https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-
 https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-GET-Authorize-Integrated.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____3
 
 .LINK
-https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Authorize-Integrated.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____10
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Authorize-Integrated.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____10
 
 .LINK
-https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____11
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____11
 
 .LINK
-https://docs.venafi.com/Docs/20.1/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CAuth%20SDK%20reference%20for%20token%20management%7C_____9
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____9
 #>
 function New-VenafiSession {
 
@@ -109,7 +113,6 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
-        # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -127,30 +130,18 @@ function New-VenafiSession {
 
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
-        # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [string] $ClientId,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
-        # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [hashtable] $Scope,
 
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [string] $State,
 
-        # [Parameter(Mandatory, ParameterSetName = 'TppToken')]
-        # [ValidateScript( {
-        #         if ( $_.AccessToken -and $_.AuthUrl -and $_.ClientId  ) {
-        #             $true
-        #         } else {
-        #             throw 'Object provided for TppToken is not valid.  Please request a new token with New-TppToken.'
-        #         }
-        #     }
-        # )]
-        # [pscustomobject] $TppToken,
-
-        # [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [PSCredential] $AccessToken,
 
@@ -159,6 +150,7 @@ function New-VenafiSession {
 
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenIntegrated')]
+        [Parameter(ParameterSetName = 'TokenCertificate')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -234,14 +226,6 @@ function New-VenafiSession {
                 $newSession.Token = $token
                 $newSession.Expires = $token.Expires
             }
-
-            # 'TppToken' {
-            #     $newSession.Token = [PSCustomObject]@{
-            #         AccessToken = $AccessToken
-            #         ClientId    = $ClientId
-            #         Scope       = $Scope
-            #     }
-            # }
 
             'AccessToken' {
                 $newSession.Token = [PSCustomObject]@{
