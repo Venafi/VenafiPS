@@ -141,7 +141,7 @@ function Invoke-VenafiRestMethod {
     }
 
     if ( $UseDefaultCredential.IsPresent -and $Certificate ) {
-        throw 'You cannot use both UseDefaultCredential and Certificate parameters'
+        throw 'You cannot use UseDefaultCredential and Certificate parameters together'
     }
 
     if ( $UseDefaultCredential.IsPresent ) {
@@ -201,8 +201,9 @@ function Invoke-VenafiRestMethod {
             }
         }
     }
-
-    $ProgressPreference = $oldProgressPreference
+    finally {
+        $ProgressPreference = $oldProgressPreference
+    }
 
     if ( $FullResponse.IsPresent ) {
         $response

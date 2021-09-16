@@ -146,9 +146,6 @@ function New-VenafiSession {
         [PSCredential] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
-        [Switch] $UseCertificate,
-
-        [Parameter(ParameterSetName = 'TokenCertificate')]
         [X509Certificate] $Certificate,
 
         [Parameter(ParameterSetName = 'TokenOAuth')]
@@ -217,7 +214,6 @@ function New-VenafiSession {
                     $params.Credential = $Credential
                 }
 
-                $params.UseCertificate = $UseCertificate.IsPresent
                 if ($Certificate) {
                     $params.Certificate = $Certificate
                 }
