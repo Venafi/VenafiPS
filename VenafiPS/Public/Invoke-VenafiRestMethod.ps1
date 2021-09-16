@@ -43,7 +43,11 @@ function Invoke-VenafiRestMethod {
         [String] $ServerUrl,
 
         [Parameter(ParameterSetName = 'URL')]
-        [switch] $UseDefaultCredentials,
+        [Alias('UseDefaultCredentials')]
+        [switch] $UseDefaultCredential,
+
+        [Parameter(ParameterSetName = 'URL')]
+        [X509Certificate] $Certificate,
 
         [Parameter()]
         [ValidateSet("Get", "Post", "Patch", "Put", "Delete", 'Head')]
@@ -136,8 +140,16 @@ function Invoke-VenafiRestMethod {
         }
     }
 
-    if ( $UseDefaultCredentials ) {
+    if ( $UseDefaultCredential.IsPresent -and $Certificate ) {
+        throw 'You cannot use both UseDefaultCredential and Certificate parameters'
+    }
+
+    if ( $UseDefaultCredential.IsPresent ) {
         $params.Add('UseDefaultCredentials', $true)
+    }
+
+    if ( $Certificate ) {
+        $params.Add('Certificate', $Certificate)
     }
 
     $params | Write-VerboseWithSecret

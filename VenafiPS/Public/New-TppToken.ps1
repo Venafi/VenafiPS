@@ -91,6 +91,9 @@ function New-TppToken {
         [string] $State,
 
         [Parameter(Mandatory, ParameterSetName = 'Certificate')]
+        [switch] $UseCertificate,
+
+        [Parameter(ParameterSetName = 'Certificate')]
         [X509Certificate] $Certificate
     )
 
@@ -136,7 +139,9 @@ function New-TppToken {
 
         'Certificate' {
             $params.UriLeaf = 'authorize/certificate'
-            $params.Certificate = $Certificate
+            if ( $Certificate ) {
+                $params.Certificate = $Certificate
+            }
         }
 
         Default {
