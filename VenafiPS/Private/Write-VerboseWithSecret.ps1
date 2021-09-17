@@ -44,7 +44,8 @@ function Write-VerboseWithSecret {
     }
 
     process {
-        if ( -not $InputObject ) {
+
+        if ( -not $InputObject -or [System.Management.Automation.ActionPreference]::SilentlyContinue -eq $VerbosePreference ) {
             return
         }
 
@@ -54,7 +55,7 @@ function Write-VerboseWithSecret {
         $processMe = $InputObject
         if ($InputObject.GetType().FullName -ne 'System.String') {
             # if hashtable or other object, convert to json first
-            $processMe = $InputObject | ConvertTo-Json -Depth 20
+            $processMe = $InputObject | ConvertTo-Json -Depth 5
         }
 
         foreach ($prop in $PropertyName) {
