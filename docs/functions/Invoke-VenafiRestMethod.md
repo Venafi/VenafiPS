@@ -13,8 +13,9 @@ Invoke-VenafiRestMethod -VenafiSession <VenafiSession> [-Method <String>] [-UriR
 
 ### URL
 ```
-Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredentials] [-Method <String>] [-UriRoot <String>]
- -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
+Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
+ [-Method <String>] [-UriRoot <String>] -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>]
+ [-FullResponse] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -61,17 +62,32 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -UseDefaultCredentials
-{{ Fill UseDefaultCredentials Description }}
+### -UseDefaultCredential
+{{ Fill UseDefaultCredential Description }}
 
 ```yaml
 Type: SwitchParameter
+Parameter Sets: URL
+Aliases: UseDefaultCredentials
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Certificate
+{{ Fill Certificate Description }}
+
+```yaml
+Type: X509Certificate
 Parameter Sets: URL
 Aliases:
 
 Required: False
 Position: Named
-Default value: False
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

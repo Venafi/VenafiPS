@@ -18,8 +18,8 @@ New-VenafiSession -Server <String> -AccessToken <PSCredential> [-PassThru] [-Wha
 
 ### TokenCertificate
 ```
-New-VenafiSession -Server <String> -Certificate <X509Certificate> [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
+ [-AuthServer <String>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### TokenIntegrated
@@ -75,26 +75,33 @@ Create token-based session using Windows Integrated authentication with a certai
 
 ### EXAMPLE 4
 ```
+New-VenafiSession -Server venafitpp.mycompany.com -Certificate $myCert -ClientId MyApp -Scope @{'certificate'='manage'}
+```
+
+Create token-based session using a client certificate
+
+### EXAMPLE 5
+```
 New-VenafiSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
 ```
 
 Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 $sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
 ```
 
 Create session and return the session object instead of setting to script scope variable
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $cred
 ```
 
 Create session using an access token obtained outside this module
 
-### EXAMPLE 7
+### EXAMPLE 8
 ```
 New-VenafiSession -VaasKey $cred
 ```
@@ -141,7 +148,7 @@ Applcation Id configured in Venafi for token-based authentication
 
 ```yaml
 Type: String
-Parameter Sets: TokenIntegrated, TokenOAuth
+Parameter Sets: TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: True
@@ -160,7 +167,7 @@ For a scope to privilege mapping, see https://docs.venafi.com/Docs/20.4SDK/TopNa
 
 ```yaml
 Type: Hashtable
-Parameter Sets: TokenIntegrated, TokenOAuth
+Parameter Sets: TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: True
@@ -223,7 +230,7 @@ If just the server name is provided, https:// will be appended.
 
 ```yaml
 Type: String
-Parameter Sets: TokenIntegrated, TokenOAuth
+Parameter Sets: TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: False
@@ -316,9 +323,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-GET-Authorize-Integrated.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____3](https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-GET-Authorize-Integrated.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____3)
 
-[https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Authorize-Integrated.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____10](https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Authorize-Integrated.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____10)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Authorize-Integrated.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____10](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Authorize-Integrated.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____10)
 
-[https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____11](https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____11)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____11](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____11)
 
-[https://docs.venafi.com/Docs/20.1/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CAuth%20SDK%20reference%20for%20token%20management%7C_____9](https://docs.venafi.com/Docs/20.1/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CAuth%20SDK%20reference%20for%20token%20management%7C_____9)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____9](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____9)
 
