@@ -1,3 +1,6 @@
+## 3.1.7
+- Fix/finalize certificate-based oauth token support, [#29](https://github.com/gdbarron/VenafiPS/issues/29)
+
 ## 3.1.6
 - Thanks to @harrisonmeister for this contribution!
 - Add support to `Export-VenafiCertificate` for `-IncludeChain` and `-IncludePrivateKey` when using JKS format, [#24](https://github.com/gdbarron/VenafiPS/issues/24) and [#26](https://github.com/gdbarron/VenafiPS/issues/26)
