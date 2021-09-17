@@ -43,7 +43,11 @@ function Invoke-VenafiRestMethod {
         [String] $ServerUrl,
 
         [Parameter(ParameterSetName = 'URL')]
-        [switch] $UseDefaultCredentials,
+        [Alias('UseDefaultCredentials')]
+        [switch] $UseDefaultCredential,
+
+        [Parameter(ParameterSetName = 'URL')]
+        [X509Certificate] $Certificate,
 
         [Parameter()]
         [ValidateSet("Get", "Post", "Patch", "Put", "Delete", 'Head')]
@@ -136,11 +140,21 @@ function Invoke-VenafiRestMethod {
         }
     }
 
-    if ( $UseDefaultCredentials ) {
+    if ( $UseDefaultCredential.IsPresent -and $Certificate ) {
+        throw 'You cannot use UseDefaultCredential and Certificate parameters together'
+    }
+
+    if ( $UseDefaultCredential.IsPresent ) {
         $params.Add('UseDefaultCredentials', $true)
     }
 
     $params | Write-VerboseWithSecret
+
+    # ConvertTo-Json, used in Write-VerboseWithSecret, has an issue with certificates
+    # add this param after
+    if ( $Certificate ) {
+        $params.Add('Certificate', $Certificate)
+    }
 
     $oldProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'
@@ -189,8 +203,9 @@ function Invoke-VenafiRestMethod {
             }
         }
     }
-
-    $ProgressPreference = $oldProgressPreference
+    finally {
+        $ProgressPreference = $oldProgressPreference
+    }
 
     if ( $FullResponse.IsPresent ) {
         $response
