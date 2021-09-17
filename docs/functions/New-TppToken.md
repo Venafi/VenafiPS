@@ -133,7 +133,8 @@ Accept wildcard characters: False
 ```
 
 ### -Certificate
-Certificate used to request API token
+Certificate used to request API token. 
+Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/21.1SDK/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
 
 ```yaml
 Type: X509Certificate
