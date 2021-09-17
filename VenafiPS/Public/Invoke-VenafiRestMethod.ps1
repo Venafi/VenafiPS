@@ -148,11 +148,13 @@ function Invoke-VenafiRestMethod {
         $params.Add('UseDefaultCredentials', $true)
     }
 
+    $params | Write-VerboseWithSecret
+
+    # ConvertTo-Json, used in Write-VerboseWithSecret, has an issue with certificates
+    # add this param after
     if ( $Certificate ) {
         $params.Add('Certificate', $Certificate)
     }
-
-    $params | Write-VerboseWithSecret
 
     $oldProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'

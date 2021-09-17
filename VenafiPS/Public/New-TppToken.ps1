@@ -27,7 +27,7 @@ Username / password credential used to request API Token
 A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
 .PARAMETER Certificate
-Certificate used to request API token
+Certificate used to request API token.  Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/21.1SDK/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
 
 .EXAMPLE
 New-TppToken -AuthServer 'https://mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Credential $credential
