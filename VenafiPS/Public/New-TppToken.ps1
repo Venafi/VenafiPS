@@ -215,7 +215,7 @@ function New-TppToken {
         }
     }
 
-    if ( $PSCmdlet.ShouldProcess($AuthUrl, 'New token') ) {
+    if ( $PSCmdlet.ShouldProcess($params.ServerUrl, 'New access token') ) {
 
         if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
             try {
