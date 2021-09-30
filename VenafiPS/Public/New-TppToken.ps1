@@ -144,8 +144,13 @@ function New-TppToken {
         $params.ServerUrl = $VenafiSession.Token.Server
         $params.UriLeaf = 'authorize/token'
         $params.Body = @{
-            client_id     = $VenafiSession.Token.ClientId.ToLower() # lowercase bug fixed in 21.3
+            client_id     = $VenafiSession.Token.ClientId
             refresh_token = $VenafiSession.Token.RefreshToken.GetNetworkCredential().password
+        }
+
+        # workaround for bug pre 21.3 where client id needs to be lowercase
+        if ( $VenafiSession.Version -lt [Version]::new('21', '3', '0') ) {
+            $params.Body.client_id = $params.Body.client_id.ToLower()
         }
     }
     else {
@@ -160,7 +165,7 @@ function New-TppToken {
         if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
             $params.UriLeaf = 'authorize/token'
             $params.Body = @{
-                client_id     = $ClientId.ToLower()
+                client_id     = $ClientId
                 refresh_token = $RefreshToken.GetNetworkCredential().Password
             }
         }
@@ -212,18 +217,35 @@ function New-TppToken {
 
     if ( $PSCmdlet.ShouldProcess($AuthUrl, 'New token') ) {
 
-        $response = Invoke-TppRestMethod @params
+        if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
+            try {
+                $response = Invoke-TppRestMethod @params
+            }
+            catch {
+                # workaround bug pre 21.3 where client_id must be lowercase
+                if ( $_ -like '*The client_id value being requested with the refresh token does not match the client_id of the access token making the call*') {
+                    $params.Body.client_id = $params.Body.client_id.ToLower()
+                    $response = Invoke-TppRestMethod @params
+                }
+                else {
+                    throw $_
+                }
+            }
+        }
+        else {
+            $response = Invoke-TppRestMethod @params
+        }
 
         $response | Write-VerboseWithSecret
 
         $newToken = [PSCustomObject] @{
-            Server         = $AuthUrl
+            Server         = $params.ServerUrl
             AccessToken    = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
             RefreshToken   = $null
             Scope          = $response.scope
             Identity       = $response.identity
             TokenType      = $response.token_type
-            ClientId       = $ClientId
+            ClientId       = $params.Body.client_id
             Expires        = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.Expires)
             RefreshExpires = $null
         }
