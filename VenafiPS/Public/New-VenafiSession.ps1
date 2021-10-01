@@ -29,7 +29,10 @@ For a scope to privilege mapping, see https://docs.venafi.com/Docs/20.4SDK/TopNa
 A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
 .PARAMETER AccessToken
-Access token retrieved outside this module.  Provide a credential object with the access token as the password.
+PSCredential object with the access token as the password.
+
+.PARAMETER RefreshToken
+PSCredential object with the refresh token as the password.  An access token will be retrieved and a new session created.
 
 .PARAMETER Certificate
 Certificate for token-based authentication
@@ -42,12 +45,13 @@ If just the server name is provided, https:// will be appended.
 .PARAMETER VaasKey
 Api key from your Venafi as a Service instance.  The api key can be found under your user profile->preferences.
 Provide a credential object with the api key as the password.
+https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
 
 .PARAMETER PassThru
 Optionally, send the session object to the pipeline instead of script scope.
 
 .OUTPUTS
-VenafiSession, if PassThru is provided
+VenafiSession, if -PassThru is provided
 
 .EXAMPLE
 New-VenafiSession -Server venafitpp.mycompany.com
@@ -74,8 +78,12 @@ $sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -Pas
 Create session and return the session object instead of setting to script scope variable
 
 .EXAMPLE
-New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $cred
+New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $accessCred
 Create session using an access token obtained outside this module
+
+.EXAMPLE
+New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp
+Create session using a refresh token
 
 .EXAMPLE
 New-VenafiSession -VaasKey $cred
