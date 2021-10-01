@@ -41,13 +41,13 @@ function Get-TppVersion {
 
     $params = @{
         VenafiSession = $VenafiSession
-        Method     = 'Get'
-        UriLeaf    = 'SystemStatus/Version'
+        Method        = 'Get'
+        UriLeaf       = 'SystemStatus/Version'
     }
 
     try {
-        $ver = Invoke-TppRestMethod @params
-        [version] $ver.Version
+        $ver = [Version]((Invoke-TppRestMethod @params).Version)
+        [Version]::new($ver.Major, $ver.Minor, $ver.Build)
     }
     catch {
         Throw ("Getting the version failed with the following error: {0}.  This feature was introduced in v18.3." -f $_)

@@ -34,7 +34,7 @@ You must adhere to the following rules:
     - Special characters
 
 .PARAMETER KeystorePassword
-Password required to retrieve the certificate in JKS format.  TPP Only. 
+Password required to retrieve the certificate in JKS format.  TPP Only.
 You must adhere to the following rules:
 - Password is at least 12 characters.
 - Comprised of at least three of the following:
@@ -91,7 +91,8 @@ function Export-VenafiCertificate {
         [ValidateScript( {
                 if (Test-Path $_ -PathType Container) {
                     $true
-                } else {
+                }
+                else {
                     Throw "Output path '$_' does not exist"
                 }
             })]
@@ -135,7 +136,8 @@ function Export-VenafiCertificate {
             if ( $Format -notin 'PEM', 'DER') {
                 throw 'Venafi as a Service only supports PEM and DER formats'
             }
-        } else {
+        }
+        else {
 
             if ($PrivateKeyPassword) {
 
@@ -189,7 +191,8 @@ function Export-VenafiCertificate {
             $params.UriLeaf = "certificates/$CertificateId/contents"
             $params.Method = 'Get'
             Invoke-TppRestMethod @params
-        } else {
+        }
+        else {
             $params.Method = 'Post'
             $params.UriLeaf = 'certificates/retrieve'
 
@@ -206,7 +209,8 @@ function Export-VenafiCertificate {
                     [IO.File]::WriteAllBytes($outFile, $bytes)
                     Write-Verbose ('Saved {0} with format {1}' -f $outFile, $response.Format)
                 }
-            } else {
+            }
+            else {
                 $response
             }
         }

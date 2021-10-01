@@ -29,7 +29,10 @@ For a scope to privilege mapping, see https://docs.venafi.com/Docs/20.4SDK/TopNa
 A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
 .PARAMETER AccessToken
-Access token retrieved outside this module.  Provide a credential object with the access token as the password.
+PSCredential object with the access token as the password.
+
+.PARAMETER RefreshToken
+PSCredential object with the refresh token as the password.  An access token will be retrieved and a new session created.
 
 .PARAMETER Certificate
 Certificate for token-based authentication
@@ -42,12 +45,13 @@ If just the server name is provided, https:// will be appended.
 .PARAMETER VaasKey
 Api key from your Venafi as a Service instance.  The api key can be found under your user profile->preferences.
 Provide a credential object with the api key as the password.
+https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
 
 .PARAMETER PassThru
 Optionally, send the session object to the pipeline instead of script scope.
 
 .OUTPUTS
-VenafiSession, if PassThru is provided
+VenafiSession, if -PassThru is provided
 
 .EXAMPLE
 New-VenafiSession -Server venafitpp.mycompany.com
@@ -74,8 +78,12 @@ $sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -Pas
 Create session and return the session object instead of setting to script scope variable
 
 .EXAMPLE
-New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $cred
+New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $accessCred
 Create session using an access token obtained outside this module
+
+.EXAMPLE
+New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp
+Create session using a refresh token
 
 .EXAMPLE
 New-VenafiSession -VaasKey $cred
@@ -113,10 +121,12 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
+        [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid server url, it should look like https://venafi.company.com or venafi.company.com"
                 }
             }
@@ -131,6 +141,7 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
+        [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [string] $ClientId,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
@@ -145,16 +156,21 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [PSCredential] $AccessToken,
 
+        [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
+        [PSCredential] $RefreshToken,
+
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [X509Certificate] $Certificate,
 
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenCertificate')]
+        [Parameter(ParameterSetName = 'RefreshToken')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
-                } else {
+                }
+                else {
                     throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
                 }
             }
@@ -183,22 +199,23 @@ function New-VenafiSession {
     Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
 
     if ( $PSCmdlet.ShouldProcess($Server, 'New session') ) {
-        Switch -Wildcard ($PsCmdlet.ParameterSetName)	{
+        Switch ($PsCmdlet.ParameterSetName)	{
 
-            "Key*" {
+            { $_ -in 'KeyCredential', 'KeyIntegrated' } {
 
                 Write-Warning 'Key-based authentication will be deprecated in release 20.4 in favor of token-based'
 
                 if ( $PsCmdlet.ParameterSetName -eq 'KeyCredential' ) {
                     $newSession.Connect($Credential)
-                } else {
+                }
+                else {
                     # integrated
                     $newSession.Connect($null)
                 }
 
             }
 
-            'Token*' {
+            { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate' } {
                 $params = @{
                     AuthServer = $serverUrl
                     ClientId   = $ClientId
@@ -231,6 +248,23 @@ function New-VenafiSession {
                 $newSession.Token = [PSCustomObject]@{
                     AccessToken = $AccessToken
                 }
+                # we don't have the expiry so create one
+                # rely on the api call itself to fail if access token is invalid
+                $newSession.Expires = (Get-Date).AddMonths(12)
+            }
+
+            'RefreshToken' {
+                $params = @{
+                    AuthServer   = $serverUrl
+                    ClientId     = $ClientId
+                    RefreshToken = $RefreshToken
+                }
+                if ( $AuthServer ) {
+                    $params.AuthServer = $AuthServer
+                }
+                $newToken = New-TppToken @params
+                $newSession.Token = $newToken
+                $newSession.Expires = $newToken.Expires
             }
 
             'Vaas' {
@@ -258,7 +292,8 @@ function New-VenafiSession {
 
         if ( $PassThru ) {
             $newSession
-        } else {
+        }
+        else {
             $Script:VenafiSession = $newSession
         }
     }

@@ -19,22 +19,20 @@ Token object obtained from New-TppToken
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .PARAMETER GrantDetail
-Provides detailed info about the token object from the TPP server response as an output.
-PSCustomObject with the following properties:
-    AuthUrl
-    AccessToken
-    RefreshToken
-    Scope
-    Identity
-    TokenType
-    ClientId
-    Expires
+Provides detailed info about the token object from the TPP server response as an output.  Supported on TPP 20.4 and later.
 
 .INPUTS
-Accesstoken
+AccessToken, TppToken
 
 .OUTPUTS
-Boolean (default). PSCustomObject (GrantDetail). Throws error if a 400 status is returned.
+Boolean (default)
+PSCustomObject (GrantDetail)
+    ClientId
+    AccessIssued
+    GrantIssued
+    Scope
+    Identity
+    RefreshExpires
 
 .EXAMPLE
 Test-TppToken
@@ -64,13 +62,14 @@ https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Autho
 #>
 function Test-TppToken {
 
-    [CmdletBinding(DefaultParameterSetName = 'Session')]
+    [CmdletBinding(DefaultParameterSetName = 'AccessToken')]
     param (
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
-                } else {
+                }
+                else {
                     throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
                 }
             }
@@ -100,17 +99,27 @@ function Test-TppToken {
     }
 
     process {
-        
+
         Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
 
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
+                if ( $VenafiSession.Version -lt [Version]::new('20', '3', '0') ) {
+                    throw 'Test-TppToken is only supported on version 20.3 and later.'
+                }
+
+                if ( $GrantDetail.IsPresent ) {
+                    if ( $VenafiSession.Version -lt [Version]::new('20', '4', '0') ) {
+                        throw 'Test-TppToken -GrantDetail is only supported on version 20.4 and later.'
+                    }
+                }
+
                 $params.VenafiSession = $VenafiSession
             }
 
             'AccessToken' {
                 $AuthUrl = $AuthServer
-            # add prefix if just server url was provided
+                # add prefix if just server url was provided
                 if ( $AuthServer -notlike 'https://*') {
                     $AuthUrl = 'https://{0}' -f $AuthUrl
                 }
@@ -135,19 +144,21 @@ function Test-TppToken {
 
         Write-Verbose ($params | Out-String)
 
-        if ($GrantDetail) {
-            $response = Invoke-VenafiRestMethod @params -FullResponse
+        $response = Invoke-VenafiRestMethod @params -FullResponse
+
+        if ( $GrantDetail.IsPresent ) {
 
             switch ([int]$response.StatusCode) {
+
                 '200' {
+                    $responseData = $response.Content | ConvertFrom-Json
                     [PSCustomObject] @{
-                        Application    = $response.application
-                        AccessIssued   = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.access_issued_on_unix_time)
-                        GrantIssued    = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.grant_issued_on_unix_time)
-                        Scope          = $response.scope
-                        Identity       = $response.identity
-                        RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.expires_unix_time)
-                        ValidFor       = $response.valid_for
+                        ClientId       = $responseData.application
+                        AccessIssued   = ([datetime] '1970-01-01 00:00:00').AddSeconds($responseData.access_issued_on_unix_time)
+                        GrantIssued    = ([datetime] '1970-01-01 00:00:00').AddSeconds($responseData.grant_issued_on_unix_time)
+                        Scope          = $responseData.scope
+                        Identity       = $responseData.identity
+                        RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($responseData.expires_unix_time)
                     }
                 }
 
@@ -156,8 +167,8 @@ function Test-TppToken {
                 }
             }
 
-        } else {
-            $response = Invoke-VenafiRestMethod @params -FullResponse
+        }
+        else {
 
             switch ([int]$response.StatusCode) {
                 '200' {
