@@ -116,7 +116,8 @@ function New-VenafiSession {
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid server url, it should look like https://venafi.company.com or venafi.company.com"
                 }
             }
@@ -154,7 +155,8 @@ function New-VenafiSession {
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
-                } else {
+                }
+                else {
                     throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
                 }
             }
@@ -183,22 +185,23 @@ function New-VenafiSession {
     Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
 
     if ( $PSCmdlet.ShouldProcess($Server, 'New session') ) {
-        Switch -Wildcard ($PsCmdlet.ParameterSetName)	{
+        Switch ($PsCmdlet.ParameterSetName)	{
 
-            "Key*" {
+            { $_ -in 'KeyCredential', 'KeyIntegrated' } {
 
                 Write-Warning 'Key-based authentication will be deprecated in release 20.4 in favor of token-based'
 
                 if ( $PsCmdlet.ParameterSetName -eq 'KeyCredential' ) {
                     $newSession.Connect($Credential)
-                } else {
+                }
+                else {
                     # integrated
                     $newSession.Connect($null)
                 }
 
             }
 
-            'Token*' {
+            { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate' } {
                 $params = @{
                     AuthServer = $serverUrl
                     ClientId   = $ClientId
@@ -231,6 +234,9 @@ function New-VenafiSession {
                 $newSession.Token = [PSCustomObject]@{
                     AccessToken = $AccessToken
                 }
+                # we don't have the expiry so create one
+                # rely on the api call itself to fail if access token is invalid
+                $newSession.Expires = (Get-Date).AddMonths(12)
             }
 
             'Vaas' {
@@ -258,7 +264,8 @@ function New-VenafiSession {
 
         if ( $PassThru ) {
             $newSession
-        } else {
+        }
+        else {
             $Script:VenafiSession = $newSession
         }
     }
