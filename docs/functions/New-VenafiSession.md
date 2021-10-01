@@ -10,6 +10,12 @@ Create a new Venafi TPP or Venafi as a Service session
 New-VenafiSession -Server <String> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+### RefreshToken
+```
+New-VenafiSession -Server <String> -ClientId <String> -RefreshToken <PSCredential> [-AuthServer <String>]
+ [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
 ### AccessToken
 ```
 New-VenafiSession -Server <String> -AccessToken <PSCredential> [-PassThru] [-WhatIf] [-Confirm]
@@ -96,12 +102,19 @@ Create session and return the session object instead of setting to script scope 
 
 ### EXAMPLE 7
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $cred
+New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $accessCred
 ```
 
 Create session using an access token obtained outside this module
 
 ### EXAMPLE 8
+```
+New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp
+```
+
+Create session using a refresh token
+
+### EXAMPLE 9
 ```
 New-VenafiSession -VaasKey $cred
 ```
@@ -117,7 +130,7 @@ If just the server name is provided, https:// will be appended.
 
 ```yaml
 Type: String
-Parameter Sets: KeyIntegrated, AccessToken, TokenCertificate, TokenIntegrated, TokenOAuth, KeyCredential
+Parameter Sets: KeyIntegrated, RefreshToken, AccessToken, TokenCertificate, TokenIntegrated, TokenOAuth, KeyCredential
 Aliases: ServerUrl, Url
 
 Required: True
@@ -148,7 +161,7 @@ Applcation Id configured in Venafi for token-based authentication
 
 ```yaml
 Type: String
-Parameter Sets: TokenCertificate, TokenIntegrated, TokenOAuth
+Parameter Sets: RefreshToken, TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: True
@@ -193,12 +206,27 @@ Accept wildcard characters: False
 ```
 
 ### -AccessToken
-Access token retrieved outside this module. 
-Provide a credential object with the access token as the password.
+PSCredential object with the access token as the password.
 
 ```yaml
 Type: PSCredential
 Parameter Sets: AccessToken
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -RefreshToken
+PSCredential object with the refresh token as the password. 
+An access token will be retrieved and a new session created.
+
+```yaml
+Type: PSCredential
+Parameter Sets: RefreshToken
 Aliases:
 
 Required: True
@@ -230,7 +258,7 @@ If just the server name is provided, https:// will be appended.
 
 ```yaml
 Type: String
-Parameter Sets: TokenCertificate, TokenIntegrated, TokenOAuth
+Parameter Sets: RefreshToken, TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: False
@@ -244,6 +272,7 @@ Accept wildcard characters: False
 Api key from your Venafi as a Service instance. 
 The api key can be found under your user profile-\>preferences.
 Provide a credential object with the api key as the password.
+https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
 
 ```yaml
 Type: PSCredential
@@ -310,7 +339,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
-### VenafiSession, if PassThru is provided
+### VenafiSession, if -PassThru is provided
 ## NOTES
 
 ## RELATED LINKS

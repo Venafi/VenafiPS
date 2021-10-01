@@ -1,7 +1,7 @@
 # New-TppToken
 
 ## SYNOPSIS
-Get an OAuth Access and Refresh Token from TPP
+Get a new access token or refresh an existing one
 
 ## SYNTAX
 
@@ -11,10 +11,10 @@ New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> [-State 
  [<CommonParameters>]
 ```
 
-### OAuth
+### RefreshToken
 ```
-New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Credential <PSCredential>
- [-State <String>] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-TppToken -AuthServer <String> -ClientId <String> -RefreshToken <PSCredential> [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### Certificate
@@ -23,9 +23,21 @@ New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Certifi
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+### OAuth
+```
+New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Credential <PSCredential>
+ [-State <String>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### RefreshSession
+```
+New-TppToken -VenafiSession <VenafiSession> [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
 ## DESCRIPTION
-Get an OAuth access and refresh token to be used with New-VenafiSession or other scripts/utilities that take such a token.
-Accepts username/password credential, scope, and ClientId to get a token grant from specified TPP server.
+Get an access token and refresh token (if enabled) to be used with New-VenafiSession or other scripts/utilities that take such a token.
+You can also refresh an existing access token if you have the associated refresh token.
+Authentication can be provided as integrated, credential, or certificate.
 
 ## EXAMPLES
 
@@ -50,15 +62,29 @@ New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "mana
 
 Get a new token with certificate authentication
 
+### EXAMPLE 4
+```
+New-TppToken -AuthServer 'mytppserver.example.com' -ClientId 'MyApp' -RefreshToken $refreshCred
+```
+
+Refresh an existing access token by providing the refresh token directly
+
+### EXAMPLE 5
+```
+New-TppToken -VenafiSession $mySession
+```
+
+Refresh an existing access token by providing a VenafiSession object
+
 ## PARAMETERS
 
 ### -AuthServer
-Auth server or url, venafi.company.com or https://venafi.company.com.
-If just the server name is provided, https:// will be appended.
+Auth server or url, eg.
+venafi.company.com
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: Integrated, RefreshToken, Certificate, OAuth
 Aliases: Server
 
 Required: True
@@ -73,7 +99,7 @@ Applcation Id configured in Venafi for token-based authentication
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: Integrated, RefreshToken, Certificate, OAuth
 Aliases:
 
 Required: True
@@ -92,7 +118,7 @@ See https://docs.venafi.com/Docs/20.1/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthSco
 
 ```yaml
 Type: Hashtable
-Parameter Sets: (All)
+Parameter Sets: Integrated, Certificate, OAuth
 Aliases:
 
 Required: True
@@ -148,6 +174,37 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -RefreshToken
+Provide RefreshToken along with ClientId to obtain a new access and refresh token. 
+Format should be a pscredential where the password is the refresh token.
+
+```yaml
+Type: PSCredential
+Parameter Sets: RefreshToken
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -VenafiSession
+VenafiSession object created from New-VenafiSession method.
+
+```yaml
+Type: VenafiSession
+Parameter Sets: RefreshSession
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -WhatIf
 Shows what would happen if the cmdlet runs.
 The cmdlet is not run.
@@ -188,7 +245,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### PSCustomObject with the following properties:
-###     AuthUrl
+###     Server
 ###     AccessToken
 ###     RefreshToken
 ###     Scope
@@ -196,7 +253,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ###     TokenType
 ###     ClientId
 ###     Expires
-###     RefreshExpires (This property is null <version 21.1)
+###     RefreshExpires (This property is null when TPP version is less than 21.1)
 ## NOTES
 
 ## RELATED LINKS
