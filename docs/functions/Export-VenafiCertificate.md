@@ -207,7 +207,7 @@ Accept wildcard characters: False
 
 ### -KeystorePassword
 Password required to retrieve the certificate in JKS format. 
-TPP Only. 
+TPP Only.
 You must adhere to the following rules:
 - Password is at least 12 characters.
 - Comprised of at least three of the following:

@@ -5,12 +5,7 @@ Test if a Tpp token is valid
 
 ## SYNTAX
 
-### Session (Default)
-```
-Test-TppToken [-GrantDetail] [-VenafiSession <VenafiSession>] [<CommonParameters>]
-```
-
-### AccessToken
+### AccessToken (Default)
 ```
 Test-TppToken -AuthServer <String> -AccessToken <PSCredential> [-GrantDetail] [<CommonParameters>]
 ```
@@ -18,6 +13,11 @@ Test-TppToken -AuthServer <String> -AccessToken <PSCredential> [-GrantDetail] [<
 ### TppToken
 ```
 Test-TppToken -TppToken <PSObject> [-GrantDetail] [<CommonParameters>]
+```
+
+### Session
+```
+Test-TppToken [-GrantDetail] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -104,16 +104,8 @@ Accept wildcard characters: False
 ```
 
 ### -GrantDetail
-Provides detailed info about the token object from the TPP server response as an output.
-PSCustomObject with the following properties:
-    AuthUrl
-    AccessToken
-    RefreshToken
-    Scope
-    Identity
-    TokenType
-    ClientId
-    Expires
+Provides detailed info about the token object from the TPP server response as an output. 
+Supported on TPP 20.4 and later.
 
 ```yaml
 Type: SwitchParameter
@@ -148,10 +140,17 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Accesstoken
+### AccessToken, TppToken
 ## OUTPUTS
 
-### Boolean (default). PSCustomObject (GrantDetail). Throws error if a 400 status is returned.
+### Boolean (default)
+### PSCustomObject (GrantDetail)
+###     ClientId
+###     AccessIssued
+###     GrantIssued
+###     Scope
+###     Identity
+###     RefreshExpires
 ## NOTES
 
 ## RELATED LINKS
