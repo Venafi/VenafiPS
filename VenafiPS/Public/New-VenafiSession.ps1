@@ -113,6 +113,7 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
+        [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -132,6 +133,7 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
+        [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [string] $ClientId,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
@@ -146,12 +148,16 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [PSCredential] $AccessToken,
 
+        [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
+        [PSCredential] $RefreshToken,
+
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [X509Certificate] $Certificate,
 
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenCertificate')]
+        [Parameter(ParameterSetName = 'RefreshToken')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -237,6 +243,20 @@ function New-VenafiSession {
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
                 $newSession.Expires = (Get-Date).AddMonths(12)
+            }
+
+            'RefreshToken' {
+                $params = @{
+                    AuthServer   = $serverUrl
+                    ClientId     = $ClientId
+                    RefreshToken = $RefreshToken
+                }
+                if ( $AuthServer ) {
+                    $params.AuthServer = $AuthServer
+                }
+                $newToken = New-TppToken @params
+                $newSession.Token = $newToken
+                $newSession.Expires = $newToken.Expires
             }
 
             'Vaas' {
