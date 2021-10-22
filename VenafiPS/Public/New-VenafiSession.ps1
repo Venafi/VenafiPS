@@ -47,6 +47,9 @@ Api key from your Venafi as a Service instance.  The api key can be found under 
 Provide a credential object with the api key as the password.
 https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
 
+.PARAMETER VaultMetadata
+vault must support
+
 .PARAMETER PassThru
 Optionally, send the session object to the pipeline instead of script scope.
 
@@ -122,6 +125,8 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
+        [Parameter(ParameterSetName = 'VaultAccessToken')]
+        [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -142,11 +147,15 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
+        [Parameter(ParameterSetName = 'VaultAccessToken')]
+        [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [string] $ClientId,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
+        [Parameter(ParameterSetName = 'VaultAccessToken')]
+        [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [hashtable] $Scope,
 
         [Parameter(ParameterSetName = 'TokenIntegrated')]
@@ -161,6 +170,25 @@ function New-VenafiSession {
 
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [X509Certificate] $Certificate,
+
+        [Parameter(Mandatory, ParameterSetName = 'VaultAccessToken')]
+        [Parameter(ParameterSetName = 'AccessToken')]
+        [Parameter(ParameterSetName = 'TokenIntegrated')]
+        [Parameter(ParameterSetName = 'TokenOAuth')]
+        [Parameter(ParameterSetName = 'TokenCertificate')]
+        [string] $VaultAccessTokenName,
+
+        [Parameter(Mandatory, ParameterSetName = 'VaultRefreshToken')]
+        [Parameter(ParameterSetName = 'AccessToken')]
+        [Parameter(ParameterSetName = 'TokenIntegrated')]
+        [Parameter(ParameterSetName = 'TokenOAuth')]
+        [Parameter(ParameterSetName = 'TokenCertificate')]
+        [string] $VaultRefreshTokenName,
+
+        [Parameter(ParameterSetName = 'TokenIntegrated')]
+        [Parameter(ParameterSetName = 'TokenOAuth')]
+        [Parameter(ParameterSetName = 'TokenCertificate')]
+        [switch] $VaultMetadata,
 
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenIntegrated')]
@@ -180,6 +208,10 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'Vaas')]
         [PSCredential] $VaasKey,
 
+        [Parameter(ParameterSetName = 'Vaas')]
+        [Parameter(Mandatory, ParameterSetName = 'VaultKey')]
+        [string] $VaultVaasKeyName,
+
         [Parameter()]
         [switch] $PassThru
     )
@@ -198,12 +230,19 @@ function New-VenafiSession {
 
     Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
 
+    if ( $PSCmdlet.ParameterSetName -like 'Vault*') {
+        # ensure the appropriate setup has been performed
+        if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement)) {
+            throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a secret vault.  See the github readme for guidance.'
+        }
+    }
+
     if ( $PSCmdlet.ShouldProcess($Server, 'New session') ) {
         Switch ($PsCmdlet.ParameterSetName)	{
 
             { $_ -in 'KeyCredential', 'KeyIntegrated' } {
 
-                Write-Warning 'Key-based authentication will be deprecated in release 20.4 in favor of token-based'
+                Write-Warning 'Key-based authentication will be deprecated in release 21.4 in favor of token-based.  Get started with token authentication today, https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php.'
 
                 if ( $PsCmdlet.ParameterSetName -eq 'KeyCredential' ) {
                     $newSession.Connect($Credential)
@@ -242,11 +281,37 @@ function New-VenafiSession {
                 $token = New-TppToken @params -Verbose:$isVerbose
                 $newSession.Token = $token
                 $newSession.Expires = $token.Expires
+
+                if ( $VaultAccessTokenName ) {
+                    Set-Secret -Name $VaultAccessTokenName -Secret $token.AccessToken -Vault 'VenafiPS'
+                }
+
+                if ( $VaultRefreshTokenName ) {
+                    if ( $token.RefreshToken ) {
+                        Set-Secret -Name $VaultRefreshTokenName -Secret $token.RefreshToken -Vault 'VenafiPS'
+                    }
+                    else {
+                        Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
+                    }
+                }
             }
 
             'AccessToken' {
                 $newSession.Token = [PSCustomObject]@{
                     AccessToken = $AccessToken
+                }
+                # we don't have the expiry so create one
+                # rely on the api call itself to fail if access token is invalid
+                $newSession.Expires = (Get-Date).AddMonths(12)
+            }
+
+            'VaultAccessToken' {
+                $tokenSecret = Get-Secret -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+                if ( -not $tokenSecret ) {
+                    throw "'$VaultAccessTokenName' secret not found in vault VenafiPS."
+                }
+                $newSession.Token = [PSCustomObject]@{
+                    AccessToken = $tokenSecret
                 }
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
@@ -259,12 +324,50 @@ function New-VenafiSession {
                     ClientId     = $ClientId
                     RefreshToken = $RefreshToken
                 }
+
                 if ( $AuthServer ) {
                     $params.AuthServer = $AuthServer
                 }
+
                 $newToken = New-TppToken @params
                 $newSession.Token = $newToken
                 $newSession.Expires = $newToken.Expires
+            }
+
+            'VaultRefreshToken' {
+                $tokenSecret = Get-Secret -Name $VaultRefreshTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+                if ( -not $tokenSecret ) {
+                    throw "'$VaultRefreshTokenName' secret not found in vault VenafiPS."
+                }
+
+                # check if metadata was stored or we should get from params
+                $secretInfo = Get-SecretInfo -Name $VaultRefreshTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+
+                if ( $secretInfo.Metadata.Count -gt 0 ) {
+                    $params = @{
+                        AuthServer = $secretInfo.Metadata.AuthServer
+                        ClientId   = $secretInfo.Metadata.ClientId
+                    }
+                }
+                else {
+                    $params = @{
+                        AuthServer = $serverUrl
+                        ClientId   = $ClientId
+                    }
+
+                    if ( $AuthServer ) {
+                        $params.AuthServer = $AuthServer
+                    }
+                }
+
+                $params.RefreshToken = $tokenSecret
+
+                $newToken = New-TppToken @params
+                $newSession.Token = $newToken
+                $newSession.Expires = $newToken.Expires
+
+                # set new refresh token in vault
+                Set-Secret -Name $VaultRefreshTokenName -Secret $newToken.RefreshToken -Vault 'VenafiPS'
             }
 
             'Vaas' {
@@ -272,11 +375,37 @@ function New-VenafiSession {
                 $newSession.Key = $VaasKey
             }
 
+            'VaultKey' {
+                $newSession.ServerUrl = $script:CloudUrl
+                $keySecret = Get-Secret -Name $VaultVaasKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+                if ( -not $keySecret ) {
+                    throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
+                }
+                $newSession.Key = $keySecret
+            }
+
             Default {
                 throw ('Unknown parameter set {0}' -f $PSCmdlet.ParameterSetName)
             }
         }
 
+        if ( $VaultMetadata.IsPresent -or ($PSCmdlet.ParameterSetName -like 'Vault*') ) {
+            if ( -not $VaultAccessTokenName -and -not $VaultRefreshTokenName) {
+                throw 'Vaulting metadata requires either VaultAccessTokenName or VaultRefreshTokenName is provided'
+            }
+            $metadata = @{
+                Server     = $newSession.ServerUrl
+                AuthServer = $newSession.Token.Server
+                ClientId   = $newSession.Token.ClientId
+            }
+            Write-Verbose ($metadata | ConvertTo-Json)
+            if ( $VaultAccessTokenName ) {
+                Set-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -Metadata $metadata
+            }
+            if ( $VaultRefreshTokenName ) {
+                Set-SecretInfo -Name $VaultRefreshTokenName -Vault 'VenafiPS' -Metadata $metadata
+            }
+        }
 
         # will fail if user is on an older version
         # this isn't required so bypass on failure
