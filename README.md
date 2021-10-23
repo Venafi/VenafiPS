@@ -26,6 +26,15 @@ Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.r
 
 VenafiPS is published to the PowerShell Gallery.  The most recent version is listed in the badge 'powershell gallery' above and can be viewed by clicking on it.  To install the module, you need to have PowerShell installed first.  On Windows, PowerShell will already be installed.  For [Linux](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) or [macOS](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7), you will need to install PowerShell Core; follow those links for guidance.  Once PowerShell is installed, start a PowerShell prompt and execute `Install-Module -Name VenafiPS` which will install from the gallery.
 
+### Token/Key Secret Storage
+
+To securely store and retrieve secrets, VenafiPS has added support for the [PowerShell SecretManagement module](https://github.com/PowerShell/SecretManagement).  This can be used to store your access tokens, refresh tokens, or vaas key.  To use this feature, a vault will need to be created.  You can use [SecretStore](https://github.com/PowerShell/SecretStore) provided by the PowerShell team or any other vault type.  All of this functionality has been added to `New-VenafiSession`.  To prepare your environment, execute the following:
+- `Install-Module Microsoft.PowerShell.SecretManagement`
+- `Install-Module Microsoft.PowerShell.SecretStore` or whichever vault you would like to use
+- `Register-SecretVault -Name VenafiPS -ModuleName Microsoft.PowerShell.SecretStore -VaultParameters @{'Authentication'='None'}`.  If you are using a different vault type, replace the value for `-ModuleName`.  Note, although the vault authentication is set to none, that just turns off the password required to access the vault, it does not mean your secrets are not encrypted.  By default, a vault will require a password to access it and that needs to be turned off for automation purposes.
+
+Note, extension vaults are registered to the current logged in user context, and will be available only to that user (unless also registered to other users).
+
 ## Usage
 
 As the module supports both TPP and Venafi as a Service, you will note different names for the functions.  Functions with `-Tpp` are for TPP only, `-Vaas` are for Venafi as a Service only, and `-Venafi` are for both.
@@ -35,6 +44,12 @@ Start a new PowerShell prompt (even if you have one from the Install Module step
 ```powershell
 $cred = Get-Credential
 New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'}
+
+# to store access token for later use
+New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'} -VaultAccessTokenName TppAccessToken
+
+# to store refresh token for later use
+New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'} -VaultRefreshTokenName TppRefreshToken
 ```
 
 This will create a session which will be used by default in other functions.

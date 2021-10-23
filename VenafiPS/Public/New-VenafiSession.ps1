@@ -179,7 +179,7 @@ function New-VenafiSession {
         [string] $VaultAccessTokenName,
 
         [Parameter(Mandatory, ParameterSetName = 'VaultRefreshToken')]
-        [Parameter(ParameterSetName = 'AccessToken')]
+        [Parameter(ParameterSetName = 'RefreshToken')]
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenCertificate')]
@@ -233,7 +233,12 @@ function New-VenafiSession {
     if ( $PSCmdlet.ParameterSetName -like 'Vault*') {
         # ensure the appropriate setup has been performed
         if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement)) {
-            throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a secret vault.  See the github readme for guidance.'
+            throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a secret vault named ''VenafiPS''.  See the github readme for guidance.'
+        }
+
+        $vault = Get-SecretVault -Name 'VenafiPS' -ErrorAction SilentlyContinue
+        if ( -not $vault ) {
+            throw 'A vault named ''VenafiPS'' could not be found'
         }
     }
 
@@ -310,12 +315,26 @@ function New-VenafiSession {
                 if ( -not $tokenSecret ) {
                     throw "'$VaultAccessTokenName' secret not found in vault VenafiPS."
                 }
-                $newSession.Token = [PSCustomObject]@{
-                    AccessToken = $tokenSecret
+
+                # check if metadata was stored or we should get from params
+                $secretInfo = Get-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+
+                if ( $secretInfo.Metadata.Count -gt 0 ) {
+                    $newSession.ServerUrl = $secretInfo.Metadata.Server
+                    $newSession.Expires = $secretInfo.Metadata.Expires
+                    $newSession.Token = [PSCustomObject]@{
+                        AccessToken = $tokenSecret
+                        ClientId    = $secretInfo.Metadata.ClientId
+                    }
                 }
-                # we don't have the expiry so create one
-                # rely on the api call itself to fail if access token is invalid
-                $newSession.Expires = (Get-Date).AddMonths(12)
+                else {
+                    $newSession.Token = [PSCustomObject]@{
+                        AccessToken = $tokenSecret
+                    }
+                    # we don't have the expiry so create one
+                    # rely on the api call itself to fail if access token is invalid
+                    $newSession.Expires = (Get-Date).AddMonths(12)
+                }
             }
 
             'RefreshToken' {
@@ -397,6 +416,7 @@ function New-VenafiSession {
                 Server     = $newSession.ServerUrl
                 AuthServer = $newSession.Token.Server
                 ClientId   = $newSession.Token.ClientId
+                Expires    = $newSession.Expires
             }
             Write-Verbose ($metadata | ConvertTo-Json)
             if ( $VaultAccessTokenName ) {
