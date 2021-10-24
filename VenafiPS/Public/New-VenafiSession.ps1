@@ -5,7 +5,8 @@ Create a new Venafi TPP or Venafi as a Service session
 .DESCRIPTION
 Authenticate a user and create a new session with which future calls can be made.
 Key based username/password and windows integrated are supported as well as token-based integrated, oauth, and certificate.
-Note, key-based authentication will be fully deprecated in v20.4.
+By default, a session variable will be created and automatically used with other functions unless -PassThru is used.
+Tokens and VaaS keys can be saved in a vault for future calls.
 
 .PARAMETER Server
 Server or url to access vedsdk, venafi.company.com or https://venafi.company.com.
@@ -31,14 +32,27 @@ A session state, redirect URL, or random string to prevent Cross-Site Request Fo
 .PARAMETER AccessToken
 PSCredential object with the access token as the password.
 
+.PARAMETER VaultAccessTokenName
+Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
+This value can be provided standalone or with credentials.  First time use requires it to be provided with credentials to retrieve the access token to populate the vault.
+With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
+See -VaultMetadata to store server and clientid with the token.
+
 .PARAMETER RefreshToken
 PSCredential object with the refresh token as the password.  An access token will be retrieved and a new session created.
+
+.PARAMETER VaultRefreshTokenName
+Name of the SecretManagement vault entry for the refresh token; the name of the vault must be VenafiPS.
+This value can be provided standalone or with credentials.  Each time this is used, a new access and refresh token will be obtained.
+First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
+With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
+See -VaultMetadata to store server and clientid with the token.
 
 .PARAMETER Certificate
 Certificate for token-based authentication
 
 .PARAMETER AuthServer
-If you host your authentication service, vedauth, on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
+If you host your authentication service, vedauth, is on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
 If AuthServer is not provided, the value provided for Server will be used.
 If just the server name is provided, https:// will be appended.
 
@@ -47,8 +61,16 @@ Api key from your Venafi as a Service instance.  The api key can be found under 
 Provide a credential object with the api key as the password.
 https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
 
+.PARAMETER VaultVaasKeyName
+Name of the SecretManagement vault entry for the Venafi as a Service key.
+First time use requires it to be provided with -VaasKey to populate the vault.
+With subsequent uses, it can be provided standalone and the key will be retrieved with the need for -VaasKey.
+
 .PARAMETER VaultMetadata
-vault must support
+When a token vault entry, access or refresh, is created with -VaultAccessTokenName or -VaultRefreshTokenName, store the server and clientid with it so this doesn't need to be provided each time.
+Once used, the server and clientid will continue to be stored with updated vault entries regardless if -VaultMetadata was provided again.
+To clear the metadata, reauthenticate with this function with credentials and without providing -VaultMetadata.
+To use this parameter, the SecretManagement vault must support it.
 
 .PARAMETER PassThru
 Optionally, send the session object to the pipeline instead of script scope.
@@ -89,6 +111,14 @@ New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -Cl
 Create session using a refresh token
 
 .EXAMPLE
+New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh
+Create session using a refresh token and store the newly created refresh token in the vault
+
+.EXAMPLE
+New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh -VaultMetadata
+Create session using a refresh token, store the newly created refresh token in the vault, and store the server and clientid with the secret
+
+.EXAMPLE
 New-VenafiSession -VaasKey $cred
 Create session against Venafi as a Service
 
@@ -112,6 +142,12 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Auth
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____9
+
+.LINK
+https://github.com/PowerShell/SecretManagement
+
+.LINK
+https://github.com/PowerShell/SecretStore
 #>
 function New-VenafiSession {
 
@@ -188,6 +224,10 @@ function New-VenafiSession {
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenCertificate')]
+        [Parameter(ParameterSetName = 'AccessToken')]
+        [Parameter(ParameterSetName = 'RefreshToken')]
+        [Parameter(ParameterSetName = 'VaultAccessToken')]
+        [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [switch] $VaultMetadata,
 
         [Parameter(ParameterSetName = 'TokenOAuth')]
@@ -206,10 +246,20 @@ function New-VenafiSession {
         [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'Vaas')]
+        [ValidateScript( {
+                try {
+                    [guid] $_
+                    $true
+                }
+                catch {
+                    throw 'The value for -VaasKey is invalid and should be of the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+                }
+            }
+        )]
         [PSCredential] $VaasKey,
 
         [Parameter(ParameterSetName = 'Vaas')]
-        [Parameter(Mandatory, ParameterSetName = 'VaultKey')]
+        [Parameter(Mandatory, ParameterSetName = 'VaultVaasKey')]
         [string] $VaultVaasKeyName,
 
         [Parameter()]
@@ -224,21 +274,32 @@ function New-VenafiSession {
         $serverUrl = 'https://{0}' -f $serverUrl
     }
 
+    $authServerUrl = $serverUrl
+    if ( $AuthServer ) {
+        $authServerUrl = $AuthServer
+        if ( $authServerUrl -notlike 'https://*') {
+            $authServerUrl = 'https://{0}' -f $authServerUrl
+        }
+    }
+
     $newSession = [VenafiSession] @{
         ServerUrl = $serverUrl
     }
+
+    # use this to know if we need to re-store vault entry metadata when it already exists and -VaultMetadata not provided
+    $metadataStored = $false
 
     Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
 
     if ( $PSCmdlet.ParameterSetName -like 'Vault*') {
         # ensure the appropriate setup has been performed
         if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement)) {
-            throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a secret vault named ''VenafiPS''.  See the github readme for guidance.'
+            throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a vault named ''VenafiPS''.  See the github readme for guidance, https://github.com/gdbarron/VenafiPS#tokenkey-secret-storage.'
         }
 
         $vault = Get-SecretVault -Name 'VenafiPS' -ErrorAction SilentlyContinue
         if ( -not $vault ) {
-            throw 'A vault named ''VenafiPS'' could not be found'
+            throw 'A SecretManagement vault named ''VenafiPS'' could not be found'
         }
     }
 
@@ -261,14 +322,9 @@ function New-VenafiSession {
 
             { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate' } {
                 $params = @{
-                    AuthServer = $serverUrl
+                    AuthServer = $authServerUrl
                     ClientId   = $ClientId
                     Scope      = $Scope
-                }
-
-                # in case the auth server isn't the same as vedsdk...
-                if ( $AuthServer ) {
-                    $params.AuthServer = $AuthServer
                 }
 
                 if ($Credential) {
@@ -286,23 +342,11 @@ function New-VenafiSession {
                 $token = New-TppToken @params -Verbose:$isVerbose
                 $newSession.Token = $token
                 $newSession.Expires = $token.Expires
-
-                if ( $VaultAccessTokenName ) {
-                    Set-Secret -Name $VaultAccessTokenName -Secret $token.AccessToken -Vault 'VenafiPS'
-                }
-
-                if ( $VaultRefreshTokenName ) {
-                    if ( $token.RefreshToken ) {
-                        Set-Secret -Name $VaultRefreshTokenName -Secret $token.RefreshToken -Vault 'VenafiPS'
-                    }
-                    else {
-                        Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
-                    }
-                }
             }
 
             'AccessToken' {
                 $newSession.Token = [PSCustomObject]@{
+                    Server      = $authServerUrl
                     AccessToken = $AccessToken
                 }
                 # we don't have the expiry so create one
@@ -323,12 +367,21 @@ function New-VenafiSession {
                     $newSession.ServerUrl = $secretInfo.Metadata.Server
                     $newSession.Expires = $secretInfo.Metadata.Expires
                     $newSession.Token = [PSCustomObject]@{
+                        Server      = $secretInfo.Metadata.AuthServer
                         AccessToken = $tokenSecret
                         ClientId    = $secretInfo.Metadata.ClientId
                     }
+
+                    $metadataStored = $true
                 }
                 else {
+                    # need to check params as not mandatory
+                    if ( -not $Server -or -not $ClientId ) {
+                        throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
+                    }
+
                     $newSession.Token = [PSCustomObject]@{
+                        Server      = $authServerUrl
                         AccessToken = $tokenSecret
                     }
                     # we don't have the expiry so create one
@@ -339,13 +392,9 @@ function New-VenafiSession {
 
             'RefreshToken' {
                 $params = @{
-                    AuthServer   = $serverUrl
+                    AuthServer   = $authServerUrl
                     ClientId     = $ClientId
                     RefreshToken = $RefreshToken
-                }
-
-                if ( $AuthServer ) {
-                    $params.AuthServer = $AuthServer
                 }
 
                 $newToken = New-TppToken @params
@@ -367,15 +416,19 @@ function New-VenafiSession {
                         AuthServer = $secretInfo.Metadata.AuthServer
                         ClientId   = $secretInfo.Metadata.ClientId
                     }
+
+                    $metadataStored = $true
+
                 }
                 else {
-                    $params = @{
-                        AuthServer = $serverUrl
-                        ClientId   = $ClientId
+                    # need to check params as not mandatory
+                    if ( -not $Server -or -not $ClientId ) {
+                        throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
                     }
 
-                    if ( $AuthServer ) {
-                        $params.AuthServer = $AuthServer
+                    $params = @{
+                        AuthServer = $authServerUrl
+                        ClientId   = $ClientId
                     }
                 }
 
@@ -384,9 +437,6 @@ function New-VenafiSession {
                 $newToken = New-TppToken @params
                 $newSession.Token = $newToken
                 $newSession.Expires = $newToken.Expires
-
-                # set new refresh token in vault
-                Set-Secret -Name $VaultRefreshTokenName -Secret $newToken.RefreshToken -Vault 'VenafiPS'
             }
 
             'Vaas' {
@@ -394,7 +444,7 @@ function New-VenafiSession {
                 $newSession.Key = $VaasKey
             }
 
-            'VaultKey' {
+            'VaultVaasKey' {
                 $newSession.ServerUrl = $script:CloudUrl
                 $keySecret = Get-Secret -Name $VaultVaasKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
                 if ( -not $keySecret ) {
@@ -408,9 +458,29 @@ function New-VenafiSession {
             }
         }
 
-        if ( $VaultMetadata.IsPresent -or ($PSCmdlet.ParameterSetName -like 'Vault*') ) {
+        if ( $VaultAccessTokenName ) {
+            # set new access token in vault
+            Set-Secret -Name $VaultAccessTokenName -Secret $newSession.Token.AccessToken -Vault 'VenafiPS'
+        }
+
+        if ( $VaultRefreshTokenName ) {
+            # set new refresh token in vault
+            if ( $newSession.Token.RefreshToken ) {
+                Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS'
+            }
+            else {
+                Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
+            }
+        }
+
+        if ( $VaultVaasKeyName ) {
+            # set new vaas key in vault
+            Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
+        }
+
+        if ( $VaultMetadata.IsPresent -or $metadataStored ) {
             if ( -not $VaultAccessTokenName -and -not $VaultRefreshTokenName) {
-                throw 'Vaulting metadata requires either VaultAccessTokenName or VaultRefreshTokenName is provided'
+                throw 'Vaulting metadata requires either -VaultAccessTokenName or -VaultRefreshTokenName is provided'
             }
             $metadata = @{
                 Server     = $newSession.ServerUrl
@@ -418,19 +488,21 @@ function New-VenafiSession {
                 ClientId   = $newSession.Token.ClientId
                 Expires    = $newSession.Expires
             }
-            Write-Verbose ($metadata | ConvertTo-Json)
+
+            $metadata | ConvertTo-Json | Write-Verbose
+
             if ( $VaultAccessTokenName ) {
                 Set-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -Metadata $metadata
             }
+
             if ( $VaultRefreshTokenName ) {
                 Set-SecretInfo -Name $VaultRefreshTokenName -Vault 'VenafiPS' -Metadata $metadata
             }
         }
 
-        # will fail if user is on an older version
-        # this isn't required so bypass on failure
-
-        if ( $PSCmdlet.ParameterSetName -ne 'VaasKey' ) {
+        # will fail if user is on an older version.  this isn't required so bypass on failure
+        # only applicable to tpp
+        if ( $PSCmdlet.ParameterSetName -notin 'VaasKey', 'VaultVaasKey' ) {
             $newSession.Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue)
             $certFields = Get-TppCustomField -VenafiSession $newSession -Class 'X509 Certificate' -ErrorAction SilentlyContinue
             $deviceFields = Get-TppCustomField -VenafiSession $newSession -Class 'Device' -ErrorAction SilentlyContinue
