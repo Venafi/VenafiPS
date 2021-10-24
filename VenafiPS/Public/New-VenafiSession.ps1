@@ -24,7 +24,7 @@ Hashtable with Scopes and privilege restrictions.
 The key is the scope and the value is one or more privilege restrictions separated by commas, @{'certificate'='delete,manage'}.
 Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
 For no privilege restriction or read access, use a value of $null.
-For a scope to privilege mapping, see https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____5
+For a scope to privilege mapping, see https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
 
 .PARAMETER State
 A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
@@ -69,7 +69,7 @@ With subsequent uses, it can be provided standalone and the key will be retrieve
 .PARAMETER VaultMetadata
 When a token vault entry, access or refresh, is created with -VaultAccessTokenName or -VaultRefreshTokenName, store the server and clientid with it so this doesn't need to be provided each time.
 Once used, the server and clientid will continue to be stored with updated vault entries regardless if -VaultMetadata was provided again.
-To clear the metadata, reauthenticate with this function with credentials and without providing -VaultMetadata.
+To clear the metadata, reauthenticate with this function with a credential and without providing -VaultMetadata.
 To use this parameter, the SecretManagement vault must support it.
 
 .PARAMETER PassThru
