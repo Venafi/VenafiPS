@@ -183,7 +183,6 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
-        [Parameter(ParameterSetName = 'VaultAccessToken')]
         [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [string] $ClientId,
 
@@ -248,7 +247,7 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'Vaas')]
         [ValidateScript( {
                 try {
-                    [guid] $_
+                    [guid] $_.GetNetworkCredential().password
                     $true
                 }
                 catch {
