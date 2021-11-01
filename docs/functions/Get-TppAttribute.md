@@ -5,21 +5,14 @@ Get attributes for a given object
 
 ## SYNTAX
 
-### ByObject (Default)
-```
-Get-TppAttribute -InputObject <TppObject> [-Attribute <String[]>] [-VenafiSession <VenafiSession>]
- [<CommonParameters>]
-```
-
-### EffectiveByObject
-```
-Get-TppAttribute -InputObject <TppObject> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
- [<CommonParameters>]
-```
-
-### ByPath
+### ByPath (Default)
 ```
 Get-TppAttribute -Path <String[]> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+```
+
+### AllByPath
+```
+Get-TppAttribute -Path <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### EffectiveByPath
@@ -70,34 +63,19 @@ Retrieve all the value for attribute driver name from certificate myapp.company.
 
 ## PARAMETERS
 
-### -InputObject
-TppObject which represents a unique object
-
-```yaml
-Type: TppObject
-Parameter Sets: ByObject, EffectiveByObject
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
 ### -Path
 Path to the object to retrieve configuration attributes. 
 Just providing DN will return all attributes.
 
 ```yaml
 Type: String[]
-Parameter Sets: ByPath, EffectiveByPath
+Parameter Sets: ByPath, AllByPath, EffectiveByPath
 Aliases: DN
 
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -122,7 +100,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String[]
-Parameter Sets: ByObject, ByPath, ByGuid
+Parameter Sets: ByPath, ByGuid
 Aliases:
 
 Required: False
@@ -134,7 +112,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String[]
-Parameter Sets: EffectiveByObject, EffectiveByPath, EffectiveByGuid
+Parameter Sets: EffectiveByPath, EffectiveByGuid
 Aliases:
 
 Required: True
@@ -149,7 +127,7 @@ Get the effective values of the attribute
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: EffectiveByObject, EffectiveByPath, EffectiveByGuid
+Parameter Sets: EffectiveByPath, EffectiveByGuid
 Aliases: EffectivePolicy
 
 Required: True
@@ -180,7 +158,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### InputObject, Path, Guid
+### Path, Guid
 ## OUTPUTS
 
 ### PSCustomObject with properties Name, Value, IsCustomField, and CustomName
