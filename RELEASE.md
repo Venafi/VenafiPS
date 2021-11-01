@@ -1,5 +1,2 @@
-- Add support for token refresh to `New-VenafiSession` and `New-TppToken`.  Auto-refresh $VenafiSession when token expires and we have a refresh token.  [#33](https://github.com/gdbarron/VenafiPS/issues/33)
-- Fix invalid grant details in `Test-TppToken`, [#32](https://github.com/gdbarron/VenafiPS/issues/32)
-- Update Version in VenafiSession object, from `Get-TppVersion`, to be of type Version.  Drop Revision from version so now only 3 octets.  This assists in performing version validation.
-- Update `New-TppToken` to account for a bug in pre 21.3 which expected the client_id to be lowercase
-- Update `Test-TppToken` to validate the tpp version is supported
+- Add support for local token/key storage with [PowerShell SecretManagement](https://devblogs.microsoft.com/powershell/secretmanagement-and-secretstore-are-generally-available/)
+- Add Get-TppClassAttribute to list all attributes for a specific class
