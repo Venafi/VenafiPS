@@ -26,7 +26,7 @@ Get the effective values of the attribute
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-InputObject, Path, Guid
+Path, Guid
 
 .OUTPUTS
 PSCustomObject with properties Name, Value, IsCustomField, and CustomName
@@ -60,15 +60,12 @@ https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config
 
 #>
 function Get-TppAttribute {
-    [CmdletBinding(DefaultParameterSetName = 'ByObject')]
+    [CmdletBinding(DefaultParameterSetName = 'ByPath')]
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'EffectiveByObject', ValueFromPipeline)]
-        [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
-
-        [Parameter(Mandatory, ParameterSetName = 'EffectiveByPath', ValueFromPipeline)]
-        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline)]
+        [Parameter(Mandatory, ParameterSetName = 'EffectiveByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'AllByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -86,8 +83,6 @@ function Get-TppAttribute {
         [ValidateNotNullOrEmpty()]
         [guid[]] $Guid,
 
-        [Parameter(Mandatory, ParameterSetName = 'EffectiveByObject')]
-        [Parameter(ParameterSetName = 'ByObject')]
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByPath')]
         [Parameter(ParameterSetName = 'ByPath')]
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByGuid')]
@@ -95,7 +90,6 @@ function Get-TppAttribute {
         [ValidateNotNullOrEmpty()]
         [String[]] $Attribute,
 
-        [Parameter(Mandatory, ParameterSetName = 'EffectiveByObject')]
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByPath')]
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByGuid')]
         [Alias('EffectivePolicy')]
@@ -134,10 +128,6 @@ function Get-TppAttribute {
     process {
 
         switch -Wildcard ($PSCmdlet.ParameterSetName) {
-            '*Object' {
-                $pathToProcess = $InputObject.Path
-            }
-
             '*Path' {
                 $pathToProcess = $Path
             }
@@ -150,6 +140,7 @@ function Get-TppAttribute {
         foreach ($thisPath in $pathToProcess) {
 
             $baseParams.Body['ObjectDN'] = $thisPath
+
 
             # if specifying attribute name(s), it's a different rest api
             if ( $PSBoundParameters.ContainsKey('Attribute') ) {
