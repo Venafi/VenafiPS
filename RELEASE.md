@@ -1,2 +1,2 @@
-- Add support for local token/key storage with [PowerShell SecretManagement](https://devblogs.microsoft.com/powershell/secretmanagement-and-secretstore-are-generally-available/)
-- Add Get-TppClassAttribute to list all attributes for a specific class
+- Add support for local token/key storage with [PowerShell SecretManagement](https://devblogs.microsoft.com/powershell/secretmanagement-and-secretstore-are-generally-available/).  Store your access or refresh token securely and have VenafiPS use it to create a new session.
+- Add `Get-TppClassAttribute` to list all attributes for a specific class.  Helpful for attribute validation and getting values for all attributes.
