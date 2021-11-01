@@ -242,7 +242,7 @@ function New-TppToken {
             Server         = $params.ServerUrl
             AccessToken    = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
             RefreshToken   = $null
-            Scope          = $response.scope
+            Scope          = $Scope
             Identity       = $response.identity
             TokenType      = $response.token_type
             ClientId       = $params.Body.client_id
