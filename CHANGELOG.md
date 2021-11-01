@@ -1,3 +1,7 @@
+## 3.3.0
+- Add support for local token/key storage with [PowerShell SecretManagement](https://devblogs.microsoft.com/powershell/secretmanagement-and-secretstore-are-generally-available/)
+- Add Get-TppClassAttribute to list all attributes for a specific class
+
 ## 3.2.0
 - Add support for token refresh to `New-VenafiSession` and `New-TppToken`.  Auto-refresh $VenafiSession when token expires and we have a refresh token.  [#33](https://github.com/gdbarron/VenafiPS/issues/33)
 - Fix invalid grant details in `Test-TppToken`, [#32](https://github.com/gdbarron/VenafiPS/issues/32)
