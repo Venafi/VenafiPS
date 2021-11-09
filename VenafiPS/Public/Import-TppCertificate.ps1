@@ -26,10 +26,12 @@ If not provided and the CN is also missing, the name becomes the first Domain Na
 Finally, if none of the above are found, the serial number is used.
 
 .PARAMETER PrivateKey
-The private key data. Requires a Password. For a PEM certificate, the private key is in either the RSA or PKCS#8 format. If the CertificateData field contains a PKCS#12 formatted certificate, this parameter is ignored because only one private key is allowed.
+Private key data; requires a value for Password.
+For a PEM certificate, the private key is in either the RSA or PKCS#8 format.
+Do not provide for a PKCS#12 certificate as the private key is already included.
 
 .PARAMETER Password
-Password required when including a private key.
+Password required if the certificate has a private key.
 
 .PARAMETER Reconcile
 Controls certificate and corresponding private key replacement.
@@ -67,7 +69,8 @@ function Import-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid Policy path"
                 }
             })]
@@ -79,7 +82,8 @@ function Import-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-Path ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid path"
                 }
             })]
@@ -99,6 +103,8 @@ function Import-TppCertificate {
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
         [String] $PrivateKey,
 
+        [Parameter(ParameterSetName = 'ByFile')]
+        [Parameter(ParameterSetName = 'ByData')]
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
         [SecureString] $Password,
@@ -117,6 +123,9 @@ function Import-TppCertificate {
 
         $VenafiSession.Validate() | Out-Null
 
+    }
+
+    process {
         if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
             # get cert data from file
             $CertificateData = Get-Content -Path $CertificatePath -Raw
@@ -124,9 +133,9 @@ function Import-TppCertificate {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = 'certificates/import'
-            Body       = @{
+            Method        = 'Post'
+            UriLeaf       = 'certificates/import'
+            Body          = @{
                 PolicyDN        = $PolicyPath
                 CertificateData = $CertificateData
             }
@@ -146,10 +155,19 @@ function Import-TppCertificate {
             $params.Body.ObjectName = $Name
         }
 
+
+        if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
+        }
+
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
             $params.Body.PrivateKeyData = $PrivateKey
             $plainTextPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
             $params.Body.Password = $plainTextPassword
+        }
+        else {
+            if ( [System.IO.Path]::GetExtension($CertificatePath) -ne '.p12' ) {
+
+            }
         }
 
         $response = Invoke-TppRestMethod @params
@@ -158,8 +176,5 @@ function Import-TppCertificate {
         if ( $PassThru ) {
             $response.CertificateDN | Get-TppObject
         }
-    }
-
-    process {
     }
 }
