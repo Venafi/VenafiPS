@@ -57,8 +57,8 @@ None
 .OUTPUTS
 TppObject, if PassThru provided
 
-.NOTES
-Must have Master Admin permission or must have View, Read, Write, Create and Private Key Write permission to the Certificate object.
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Import.php
 #>
 function Import-TppCertificate {
     [CmdletBinding(DefaultParameterSetName = 'ByFile')]
@@ -162,7 +162,6 @@ function Import-TppCertificate {
         if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {
             $updatedAttribute = @($EnrollmentAttribute.GetEnumerator() | ForEach-Object { @{'Name' = $_.name; 'Value' = $_.value } })
             $params.Body.CASpecificAttributes = $updatedAttribute
-
         }
 
         if ( $Reconcile.IsPresent ) {
