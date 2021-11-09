@@ -10,7 +10,7 @@ Get-TppCustomField [-Class] <String> [[-VenafiSession] <VenafiSession>] [<Common
 ```
 
 ## DESCRIPTION
-Get details about custom fields for either certificates or devices
+Get details about custom fields
 
 ## EXAMPLES
 
@@ -24,8 +24,7 @@ Get custom fields for certificates
 ## PARAMETERS
 
 ### -Class
-Class to get details on. 
-Value can be either Device or X509 Certificate
+Class to get details on
 
 ```yaml
 Type: String
@@ -35,7 +34,7 @@ Aliases:
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
