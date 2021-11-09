@@ -1,2 +1,4 @@
-- Add support for local token/key storage with [PowerShell SecretManagement](https://devblogs.microsoft.com/powershell/secretmanagement-and-secretstore-are-generally-available/).  Store your access or refresh token securely and have VenafiPS use it to create a new session.
-- Add `Get-TppClassAttribute` to list all attributes for a specific class.  Helpful for attribute validation and getting values for all attributes.
+- Remove validation/limitation from `Get-TppCustomField` to only retrieve classes of type X509 Certificate and Device
+- Retrieve Application Base custom fields during `New-VenafiSession`
+- Fix parameter sets in `Import-TppCertificate` requiring PrivateKey be provided with PKCS#12 certificate, [#37](https://github.com/gdbarron/VenafiPS/issues/37)
+- Add `-CertificateAuthorityAttribute` to `New-TppCertificate` to submit values to the CA during enrollment
