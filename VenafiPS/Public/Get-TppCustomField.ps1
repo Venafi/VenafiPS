@@ -3,10 +3,10 @@
 Get custom field details
 
 .DESCRIPTION
-Get details about custom fields for either certificates or devices
+Get details about custom fields
 
 .PARAMETER Class
-Class to get details on.  Value can be either Device or X509 Certificate
+Class to get details on
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -51,8 +51,7 @@ function Get-TppCustomField {
 
     [CmdletBinding()]
     param (
-        [Parameter(Mandatory)]
-        [ValidateSet('Device', 'X509 Certificate')]
+        [Parameter(Mandatory, ValueFromPipeline)]
         [string] $Class,
 
         [Parameter()]

@@ -503,11 +503,9 @@ function New-VenafiSession {
         # only applicable to tpp
         if ( $PSCmdlet.ParameterSetName -notin 'VaasKey', 'VaultVaasKey' ) {
             $newSession.Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue)
-            $certFields = Get-TppCustomField -VenafiSession $newSession -Class 'X509 Certificate' -ErrorAction SilentlyContinue
-            $deviceFields = Get-TppCustomField -VenafiSession $newSession -Class 'Device' -ErrorAction SilentlyContinue
-            $allFields = $certFields.Items
-            $allFields += $deviceFields.Items | Where-Object { $_.Guid -notin $allFields.Guid }
-            $newSession.CustomField = $allFields
+            $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-TppCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
+            # make sure we remove duplicates
+            $newSession.CustomField = $certFields.Items | Sort-Object -Property Guid -Unique
         }
 
         if ( $PassThru ) {
