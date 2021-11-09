@@ -91,22 +91,27 @@ function Import-TppCertificate {
 
         [Parameter(Mandatory, ParameterSetName = 'ByData')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [ValidateNotNullOrEmpty()]
         [String] $CertificateData,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [String] $Name,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [Hashtable] $EnrollmentAttribute,
 
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [ValidateNotNullOrEmpty()]
         [String] $PrivateKey,
 
         [Parameter(ParameterSetName = 'ByFile')]
         [Parameter(ParameterSetName = 'ByData')]
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [ValidateNotNullOrEmpty()]
         [SecureString] $Password,
 
         [Parameter()]
@@ -126,9 +131,22 @@ function Import-TppCertificate {
     }
 
     process {
+
+        Write-Verbose $PSCmdlet.ParameterSetName
+
         if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
             # get cert data from file
-            $CertificateData = Get-Content -Path $CertificatePath -Raw
+            if ($PSVersionTable.PSVersion.Major -lt 6) {
+                $cert = Get-Content $CertificatePath -Encoding Byte
+            }
+            else {
+                $cert = Get-Content $CertificatePath -AsByteStream
+            }
+
+            $thisCertData = [System.Convert]::ToBase64String($cert)
+        }
+        else {
+            $thisCertData = $CertificateData
         }
 
         $params = @{
@@ -137,7 +155,7 @@ function Import-TppCertificate {
             UriLeaf       = 'certificates/import'
             Body          = @{
                 PolicyDN        = $PolicyPath
-                CertificateData = $CertificateData
+                CertificateData = $thisCertData
             }
         }
 
@@ -147,7 +165,7 @@ function Import-TppCertificate {
 
         }
 
-        if ( $PSBoundParameters.ContainsKey('Reconcile') ) {
+        if ( $Reconcile.IsPresent ) {
             $params.Body.Reconcile = 'true'
         }
 
@@ -156,25 +174,19 @@ function Import-TppCertificate {
         }
 
 
-        if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
+        if ( $PSBoundParameters.ContainsKey('Password') ) {
+            $params.Body.Password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
         }
 
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
             $params.Body.PrivateKeyData = $PrivateKey
-            $plainTextPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
-            $params.Body.Password = $plainTextPassword
-        }
-        else {
-            if ( [System.IO.Path]::GetExtension($CertificatePath) -ne '.p12' ) {
-
-            }
         }
 
         $response = Invoke-TppRestMethod @params
         Write-Verbose ('Successfully imported certificate')
 
-        if ( $PassThru ) {
-            $response.CertificateDN | Get-TppObject
+        if ( $PassThru.IsPresent ) {
+            Get-TppObject -Guid $response.Guid
         }
     }
 }
