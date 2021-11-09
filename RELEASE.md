@@ -1,3 +1,4 @@
 - Remove validation/limitation from `Get-TppCustomField` to only retrieve classes of type X509 Certificate and Device
 - Retrieve Application Base custom fields during `New-VenafiSession`
 - Fix parameter sets in `Import-TppCertificate` requiring PrivateKey be provided with PKCS#12 certificate, [#37](https://github.com/gdbarron/VenafiPS/issues/37)
+- Add `-CertificateAuthorityAttribute` to `New-TppCertificate` to submit values to the CA during enrollment
