@@ -1,47 +1,75 @@
 <#
 .SYNOPSIS
-Get attributes for a given object
+Get object attributes as well as policies (policy attributes)
 
 .DESCRIPTION
-Retrieves object attributes.  You can either retrieve all attributes or individual ones.
+Retrieves object attributes as well as policies (aka policy attributes).
+You can either retrieve all attributes or individual ones.
 By default, the attributes returned are not the effective policy, but that can be requested with the
-EffectivePolicy switch.
-
-.PARAMETER InputObject
-TppObject which represents a unique object
+Effective switch.
+Policy folders can have attributes as well as policies which apply to the resultant objects.
+For more info on policies and how they are different than attributes, see https://docs.venafi.com/Docs/current/TopNav/Content/Policies/c_policies_tpp.php.
 
 .PARAMETER Path
 Path to the object to retrieve configuration attributes.  Just providing DN will return all attributes.
 
 .PARAMETER Guid
+To be deprecated; use -Path instead.
 Object Guid.  Just providing Guid will return all attributes.
 
 .PARAMETER AttributeName
 Only retrieve the value/values for this attribute
 
 .PARAMETER Effective
-Get the effective values of the attribute
+Get the objects attribute value, once policies have been applied.
+This is not applicable to policies, only objects.
+
+.PARAMETER All
+Get all effective object attribute values.
+This will perform 3 steps, get the object type, enumerate the attributes for the object type, and get all the effective values.
+The output will contain the path where the policy was applied from.
+Note, expect this to take longer than usual given the number of api calls.
+
+.PARAMETER Policy
+Get policies (aka policy attributes) instead of object attributes
+
+.PARAMETER ClassName
+Required when getting policy attributes.  Provide the class name to retrieve the value for.
+If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-Path, Guid
+Path
 
 .OUTPUTS
-PSCustomObject with properties Name, Value, IsCustomField, and CustomName
+PSCustomObject with properties:
+- Name
+- Value
+- PolicyPath (only applicable with -All)
+- IsCustomField (not applicable to policies)
+- CustomName (not applicable to policies)
 
 .EXAMPLE
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com'
-Retrieve all configurations for a certificate
-
-.EXAMPLE
-Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -EffectivePolicy
-Retrieve all effective configurations for a certificate
+Retrieve all values for an object, excluding values assigned by policy
 
 .EXAMPLE
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'driver name'
-Retrieve all the value for attribute driver name from certificate myapp.company.com
+Retrieve the value for a specific attribute
+
+.EXAMPLE
+Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'Contact' -Effective
+Retrieve the effective value for a specific attribute
+
+.EXAMPLE
+Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -All
+Retrieve all effective values for an object
+
+.EXAMPLE
+Get-TppAttribute -Path '\VED\Policy\My Folder' -Policy -Class 'X509 Certificate' -AttributeName 'Contact'
+Retrieve the policy attribute value for the specified policy folder
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/
@@ -50,13 +78,13 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/
 https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____27
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readall.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____28
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readall.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readeffectivepolicy.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____31
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readeffectivepolicy.php
 
 #>
 function Get-TppAttribute {
@@ -65,7 +93,8 @@ function Get-TppAttribute {
 
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'AllByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'AllEffectivePath')]
+        [Parameter(Mandatory, ParameterSetName = 'PolicyPath')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -76,17 +105,18 @@ function Get-TppAttribute {
                 }
             })]
         [Alias('DN')]
-        [String[]] $Path,
+        [String] $Path,
 
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByGuid', ValueFromPipeline)]
         [Parameter(Mandatory, ParameterSetName = 'ByGuid', ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        [guid[]] $Guid,
+        [guid] $Guid,
 
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByPath')]
         [Parameter(ParameterSetName = 'ByPath')]
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByGuid')]
         [Parameter(ParameterSetName = 'ByGuid')]
+        [Parameter(Mandatory, ParameterSetName = 'PolicyPath')]
         [ValidateNotNullOrEmpty()]
         [String[]] $Attribute,
 
@@ -94,6 +124,15 @@ function Get-TppAttribute {
         [Parameter(Mandatory, ParameterSetName = 'EffectiveByGuid')]
         [Alias('EffectivePolicy')]
         [Switch] $Effective,
+
+        [Parameter(Mandatory, ParameterSetName = 'AllEffectivePath')]
+        [switch] $All,
+
+        [Parameter(Mandatory, ParameterSetName = 'PolicyPath')]
+        [switch] $Policy,
+
+        [Parameter(Mandatory, ParameterSetName = 'PolicyPath')]
+        [string] $ClassName,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -103,26 +142,40 @@ function Get-TppAttribute {
 
         $VenafiSession.Validate() | Out-Null
 
-        if ( $PSBoundParameters.ContainsKey('Attribute') ) {
-            if ( $PSBoundParameters.ContainsKey('Effective') ) {
-                $uriLeaf = 'config/ReadEffectivePolicy'
-            }
-            else {
-                $uriLeaf = 'config/read'
-            }
-        }
-        else {
-            $uriLeaf = 'config/readall'
+        if ( $Guid ) {
+            Write-Warning '-Guid will be deprecated in a future release.  Please use -Path instead.'
         }
 
         $baseParams = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = $uriLeaf
-            Body       = @{
+            Method        = 'Post'
+            Body          = @{
                 ObjectDN = ''
             }
         }
+
+        if ( $Policy ) {
+            $uriLeaf = 'config/ReadPolicy'
+        }
+        else {
+            if ( $PSBoundParameters.ContainsKey('Attribute') ) {
+                if ( $Effective ) {
+                    $uriLeaf = 'config/ReadEffectivePolicy'
+                }
+                else {
+                    $uriLeaf = 'config/read'
+                }
+            }
+            else {
+                if ( $All ) {
+                    $uriLeaf = 'config/ReadEffectivePolicy'
+                }
+                else {
+                    $uriLeaf = 'config/readall'
+                }
+            }
+        }
+        $baseParams.UriLeaf = $uriLeaf
     }
 
     process {
@@ -137,71 +190,80 @@ function Get-TppAttribute {
             }
         }
 
-        foreach ($thisPath in $pathToProcess) {
+        $baseParams.Body['ObjectDN'] = $pathToProcess
 
-            $baseParams.Body['ObjectDN'] = $thisPath
+        if ( $All ) {
+            $className = Get-TppObject -Path $pathToProcess -VenafiSession $VenafiSession | Select-Object -ExpandProperty TypeName
+            $Attribute = Get-TppClassAttribute -ClassName $className -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name
+        }
 
+        if ( $Attribute ) {
 
-            # if specifying attribute name(s), it's a different rest api
-            if ( $PSBoundParameters.ContainsKey('Attribute') ) {
+            # get the attribute values one by one as there is no
+            # api which allows passing a list
+            $configValues = foreach ($thisAttribute in $Attribute) {
 
-                # get the attribute values one by one as there is no
-                # api which allows passing a list
-                $configValues = foreach ($thisAttribute in $Attribute) {
+                $params = $baseParams.Clone()
+                $params.Body += @{
+                    AttributeName = $thisAttribute
+                }
 
-                    $params = $baseParams.Clone()
+                # add the class for a policy call
+                if ( $ClassName ) {
                     $params.Body += @{
-                        AttributeName = $thisAttribute
-                    }
-
-                    $response = Invoke-TppRestMethod @params
-
-                    if ( $response ) {
-                        [PSCustomObject] @{
-                            Name  = $thisAttribute
-                            Value = $response.Values
-                        }
+                        'Class' = $ClassName
                     }
                 }
-            }
-            else {
-                $response = Invoke-TppRestMethod @baseParams
+
+                $response = Invoke-TppRestMethod @params
+
                 if ( $response ) {
-                    $configValues = $response.NameValues | Select-Object Name,
-                    @{
-                        n = 'Value'
-                        e = {
-                            $_.Values
-                        }
+                    [PSCustomObject] @{
+                        Name       = $thisAttribute
+                        Value      = $response.Values
+                        PolicyPath = $response.PolicyDN
                     }
                 }
-            }
-
-            if ( $configValues ) {
-
-                $configValues = @($configValues)
-
-                # convert custom field guids to names
-                foreach ($thisConfigValue in $configValues) {
-
-                    $customField = $VenafiSession.CustomField | Where-Object {$_.Guid -eq $thisConfigValue.Name}
-                    $thisConfigValue | Add-Member @{
-                        'IsCustomField' = $null -ne $customField
-                        'CustomName'    = $null
-                    }
-                    if ( $customField ) {
-                        $thisConfigValue.CustomName = $customField.Label
-                    }
-
-                    $thisConfigValue
-                }
-
-                # [PSCustomObject] @{
-                #     Path      = $thisPath
-                #     Attribute = $updatedConfigValues
-                # }
             }
         }
+        else {
+            $response = Invoke-TppRestMethod @baseParams
+            if ( $response ) {
+                $configValues = $response.NameValues | Select-Object Name,
+                @{
+                    n = 'Value'
+                    e = {
+                        $_.Values
+                    }
+                }
+            }
+        }
+
+        if ( $configValues ) {
+
+            $configValues = @($configValues)
+
+            # convert custom field guids to names
+            foreach ($thisConfigValue in $configValues) {
+
+                $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name }
+                $thisConfigValue | Add-Member @{
+                    'IsCustomField' = $null -ne $customField
+                    'CustomName'    = $null
+                }
+                if ( $customField ) {
+                    $thisConfigValue.CustomName = $customField.Label
+                }
+
+                $thisConfigValue
+            }
+
+            # [PSCustomObject] @{
+            #     Path      = $thisPath
+            #     Attribute = $updatedConfigValues
+            # }
+        }
+        # }
     }
 
     end {

@@ -14,6 +14,7 @@ foreach ( $folder in $folders) {
 
     Foreach ( $thisFile in $files ) {
         Try {
+            Write-Verbose ('dot sourcing {0}' -f $thisFile.FullName)
             . $thisFile.fullname
             if ( $folder -eq 'Public' ) {
                 Export-ModuleMember -Function $thisFile.Basename

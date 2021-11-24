@@ -302,217 +302,217 @@ function New-VenafiSession {
         }
     }
 
-    if ( $PSCmdlet.ShouldProcess($Server, 'New session') ) {
-        Switch ($PsCmdlet.ParameterSetName)	{
+    # if ( $PSCmdlet.ShouldProcess($Server, 'New session') ) {
+    Switch ($PsCmdlet.ParameterSetName)	{
 
-            { $_ -in 'KeyCredential', 'KeyIntegrated' } {
+        { $_ -in 'KeyCredential', 'KeyIntegrated' } {
 
-                Write-Warning 'Key-based authentication will be deprecated in release 21.4 in favor of token-based.  Get started with token authentication today, https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php.'
+            Write-Warning 'Key-based authentication will be deprecated in release 21.4 in favor of token-based.  Get started with token authentication today, https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php.'
 
-                if ( $PsCmdlet.ParameterSetName -eq 'KeyCredential' ) {
-                    $newSession.Connect($Credential)
-                }
-                else {
-                    # integrated
-                    $newSession.Connect($null)
-                }
-
+            if ( $PsCmdlet.ParameterSetName -eq 'KeyCredential' ) {
+                $newSession.Connect($Credential)
+            }
+            else {
+                # integrated
+                $newSession.Connect($null)
             }
 
-            { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate' } {
-                $params = @{
-                    AuthServer = $authServerUrl
-                    ClientId   = $ClientId
-                    Scope      = $Scope
-                }
+        }
 
-                if ($Credential) {
-                    $params.Credential = $Credential
-                }
-
-                if ($Certificate) {
-                    $params.Certificate = $Certificate
-                }
-
-                if ($State) {
-                    $params.State = $State
-                }
-
-                $token = New-TppToken @params -Verbose:$isVerbose
-                $newSession.Token = $token
-                $newSession.Expires = $token.Expires
+        { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate' } {
+            $params = @{
+                AuthServer = $authServerUrl
+                ClientId   = $ClientId
+                Scope      = $Scope
             }
 
-            'AccessToken' {
+            if ($Credential) {
+                $params.Credential = $Credential
+            }
+
+            if ($Certificate) {
+                $params.Certificate = $Certificate
+            }
+
+            if ($State) {
+                $params.State = $State
+            }
+
+            $token = New-TppToken @params -Verbose:$isVerbose
+            $newSession.Token = $token
+            $newSession.Expires = $token.Expires
+        }
+
+        'AccessToken' {
+            $newSession.Token = [PSCustomObject]@{
+                Server      = $authServerUrl
+                AccessToken = $AccessToken
+            }
+            # we don't have the expiry so create one
+            # rely on the api call itself to fail if access token is invalid
+            $newSession.Expires = (Get-Date).AddMonths(12)
+        }
+
+        'VaultAccessToken' {
+            $tokenSecret = Get-Secret -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+            if ( -not $tokenSecret ) {
+                throw "'$VaultAccessTokenName' secret not found in vault VenafiPS."
+            }
+
+            # check if metadata was stored or we should get from params
+            $secretInfo = Get-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+
+            if ( $secretInfo.Metadata.Count -gt 0 ) {
+                $newSession.ServerUrl = $secretInfo.Metadata.Server
+                $newSession.Expires = $secretInfo.Metadata.Expires
+                $newSession.Token = [PSCustomObject]@{
+                    Server      = $secretInfo.Metadata.AuthServer
+                    AccessToken = $tokenSecret
+                    ClientId    = $secretInfo.Metadata.ClientId
+                }
+
+                $metadataStored = $true
+            }
+            else {
+                # need to check params as not mandatory
+                if ( -not $Server -or -not $ClientId ) {
+                    throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
+                }
+
                 $newSession.Token = [PSCustomObject]@{
                     Server      = $authServerUrl
-                    AccessToken = $AccessToken
+                    AccessToken = $tokenSecret
                 }
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
                 $newSession.Expires = (Get-Date).AddMonths(12)
             }
-
-            'VaultAccessToken' {
-                $tokenSecret = Get-Secret -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
-                if ( -not $tokenSecret ) {
-                    throw "'$VaultAccessTokenName' secret not found in vault VenafiPS."
-                }
-
-                # check if metadata was stored or we should get from params
-                $secretInfo = Get-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
-
-                if ( $secretInfo.Metadata.Count -gt 0 ) {
-                    $newSession.ServerUrl = $secretInfo.Metadata.Server
-                    $newSession.Expires = $secretInfo.Metadata.Expires
-                    $newSession.Token = [PSCustomObject]@{
-                        Server      = $secretInfo.Metadata.AuthServer
-                        AccessToken = $tokenSecret
-                        ClientId    = $secretInfo.Metadata.ClientId
-                    }
-
-                    $metadataStored = $true
-                }
-                else {
-                    # need to check params as not mandatory
-                    if ( -not $Server -or -not $ClientId ) {
-                        throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
-                    }
-
-                    $newSession.Token = [PSCustomObject]@{
-                        Server      = $authServerUrl
-                        AccessToken = $tokenSecret
-                    }
-                    # we don't have the expiry so create one
-                    # rely on the api call itself to fail if access token is invalid
-                    $newSession.Expires = (Get-Date).AddMonths(12)
-                }
-            }
-
-            'RefreshToken' {
-                $params = @{
-                    AuthServer   = $authServerUrl
-                    ClientId     = $ClientId
-                    RefreshToken = $RefreshToken
-                }
-
-                $newToken = New-TppToken @params
-                $newSession.Token = $newToken
-                $newSession.Expires = $newToken.Expires
-            }
-
-            'VaultRefreshToken' {
-                $tokenSecret = Get-Secret -Name $VaultRefreshTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
-                if ( -not $tokenSecret ) {
-                    throw "'$VaultRefreshTokenName' secret not found in vault VenafiPS."
-                }
-
-                # check if metadata was stored or we should get from params
-                $secretInfo = Get-SecretInfo -Name $VaultRefreshTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
-
-                if ( $secretInfo.Metadata.Count -gt 0 ) {
-                    $params = @{
-                        AuthServer = $secretInfo.Metadata.AuthServer
-                        ClientId   = $secretInfo.Metadata.ClientId
-                    }
-
-                    $metadataStored = $true
-
-                }
-                else {
-                    # need to check params as not mandatory
-                    if ( -not $Server -or -not $ClientId ) {
-                        throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
-                    }
-
-                    $params = @{
-                        AuthServer = $authServerUrl
-                        ClientId   = $ClientId
-                    }
-                }
-
-                $params.RefreshToken = $tokenSecret
-
-                $newToken = New-TppToken @params
-                $newSession.Token = $newToken
-                $newSession.Expires = $newToken.Expires
-            }
-
-            'Vaas' {
-                $newSession.ServerUrl = $script:CloudUrl
-                $newSession.Key = $VaasKey
-            }
-
-            'VaultVaasKey' {
-                $newSession.ServerUrl = $script:CloudUrl
-                $keySecret = Get-Secret -Name $VaultVaasKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
-                if ( -not $keySecret ) {
-                    throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
-                }
-                $newSession.Key = $keySecret
-            }
-
-            Default {
-                throw ('Unknown parameter set {0}' -f $PSCmdlet.ParameterSetName)
-            }
         }
 
+        'RefreshToken' {
+            $params = @{
+                AuthServer   = $authServerUrl
+                ClientId     = $ClientId
+                RefreshToken = $RefreshToken
+            }
+
+            $newToken = New-TppToken @params
+            $newSession.Token = $newToken
+            $newSession.Expires = $newToken.Expires
+        }
+
+        'VaultRefreshToken' {
+            $tokenSecret = Get-Secret -Name $VaultRefreshTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+            if ( -not $tokenSecret ) {
+                throw "'$VaultRefreshTokenName' secret not found in vault VenafiPS."
+            }
+
+            # check if metadata was stored or we should get from params
+            $secretInfo = Get-SecretInfo -Name $VaultRefreshTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+
+            if ( $secretInfo.Metadata.Count -gt 0 ) {
+                $params = @{
+                    AuthServer = $secretInfo.Metadata.AuthServer
+                    ClientId   = $secretInfo.Metadata.ClientId
+                }
+
+                $metadataStored = $true
+
+            }
+            else {
+                # need to check params as not mandatory
+                if ( -not $Server -or -not $ClientId ) {
+                    throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
+                }
+
+                $params = @{
+                    AuthServer = $authServerUrl
+                    ClientId   = $ClientId
+                }
+            }
+
+            $params.RefreshToken = $tokenSecret
+
+            $newToken = New-TppToken @params
+            $newSession.Token = $newToken
+            $newSession.Expires = $newToken.Expires
+        }
+
+        'Vaas' {
+            $newSession.ServerUrl = $script:CloudUrl
+            $newSession.Key = $VaasKey
+        }
+
+        'VaultVaasKey' {
+            $newSession.ServerUrl = $script:CloudUrl
+            $keySecret = Get-Secret -Name $VaultVaasKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+            if ( -not $keySecret ) {
+                throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
+            }
+            $newSession.Key = $keySecret
+        }
+
+        Default {
+            throw ('Unknown parameter set {0}' -f $PSCmdlet.ParameterSetName)
+        }
+    }
+
+    if ( $VaultAccessTokenName ) {
+        # set new access token in vault
+        Set-Secret -Name $VaultAccessTokenName -Secret $newSession.Token.AccessToken -Vault 'VenafiPS'
+    }
+
+    if ( $VaultRefreshTokenName ) {
+        # set new refresh token in vault
+        if ( $newSession.Token.RefreshToken ) {
+            Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS'
+        }
+        else {
+            Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
+        }
+    }
+
+    if ( $VaultVaasKeyName ) {
+        # set new vaas key in vault
+        Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
+    }
+
+    if ( $VaultMetadata.IsPresent -or $metadataStored ) {
+        if ( -not $VaultAccessTokenName -and -not $VaultRefreshTokenName) {
+            throw 'Vaulting metadata requires either -VaultAccessTokenName or -VaultRefreshTokenName is provided'
+        }
+        $metadata = @{
+            Server     = $newSession.ServerUrl
+            AuthServer = $newSession.Token.Server
+            ClientId   = $newSession.Token.ClientId
+            Expires    = $newSession.Expires
+        }
+
+        $metadata | ConvertTo-Json | Write-Verbose
+
         if ( $VaultAccessTokenName ) {
-            # set new access token in vault
-            Set-Secret -Name $VaultAccessTokenName -Secret $newSession.Token.AccessToken -Vault 'VenafiPS'
+            Set-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -Metadata $metadata
         }
 
         if ( $VaultRefreshTokenName ) {
-            # set new refresh token in vault
-            if ( $newSession.Token.RefreshToken ) {
-                Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS'
-            }
-            else {
-                Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
-            }
-        }
-
-        if ( $VaultVaasKeyName ) {
-            # set new vaas key in vault
-            Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
-        }
-
-        if ( $VaultMetadata.IsPresent -or $metadataStored ) {
-            if ( -not $VaultAccessTokenName -and -not $VaultRefreshTokenName) {
-                throw 'Vaulting metadata requires either -VaultAccessTokenName or -VaultRefreshTokenName is provided'
-            }
-            $metadata = @{
-                Server     = $newSession.ServerUrl
-                AuthServer = $newSession.Token.Server
-                ClientId   = $newSession.Token.ClientId
-                Expires    = $newSession.Expires
-            }
-
-            $metadata | ConvertTo-Json | Write-Verbose
-
-            if ( $VaultAccessTokenName ) {
-                Set-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -Metadata $metadata
-            }
-
-            if ( $VaultRefreshTokenName ) {
-                Set-SecretInfo -Name $VaultRefreshTokenName -Vault 'VenafiPS' -Metadata $metadata
-            }
-        }
-
-        # will fail if user is on an older version.  this isn't required so bypass on failure
-        # only applicable to tpp
-        if ( $PSCmdlet.ParameterSetName -notin 'VaasKey', 'VaultVaasKey' ) {
-            $newSession.Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue)
-            $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-TppCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
-            # make sure we remove duplicates
-            $newSession.CustomField = $certFields.Items | Sort-Object -Property Guid -Unique
-        }
-
-        if ( $PassThru ) {
-            $newSession
-        }
-        else {
-            $Script:VenafiSession = $newSession
+            Set-SecretInfo -Name $VaultRefreshTokenName -Vault 'VenafiPS' -Metadata $metadata
         }
     }
+
+    # will fail if user is on an older version.  this isn't required so bypass on failure
+    # only applicable to tpp
+    if ( $PSCmdlet.ParameterSetName -notin 'Vaas', 'VaultVaasKey' ) {
+        $newSession.Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue)
+        $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-TppCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
+        # make sure we remove duplicates
+        $newSession.CustomField = $certFields.Items | Sort-Object -Property Guid -Unique
+    }
+
+    if ( $PassThru ) {
+        $newSession
+    }
+    else {
+        $Script:VenafiSession = $newSession
+    }
+    # }
 }
