@@ -81,6 +81,7 @@ https://api.venafi.cloud/webjars/swagger-ui/index.html?configUrl=%2Fv3%2Fapi-doc
 function Invoke-VenafiCertificateAction {
 
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Params being used in paramset check, not by variable')]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -223,7 +224,7 @@ function Invoke-VenafiCertificateAction {
 
         try {
             if ( $performInvoke ) {
-                $response = Invoke-VenafiRestMethod @params -FullResponse
+                Invoke-VenafiRestMethod @params -FullResponse | Out-Null
             }
         }
         catch {

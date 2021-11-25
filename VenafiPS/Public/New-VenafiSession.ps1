@@ -151,7 +151,7 @@ https://github.com/PowerShell/SecretStore
 #>
 function New-VenafiSession {
 
-    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'KeyIntegrated')]
+    [CmdletBinding(DefaultParameterSetName = 'KeyIntegrated')]
 
     param(
         [Parameter(Mandatory, ParameterSetName = 'KeyCredential')]
