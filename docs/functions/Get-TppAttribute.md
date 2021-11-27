@@ -1,42 +1,50 @@
 # Get-TppAttribute
 
 ## SYNOPSIS
-Get attributes for a given object
+Get object attributes as well as policies (policy attributes)
 
 ## SYNTAX
 
 ### ByPath (Default)
 ```
-Get-TppAttribute -Path <String[]> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Path <String> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
-### AllByPath
+### PolicyPath
 ```
-Get-TppAttribute -Path <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Policy] -ClassName <String>
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
+```
+
+### AllEffectivePath
+```
+Get-TppAttribute -Path <String> [-All] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### EffectiveByPath
 ```
-Get-TppAttribute -Path <String[]> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppAttribute -Guid <Guid[]> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Guid <Guid> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### EffectiveByGuid
 ```
-Get-TppAttribute -Guid <Guid[]> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Guid <Guid> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Retrieves object attributes. 
+Retrieves object attributes as well as policies (aka policy attributes).
 You can either retrieve all attributes or individual ones.
 By default, the attributes returned are not the effective policy, but that can be requested with the
-EffectivePolicy switch.
+Effective switch.
+Policy folders can have attributes as well as policies which apply to the resultant objects.
+For more info on policies and how they are different than attributes, see https://docs.venafi.com/Docs/current/TopNav/Content/Policies/c_policies_tpp.php.
 
 ## EXAMPLES
 
@@ -45,21 +53,35 @@ EffectivePolicy switch.
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com'
 ```
 
-Retrieve all configurations for a certificate
+Retrieve all values for an object, excluding values assigned by policy
 
 ### EXAMPLE 2
-```
-Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -EffectivePolicy
-```
-
-Retrieve all effective configurations for a certificate
-
-### EXAMPLE 3
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'driver name'
 ```
 
-Retrieve all the value for attribute driver name from certificate myapp.company.com
+Retrieve the value for a specific attribute
+
+### EXAMPLE 3
+```
+Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'Contact' -Effective
+```
+
+Retrieve the effective value for a specific attribute
+
+### EXAMPLE 4
+```
+Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -All
+```
+
+Retrieve all effective values for an object
+
+### EXAMPLE 5
+```
+Get-TppAttribute -Path '\VED\Policy\My Folder' -Policy -Class 'X509 Certificate' -AttributeName 'Contact'
+```
+
+Retrieve the policy attribute value for the specified policy folder
 
 ## PARAMETERS
 
@@ -68,8 +90,20 @@ Path to the object to retrieve configuration attributes.
 Just providing DN will return all attributes.
 
 ```yaml
-Type: String[]
-Parameter Sets: ByPath, AllByPath, EffectiveByPath
+Type: String
+Parameter Sets: ByPath, EffectiveByPath
+Aliases: DN
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+```yaml
+Type: String
+Parameter Sets: PolicyPath, AllEffectivePath
 Aliases: DN
 
 Required: True
@@ -80,11 +114,12 @@ Accept wildcard characters: False
 ```
 
 ### -Guid
+To be deprecated; use -Path instead.
 Object Guid. 
 Just providing Guid will return all attributes.
 
 ```yaml
-Type: Guid[]
+Type: Guid
 Parameter Sets: ByGuid, EffectiveByGuid
 Aliases:
 
@@ -112,7 +147,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String[]
-Parameter Sets: EffectiveByPath, EffectiveByGuid
+Parameter Sets: PolicyPath, EffectiveByPath, EffectiveByGuid
 Aliases:
 
 Required: True
@@ -123,7 +158,8 @@ Accept wildcard characters: False
 ```
 
 ### -Effective
-Get the effective values of the attribute
+Get the objects attribute value, once policies have been applied.
+This is not applicable to policies, only objects.
 
 ```yaml
 Type: SwitchParameter
@@ -133,6 +169,56 @@ Aliases: EffectivePolicy
 Required: True
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -All
+Get all effective object attribute values.
+This will perform 3 steps, get the object type, enumerate the attributes for the object type, and get all the effective values.
+The output will contain the path where the policy was applied from.
+Note, expect this to take longer than usual given the number of api calls.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: AllEffectivePath
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Policy
+Get policies (aka policy attributes) instead of object attributes
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PolicyPath
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ClassName
+Required when getting policy attributes. 
+Provide the class name to retrieve the value for.
+If unsure of the class name, add the value through the TPP UI and go to Support-\>Policy Attributes to find it.
+
+```yaml
+Type: String
+Parameter Sets: PolicyPath
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -158,10 +244,15 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Path, Guid
+### Path
 ## OUTPUTS
 
-### PSCustomObject with properties Name, Value, IsCustomField, and CustomName
+### PSCustomObject with properties:
+### - Name
+### - Value
+### - PolicyPath (only applicable with -All)
+### - IsCustomField (not applicable to policies)
+### - CustomName (not applicable to policies)
 ## NOTES
 
 ## RELATED LINKS
@@ -170,9 +261,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____27](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____27)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readall.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____28](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readall.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____28)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readall.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readall.php)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readeffectivepolicy.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____31](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readeffectivepolicy.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____31)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readeffectivepolicy.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readeffectivepolicy.php)
 
