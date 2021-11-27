@@ -61,6 +61,13 @@ Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVe
 
 Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
 
+### EXAMPLE 6
+```
+Find-TppCertificate | Get-VenafiCertificate
+```
+
+Get certificate info for all certs in TPP
+
 ## PARAMETERS
 
 ### -CertificateId

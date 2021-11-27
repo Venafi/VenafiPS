@@ -7,70 +7,67 @@ Create a new Venafi TPP or Venafi as a Service session
 
 ### KeyIntegrated (Default)
 ```
-New-VenafiSession -Server <String> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VenafiSession -Server <String> [-PassThru] [<CommonParameters>]
 ```
 
 ### VaultRefreshToken
 ```
 New-VenafiSession [-Server <String>] [-ClientId <String>] [-Scope <Hashtable>] -VaultRefreshTokenName <String>
- [-VaultMetadata] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VaultMetadata] [-PassThru] [<CommonParameters>]
 ```
 
 ### VaultAccessToken
 ```
 New-VenafiSession [-Server <String>] [-Scope <Hashtable>] -VaultAccessTokenName <String> [-VaultMetadata]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [<CommonParameters>]
 ```
 
 ### RefreshToken
 ```
 New-VenafiSession -Server <String> -ClientId <String> -RefreshToken <PSCredential>
- [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>] [-PassThru] [<CommonParameters>]
 ```
 
 ### AccessToken
 ```
 New-VenafiSession -Server <String> -AccessToken <PSCredential> [-VaultAccessTokenName <String>]
- [-VaultMetadata] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VaultMetadata] [-PassThru] [<CommonParameters>]
 ```
 
 ### TokenCertificate
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
  [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [<CommonParameters>]
 ```
 
 ### TokenIntegrated
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>]
  [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>]
- [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-PassThru] [<CommonParameters>]
 ```
 
 ### TokenOAuth
 ```
 New-VenafiSession -Server <String> -Credential <PSCredential> -ClientId <String> -Scope <Hashtable>
  [-State <String>] [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata]
- [-AuthServer <String>] [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-AuthServer <String>] [-PassThru] [<CommonParameters>]
 ```
 
 ### KeyCredential
 ```
-New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [<CommonParameters>]
 ```
 
 ### Vaas
 ```
-New-VenafiSession -VaasKey <PSCredential> [-VaultVaasKeyName <String>] [-PassThru] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+New-VenafiSession -VaasKey <PSCredential> [-VaultVaasKeyName <String>] [-PassThru] [<CommonParameters>]
 ```
 
 ### VaultVaasKey
 ```
-New-VenafiSession -VaultVaasKeyName <String> [-PassThru] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VenafiSession -VaultVaasKeyName <String> [-PassThru] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -480,37 +477,6 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -WhatIf
-Shows what would happen if the cmdlet runs.
-The cmdlet is not run.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: wi
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Confirm
-Prompts you for confirmation before running the cmdlet.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases: cf
-
-Required: False
-Position: Named
-Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
