@@ -152,6 +152,7 @@ https://github.com/PowerShell/SecretStore
 function New-VenafiSession {
 
     [CmdletBinding(DefaultParameterSetName = 'KeyIntegrated')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Not needed')]
 
     param(
         [Parameter(Mandatory, ParameterSetName = 'KeyCredential')]
