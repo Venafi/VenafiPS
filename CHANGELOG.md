@@ -1,3 +1,11 @@
+## 3.4.0
+- Add `-All` option to `Get-TppAttribute` to get ALL effective attribute values for an object.  This will provide the values as well as the path where the policy was applied
+- Add getting policies (policy attributes) with `Get-TppAttribute`
+- Add setting policies (policy attributes) with `Set-TppAttribute`
+- Add `Invoke-VenafiCertificateAction`.  This is your one stop shop for certificate actions on TPP or VaaS.  You can Retire, Reset, Renew, Push, Validate, or Revoke.
+- Cleanup output and verbose logging with `Remove-TppCertificate`
+- Fix parameter set issue in `New-VenafiSession`, ensure version and custom field info retrieval doesn't occur when creating a VaaS session
+
 ## 3.3.1
 - Remove validation/limitation from `Get-TppCustomField` to only retrieve classes of type X509 Certificate and Device
 - Retrieve Application Base custom fields during `New-VenafiSession`
