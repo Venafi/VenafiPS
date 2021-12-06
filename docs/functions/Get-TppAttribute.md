@@ -91,19 +91,7 @@ Just providing DN will return all attributes.
 
 ```yaml
 Type: String
-Parameter Sets: ByPath, EffectiveByPath
-Aliases: DN
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String
-Parameter Sets: PolicyPath, AllEffectivePath
+Parameter Sets: ByPath, PolicyPath, AllEffectivePath, EffectiveByPath
 Aliases: DN
 
 Required: True
