@@ -11,6 +11,7 @@ pages:
     - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
     - ConvertTo-TppGuid: functions/ConvertTo-TppGuid.md
     - ConvertTo-TppPath: functions/ConvertTo-TppPath.md
+    - Convert-TppObject: functions/Convert-TppObject.md
     - Export-VenafiCertificate: functions/Export-VenafiCertificate.md
     - Find-TppCertificate: functions/Find-TppCertificate.md
     - Find-TppCodeSignEnvironment: functions/Find-TppCodeSignEnvironment.md

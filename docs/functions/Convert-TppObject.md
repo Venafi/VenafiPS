@@ -1,52 +1,45 @@
-# Rename-TppObject
+# Convert-TppObject
 
 ## SYNOPSIS
-Rename and/or move an object
+Change the class/object type of an existing object
 
 ## SYNTAX
 
 ```
-Rename-TppObject [-Path] <String> [-NewPath] <String> [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
+Convert-TppObject [-Path] <String> [-Class] <String> [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Rename and/or move an object
+Change the class/object type of an existing object
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Rename-TppObject -Path '\VED\Policy\My Devices\OldDeviceName' -NewPath '\ved\policy\my devices\NewDeviceName'
+Convert-TppObject -Path '\ved\policy\' -Class 'X509 Device Certificate'
 ```
 
-Rename an object
-
-### EXAMPLE 2
-```
-Rename-TppObject -Path '\VED\Policy\My Devices\DeviceName' -NewPath '\ved\policy\new devices folder\DeviceName'
-```
-
-Move an object
+Convert an object to a different type
 
 ## PARAMETERS
 
 ### -Path
-Full path to an existing object
+Path to the object
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: SourceDN
+Aliases:
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -NewPath
-New path, including name
+### -Class
+New class/type
 
 ```yaml
 Type: String
@@ -81,16 +74,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### none
+### Path
 ## OUTPUTS
 
+### None
 ## NOTES
 
 ## RELATED LINKS
-
-[http://VenafiPS.readthedocs.io/en/latest/functions/Rename-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Rename-TppObject/)
-
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1)
-
-[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php)
-

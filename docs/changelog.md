@@ -1,3 +1,12 @@
+## 3.5.0
+- BREAKING CHANGE: change parameter `-NewName` to `-NewPath` in `Rename-TppObject` to allow moving an object in addition to renaming
+- Add `Convert-TppObject` to change the class/type of an existing object
+- Fix typos in examples for `Add-TppCertificateAssociation` and `Remove-TppCertificateAssociation`
+- Set the default for `-Path` in `Find-TppObject` to \ved\policy.  Running `Find-TppObject` without a path will now recursively search from \ved\policy.
+- Add additional pipeline options to `Get-TppAttribute`
+- Add help and examples to `Invoke-VenafiRestMethod`, [#48](https://github.com/gdbarron/VenafiPS/issues/48)
+- Set VenafiSession default value in `Invoke-VenafiRestMethod`, [#47](https://github.com/gdbarron/VenafiPS/issues/47)
+
 ## 3.4.0
 - Add `-All` option to `Get-TppAttribute` to get ALL effective attribute values for an object.  This will provide the values as well as the path where the policy was applied
 - Add getting policies (policy attributes) with `Get-TppAttribute`
