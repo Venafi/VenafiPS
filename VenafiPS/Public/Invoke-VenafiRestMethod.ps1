@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-Generic REST API call
+Ability to execute REST API calls which don't exist in a dedicated function yet
 
 .DESCRIPTION
-Generic REST API call
+Ability to execute REST API calls which don't exist in a dedicated function yet
 
 .PARAMETER VenafiSession
 VenafiSession object from New-VenafiSession.
@@ -29,14 +29,20 @@ None
 PSCustomObject
 
 .EXAMPLE
+Invoke-VenafiRestMethod -Method Delete -UriLeaf 'Discovery/{1345311e-83c5-4945-9b4b-1da0a17c45c6}'
+Api call
+
+.EXAMPLE
+Invoke-VenafiRestMethod -Method Post -UriLeaf 'Certificates/Revoke' -Body @{'CertificateDN'='\ved\policy\mycert.com'}
+Api call with optional payload
 
 #>
 function Invoke-VenafiRestMethod {
     [CmdletBinding(DefaultParameterSetName = 'Session')]
     param (
-        [Parameter(Mandatory, ParameterSetName = 'Session')]
+        [Parameter(ParameterSetName = 'Session')]
         [ValidateNotNullOrEmpty()]
-        [VenafiSession] $VenafiSession,
+        [VenafiSession] $VenafiSession = $script:VenafiSession,
 
         [Parameter(Mandatory, ParameterSetName = 'URL')]
         [ValidateNotNullOrEmpty()]

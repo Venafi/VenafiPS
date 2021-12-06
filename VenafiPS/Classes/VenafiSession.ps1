@@ -21,6 +21,7 @@ class VenafiSession {
     # AuthType can be key, token or vaas
     # key is TPP and all functions
     # token is TPP and some functions require it
+    # tpp is key or token for tpp
     # vaas is Venafi as a Service
 
     # return $AuthType so functions know what we're working with
@@ -34,8 +35,12 @@ class VenafiSession {
                     throw "You must first connect to Venafi as a Service with New-VenafiSession -VaasKey"
                 }
 
+                'tpp' {
+                    throw "You must first connect to a TPP server with New-VenafiSession"
+                }
+
                 Default {
-                    throw "You must first connect to the TPP server with New-VenafiSession"
+                    throw "You must first connect to either Venafi as a Service or a TPP server with New-VenafiSession"
                 }
             }
 
@@ -109,6 +114,10 @@ class VenafiSession {
                 $newToken = New-TppToken -VenafiSession $this
                 $this.Token = $newToken
                 $this.Expires = $newToken.Expires
+            }
+
+            'tpp' {
+                # handled by key/token above
             }
 
             'vaas' {
