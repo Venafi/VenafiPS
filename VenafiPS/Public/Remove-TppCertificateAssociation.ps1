@@ -32,15 +32,15 @@ InputObject, Path
 None
 
 .EXAMPLE
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
 Remove a single application object association
 
 .EXAMPLE
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -OrphanCleanup
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -OrphanCleanup
 Disassociate and delete the application object
 
 .EXAMPLE
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -RemoveAll
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -RemoveAll
 Remove all certificate associations
 
 .LINK

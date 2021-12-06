@@ -29,11 +29,11 @@ InputObject, Path
 None
 
 .EXAMPLE
-Add-TppCertificateAssocation -CertificatePath '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
+Add-TppCertificateAssociation -CertificatePath '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
 Add a single application object association
 
 .EXAMPLE
-Add-TppCertificateAssocation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -PushCertificate
+Add-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -PushCertificate
 Add the association and push the certificate
 
 .LINK

@@ -1,15 +1,15 @@
 <#
 .SYNOPSIS
-Rename an object of any type
+Rename and/or move an object
 
 .DESCRIPTION
-Rename an object of any type
+Rename and/or move an object
 
 .PARAMETER Path
-Full path to an object in TPP
+Full path to an existing object
 
-.PARAMETER NewName
-New name for the object
+.PARAMETER NewPath
+New path, including name
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -20,20 +20,21 @@ none
 .OUTPUTS
 
 .EXAMPLE
-Rename-TppObject -Path '\VED\Policy\My Devices\OldDeviceName' -NewName 'NewDeviceName'
-Rename device
+Rename-TppObject -Path '\VED\Policy\My Devices\OldDeviceName' -NewPath '\ved\policy\my devices\NewDeviceName'
+Rename an object
+
+.EXAMPLE
+Rename-TppObject -Path '\VED\Policy\My Devices\DeviceName' -NewPath '\ved\policy\new devices folder\DeviceName'
+Move an object
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Rename-TppObject/
 
 .LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppObject/
-
-.LINK
 https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____35
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php
 
 #>
 function Rename-TppObject {
@@ -53,24 +54,13 @@ function Rename-TppObject {
 
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [String] $NewName,
+        [String] $NewPath,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate() | Out-Null
-
-    # ensure the object to rename already exists
-    if ( -not (Test-TppObject -Path $Path -ExistOnly -VenafiSession $VenafiSession) ) {
-        throw ("{0} does not exist" -f $Path)
-    }
-
-    # ensure the new object doesn't already exist
-    $newDN = "{0}\{1}" -f (Split-Path $Path -Parent), $NewName
-    if ( Test-TppObject -Path $newDN -ExistOnly -VenafiSession $VenafiSession ) {
-        throw ("{0} already exists" -f $newDN)
-    }
+    $VenafiSession.Validate('tpp') | Out-Null
 
     $params = @{
         VenafiSession = $VenafiSession
@@ -78,7 +68,7 @@ function Rename-TppObject {
         UriLeaf    = 'config/RenameObject'
         Body       = @{
             ObjectDN    = $Path
-            NewObjectDN = $newDN
+            NewObjectDN = $NewPath
         }
     }
 
