@@ -5,7 +5,7 @@ Sets a value on an objects attribute or policies (policy attributes)
 
 ## SYNTAX
 
-### Object
+### Object (Default)
 ```
 Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-VenafiSession <VenafiSession>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
