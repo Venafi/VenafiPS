@@ -1,3 +1,7 @@
+## 3.5.1
+- Older versions of TPP failing to update attributes, [#50](https://github.com/gdbarron/VenafiPS/issues/50)
+- Fix pipeline for `-Path` parameter with `Set-TppAttribute`
+
 ## 3.5.0
 - BREAKING CHANGE: change parameter `-NewName` to `-NewPath` in `Rename-TppObject` to allow moving an object in addition to renaming
 - Add `Convert-TppObject` to change the class/type of an existing object

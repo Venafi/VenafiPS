@@ -71,7 +71,7 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config
 #>
 function Set-TppAttribute {
 
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Object')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Being flagged incorrectly')]
 
     param (
@@ -178,7 +178,7 @@ function Set-TppAttribute {
                 else {
                     $baseFields += @{
                         Name  = $thisKey
-                        Value = $thisValue
+                        Value = @($thisValue)
                     }
                 }
             }
