@@ -86,6 +86,34 @@ function Get-VenafiCertificate {
             VenafiSession = $VenafiSession
             Method        = 'Get'
         }
+
+        $selectProps = @{
+            Property        =
+            @{
+                n = 'Name'
+                e = { $_.Name }
+            },
+            @{
+                n = 'TypeName'
+                e = { $_.SchemaClass }
+            },
+            @{
+                n = 'Path'
+                e = { $_.DN }
+            }, @{
+                n = 'Guid'
+                e = { [guid]$_.guid }
+            }, @{
+                n = 'ParentPath'
+                e = { $_.ParentDN }
+            }, @{
+                n = 'CreatedOn'
+                e = { [datetime]$_.CreatedOn }
+            },
+            '*'
+            ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name', 'CreatedOn'
+        }
+
     }
 
     process {
@@ -126,31 +154,7 @@ function Get-VenafiCertificate {
 
                     $response = Invoke-VenafiRestMethod @params
 
-                    $selectProps = @{
-                        Property        =
-                        @{
-                            n = 'Name'
-                            e = { $_.Name }
-                        },
-                        @{
-                            n = 'TypeName'
-                            e = { $_.SchemaClass }
-                        },
-                        @{
-                            n = 'Path'
-                            e = { $_.DN }
-                        }, @{
-                            n = 'Guid'
-                            e = { [guid]$_.guid }
-                        }, @{
-                            n = 'ParentPath'
-                            e = { $_.ParentDN }
-                        },
-                        '*'
-                        ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name'
-                    }
-
-                    if ( $IncludePreviousVersions.IsPresent ) {
+                    if ( $IncludePreviousVersions ) {
                         $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}/PreviousVersions")
                         $params.Body = @{}
 
@@ -163,8 +167,21 @@ function Get-VenafiCertificate {
 
                         $previous = Invoke-VenafiRestMethod @params
 
+                        if ( $previous.PreviousVersions ) {
+                            $previous.PreviousVersions.CertificateDetails | ForEach-Object {
+                                $_.StoreAdded = [datetime]$_.StoreAdded
+                                $_.ValidFrom = [datetime]$_.ValidFrom
+                                $_.ValidTo = [datetime]$_.ValidTo
+                            }
+                        }
+
                         $response | Add-Member @{'PreviousVersions' = $previous.PreviousVersions }
                     }
+
+                    # object transformations
+                    $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
+                    $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
+                    $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
                     $response | Select-Object @selectProps
 
                 }

@@ -1,2 +1,1 @@
-- Older versions of TPP failing to update attributes, [#50](https://github.com/gdbarron/VenafiPS/issues/50)
-- Fix pipeline for `-Path` parameter with `Set-TppAttribute`
+- Convert dates from ISO 8601 to datetime objects in `Get-VenafiCertificate`
