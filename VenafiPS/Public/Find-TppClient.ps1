@@ -4,10 +4,10 @@ Get information about registered Server Agents or Agentless clients
 
 .DESCRIPTION
 Get information about registered Server Agent or Agentless clients.
-At least one filter must be provided
 
 .PARAMETER ClientType
-The client category
+The client type.
+Allowed values include VenafiAgent, AgentJuniorMachine, AgentJuniorUser, Portal, Agentless, PreEnrollment, iOS, Android
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -22,6 +22,10 @@ PSCustomObject with the following properties:
 - FQDN
 - OsName
 - Username
+
+.EXAMPLE
+Find-TppClient
+Find all clients
 
 .EXAMPLE
 Find-TppClient -ClientType Portal
@@ -64,8 +68,9 @@ function Find-TppClient {
             $params.Body.ClientType = $ClientType
         }
 
+        # if no filters provided, get all
         if ( $params.Body.Count -eq 0 ) {
-            throw 'At least one filter must be provided'
+            $params.Body.LastSeenOnLess = (Get-Date) | ConvertTo-UtcIso8601
         }
     }
 
