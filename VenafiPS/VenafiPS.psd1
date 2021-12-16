@@ -90,7 +90,8 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'Remove-TppPermission', 'Rename-TppObject', 'Revoke-TppCertificate',
                'Revoke-TppToken', 'Set-TppAttribute', 'Set-TppCodeSignProjectStatus',
                'Set-TppPermission', 'Set-TppWorkflowTicketStatus', 'Test-ModuleHash',
-               'Test-TppIdentity', 'Test-TppObject', 'Test-TppToken', 'Write-TppLog', 'Get-TppCredential','Set-TppCredential'
+               'Test-TppIdentity', 'Test-TppObject', 'Test-TppToken', 'Write-TppLog', 'Get-TppCredential','Set-TppCredential',
+               'Remove-TppClient', 'Get-TppClient'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
