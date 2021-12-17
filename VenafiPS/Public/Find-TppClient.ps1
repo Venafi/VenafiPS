@@ -16,12 +16,7 @@ Session object created from New-VenafiSession method.  The value defaults to the
 None
 
 .OUTPUTS
-PSCustomObject with the following properties:
-- ClientId
-- ClientType
-- FQDN
-- OsName
-- Username
+PSCustomObject
 
 .EXAMPLE
 Find-TppClient
@@ -38,7 +33,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppClient/
 https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppClient.ps1
 
 .LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Client.php
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-ClientDetails.php
 
 #>
 function Find-TppClient {
@@ -60,7 +55,7 @@ function Find-TppClient {
         $params = @{
             VenafiSession = $VenafiSession
             Method        = 'Get'
-            UriLeaf       = 'Client/'
+            UriLeaf       = 'Client/Details/'
             Body          = @{ }
         }
 
