@@ -41,7 +41,7 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Creden
 #>
 function Set-TppCredential {
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -125,10 +125,13 @@ function Set-TppCredential {
         $params.Body.CredentialPath = $Path
         $params.Body.FriendlyName = $friendlyName
         $params.Body.Values = @($newValues)
-        $response = Invoke-VenafiRestMethod @params
 
-        if ( $response.Result -ne 1 ) {
-            Write-Error $response.Error
+        if ( $PSCmdlet.ShouldProcess( $Path )) {
+            $response = Invoke-VenafiRestMethod @params
+
+            if ( $response.Result -ne 1 ) {
+                Write-Error $response.Error
+            }
         }
     }
 }
