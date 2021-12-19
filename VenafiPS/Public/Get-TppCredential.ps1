@@ -33,6 +33,7 @@ https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppCredential
 function Get-TppCredential {
 
     [CmdletBinding()]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Generating cred from api call response data')]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
