@@ -26,7 +26,7 @@ Find a vault id
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppVaultId/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppVaultId.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppVaultId.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php

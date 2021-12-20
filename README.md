@@ -1,6 +1,6 @@
 # VenafiPS - Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!
 
-![PSSA](https://github.com/gdbarron/VenafiPS/actions/workflows/powershell-analysis.yml/badge.svg)
+![PSSA](https://github.com/Venafi/VenafiPS/actions/workflows/powershell-analysis.yml/badge.svg)
 [![Build Status](https://dev.azure.com/gd-barron/VenafiTppPS/_apis/build/status/VenafiPS?branchName=main)](https://dev.azure.com/gd-barron/VenafiTppPS/_build/latest?definitionId=6&branchName=main)
 [![Documentation Status](https://readthedocs.org/projects/venafips/badge/?version=latest)](https://venafips.readthedocs.io/en/latest/?badge=latest)
 

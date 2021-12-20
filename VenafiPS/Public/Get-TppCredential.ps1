@@ -27,7 +27,7 @@ Get a credential
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCredential/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppCredential.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppCredential.ps1
 
 #>
 function Get-TppCredential {

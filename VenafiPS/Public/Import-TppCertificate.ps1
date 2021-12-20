@@ -39,7 +39,7 @@ By default, this function will import and replace the certificate regardless of 
 By using this parameter, this function will import, but use newest. Only import the certificate when no Certificate object exists with a past, present, or current version of the imported certificate.
 If a match is found between the Certificate object and imported certificate, activate the certificate with the most current 'Valid From' date.
 Archive the unused certificate, even if it is the imported certificate, to the History tab.
-See https://github.com/gdbarron/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
+See https://github.com/Venafi/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
 
 .PARAMETER PassThru
 Return a TppObject representing the newly imported object.

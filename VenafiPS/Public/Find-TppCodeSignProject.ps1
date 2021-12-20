@@ -29,7 +29,7 @@ Find all projects that match the name CSTest
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCodeSignProject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignProject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignProject.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.3/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-EnumerateProjects.php?tocpath=CodeSign%20Protect%20SDK%20reference%7CProjects%20and%20environments%7C_____8

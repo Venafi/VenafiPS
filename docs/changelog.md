@@ -2,7 +2,7 @@
 - Convert dates from ISO 8601 to datetime objects in `Get-VenafiCertificate`
 
 ## 3.5.1
-- Older versions of TPP failing to update attributes, [#50](https://github.com/gdbarron/VenafiPS/issues/50)
+- Older versions of TPP failing to update attributes, [#50](https://github.com/Venafi/VenafiPS/issues/50)
 - Fix pipeline for `-Path` parameter with `Set-TppAttribute`
 
 ## 3.5.0
@@ -11,8 +11,8 @@
 - Fix typos in examples for `Add-TppCertificateAssociation` and `Remove-TppCertificateAssociation`
 - Set the default for `-Path` in `Find-TppObject` to \ved\policy.  Running `Find-TppObject` without a path will now recursively search from \ved\policy.
 - Add additional pipeline options to `Get-TppAttribute`
-- Add help and examples to `Invoke-VenafiRestMethod`, [#48](https://github.com/gdbarron/VenafiPS/issues/48)
-- Set VenafiSession default value in `Invoke-VenafiRestMethod`, [#47](https://github.com/gdbarron/VenafiPS/issues/47)
+- Add help and examples to `Invoke-VenafiRestMethod`, [#48](https://github.com/Venafi/VenafiPS/issues/48)
+- Set VenafiSession default value in `Invoke-VenafiRestMethod`, [#47](https://github.com/Venafi/VenafiPS/issues/47)
 
 ## 3.4.0
 - Add `-All` option to `Get-TppAttribute` to get ALL effective attribute values for an object.  This will provide the values as well as the path where the policy was applied
@@ -25,7 +25,7 @@
 ## 3.3.1
 - Remove validation/limitation from `Get-TppCustomField` to only retrieve classes of type X509 Certificate and Device
 - Retrieve Application Base custom fields during `New-VenafiSession`
-- Fix parameter sets in `Import-TppCertificate` requiring PrivateKey be provided with PKCS#12 certificate, [#37](https://github.com/gdbarron/VenafiPS/issues/37)
+- Fix parameter sets in `Import-TppCertificate` requiring PrivateKey be provided with PKCS#12 certificate, [#37](https://github.com/Venafi/VenafiPS/issues/37)
 - Add `-CertificateAuthorityAttribute` to `New-TppCertificate` to submit values to the CA during enrollment
 
 ## 3.3.0
@@ -33,19 +33,19 @@
 - Add `Get-TppClassAttribute` to list all attributes for a specific class.  Helpful for attribute validation and getting values for all attributes.
 
 ## 3.2.0
-- Add support for token refresh to `New-VenafiSession` and `New-TppToken`.  Auto-refresh $VenafiSession when token expires and we have a refresh token.  [#33](https://github.com/gdbarron/VenafiPS/issues/33)
-- Fix invalid grant details in `Test-TppToken`, [#32](https://github.com/gdbarron/VenafiPS/issues/32)
+- Add support for token refresh to `New-VenafiSession` and `New-TppToken`.  Auto-refresh $VenafiSession when token expires and we have a refresh token.  [#33](https://github.com/Venafi/VenafiPS/issues/33)
+- Fix invalid grant details in `Test-TppToken`, [#32](https://github.com/Venafi/VenafiPS/issues/32)
 - Update Version in VenafiSession object, from `Get-TppVersion`, to be of type Version.  Drop Revision from version so now only 3 octets.  This assists in performing version validation.
 - Update `New-TppToken` to account for a bug in pre 21.3 which expected the client_id to be lowercase
 - Update `Test-TppToken` to validate the tpp version is supported
 
 ## 3.1.7
-- Fix/finalize certificate-based oauth token support, [#29](https://github.com/gdbarron/VenafiPS/issues/29)
+- Fix/finalize certificate-based oauth token support, [#29](https://github.com/Venafi/VenafiPS/issues/29)
 
 ## 3.1.6
 - Thanks to @harrisonmeister for this contribution!
-- Add support to `Export-VenafiCertificate` for `-IncludeChain` and `-IncludePrivateKey` when using JKS format, [#24](https://github.com/gdbarron/VenafiPS/issues/24) and [#26](https://github.com/gdbarron/VenafiPS/issues/26)
-- Add 'CertificateData' to the list of values hidden with `Write-VerboseWithSecret`, [#25](https://github.com/gdbarron/VenafiPS/issues/25)
+- Add support to `Export-VenafiCertificate` for `-IncludeChain` and `-IncludePrivateKey` when using JKS format, [#24](https://github.com/Venafi/VenafiPS/issues/24) and [#26](https://github.com/Venafi/VenafiPS/issues/26)
+- Add 'CertificateData' to the list of values hidden with `Write-VerboseWithSecret`, [#25](https://github.com/Venafi/VenafiPS/issues/25)
 - Help updates
 
 ## 3.1.5
@@ -58,7 +58,7 @@
 - Update `Get-VenafiCertificate` to get historical certificate versions with `-IncludePreviousVersions`.  `-ExcludeExpired` and `-ExcludeRevoked` filters the results.
 
 ## 3.1.4
-- Fix [#19](https://github.com/gdbarron/VenafiPS/issues/19), `Revoke-TppToken -AccessToken` not decrypting password
+- Fix [#19](https://github.com/Venafi/VenafiPS/issues/19), `Revoke-TppToken -AccessToken` not decrypting password
 - Update `Set-TppAttribute`
   - Change from name and value parameters to hashtable
   - API calls were sending deprecated payloads, fix this
@@ -75,20 +75,20 @@
 - Add -UseBasicParsing to `Invoke-WebRequest` to avoid IE profile error
 
 ## 3.1.0
-- Add `-CountOnly` to `Find-TppCertificate` to return the number of certificates found based on the filters provided, [#12](https://github.com/gdbarron/VenafiPS/issues/12)
+- Add `-CountOnly` to `Find-TppCertificate` to return the number of certificates found based on the filters provided, [#12](https://github.com/Venafi/VenafiPS/issues/12)
 - Move from `Invoke-RestMethod` to `Invoke-WebRequest` in `Invoke-VenafiRestMethod` so we get response headers, to be used with `-CountOnly` above.  `Invoke-VenafiRestMethod` has a new parameter, `-FullResponse`, to retrieve the complete response, not just content value.
 - Add `New-HttpQueryString` private function to support HEAD api calls which require a query string and not body.
 - Fix `Test-TppIdentityFormat` which was failing when the identity guid was surrounded with curly braces
 - Replace `-Limit` parameter and standardize on `-First`
 
 ## 3.0.3
-- Fix [#10](https://github.com/gdbarron/VenafiPS/issues/10), Get-VenafiCertificate not recognizing session.
+- Fix [#10](https://github.com/Venafi/VenafiPS/issues/10), Get-VenafiCertificate not recognizing session.
 
 ## 3.0.2
 - Add `Test-ModuleHash` to validate the script files in the module.  The release pipeline has been updated to create a GitHub release with a file which stores the file hashes with SHA256.  This function will validate the current module against these hashes and provide true/false for success or failure.
 
 ## 3.0.1
-- Fix [#6](https://github.com/gdbarron/VenafiPS/issues/6), truncation on json conversion.
+- Fix [#6](https://github.com/Venafi/VenafiPS/issues/6), truncation on json conversion.
 
 ## 3.0
 - Rebrand from VenafiTppPS to VenafiPS as the module will now support Venafi products other than TPP.  Functions with -Tpp in the name will now be TPP only, -Vaas will be for Venafi as a Service only, and -Venafi will be both

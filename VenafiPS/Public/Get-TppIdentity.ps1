@@ -46,7 +46,7 @@ Get identity details for user in the current session
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppIdentity/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppIdentity.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppIdentity.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php

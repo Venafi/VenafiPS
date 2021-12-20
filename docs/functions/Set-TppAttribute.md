@@ -18,7 +18,7 @@ Set-TppAttribute -Path <String> -Attribute <Hashtable> [-Policy] -ClassName <Str
 ```
 
 ## DESCRIPTION
-Set the value on an objects attribute. 
+Set the value on an objects attribute.
 The attribute can either be built-in or custom.
 You can also set policies (policy attributes).
 
@@ -77,7 +77,7 @@ Accept wildcard characters: False
 ```
 
 ### -Attribute
-Hashtable with names and values to be set. 
+Hashtable with names and values to be set.
 If setting a custom field, you can use either the name or guid as the key.
 
 ```yaml
@@ -93,7 +93,7 @@ Accept wildcard characters: False
 ```
 
 ### -BypassValidation
-Bypass data validation. 
+Bypass data validation.
 Only appicable to custom fields.
 
 ```yaml
@@ -124,7 +124,7 @@ Accept wildcard characters: False
 ```
 
 ### -ClassName
-Required when setting policy attributes. 
+Required when setting policy attributes.
 Provide the class name to set the value for.
 If unsure of the class name, add the value through the TPP UI and go to Support-\>Policy Attributes to find it.
 
@@ -141,7 +141,7 @@ Accept wildcard characters: False
 ```
 
 ### -Lock
-Lock the value on the policy. 
+Lock the value on the policy.
 Only applicable to setting policies.
 
 ```yaml
@@ -157,7 +157,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -218,7 +218,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php)
 

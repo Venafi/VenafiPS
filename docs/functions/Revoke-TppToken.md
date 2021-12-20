@@ -66,7 +66,7 @@ Accept wildcard characters: False
 ```
 
 ### -AccessToken
-Access token to be revoked. 
+Access token to be revoked.
 Provide a credential object with the access token as the password.
 
 ```yaml
@@ -112,7 +112,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -173,7 +173,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppToken/](http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppToken/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppToken.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppToken.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppToken.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppToken.ps1)
 
 [https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Revoke-Token.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13](https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Revoke-Token.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13)
 

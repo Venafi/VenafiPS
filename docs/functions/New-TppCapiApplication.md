@@ -58,7 +58,7 @@ Create a new application and return a TppObject for the newly created app
 ## PARAMETERS
 
 ### -Path
-Full path, including name, to the application to be created. 
+Full path, including name, to the application to be created.
 The application must be created under a device.
 Alternatively, provide the path to the device and provide ApplicationName.
 
@@ -75,7 +75,7 @@ Accept wildcard characters: False
 ```
 
 ### -ApplicationName
-1 or more application names to create. 
+1 or more application names to create.
 Path property must be a path to a device.
 
 ```yaml
@@ -166,7 +166,7 @@ Accept wildcard characters: False
 ```
 
 ### -Disable
-Set processing to disabled. 
+Set processing to disabled.
 It is enabled by default.
 
 ```yaml
@@ -259,7 +259,7 @@ Accept wildcard characters: False
 ```
 
 ### -PushCertificate
-Push the certificate to the application. 
+Push the certificate to the application.
 CertificatePath must be provided.
 
 ```yaml
@@ -306,7 +306,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -367,9 +367,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/)
 
