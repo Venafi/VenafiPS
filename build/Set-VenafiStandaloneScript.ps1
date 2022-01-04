@@ -3,6 +3,7 @@
     Create standalone script with VenafiPS functionality, but without the module installed
 .DESCRIPTION
     Search the provided script for VenafiPS references and create a new script with all the required VenafiPS code in it.
+    The new script will be created in the same folder as the original with -Standalone appended.
     Optionally, you can select the code from a specific VenafiPS version.  It must be installed already.
 .EXAMPLE
     Set-VenafiStandaloneScript -ScriptPath c:\temp\old.ps1
@@ -109,12 +110,12 @@ begin {
                 Get-ModuleCommand -ModuleName VenafiPS
                 Get module and function info from most recent module version found
             .EXAMPLE
-                Get-ModuleCommand -ModuleName VenafiPS -Version
+                Get-ModuleCommand -ModuleName VenafiPS -Version 3.2
                 Get module and function info from specific version
             .INPUTS
                 ModuleName
             .OUTPUTS
-                Hashtable, Module and Functions
+                Hashtable, Module and Functions keys
             #>
 
         [CmdLetBinding()]
@@ -137,8 +138,9 @@ begin {
 
         Process {
             $params = @{
-                Name  = $ModuleName
-                Force = $true
+                Name     = $ModuleName
+                Force    = $true
+                PassThru = $true
             }
 
             if ( $Version ) {
@@ -148,10 +150,13 @@ begin {
             $thisModule = Import-Module @params
 
             if ( $thisModule ) {
-                $functions = $thisModule.Invoke({ Get-Command -Module $ModuleName -CommandType Function })
+                # must precreate the scriptblock to ensure $ModuleName is expanded
+                $sb = [scriptblock]::Create("Get-Command -Module $ModuleName -CommandType Function")
+                # invoking from within the module is how we get the private functions
+                $functions = $thisModule.Invoke($sb, $null)
 
                 @{
-                    Module    = $module
+                    Module    = $thisModule
                     Functions = $functions
                 }
             }
@@ -243,7 +248,7 @@ process {
     foreach ($thisClass in $classFiles) {
         $fullClass = "`r`n{0}`r`n`r`n" -f (Get-Content $thisClass.FullName -Raw)
         $newScript.Insert($addOffset, $fullClass) | Out-Null
-        $addOffset += $fullEnum.Length
+        $addOffset += $fullClass.Length
     }
 
     $fileExt = [System.IO.Path]::GetExtension($ScriptPath)
