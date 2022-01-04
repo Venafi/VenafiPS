@@ -1,19 +1,19 @@
 <#
 .SYNOPSIS
-    Short description
+    Create standalone script with VenafiPS functionality, but without the module installed
 .DESCRIPTION
-    Long description
+    Search the provided script for VenafiPS references and create a new script with all the required VenafiPS code in it.
+    Optionally, you can select the code from a specific VenafiPS version.  It must be installed already.
 .EXAMPLE
-    PS C:\> <example usage>
-    Explanation of what the example does
-.INPUTS
-    Inputs (if any)
-.OUTPUTS
-    Output (if any)
+    Set-VenafiStandaloneScript -ScriptPath c:\temp\old.ps1
+    Create a new script
+.EXAMPLE
+    Set-VenafiStandaloneScript -ScriptPath c:\temp\old.ps1 -ModuleVersion 3.2
+    Create a new script with a specific version of the VenafiPS module code
 .NOTES
     don't use VenafiPS aliases, not supported
     TODO
-    - add classes/enums
+    - add classes/enums - done
     - remove requires/import statements?
     -
 #>
@@ -99,21 +99,22 @@ begin {
         }
     }
 
-    function Get-ModuleCommand {
+    function Get-ModuleFunction {
         <#
             .SYNOPSIS
                 Get public and private module functions
             .DESCRIPTION
                 Long description
             .EXAMPLE
-                PS C:\> <example usage>
-                Explanation of what the example does
+                Get-ModuleCommand -ModuleName VenafiPS
+                Get module and function info from most recent module version found
+            .EXAMPLE
+                Get-ModuleCommand -ModuleName VenafiPS -Version
+                Get module and function info from specific version
             .INPUTS
-                Inputs (if any)
+                ModuleName
             .OUTPUTS
-                Output (if any)
-            .NOTES
-                General notes
+                Hashtable, Module and Functions
             #>
 
         [CmdLetBinding()]
@@ -130,30 +131,29 @@ begin {
         )
 
         Begin {
+            # this throws an error if the module isn't already loaded so make it quiet
             Remove-Module $ModuleName -ErrorAction SilentlyContinue
         }
 
         Process {
             $params = @{
-                Name    = $ModuleName
-                Force   = $true
-                # PassThru = $true
-                Verbose = $false
+                Name  = $ModuleName
+                Force = $true
             }
 
             if ( $Version ) {
                 $params.RequiredVersion = $Version
             }
 
-            Import-Module @params
+            $thisModule = Import-Module @params
 
-            $module = Get-Module -Name $ModuleName
-            $functions = $module.Invoke({ Get-Command -Module $ModuleName -CommandType Function })
-            # $functions = $module.Invoke({ Get-Command -Module $ModuleName }) | Where-Object { $_.CommandType -eq 'Function' }
+            if ( $thisModule ) {
+                $functions = $thisModule.Invoke({ Get-Command -Module $ModuleName -CommandType Function })
 
-            @{
-                Module    = $module
-                Functions = $functions
+                @{
+                    Module    = $module
+                    Functions = $functions
+                }
             }
         }
     }
@@ -163,10 +163,15 @@ process {
     $astTypes = 'CommandAst', 'TypeExpressionAst'
     $script = (Get-Command $scriptPath).ScriptBlock
 
-    $module = Get-ModuleCommand -Module VenafiPS -Version $ModuleVersion
+    $module = Get-ModuleFunction -Module VenafiPS -Version $ModuleVersion
+    # make sure the module exists before we continue
+    if ( -not $module ) {
+        throw 'VenafiPS module not found'
+    }
+
     $moduleRootPath = Split-Path $module.Module.Path -Parent
-    $enumFiles = gci "$moduleRootPath\Enum"
-    $classFiles = gci "$moduleRootPath\Classes"
+    $enumFiles = Get-ChildItem "$moduleRootPath\Enum"
+    $classFiles = Get-ChildItem "$moduleRootPath\Classes"
 
     $scriptCommands = Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw) -AstType $astTypes
 
