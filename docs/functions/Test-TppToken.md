@@ -73,7 +73,7 @@ Accept wildcard characters: False
 ```
 
 ### -AccessToken
-Access token retrieved outside this module. 
+Access token retrieved outside this module.
 Provide a credential object with the access token as the password.
 
 ```yaml
@@ -104,7 +104,7 @@ Accept wildcard characters: False
 ```
 
 ### -GrantDetail
-Provides detailed info about the token object from the TPP server response as an output. 
+Provides detailed info about the token object from the TPP server response as an output.
 Supported on TPP 20.4 and later.
 
 ```yaml
@@ -120,7 +120,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -157,7 +157,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppToken/](http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppToken/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13)
 

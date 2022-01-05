@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -Me
-Returns the identity of the authenticated user and all associated identities. 
+Returns the identity of the authenticated user and all associated identities.
 Will be deprecated in a future release, use Get-TppIdentity -Me instead.
 
 ```yaml
@@ -130,7 +130,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -163,7 +163,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppIdentity/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppIdentity/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php)
 

@@ -86,7 +86,7 @@ Get objects for multiple types
 Find-TppObject -Pattern '*f5*'
 ```
 
-Find objects with the specific name. 
+Find objects with the specific name.
 All objects under \ved\policy (the default) will be searched.
 
 ### EXAMPLE 9
@@ -99,7 +99,7 @@ Find objects where the specific attribute matches the pattern
 ## PARAMETERS
 
 ### -Path
-The path to start our search. 
+The path to start our search.
 The default is \ved\policy.
 
 ```yaml
@@ -167,7 +167,7 @@ Accept wildcard characters: False
 ```
 
 ### -Attribute
-A list of attribute names to limit the search against. 
+A list of attribute names to limit the search against.
 Only valid when searching by pattern.
 
 ```yaml
@@ -198,7 +198,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -228,7 +228,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php)
 

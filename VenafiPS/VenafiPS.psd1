@@ -12,7 +12,7 @@
 RootModule = 'VenafiPS.psm1'
 
 # Version number of this module.
-ModuleVersion = '3.5.2'
+ModuleVersion = '4.0'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -21,13 +21,13 @@ ModuleVersion = '3.5.2'
 GUID = 'a1c0ef7c-8499-4ac4-9659-52ca91258d13'
 
 # Author of this module
-Author = 'Greg Brownstein'
+Author = 'Venafi'
 
 # Company or vendor of this module
-CompanyName = 'Greg Brownstein'
+CompanyName = 'Venafi'
 
 # Copyright statement for this module
-Copyright = '(c) 2018-2021 Greg Brownstein. All rights reserved.'
+Copyright = '(c) Venafi. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = 'Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!'
@@ -69,28 +69,29 @@ PowerShellVersion = '5.1'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject', 
-               'ConvertTo-TppGuid', 'ConvertTo-TppPath', 'Export-VenafiCertificate', 
-               'Find-TppCertificate', 'Find-TppCodeSignEnvironment', 
-               'Find-TppCodeSignProject', 'Find-TppCodeSignTemplate', 
-               'Find-TppIdentity', 'Find-TppObject', 'Get-TppAttribute', 
-               'Get-TppClassAttribute', 'Get-TppCodeSignConfig', 
-               'Get-TppCodeSignEnvironment', 'Get-TppCodeSignProject', 
-               'Get-TppCustomField', 'Get-TppIdentity', 'Get-TppIdentityAttribute', 
-               'Get-TppObject', 'Get-TppPermission', 'Get-TppSystemStatus', 
-               'Get-TppVersion', 'Get-TppWorkflowTicket', 'Get-VaasApplication', 
-               'Get-VaasOrgUnit', 'Get-VenafiCertificate', 'Import-TppCertificate', 
-               'Invoke-TppCertificatePush', 'Invoke-TppCertificateRenewal', 
-               'Invoke-VenafiCertificateAction', 'Invoke-VenafiRestMethod', 
-               'Move-TppObject', 'New-TppCapiApplication', 'New-TppCertificate', 
-               'New-TppCodeSignProject', 'New-TppDevice', 'New-TppObject', 
-               'New-TppPolicy', 'New-TppToken', 'New-VenafiSession', 'Read-TppLog', 
-               'Remove-TppCertificate', 'Remove-TppCertificateAssociation', 
-               'Remove-TppCodeSignEnvironment', 'Remove-TppCodeSignProject', 
-               'Remove-TppPermission', 'Rename-TppObject', 'Revoke-TppCertificate', 
-               'Revoke-TppToken', 'Set-TppAttribute', 'Set-TppCodeSignProjectStatus', 
-               'Set-TppPermission', 'Set-TppWorkflowTicketStatus', 'Test-ModuleHash', 
-               'Test-TppIdentity', 'Test-TppObject', 'Test-TppToken', 'Write-TppLog'
+FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
+               'ConvertTo-TppGuid', 'ConvertTo-TppPath', 'Export-VenafiCertificate',
+               'Find-TppCertificate', 'Find-TppCodeSignEnvironment',
+               'Find-TppCodeSignProject', 'Find-TppCodeSignTemplate',
+               'Find-TppIdentity', 'Find-TppObject', 'Get-TppAttribute',
+               'Get-TppClassAttribute', 'Get-TppCodeSignConfig',
+               'Get-TppCodeSignEnvironment', 'Get-TppCodeSignProject',
+               'Get-TppCustomField', 'Get-TppIdentity', 'Get-TppIdentityAttribute',
+               'Get-TppObject', 'Get-TppPermission', 'Get-TppSystemStatus',
+               'Get-TppVersion', 'Get-TppWorkflowTicket', 'Get-VaasApplication',
+               'Get-VaasOrgUnit', 'Get-VenafiCertificate', 'Import-TppCertificate',
+               'Invoke-TppCertificatePush', 'Invoke-TppCertificateRenewal',
+               'Invoke-VenafiCertificateAction', 'Invoke-VenafiRestMethod',
+               'Move-TppObject', 'New-TppCapiApplication', 'New-TppCertificate',
+               'New-TppCodeSignProject', 'New-TppDevice', 'New-TppObject',
+               'New-TppPolicy', 'New-TppToken', 'New-VenafiSession', 'Read-TppLog',
+               'Remove-TppCertificate', 'Remove-TppCertificateAssociation',
+               'Remove-TppCodeSignEnvironment', 'Remove-TppCodeSignProject',
+               'Remove-TppPermission', 'Rename-TppObject', 'Revoke-TppCertificate',
+               'Revoke-TppToken', 'Set-TppAttribute', 'Set-TppCodeSignProjectStatus',
+               'Set-TppPermission', 'Set-TppWorkflowTicketStatus', 'Test-ModuleHash',
+               'Test-TppIdentity', 'Test-TppObject', 'Test-TppToken', 'Write-TppLog', 'Get-TppCredential','Set-TppCredential',
+               'Remove-TppClient', 'Find-TppClient', 'Find-TppVaultId'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -119,16 +120,16 @@ PrivateData = @{
         Tags = 'Venafi','TPP','TrustProtectionPlatform','API','devsecops'
 
         # A URL to the license for this module.
-        LicenseUri = 'https://github.com/gdbarron/VenafiPS/blob/main/LICENSE'
+        LicenseUri = 'https://github.com/Venafi/VenafiPS/blob/main/LICENSE'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://github.com/gdbarron/VenafiPS'
+        ProjectUri = 'https://github.com/Venafi/VenafiPS'
 
         # A URL to an icon representing this module.
         IconUri = 'https://raw.githubusercontent.com/gdbarron/VenafiPS/main/images/Ven_circleV_logo.png'
 
         # ReleaseNotes of this module
-        ReleaseNotes = 'https://github.com/gdbarron/VenafiPS/blob/main/CHANGELOG.md'
+        ReleaseNotes = 'https://github.com/Venafi/VenafiPS/blob/main/CHANGELOG.md'
 
         # Prerelease string of this module
         # Prerelease = ''

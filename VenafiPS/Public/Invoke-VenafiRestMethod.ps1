@@ -195,7 +195,7 @@ function Invoke-VenafiRestMethod {
                     try {
                         $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
                         $verboseOutput.Message | Write-VerboseWithSecret
-                        Write-Warning ('This ''{0}'' call requires a trailing slash, please create an issue at https://github.com/gdbarron/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{0}/{1}' -f $UriRoot, $UriLeaf))
+                        Write-Warning ('This ''{0}'' call requires a trailing slash, please create an issue at https://github.com/Venafi/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{0}/{1}' -f $UriRoot, $UriLeaf))
                     }
                     catch {
                         # this didn't work, provide details from pre slash call

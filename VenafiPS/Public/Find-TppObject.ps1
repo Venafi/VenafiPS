@@ -76,7 +76,7 @@ Find objects where the specific attribute matches the pattern
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php

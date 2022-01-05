@@ -33,7 +33,7 @@ Remove all permissions for a specific user
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppPermission/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Remove-TppPermission.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppPermission.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Permissions-object-guid-principal.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____6

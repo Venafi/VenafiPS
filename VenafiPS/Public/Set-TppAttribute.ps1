@@ -58,7 +58,7 @@ Set a policy attribute and lock the value
 http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php

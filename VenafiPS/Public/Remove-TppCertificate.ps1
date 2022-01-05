@@ -42,7 +42,7 @@ Remove a certificate and automatically remove all associations
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificate/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Certificates-Guid.php

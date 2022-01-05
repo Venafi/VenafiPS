@@ -176,7 +176,7 @@ Accept wildcard characters: False
 ```
 
 ### -First
-Specify the number of items to retrieve, starting with most recent. 
+Specify the number of items to retrieve, starting with most recent.
 The default is 100 and there is no maximum.
 
 ```yaml
@@ -192,7 +192,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -238,7 +238,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Read-TppLog/](http://VenafiPS.readthedocs.io/en/latest/functions/Read-TppLog/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____2](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____2)
 
