@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -First
-Limit how many items are returned.
+Limit how many items are returned. 
 Default is 0 for no limit.
 It is definitely recommended to filter on another property when searching with no limit.
 
@@ -768,7 +768,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

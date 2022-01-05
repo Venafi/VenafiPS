@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -Me
-Returns the identity of the authenticated user and all associated identities.
+Returns the identity of the authenticated user and all associated identities. 
 Will be deprecated in a future release, use Get-TppIdentity -Me instead.
 
 ```yaml
@@ -130,7 +130,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

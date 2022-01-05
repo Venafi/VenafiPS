@@ -43,13 +43,13 @@ $id = Find-TppIdentity -Name 'brownstein' | Select-Object -ExpandProperty Id
 
 Find-TppObject -Path '\VED' -Recursive | Get-TppPermission -IdentityId $id | Set-TppPermission -Permission $TppPermObject -Force
 
-Reset permissions for a specific user/group for all objects.
+Reset permissions for a specific user/group for all objects. 
 Note the use of -Force to overwrite existing permissions.
 
 ## PARAMETERS
 
 ### -Path
-Path to an object.
+Path to an object. 
 Can pipe output from many other functions.
 
 ```yaml
@@ -80,7 +80,7 @@ Accept wildcard characters: False
 ```
 
 ### -IdentityId
-The id that represents the user or group.
+The id that represents the user or group. 
 You can use Find-TppIdentity or Get-TppPermission to get the id.
 
 ```yaml
@@ -96,7 +96,7 @@ Accept wildcard characters: False
 ```
 
 ### -Permission
-TppPermission object.
+TppPermission object. 
 You can create a new object or get existing object from Get-TppPermission.
 
 ```yaml
@@ -127,7 +127,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

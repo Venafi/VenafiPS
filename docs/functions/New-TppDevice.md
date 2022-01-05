@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -DeviceName
-Name of 1 or more devices to create.
+Name of 1 or more devices to create. 
 Path must be of type Policy to use this.
 
 ```yaml
@@ -125,7 +125,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

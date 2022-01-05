@@ -66,7 +66,7 @@ Accept wildcard characters: False
 ```
 
 ### -AccessToken
-Access token to be revoked.
+Access token to be revoked. 
 Provide a credential object with the access token as the password.
 
 ```yaml
@@ -112,7 +112,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

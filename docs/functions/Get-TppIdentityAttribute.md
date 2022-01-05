@@ -32,7 +32,7 @@ Get specific attribute for user
 ## PARAMETERS
 
 ### -ID
-The id that represents the user or group.
+The id that represents the user or group. 
 Use Find-TppIdentity to get the id.
 
 ```yaml
@@ -63,7 +63,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

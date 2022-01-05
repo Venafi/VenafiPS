@@ -1,41 +1,57 @@
-# New-TppCodeSignProject
+# Remove-TppClient
 
 ## SYNOPSIS
-Create a new code sign project
+Remove registered client agents
 
 ## SYNTAX
 
 ```
-New-TppCodeSignProject [-Path] <String> [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-TppClient [-ClientId] <String[]> [-RemoveAssociatedDevices] [[-VenafiSession] <VenafiSession>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Create a new code sign project which will be empty.
+Remove registered client agents.
+Provide an array of client IDs to remove a large list at once.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-New-TppCodeSignProject -Path '\ved\code signing\projects\my_project'
+Remove-TppClient -ClientId 1234
 ```
 
-Create a new code sign project
+Remove a client
 
 ## PARAMETERS
 
-### -Path
-Path of the project to create
+### -ClientId
+Unique id for one or more clients
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -RemoveAssociatedDevices
+{{ Fill RemoveAssociatedDevices Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -91,31 +107,17 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Path
+### ClientId
 ## OUTPUTS
 
-### PSCustomObject with the following properties:
-###     Application
-###     Auditor
-###     CertificateEnvironments
-###     Collection
-###     CreatedOn
-###     Guid
-###     Id
-###     KeyUseApprovers
-###     KeyUsers
-###     Owners
-###     Status
-###     Name
-###     Path
-###     TypeName
+### None
 ## NOTES
 
 ## RELATED LINKS
 
-[http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCodeSignProject/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCodeSignProject/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppClient/](http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppClient/)
 
-[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCodeSignProject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCodeSignProject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppClient.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppClient.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-CreateProject.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____5](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-CreateProject.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____5)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-ClientDelete.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-ClientDelete.php)
 

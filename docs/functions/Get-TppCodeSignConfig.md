@@ -10,7 +10,7 @@ Get-TppCodeSignConfig [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get CodeSign Protect project settings.
+Get CodeSign Protect project settings. 
 Must have token with scope codesign:manage.
 
 ## EXAMPLES
@@ -25,7 +25,7 @@ Get settings
 ## PARAMETERS
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

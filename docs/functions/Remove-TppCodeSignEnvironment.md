@@ -28,7 +28,7 @@ Delete an environment
 $envObj | Remove-TppCodeSignEnvironment
 ```
 
-Remove 1 or more environments.
+Remove 1 or more environments. 
 Get environments with Find-TppCodeSignEnvironment
 
 ## PARAMETERS
@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

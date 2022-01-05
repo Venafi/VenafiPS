@@ -7,7 +7,7 @@ Get identity details
 
 ### Id (Default)
 ```
-Get-TppIdentity -ID <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppIdentity -ID <String[]> [-IncludeAssociated] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### Me
@@ -28,6 +28,13 @@ Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7'
 Get identity details from an id
 
 ### EXAMPLE 2
+```
+Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeAssociated
+```
+
+Get identity details from an id and include associated groups/folders
+
+### EXAMPLE 3
 ```
 Get-TppIdentity -Me
 ```
@@ -51,6 +58,21 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
+### -IncludeAssociated
+Include all associated identity groups and folders
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Id
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Me
 Returns the identity of the authenticated user
 
@@ -67,7 +89,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -94,6 +116,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ###     Name
 ###     ID
 ###     Path
+###     Associated (if -IncludeAssociated provided)
 ## NOTES
 
 ## RELATED LINKS
@@ -102,7 +125,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppIdentity.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppIdentity.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____15](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____15)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identity-Self.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____13](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identity-Self.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____13)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identity-Self.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identity-Self.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetAssociatedEntries.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetAssociatedEntries.php)
 
