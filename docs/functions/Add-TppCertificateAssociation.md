@@ -55,7 +55,7 @@ Accept wildcard characters: False
 ```
 
 ### -CertificatePath
-Path to the certificate.
+Path to the certificate. 
 Required if InputObject not provided.
 
 ```yaml
@@ -102,7 +102,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

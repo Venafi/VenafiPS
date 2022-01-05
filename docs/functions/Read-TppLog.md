@@ -176,7 +176,7 @@ Accept wildcard characters: False
 ```
 
 ### -First
-Specify the number of items to retrieve, starting with most recent.
+Specify the number of items to retrieve, starting with most recent. 
 The default is 100 and there is no maximum.
 
 ```yaml
@@ -192,7 +192,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

@@ -86,7 +86,7 @@ Retrieve the policy attribute value for the specified policy folder
 ## PARAMETERS
 
 ### -Path
-Path to the object to retrieve configuration attributes.
+Path to the object to retrieve configuration attributes. 
 Just providing DN will return all attributes.
 
 ```yaml
@@ -103,7 +103,7 @@ Accept wildcard characters: False
 
 ### -Guid
 To be deprecated; use -Path instead.
-Object Guid.
+Object Guid. 
 Just providing Guid will return all attributes.
 
 ```yaml
@@ -195,7 +195,7 @@ Accept wildcard characters: False
 ```
 
 ### -ClassName
-Required when getting policy attributes.
+Required when getting policy attributes. 
 Provide the class name to retrieve the value for.
 If unsure of the class name, add the value through the TPP UI and go to Support-\>Policy Attributes to find it.
 
@@ -212,7 +212,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

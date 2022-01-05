@@ -187,7 +187,7 @@ Accept wildcard characters: False
 ```
 
 ### -Credential
-Username and password used for key and token-based authentication.
+Username and password used for key and token-based authentication. 
 Not required for integrated authentication.
 
 ```yaml
@@ -291,7 +291,7 @@ Accept wildcard characters: False
 ```
 
 ### -RefreshToken
-PSCredential object with the refresh token as the password.
+PSCredential object with the refresh token as the password. 
 An access token will be retrieved and a new session created.
 
 ```yaml
@@ -323,7 +323,7 @@ Accept wildcard characters: False
 
 ### -VaultAccessTokenName
 Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
-This value can be provided standalone or with credentials.
+This value can be provided standalone or with credentials. 
 First time use requires it to be provided with credentials to retrieve the access token to populate the vault.
 With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
 See -VaultMetadata to store server and clientid with the token.
@@ -354,7 +354,7 @@ Accept wildcard characters: False
 
 ### -VaultRefreshTokenName
 Name of the SecretManagement vault entry for the refresh token; the name of the vault must be VenafiPS.
-This value can be provided standalone or with credentials.
+This value can be provided standalone or with credentials. 
 Each time this is used, a new access and refresh token will be obtained.
 First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
 With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
@@ -420,7 +420,7 @@ Accept wildcard characters: False
 ```
 
 ### -VaasKey
-Api key from your Venafi as a Service instance.
+Api key from your Venafi as a Service instance. 
 The api key can be found under your user profile-\>preferences.
 Provide a credential object with the api key as the password.
 https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/

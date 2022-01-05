@@ -67,7 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -EventId
-Event ID from within the EventGroup provided.
+Event ID from within the EventGroup provided. 
 Only provide the 4 character event id, do not precede with group ID.
 
 ```yaml
@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -Text1
-String data to write to log.
+String data to write to log. 
 See link for event ID messages for more info.
 
 ```yaml
@@ -175,7 +175,7 @@ Accept wildcard characters: False
 ```
 
 ### -Text2
-String data to write to log.
+String data to write to log. 
 See link for event ID messages for more info.
 
 ```yaml
@@ -191,7 +191,7 @@ Accept wildcard characters: False
 ```
 
 ### -Value1
-Integer data to write to log.
+Integer data to write to log. 
 See link for event ID messages for more info.
 
 ```yaml
@@ -207,7 +207,7 @@ Accept wildcard characters: False
 ```
 
 ### -Value2
-Integer data to write to log.
+Integer data to write to log. 
 See link for event ID messages for more info.
 
 ```yaml
@@ -223,7 +223,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

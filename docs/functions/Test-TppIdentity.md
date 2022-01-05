@@ -46,7 +46,7 @@ Accept wildcard characters: False
 ```
 
 ### -ExistOnly
-Only return boolean instead of ID and Exists list.
+Only return boolean instead of ID and Exists list. 
 Helpful when validating just 1 identity.
 
 ```yaml
@@ -62,7 +62,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

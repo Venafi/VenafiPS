@@ -64,8 +64,8 @@ Perform an action sending additional parameters.
 ## PARAMETERS
 
 ### -CertificateId
-Certificate identifier.
-For Venafi as a Service, this is the unique guid.
+Certificate identifier. 
+For Venafi as a Service, this is the unique guid. 
 For TPP, use the full path.
 
 ```yaml
@@ -96,7 +96,7 @@ Accept wildcard characters: False
 ```
 
 ### -Reset
-Reset the state of a certificate and its associated applications.
+Reset the state of a certificate and its associated applications. 
 TPP only.
 
 ```yaml
@@ -159,7 +159,7 @@ Accept wildcard characters: False
 ```
 
 ### -Revoke
-Sends a revocation request to the certificate CA.
+Sends a revocation request to the certificate CA. 
 TPP only.
 
 ```yaml
@@ -191,7 +191,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

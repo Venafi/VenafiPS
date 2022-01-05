@@ -1,40 +1,33 @@
-# Remove-TppCodeSignProject
+# Set-TppCredential
 
 ## SYNOPSIS
-Delete a code sign project
+Update credential values
 
 ## SYNTAX
 
 ```
-Remove-TppCodeSignProject [-Path] <String> [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm]
+Set-TppCredential [-Path] <String> [-Value] <Hashtable> [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Delete a code sign project. 
-You must be a code sign admin or owner of the project.
+Update values for credential objects in TPP.
+The values allowed to be updated are specific to the object type.
+See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Credentials-FriendlyName.php for details.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Remove-TppCodeSignProject -Path '\ved\code signing\projects\my_project'
+Set-TppCredential -Path '\VED\Policy\Password Credential' -Value @{'Password'='my-new-password'}
 ```
 
-Delete a project
-
-### EXAMPLE 2
-```
-$projectObj | Remove-TppCodeSignProject
-```
-
-Remove 1 or more projects. 
-Get projects with Find-TppCodeSignProject
+Set a value
 
 ## PARAMETERS
 
 ### -Path
-Path of the project to delete
+The full path to the credential object
 
 ```yaml
 Type: String
@@ -48,6 +41,21 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
+### -Value
+Hashtable containing the keys/values to be updated
+
+```yaml
+Type: Hashtable
+Parameter Sets: (All)
+Aliases:
+
+Required: True
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VenafiSession
 Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
@@ -58,7 +66,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: 3
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -108,9 +116,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCodeSignProject/](http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCodeSignProject/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppCredential/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppCredential/)
 
-[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCodeSignProject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCodeSignProject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppCredential.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppCredential.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteProject.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____7](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteProject.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____7)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Credentials-update.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Credentials-update.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Credentials-FriendlyName.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Credentials-FriendlyName.php)
 

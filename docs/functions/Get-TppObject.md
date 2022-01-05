@@ -16,7 +16,7 @@ Get-TppObject -Guid <Guid[]> [-VenafiSession <VenafiSession>] [<CommonParameters
 ```
 
 ## DESCRIPTION
-Return object information by either path or guid.
+Return object information by either path or guid. 
 This will return a TppObject which can be used with many other functions.
 
 ## EXAMPLES
@@ -68,7 +68,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

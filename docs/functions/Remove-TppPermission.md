@@ -40,7 +40,7 @@ Remove all permissions for a specific user
 ## PARAMETERS
 
 ### -Path
-Full path to an object.
+Full path to an object. 
 You can also pipe in a TppObject
 
 ```yaml
@@ -86,7 +86,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml

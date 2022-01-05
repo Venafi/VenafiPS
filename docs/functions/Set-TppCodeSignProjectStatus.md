@@ -40,7 +40,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-New project status, must have the appropriate perms.
+New project status, must have the appropriate perms. 
 Status can be Disabled, Enabled, Draft, or Pending.
 
 ```yaml
@@ -57,7 +57,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method.
+Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
