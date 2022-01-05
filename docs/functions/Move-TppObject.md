@@ -55,7 +55,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -86,7 +86,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Move-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Move-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Move-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Move-TppObject.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____35](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____35)
 

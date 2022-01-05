@@ -40,7 +40,7 @@ Accept wildcard characters: False
 ```
 
 ### -Status
-New project status, must have the appropriate perms. 
+New project status, must have the appropriate perms.
 Status can be Disabled, Enabled, Draft, or Pending.
 
 ```yaml
@@ -57,7 +57,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -118,7 +118,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppCodeSignProjectStatus/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppCodeSignProjectStatus/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-UpdateProjectStatus.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____14](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-UpdateProjectStatus.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____14)
 

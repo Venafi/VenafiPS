@@ -1,13 +1,15 @@
 # VenafiPS - Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!
 
-![PSSA](https://github.com/gdbarron/VenafiPS/actions/workflows/powershell-analysis.yml/badge.svg)
+![PSSA](https://github.com/Venafi/VenafiPS/actions/workflows/powershell-analysis.yml/badge.svg)
 [![Build Status](https://dev.azure.com/gd-barron/VenafiTppPS/_apis/build/status/VenafiPS?branchName=main)](https://dev.azure.com/gd-barron/VenafiTppPS/_build/latest?definitionId=6&branchName=main)
 [![Documentation Status](https://readthedocs.org/projects/venafips/badge/?version=latest)](https://venafips.readthedocs.io/en/latest/?badge=latest)
 
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
-Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform core functionality as well as code signing.  Support for Venafi as a Service has also recently been added.  Please let me know how you are using this module and what I can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to submit an issue.
+Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform core functionality as well as code signing.  Support for Venafi as a Service has also recently been added.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to submit an issue.
+
+:warning: **Please note, as of version 4.0, the license has changed and is now Apache 2.0** :warning:
 
 ## Documentation
 

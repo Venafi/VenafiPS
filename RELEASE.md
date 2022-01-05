@@ -1,1 +1,8 @@
-- Convert dates from ISO 8601 to datetime objects in `Get-VenafiCertificate`
+- Moved to Venafi GitHub org, rebranded
+- **License is now Apache 2.0**
+- Add `Find-TppClient` to get information about registered Server Agents or Agentless clients
+- Add `Find-TppVaultId` to find vault IDs in the secret store
+- Add `Get-TppCredential` to get different credential types, password, username/password, certificate
+- Add parameter `-IncludeAssociated` to `Get-TppIdentity` to retrieve associated groups and folders
+- Add `Remove-TppClient` to remove registered client agents
+- Add `Set-TppCredential` to update credential values

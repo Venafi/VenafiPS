@@ -48,7 +48,7 @@ Find all identity types with the name greg and brownstein
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppIdentity/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php

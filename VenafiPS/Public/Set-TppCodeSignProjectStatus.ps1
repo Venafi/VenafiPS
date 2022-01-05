@@ -28,7 +28,7 @@ Update project status
 http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppCodeSignProjectStatus/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-UpdateProjectStatus.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____14

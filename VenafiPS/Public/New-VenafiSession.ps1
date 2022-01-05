@@ -126,7 +126,7 @@ Create session against Venafi as a Service
 http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-VenafiSession.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VenafiSession.ps1
 
 .LINK
 https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____1
@@ -294,7 +294,7 @@ function New-VenafiSession {
     if ( $PSCmdlet.ParameterSetName -like 'Vault*') {
         # ensure the appropriate setup has been performed
         if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement)) {
-            throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a vault named ''VenafiPS''.  See the github readme for guidance, https://github.com/gdbarron/VenafiPS#tokenkey-secret-storage.'
+            throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a vault named ''VenafiPS''.  See the github readme for guidance, https://github.com/Venafi/VenafiPS#tokenkey-secret-storage.'
         }
 
         $vault = Get-SecretVault -Name 'VenafiPS' -ErrorAction SilentlyContinue

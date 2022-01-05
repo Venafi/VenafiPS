@@ -111,7 +111,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -172,7 +172,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____10](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____10)
 

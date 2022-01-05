@@ -49,7 +49,7 @@ Accept wildcard characters: False
 ```
 
 ### -DeviceName
-Name of 1 or more devices to create. 
+Name of 1 or more devices to create.
 Path must be of type Policy to use this.
 
 ```yaml
@@ -125,7 +125,7 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -186,9 +186,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppDevice/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppDevice/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1)
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
 
