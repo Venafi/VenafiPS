@@ -21,11 +21,8 @@ jobs:
       - name: Lint with PSScriptAnalyzer
         shell: pwsh
         run: |
-          pwd
-          gci . -recurse
-          gci /home/runner/work/VenafiPS
-          Invoke-ScriptAnalyzer -Path /home/runner/work/VenafiPS/*.ps1 -Recurse -Outvariable issues
-          write-output ($issues | ConvertTo-Json)
+          Invoke-ScriptAnalyzer -Path . -Recurse -Outvariable issues
+          $issues | ConvertTo-Json | Set-Content -Path '../../pssa.json'
           $errors   = $issues.Where({$_.Severity -eq 'Error'})
           $warnings = $issues.Where({$_.Severity -eq 'Warning'})
           if ($errors) {
@@ -33,3 +30,8 @@ jobs:
           } else {
               Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
           }
+      - name: Upload test results
+        uses: actions/upload-artifact@v2
+        with:
+          name: pssa
+          path: ../../pssa.json
