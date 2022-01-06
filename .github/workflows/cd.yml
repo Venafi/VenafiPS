@@ -20,7 +20,7 @@ jobs:
         shell: pwsh
         run: |
           $fullPath = Resolve-Path ./VenafiPS | Select-Object -ExpandProperty Path
-          Get-ChildItem -Path ./VenafiPS -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash,
+          Get-ChildItem -Path ./VenafiPS -File -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash,
           @{
           'n' = 'File'
           'e' = {
