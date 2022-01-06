@@ -1,29 +1,31 @@
+# This is a basic workflow to help you get started with Actions
+
 name: CD
+
+# Controls when the workflow will run
 on:
   workflow_dispatch:
-defaults:
-  run:
-    shell: pwsh
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  build:
-    strategy:
-      matrix:
-        os: [windows-latest]
-        # os: [ubuntu-latest, macos-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+  lint-with-PSScriptAnalyzer:
+    name: Install and run PSScriptAnalyzer
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Generate File Hash
-        uses: ./
-        with:
-          script: |
-            $path = './VenafiPS'
-            $fullPath = Resolve-Path $path | Select-Object -ExpandProperty Path
-            Get-ChildItem -Path $path -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash, 
-            @{
-                'n' = 'File'
-                'e' = {
-                    $_.Path.Replace("$fullPath\", '')
-                }
-            } | ConvertTo-Json | Out-File -FilePath ../hash.json
-            gc ../hash.json -raw
+      - name: Install PSScriptAnalyzer module
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module PSScriptAnalyzer -ErrorAction Stop
+      - name: Lint with PSScriptAnalyzer
+        shell: pwsh
+        run: |
+          Invoke-ScriptAnalyzer -Path *.ps1 -Recurse -Outvariable issues
+          $errors   = $issues.Where({$_.Severity -eq 'Error'})
+          $warnings = $issues.Where({$_.Severity -eq 'Warning'})
+          if ($errors) {
+              Write-Error "There were $($errors.Count) errors and $($warnings.Count) warnings total." -ErrorAction Stop
+          } else {
+              Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
+          }
