@@ -21,7 +21,10 @@ jobs:
       - name: Lint with PSScriptAnalyzer
         shell: pwsh
         run: |
-          Invoke-ScriptAnalyzer -Path *.ps1 -Recurse -Outvariable issues
+          pwd
+          gci . -recurse
+          gci /home/runner/work/VenafiPS
+          Invoke-ScriptAnalyzer -Path /home/runner/work/VenafiPS/*.ps1 -Recurse -Outvariable issues
           write-output ($issues | ConvertTo-Json)
           $errors   = $issues.Where({$_.Severity -eq 'Error'})
           $warnings = $issues.Where({$_.Severity -eq 'Warning'})
