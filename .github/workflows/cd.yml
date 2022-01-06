@@ -37,5 +37,5 @@ jobs:
         with:
           files: /home/runner/work/hash.json
           tag_name: v5.0
-          body_path: ./RELEASE.md
+          body_path: ${{ github.workspace }}/RELEASE.md
           draft: true
