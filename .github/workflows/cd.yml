@@ -8,7 +8,7 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  lint-with-PSScriptAnalyzer:
+  deployment:
     name: Install and run PSScriptAnalyzer
     runs-on: ubuntu-latest
     steps:
@@ -20,16 +20,16 @@ jobs:
       - name: Generate file hash
         shell: pwsh
         run: |
-          $fullPath = Resolve-Path . | Select-Object -ExpandProperty Path
-          Get-ChildItem -Path . -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash,
+          $fullPath = Resolve-Path ./VenafiPS | Select-Object -ExpandProperty Path
+          Get-ChildItem -Path ./VenafiPS -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash,
           @{
           'n' = 'File'
           'e' = {
-          $_.Path.Replace("$fullPath\", '')
+          $_.Path.Replace("$fullPath/", '')
           }
-          } | ConvertTo-Json | Out-File -FilePath ../hash.json
+          } | ConvertTo-Json | Out-File -FilePath ../../hash.json
       - name: Upload test results
         uses: actions/upload-artifact@v2
         with:
           name: pssa-results
-          path: /home/runner/work/pssa.json
+          path: /home/runner/work/hash.json
