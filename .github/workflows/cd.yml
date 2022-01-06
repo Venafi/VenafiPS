@@ -15,7 +15,7 @@ jobs:
       - uses: actions/checkout@v2
       - name: Set perms
         run: |
-          chmod -R +x .
+          chmod -R 644 .
       - name: Generate file hash
         shell: pwsh
         run: |
