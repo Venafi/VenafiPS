@@ -13,9 +13,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Set perms
-        run: |
-          sudo chmod -R 755 .
+      # - name: Set perms
+      #   run: |
+      #     sudo chmod -R 755 .
       - name: Generate file hash
         shell: pwsh
         run: |
@@ -27,8 +27,15 @@ jobs:
           $_.Path.Replace("$fullPath/", '')
           }
           } | ConvertTo-Json | Out-File -FilePath ../../hash.json
-      - name: Upload test results
+      - name: Upload hash.json artifact
         uses: actions/upload-artifact@v2
         with:
           name: hash.json
           path: /home/runner/work/hash.json
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: /home/runner/work/hash.json
+          tag_name: v5.0
+          body_path: ./RELEASE.md
+          draft: true
