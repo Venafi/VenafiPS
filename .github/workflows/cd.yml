@@ -34,4 +34,4 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: pssa
-          path: ../../pssa.json
+          path: /home/runner/work/pssa.json
