@@ -11,10 +11,12 @@ jobs:
       - name: Update psd and psm version
         shell: pwsh
         run: |
-          $modulePath = '${{ github.workspace }}/VenafiPS/VenafiPS.psm1'
+          $manifestPath = '${{ github.workspace }}/VenafiPS/VenafiPS.psd1'
+          $modulePath = $manifestPath.Replace('.psd1', '.psm1')
           $manifest = Import-PowerShellDataFile '${{ github.workspace }}/VenafiPS/VenafiPS.psd1'
           [version]$version = $manifest.ModuleVersion
           [version]$newVersion = "{0}.{1}.{2}" -f $Version.Major, $Version.Minor, ($Version.Build + 1)
+          Update-ModuleManifest -Path $manifestPath -ModuleVersion $newVersion
           ((Get-Content -Path $modulePath -Raw).Replace('((NEW_VERSION))', $newVersion)) | Set-Content -Path $modulePath
           "New version: $newVersion"
           # set version to be used in later steps
@@ -76,9 +78,8 @@ jobs:
         run: |
           git config --global user.name 'Greg Brownstein'
           git config --global user.email 'greg@jagtechnical.com'
-          git add VenafiPS/*.psd1
-          git add VenafiPS/*.psm1
-          git add docs/*.md
+          git add VenafiPS
+          git add docs
           git add mkdocs.yml
           git status -v
           # git commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
