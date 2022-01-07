@@ -12,9 +12,9 @@ jobs:
       - name: Update psd and psm version
         shell: pwsh
         run: |
-          $manifestPath = '${{ github.workspace }}/${{ env.module_name}}/${{ env.module_name}}.psd1'
+          $manifestPath = '${{ github.workspace }}/${{ env.module_name }}/${{ env.module_name }}.psd1'
           $modulePath = $manifestPath.Replace('.psd1', '.psm1')
-          $manifest = Import-PowerShellDataFile '${{ github.workspace }}/${{ env.module_name}}/${{ env.module_name}}.psd1'
+          $manifest = Import-PowerShellDataFile '${{ github.workspace }}/${{ env.module_name }}/${{ env.module_name }}.psd1'
           [version]$version = $manifest.ModuleVersion
           [version]$newVersion = "{0}.{1}.{2}" -f $Version.Major, $Version.Minor, ($Version.Build + 1)
           Update-ModuleManifest -Path $manifestPath -ModuleVersion $newVersion
@@ -25,14 +25,13 @@ jobs:
       - name: Install platyPS module
         shell: pwsh
         run: |
-          gci env:
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module platyPS -ErrorAction Stop
       - name: Update docs
         shell: pwsh
         run: |
-          Remove-Module '${{ env.module_name}}' -Force -ea SilentlyContinue -Verbose
-          Import-Module '${{ github.workspace }}/${{ env.module_name}}/${{ env.module_name}}.psd1' -Force -Verbose
+          Remove-Module '${{ env.module_name }}' -Force -ea SilentlyContinue -Verbose
+          Import-Module '${{ github.workspace }}/${{ env.module_name }}/${{ env.module_name }}.psd1' -Force -Verbose
 
           #Build YAMLText starting with the header
           $YMLtext = (Get-Content "${{ github.workspace }}/header-mkdocs.yml") -join "`n"
@@ -63,7 +62,7 @@ jobs:
           }
           $null = New-Item @Params
           $Params = @{
-              Module       = '${{ env.module_name}}'
+              Module       = '${{ env.module_name }}'
               Force        = $true
               OutputFolder = '${{ github.workspace }}/docs/functions'
               NoMetadata   = $true
@@ -79,7 +78,7 @@ jobs:
         run: |
           git config --global user.name 'Greg Brownstein'
           git config --global user.email 'greg@jagtechnical.com'
-          git add ${{ env.module_name}}
+          git add ${{ env.module_name }}
           git add docs
           git add mkdocs.yml
           git status -v
@@ -88,8 +87,8 @@ jobs:
       - name: Generate file hash
         shell: pwsh
         run: |
-          $fullPath = Resolve-Path ./${{ env.module_name}} | Select-Object -ExpandProperty Path
-          Get-ChildItem -Path ./${{ env.module_name}} -File -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash,
+          $fullPath = Resolve-Path ./${{ env.module_name }} | Select-Object -ExpandProperty Path
+          Get-ChildItem -Path ./${{ env.module_name }} -File -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash,
           @{
           'n' = 'File'
           'e' = {
@@ -108,9 +107,7 @@ jobs:
           tag_name: v${{ env.venafips_new_version }}
           body_path: ${{ github.workspace }}/RELEASE.md
           draft: true
-      # - name: Publish
-      #   env:
-      #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
-      #   shell: pwsh
-      #   run: |
-      #     Publish-Module -Path "${{ github.workspace }}/${{ env.module_name}}" -NuGetApiKey $env:NUGET_KEY -Verbose
+      - name: Publish
+        shell: pwsh
+        run: |
+          Publish-Module -Path "${{ github.workspace }}/${{ env.module_name }}" -NuGetApiKey ${{ secrets.NUGET_KEY }} -Verbose

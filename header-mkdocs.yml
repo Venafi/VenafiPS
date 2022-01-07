@@ -1,8 +1,8 @@
 site_name: VenafiPS
-repo_url: https://github.com/gdbarron/VenafiPS
-site_author: Greg Brownstein
+repo_url: https://github.com/Venafi/VenafiPS
+site_author: Venafi
 edit_uri: edit/main/docs/
 theme: readthedocs
-copyright: "Copyright (c) 2018-2021 Greg Brownstein"
+copyright: "Copyright (c) Venafi"
 pages:
   - Home: index.md
