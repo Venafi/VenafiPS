@@ -19,6 +19,9 @@ jobs:
           # $env:VENAFIPS_NEW_VERSION = $newVersion
           echo "VENAFIPS_NEW_VERSION=$newVersion" >> $GITHUB_ENV
           "New version: $newVersion"
+      - name: Echo env var
+        run: |
+          echo "${Env:VENAFIPS_NEW_VERSION}"
       - name: Install platyPS module
         shell: pwsh
         run: |
