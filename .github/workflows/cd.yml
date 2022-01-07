@@ -16,11 +16,13 @@ jobs:
           [version]$version = $manifest.ModuleVersion
           [version]$newVersion = "{0}.{1}.{2}" -f $Version.Major, $Version.Minor, ($Version.Build + 1)
           ((Get-Content -Path $modulePath -Raw).Replace('((NEW_VERSION))', $newVersion)) | Set-Content -Path $modulePath
-          $env:VENAFIPS_NEW_VERSION = $newVersion
+          # $env:VENAFIPS_NEW_VERSION = $newVersion
+          echo "VENAFIPS_NEW_VERSION=$newVersion" >> $GITHUB_ENV
           "New version: $newVersion"
       - name: Install platyPS module
         shell: pwsh
         run: |
+          gci env:
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module platyPS -ErrorAction Stop
       - name: Update docs
