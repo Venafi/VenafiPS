@@ -17,6 +17,7 @@ jobs:
           [version]$newVersion = "{0}.{1}.{2}" -f $Version.Major, $Version.Minor, ($Version.Build + 1)
           ((Get-Content -Path $modulePath -Raw).Replace('((NEW_VERSION))', $newVersion)) | Set-Content -Path $modulePath
           echo "venafips_new_version=$newVersion" >> $GITHUB_ENV
+          "venafips_new_version=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
           "New version: $newVersion"
       - name: Install platyPS module
         shell: pwsh
