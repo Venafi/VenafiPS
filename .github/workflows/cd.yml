@@ -4,16 +4,17 @@ on: workflow_dispatch
 
 jobs:
   deployment:
-    name: Deployment
     runs-on: ubuntu-latest
+    env:
+      module_name: VenafiPS
     steps:
       - uses: actions/checkout@v2
       - name: Update psd and psm version
         shell: pwsh
         run: |
-          $manifestPath = '${{ github.workspace }}/VenafiPS/VenafiPS.psd1'
+          $manifestPath = '${{ github.workspace }}/${{ env.module_name}}/${{ env.module_name}}.psd1'
           $modulePath = $manifestPath.Replace('.psd1', '.psm1')
-          $manifest = Import-PowerShellDataFile '${{ github.workspace }}/VenafiPS/VenafiPS.psd1'
+          $manifest = Import-PowerShellDataFile '${{ github.workspace }}/${{ env.module_name}}/${{ env.module_name}}.psd1'
           [version]$version = $manifest.ModuleVersion
           [version]$newVersion = "{0}.{1}.{2}" -f $Version.Major, $Version.Minor, ($Version.Build + 1)
           Update-ModuleManifest -Path $manifestPath -ModuleVersion $newVersion
@@ -30,8 +31,8 @@ jobs:
       - name: Update docs
         shell: pwsh
         run: |
-          Remove-Module 'VenafiPS' -Force -ea SilentlyContinue -Verbose
-          Import-Module '${{ github.workspace }}/VenafiPS/VenafiPS.psd1' -Force -Verbose
+          Remove-Module '${{ env.module_name}}' -Force -ea SilentlyContinue -Verbose
+          Import-Module '${{ github.workspace }}/${{ env.module_name}}/${{ env.module_name}}.psd1' -Force -Verbose
 
           #Build YAMLText starting with the header
           $YMLtext = (Get-Content "${{ github.workspace }}/header-mkdocs.yml") -join "`n"
@@ -62,7 +63,7 @@ jobs:
           }
           $null = New-Item @Params
           $Params = @{
-              Module       = 'VenafiPS'
+              Module       = '${{ env.module_name}}'
               Force        = $true
               OutputFolder = '${{ github.workspace }}/docs/functions'
               NoMetadata   = $true
@@ -78,33 +79,32 @@ jobs:
         run: |
           git config --global user.name 'Greg Brownstein'
           git config --global user.email 'greg@jagtechnical.com'
-          git add VenafiPS
+          git add ${{ env.module_name}}
           git add docs
           git add mkdocs.yml
           git status -v
           # git commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
-
           # git push
       - name: Generate file hash
         shell: pwsh
         run: |
-          $fullPath = Resolve-Path ./VenafiPS | Select-Object -ExpandProperty Path
-          Get-ChildItem -Path ./VenafiPS -File -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash,
+          $fullPath = Resolve-Path ./${{ env.module_name}} | Select-Object -ExpandProperty Path
+          Get-ChildItem -Path ./${{ env.module_name}} -File -Recurse | Get-FileHash -Algorithm SHA256 | Select-Object Hash,
           @{
           'n' = 'File'
           'e' = {
           $_.Path.Replace("$fullPath/", '')
           }
-          } | ConvertTo-Json | Out-File -FilePath ../../hash.json
+          } | ConvertTo-Json | Out-File -FilePath ${{ github.workspace }}/hash.json
       - name: Upload hash.json artifact
         uses: actions/upload-artifact@v2
         with:
           name: hash.json
-          path: /home/runner/work/hash.json
+          path: ${{ github.workspace }}/hash.json
       - name: Create GitHub release
         uses: softprops/action-gh-release@v1
         with:
-          files: /home/runner/work/hash.json
+          files: ${{ github.workspace }}/hash.json
           tag_name: v${{ env.venafips_new_version }}
           body_path: ${{ github.workspace }}/RELEASE.md
           draft: true
@@ -113,4 +113,4 @@ jobs:
       #     NUGET_KEY: ${{ secrets.NUGET_KEY }}
       #   shell: pwsh
       #   run: |
-      #     Publish-Module -Path "${{ github.workspace }}/VenafiPS" -NuGetApiKey $env:NUGET_KEY -Verbose
+      #     Publish-Module -Path "${{ github.workspace }}/${{ env.module_name}}" -NuGetApiKey $env:NUGET_KEY -Verbose
