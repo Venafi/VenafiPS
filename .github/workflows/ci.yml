@@ -1,16 +1,10 @@
-# This is a basic workflow to help you get started with Actions
-
 name: CI
 
-# Controls when the workflow will run
-on:
-  pull_request:
-  workflow_dispatch:
+on: [pull_request, workflow_dispatch]
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  lint-with-PSScriptAnalyzer:
-    name: Install and run PSScriptAnalyzer
+  Testing:
+    name: Testing
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -23,7 +17,7 @@ jobs:
         shell: pwsh
         run: |
           Invoke-ScriptAnalyzer -Path . -Recurse -Outvariable issues
-          $issues | ConvertTo-Json -Depth 2 | Set-Content -Path '../../pssa.json'
+          $issues | ConvertTo-Json -Depth 2 | Set-Content -Path '${{ github.workspace }}/pssa.json'
           $errors   = $issues.Where({$_.Severity -eq 'Error'})
           $warnings = $issues.Where({$_.Severity -eq 'Warning'})
           if ($errors) {
@@ -35,4 +29,7 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: pssa-results
-          path: /home/runner/work/pssa.json
+          path: ${{ github.workspace }}/pssa.json
+      # - name: Test with Pester
+      #   shell: pwsh
+      #   run: Invoke-Pester Unit.Tests.ps1 -Passthru | Export-CliXml -Path Unit.Tests.xml
