@@ -58,7 +58,7 @@ jobs:
           }
           $null = New-Item @Params
           $Params = @{
-              Module       = $ModuleName
+              Module       = 'VenafiPS'
               Force        = $true
               OutputFolder = '${{ github.workspace }}/docs/functions'
               NoMetadata   = $true
