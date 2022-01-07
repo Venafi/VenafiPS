@@ -74,15 +74,15 @@ jobs:
           $YMLtext | Set-Content -Path '${{ github.workspace }}/mkdocs.yml'
       - name: Update repo
         run: |
-          git.exe config --global user.name 'Greg Brownstein'
-          git.exe config --global user.email 'greg@jagtechnical.com'
-          git.exe add *.psd1
-          git.exe add *.md
-          git.exe add mkdocs.yml
-          git.exe status -v
-          # git.exe commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
+          git config --global user.name 'Greg Brownstein'
+          git config --global user.email 'greg@jagtechnical.com'
+          git add *.psd1
+          git add *.md
+          git add mkdocs.yml
+          git status -v
+          # git commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
 
-          # git.exe push
+          # git push
       - name: Generate file hash
         shell: pwsh
         run: |
