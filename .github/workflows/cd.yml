@@ -16,12 +16,8 @@ jobs:
           [version]$version = $manifest.ModuleVersion
           [version]$newVersion = "{0}.{1}.{2}" -f $Version.Major, $Version.Minor, ($Version.Build + 1)
           ((Get-Content -Path $modulePath -Raw).Replace('((NEW_VERSION))', $newVersion)) | Set-Content -Path $modulePath
-          # $env:VENAFIPS_NEW_VERSION = $newVersion
-          echo "VENAFIPS_NEW_VERSION=$newVersion" >> $GITHUB_ENV
+          echo "venafips_new_version=$newVersion" >> $GITHUB_ENV
           "New version: $newVersion"
-      - name: Echo env var
-        run: |
-          echo "${Env:VENAFIPS_NEW_VERSION}"
       - name: Install platyPS module
         shell: pwsh
         run: |
@@ -95,7 +91,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: /home/runner/work/hash.json
-          tag_name: v${{ env.VENAFIPS_NEW_VERSION }}
+          tag_name: v${{ env.venafips_new_version }}
           body_path: ${{ github.workspace }}/RELEASE.md
           draft: true
       # - name: Publish
