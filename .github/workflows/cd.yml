@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Update psm version
+      - name: Update psd and psm version
         shell: pwsh
         run: |
           $modulePath = '${{ github.workspace }}/VenafiPS/VenafiPS.psm1'
@@ -16,9 +16,9 @@ jobs:
           [version]$version = $manifest.ModuleVersion
           [version]$newVersion = "{0}.{1}.{2}" -f $Version.Major, $Version.Minor, ($Version.Build + 1)
           ((Get-Content -Path $modulePath -Raw).Replace('((NEW_VERSION))', $newVersion)) | Set-Content -Path $modulePath
-          echo "venafips_new_version=$newVersion" >> $GITHUB_ENV
-          "venafips_new_version=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
           "New version: $newVersion"
+          # set version to be used in later steps
+          "venafips_new_version=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
       - name: Install platyPS module
         shell: pwsh
         run: |
@@ -72,6 +72,17 @@ jobs:
               $Part
           }
           $YMLtext | Set-Content -Path '${{ github.workspace }}/mkdocs.yml'
+      - name: Update repo
+        run: |
+          git.exe config user.email 'greg@jagtechnical.com'
+          git.exe config user.name 'Greg Brownstein'
+          git.exe add *.psd1
+          git.exe add *.md
+          git.exe add mkdocs.yml
+          git.exe status -v
+          # git.exe commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
+
+          git.exe push https://$(GitHubPat)@github.com/Venafi/VenafiPS.git ('HEAD:{0}' -f $branch)
       - name: Generate file hash
         shell: pwsh
         run: |
