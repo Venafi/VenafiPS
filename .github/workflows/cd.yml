@@ -82,8 +82,8 @@ jobs:
           git add docs
           git add mkdocs.yml
           git status -v
-          # git commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
-          # git push
+          git commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
+          git push
       - name: Generate file hash
         shell: pwsh
         run: |
