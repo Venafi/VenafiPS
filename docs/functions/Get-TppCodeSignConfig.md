@@ -63,7 +63,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCodeSignConfig/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCodeSignConfig/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppCodeSignConfig.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppCodeSignConfig.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppCodeSignConfig.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppCodeSignConfig.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-GET-Codesign-GetGlobalConfiguration.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CGlobalConfiguration%7C_____1](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-GET-Codesign-GetGlobalConfiguration.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CGlobalConfiguration%7C_____1)
 

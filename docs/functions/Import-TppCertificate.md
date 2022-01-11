@@ -8,8 +8,8 @@ Import a certificate
 ### ByFile (Default)
 ```
 Import-TppCertificate -PolicyPath <String> -CertificatePath <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-VenafiSession <VenafiSession>]
- [<CommonParameters>]
+ [-EnrollmentAttribute <Hashtable>] [-Password <SecureString>] [-Reconcile] [-PassThru]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByFileWithPrivateKey
@@ -29,8 +29,8 @@ Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <Str
 ### ByData
 ```
 Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] [-Reconcile] [-PassThru] [-VenafiSession <VenafiSession>]
- [<CommonParameters>]
+ [-EnrollmentAttribute <Hashtable>] [-Password <SecureString>] [-Reconcile] [-PassThru]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -131,10 +131,9 @@ Accept wildcard characters: False
 ```
 
 ### -PrivateKey
-The private key data.
-Requires a Password.
+Private key data; requires a value for Password.
 For a PEM certificate, the private key is in either the RSA or PKCS#8 format.
-If the CertificateData field contains a PKCS#12 formatted certificate, this parameter is ignored because only one private key is allowed.
+Do not provide for a PKCS#12 certificate as the private key is already included.
 
 ```yaml
 Type: String
@@ -149,7 +148,19 @@ Accept wildcard characters: False
 ```
 
 ### -Password
-Password required when including a private key.
+Password required if the certificate has a private key.
+
+```yaml
+Type: SecureString
+Parameter Sets: ByFile, ByData
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ```yaml
 Type: SecureString
@@ -170,7 +181,7 @@ By using this parameter, this function will import, but use newest.
 Only import the certificate when no Certificate object exists with a past, present, or current version of the imported certificate.
 If a match is found between the Certificate object and imported certificate, activate the certificate with the most current 'Valid From' date.
 Archive the unused certificate, even if it is the imported certificate, to the History tab.
-See https://github.com/gdbarron/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
+See https://github.com/Venafi/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
 
 ```yaml
 Type: SwitchParameter
@@ -225,6 +236,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### TppObject, if PassThru provided
 ## NOTES
-Must have Master Admin permission or must have View, Read, Write, Create and Private Key Write permission to the Certificate object.
 
 ## RELATED LINKS
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Import.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Import.php)
+

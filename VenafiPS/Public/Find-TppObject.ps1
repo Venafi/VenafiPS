@@ -6,10 +6,10 @@ Find objects by path, class, or pattern
 Find objects by path, class, or pattern.
 
 .PARAMETER Path
-The path to start our search.
+The path to start our search.  The default is \ved\policy.
 
 .PARAMETER Class
-1 or more classes to search for
+1 or more classes/types to search for
 
 .PARAMETER Pattern
 Filter against object paths.
@@ -37,7 +37,11 @@ Path
 TppObject
 
 .EXAMPLE
-Find-TppObject -Path '\VED\Policy'
+Find-TppObject
+Get all objects recursively starting from \ved\policy
+
+.EXAMPLE
+Find-TppObject -Path '\VED\Policy\certificates'
 Get all objects in the root of a specific folder
 
 .EXAMPLE
@@ -45,53 +49,54 @@ Find-TppObject -Path '\VED\Policy\My Folder' -Recursive
 Get all objects in a folder and subfolders
 
 .EXAMPLE
-Find-TppObject -Path '\VED\Policy' -Pattern 'test'
+Find-TppObject -Path '\VED\Policy' -Pattern '*test*'
 Get items in a specific folder filtering the path
 
 .EXAMPLE
-Find-TppObject -Class 'iis6'
-Get all objects of the type iis6
+Find-TppObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
+Get objects of a specific type
 
 .EXAMPLE
-Find-TppObject -Class 'iis6' -Pattern 'test*'
-Get all objects of the type iis6 filtering the path
+Find-TppObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
+Get all objects of a specific type where the path is of a specific pattern
 
 .EXAMPLE
-Find-TppObject -Class 'iis6', 'capi'
-Get all objects of the type iis6 or capi
+Find-TppObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
+Get objects for multiple types
 
 .EXAMPLE
-Find-TppObject -Pattern 'test*'
-Find objects with the specific name.  All objects will be searched.
+Find-TppObject -Pattern '*f5*'
+Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
 
 .EXAMPLE
-Find-TppObject -Pattern 'test*' -Attribute 'Consumers'
-Find all objects where the specific attribute matches the pattern
+Find-TppObject -Pattern 'awesome*' -Attribute 'Description'
+Find objects where the specific attribute matches the pattern
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppObject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____17
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____19
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____13
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php
 
 #>
 function Find-TppObject {
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
     [Alias('fto')]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'FindByPath', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'FindByClassAndPath', ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'FindByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'FindByClass', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'FindByPattern', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath -AllowRoot ) {
@@ -102,23 +107,17 @@ function Find-TppObject {
                 }
             })]
         [Alias('DN')]
-        [String] $Path,
+        [String] $Path = '\ved\policy',
 
-        [Parameter(ParameterSetName = 'FindByPath')]
         [Parameter(Mandatory, ParameterSetName = 'FindByPattern')]
         [Parameter(ParameterSetName = 'FindByClass')]
-        [Parameter(ParameterSetName = 'FindByClassAndPath')]
         [Parameter(Mandatory, ParameterSetName = 'FindByAttribute')]
         [ValidateNotNullOrEmpty()]
         [String] $Pattern,
 
-        [Parameter(ParameterSetName = 'FindByPath')]
-        [Parameter(ParameterSetName = 'FindByClassAndPath')]
-        [switch] $Recursive,
-
         [Parameter(Mandatory, ParameterSetName = 'FindByClass')]
-        [Parameter(Mandatory, ParameterSetName = 'FindByClassAndPath')]
         [ValidateNotNullOrEmpty()]
+        [Alias('TypeName')]
         [String[]] $Class,
 
         [Parameter(Mandatory, ParameterSetName = 'FindByAttribute')]
@@ -126,41 +125,55 @@ function Find-TppObject {
         [Alias('AttributeName')]
         [String[]] $Attribute,
 
+        [Parameter(ParameterSetName = 'FindByPath')]
+        [Parameter(ParameterSetName = 'FindByClass')]
+        [Parameter(ParameterSetName = 'FindByPattern')]
+        [Alias('r')]
+        [switch] $Recursive,
+
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
+        $VenafiSession.Validate('tpp') | Out-Null
+    }
 
-        $VenafiSession.Validate() | Out-Null
-
-        Write-Verbose $PsCmdlet.ParameterSetName
+    process {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = 'placeholder'
-            Body       = @{ }
+            Method        = 'Post'
+            Body          = @{
+                'ObjectDN' = $Path
+            }
         }
 
-        Switch -Wildcard ($PsCmdlet.ParameterSetName) {
+        Switch ($PsCmdlet.ParameterSetName) {
             'FindByAttribute' {
                 $params.UriLeaf = 'config/find'
+                # this is the only api for this function which doesn't accept a path, let's remove it
+                $params.Body.Remove('ObjectDN')
+                $params.Body['AttributeNames'] = $Attribute
             }
 
-            'FindByPath' {
+            {$_ -in 'FindByPath', 'FindByPattern'} {
                 $params.UriLeaf = 'config/enumerate'
+                # if a path wasn't provided, default to recursive enumeration of \ved\policy
+                if ( -not $PSBoundParameters.ContainsKey('Path') ) {
+                    $params.Body['Recursive'] = 'true'
+                }
             }
 
-            'FindByPattern' {
-                $params.UriLeaf = 'config/enumerate'
-                $params.Body.Add( 'ObjectDN', '\VED' )
-                $params.Body.Add( 'Recursive', 'true' )
-            }
+            # 'FindByPattern' {
+            #     $params.UriLeaf = 'config/enumerate'
+            # }
 
-            'FindByClass*' {
+            'FindByClass' {
                 $params.UriLeaf = 'config/FindObjectsOfClass'
+                $params.Body['ObjectDN'] = $Path
             }
+
         }
 
         # add filters
@@ -168,18 +181,8 @@ function Find-TppObject {
             $params.Body.Add( 'Pattern', $Pattern )
         }
 
-        if ( $PSBoundParameters.ContainsKey('Attribute') ) {
-            $params.Body.Add( 'AttributeNames', $Attribute )
-        }
-
         if ( $PSBoundParameters.ContainsKey('Recursive') ) {
             $params.Body.Add( 'Recursive', 'true' )
-        }
-    }
-
-    process {
-        if ( $PSBoundParameters.ContainsKey('Path') ) {
-            $params.Body['ObjectDN'] = $Path
         }
 
         if ( $PSBoundParameters.ContainsKey('Class') ) {

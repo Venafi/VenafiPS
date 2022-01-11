@@ -8,15 +8,17 @@ Enrolls or provisions a new certificate
 ### ByName (Default)
 ```
 New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-CertificateType <String>]
- [-CertificateAuthorityPath <String>] [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>]
- [-PassThru] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
+ [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-PassThru]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### BySubject
 ```
 New-TppCertificate -Path <String> -CommonName <String> [-CertificateType <String>]
- [-CertificateAuthorityPath <String>] [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>]
- [-PassThru] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
+ [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-PassThru]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -132,6 +134,22 @@ Accept wildcard characters: False
 Type: String
 Parameter Sets: (All)
 Aliases: CADN, CertificateAuthorityDN
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CertificateAuthorityAttribute
+Name/value pairs providing any CA attributes to store with the Certificate object.
+During enrollment, these values will be submitted to the CA.
+
+```yaml
+Type: Hashtable
+Parameter Sets: (All)
+Aliases:
 
 Required: False
 Position: Named
@@ -258,7 +276,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCertificate.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCertificate.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCertificate.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCertificate.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7CPOST%20Certificates%252FRequest%7C_____0](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7CPOST%20Certificates%252FRequest%7C_____0)
 

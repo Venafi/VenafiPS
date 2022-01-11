@@ -5,31 +5,26 @@ Find objects by path, class, or pattern
 
 ## SYNTAX
 
-### FindByClassAndPath
+### FindByPath (Default)
 ```
-Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] -Class <String[]>
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Find-TppObject [-Path <String>] [-Recursive] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
-### FindByPath
+### FindByPattern
 ```
-Find-TppObject -Path <String> [-Pattern <String>] [-Recursive] [-VenafiSession <VenafiSession>]
+Find-TppObject [-Path <String>] -Pattern <String> [-Recursive] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
+```
+
+### FindByClass
+```
+Find-TppObject [-Path <String>] [-Pattern <String>] -Class <String[]> [-Recursive]
+ [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### FindByAttribute
 ```
 Find-TppObject -Pattern <String> -Attribute <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
-```
-
-### FindByClass
-```
-Find-TppObject [-Pattern <String>] -Class <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
-```
-
-### FindByPattern
-```
-Find-TppObject -Pattern <String> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -39,75 +34,83 @@ Find objects by path, class, or pattern.
 
 ### EXAMPLE 1
 ```
-Find-TppObject -Path '\VED\Policy'
+Find-TppObject
+```
+
+Get all objects recursively starting from \ved\policy
+
+### EXAMPLE 2
+```
+Find-TppObject -Path '\VED\Policy\certificates'
 ```
 
 Get all objects in the root of a specific folder
 
-### EXAMPLE 2
+### EXAMPLE 3
 ```
 Find-TppObject -Path '\VED\Policy\My Folder' -Recursive
 ```
 
 Get all objects in a folder and subfolders
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
-Find-TppObject -Path '\VED\Policy' -Pattern 'test'
+Find-TppObject -Path '\VED\Policy' -Pattern '*test*'
 ```
 
 Get items in a specific folder filtering the path
 
-### EXAMPLE 4
-```
-Find-TppObject -Class 'iis6'
-```
-
-Get all objects of the type iis6
-
 ### EXAMPLE 5
 ```
-Find-TppObject -Class 'iis6' -Pattern 'test*'
+Find-TppObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
 ```
 
-Get all objects of the type iis6 filtering the path
+Get objects of a specific type
 
 ### EXAMPLE 6
 ```
-Find-TppObject -Class 'iis6', 'capi'
+Find-TppObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
 ```
 
-Get all objects of the type iis6 or capi
+Get all objects of a specific type where the path is of a specific pattern
 
 ### EXAMPLE 7
 ```
-Find-TppObject -Pattern 'test*'
+Find-TppObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
 ```
 
-Find objects with the specific name. 
-All objects will be searched.
+Get objects for multiple types
 
 ### EXAMPLE 8
 ```
-Find-TppObject -Pattern 'test*' -Attribute 'Consumers'
+Find-TppObject -Pattern '*f5*'
 ```
 
-Find all objects where the specific attribute matches the pattern
+Find objects with the specific name. 
+All objects under \ved\policy (the default) will be searched.
+
+### EXAMPLE 9
+```
+Find-TppObject -Pattern 'awesome*' -Attribute 'Description'
+```
+
+Find objects where the specific attribute matches the pattern
 
 ## PARAMETERS
 
 ### -Path
-The path to start our search.
+The path to start our search. 
+The default is \ved\policy.
 
 ```yaml
 Type: String
-Parameter Sets: FindByClassAndPath, FindByPath
+Parameter Sets: FindByPath, FindByPattern, FindByClass
 Aliases: DN
 
-Required: True
+Required: False
 Position: Named
-Default value: None
-Accept pipeline input: True (ByPropertyName)
+Default value: \ved\policy
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
@@ -126,19 +129,7 @@ You can also use both literals and wildcards in a pattern.
 
 ```yaml
 Type: String
-Parameter Sets: FindByClassAndPath, FindByPath, FindByClass
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String
-Parameter Sets: FindByAttribute, FindByPattern
+Parameter Sets: FindByPattern, FindByAttribute
 Aliases:
 
 Required: True
@@ -148,28 +139,25 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Recursive
-Searches the subordinates of the object specified in Path.
-
 ```yaml
-Type: SwitchParameter
-Parameter Sets: FindByClassAndPath, FindByPath
+Type: String
+Parameter Sets: FindByClass
 Aliases:
 
 Required: False
 Position: Named
-Default value: False
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -Class
-1 or more classes to search for
+1 or more classes/types to search for
 
 ```yaml
 Type: String[]
-Parameter Sets: FindByClassAndPath, FindByClass
-Aliases:
+Parameter Sets: FindByClass
+Aliases: TypeName
 
 Required: True
 Position: Named
@@ -190,6 +178,21 @@ Aliases: AttributeName
 Required: True
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Recursive
+Searches the subordinates of the object specified in Path.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: FindByPath, FindByPattern, FindByClass
+Aliases: r
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -225,11 +228,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____17](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____17)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____19](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____19)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____13](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____13)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php)
 

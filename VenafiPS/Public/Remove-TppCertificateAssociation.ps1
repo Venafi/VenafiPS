@@ -32,22 +32,22 @@ InputObject, Path
 None
 
 .EXAMPLE
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
 Remove a single application object association
 
 .EXAMPLE
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -OrphanCleanup
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -OrphanCleanup
 Disassociate and delete the application object
 
 .EXAMPLE
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -RemoveAll
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -RemoveAll
 Remove all certificate associations
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociation/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCertificateAssociation.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificateAssociation.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Dissociate.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____8

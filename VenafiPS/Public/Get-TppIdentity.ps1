@@ -8,6 +8,9 @@ Returns information about individual identity, group identity, or distribution g
 .PARAMETER ID
 The individual identity, group identity, or distribution group prefixed universal id
 
+.PARAMETER IncludeAssociated
+Include all associated identity groups and folders
+
 .PARAMETER Me
 Returns the identity of the authenticated user
 
@@ -22,11 +25,17 @@ PSCustomObject with the following properties:
     Name
     ID
     Path
+    Associated (if -IncludeAssociated provided)
 
 .EXAMPLE
 Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7'
 
 Get identity details from an id
+
+.EXAMPLE
+Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeAssociated
+
+Get identity details from an id and include associated groups/folders
 
 .EXAMPLE
 Get-TppIdentity -Me
@@ -37,14 +46,16 @@ Get identity details for user in the current session
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppIdentity/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppIdentity.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppIdentity.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____15
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identity-Self.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____13
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identity-Self.php
 
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetAssociatedEntries.php
 #>
 function Get-TppIdentity {
 
@@ -55,6 +66,9 @@ function Get-TppIdentity {
         [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [String[]] $ID,
+
+        [Parameter(ParameterSetName = 'Id')]
+        [Switch] $IncludeAssociated,
 
         [Parameter(Mandatory, ParameterSetName = 'Me')]
         [Switch] $Me,
@@ -70,9 +84,9 @@ function Get-TppIdentity {
             'Id' {
                 $params = @{
                     VenafiSession = $VenafiSession
-                    Method     = 'Post'
-                    UriLeaf    = 'Identity/Validate'
-                    Body       = @{
+                    Method        = 'Post'
+                    UriLeaf       = 'Identity/Validate'
+                    Body          = @{
                         'ID' = @{
                             'PrefixedUniversal' = ''
                         }
@@ -83,8 +97,8 @@ function Get-TppIdentity {
             'Me' {
                 $params = @{
                     VenafiSession = $VenafiSession
-                    Method     = 'Get'
-                    UriLeaf    = 'Identity/Self'
+                    Method        = 'Get'
+                    UriLeaf       = 'Identity/Self'
                 }
             }
         }
@@ -98,7 +112,14 @@ function Get-TppIdentity {
 
                     $params.Body.Id.PrefixedUniversal = $thisId
 
-                    $response = Invoke-TppRestMethod @params
+                    $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID
+
+                    if ( $IncludeAssociated ) {
+                        $associated = Invoke-VenafiRestMethod @params -UriLeaf 'Identity/GetAssociatedEntries'
+                        $response | Add-Member @{ 'Associated' = $associated.Identities }
+                    }
+
+                    $response
                 }
             }
 
@@ -112,17 +133,13 @@ function Get-TppIdentity {
         if ( $idOut ) {
             $idOut | Select-Object `
             @{
-                n = 'Name'
-                e = { $_.Name }
-            },
-            @{
                 n = 'ID'
                 e = { $_.PrefixedUniversal }
             },
             @{
                 n = 'Path'
                 e = { $_.FullName }
-            }
+            }, * -ExcludeProperty PrefixedUniversal, FullName, Prefix, PrefixedName, Type, Universal
         }
     }
 }

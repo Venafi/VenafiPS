@@ -22,7 +22,7 @@ Get the version
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppVersion/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Get-TppVersion.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppVersion.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatusVersion.php?tocpath=Web%20SDK%7CSystemStatus%20programming%20interface%7C_____9
@@ -41,13 +41,13 @@ function Get-TppVersion {
 
     $params = @{
         VenafiSession = $VenafiSession
-        Method     = 'Get'
-        UriLeaf    = 'SystemStatus/Version'
+        Method        = 'Get'
+        UriLeaf       = 'SystemStatus/Version'
     }
 
     try {
-        $ver = Invoke-TppRestMethod @params
-        [version] $ver.Version
+        $ver = [Version]((Invoke-TppRestMethod @params).Version)
+        [Version]::new($ver.Major, $ver.Minor, $ver.Build)
     }
     catch {
         Throw ("Getting the version failed with the following error: {0}.  This feature was introduced in v18.3." -f $_)

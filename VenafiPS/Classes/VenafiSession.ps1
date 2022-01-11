@@ -5,7 +5,7 @@ class VenafiSession {
     [PSCustomObject] $Key
     [PSCustomObject] $Token
     [PSCustomObject] $CustomField
-    [string] $Version
+    [Version] $Version
 
     VenafiSession () {
     }
@@ -21,6 +21,7 @@ class VenafiSession {
     # AuthType can be key, token or vaas
     # key is TPP and all functions
     # token is TPP and some functions require it
+    # tpp is key or token for tpp
     # vaas is Venafi as a Service
 
     # return $AuthType so functions know what we're working with
@@ -34,8 +35,12 @@ class VenafiSession {
                     throw "You must first connect to Venafi as a Service with New-VenafiSession -VaasKey"
                 }
 
+                'tpp' {
+                    throw "You must first connect to a TPP server with New-VenafiSession"
+                }
+
                 Default {
-                    throw "You must first connect to the TPP server with New-VenafiSession"
+                    throw "You must first connect to either Venafi as a Service or a TPP server with New-VenafiSession"
                 }
             }
 
@@ -52,7 +57,8 @@ class VenafiSession {
             if ( $this.ServerUrl -ne $script:CloudUrl ) {
                 throw 'This function is only accessible for Venafi as a Service, not TPP'
             }
-        } else {
+        }
+        else {
             if ( $this.ServerUrl -eq $script:CloudUrl ) {
                 throw 'This function is only accessible for TPP, not Venafi as a Service'
             }
@@ -60,10 +66,16 @@ class VenafiSession {
 
         # if we know the session is still valid, don't bother checking with the server
         # add a couple of seconds so we don't get caught making the call as it expires
-        if ( $AuthType -eq 'key' ) {
+        Write-Verbose ("Key/Token expires: {0}, Current (+2s): {1}" -f $this.Expires, (Get-Date).ToUniversalTime().AddSeconds(2))
+        if ( $this.Expires -gt (Get-Date).ToUniversalTime().AddSeconds(2) ) {
+            return $AuthType
+        }
 
-            Write-Verbose ("Expires: {0}, Current (+2s): {1}" -f $this.Expires, (Get-Date).ToUniversalTime().AddSeconds(2))
-            if ( $this.Expires -lt (Get-Date).ToUniversalTime().AddSeconds(2) ) {
+        # expired, perform refresh
+        Write-Verbose 'Key/token expired.  Attempting refresh.'
+
+        switch ( $AuthType ) {
+            'key' {
 
                 try {
                     $params = @{
@@ -75,27 +87,46 @@ class VenafiSession {
                         ContentType = 'application/json'
                     }
                     Invoke-RestMethod @params
-                } catch {
+                }
+                catch {
                     # tpp sessions timeout after 3 mins of inactivity
                     # reestablish connection
                     if ( $_.Exception.Response.StatusCode.value__ -eq '401' ) {
                         Write-Verbose "Unauthorized, re-authenticating"
                         if ( $this.Key.Credential ) {
                             $this.Connect($this.Key.Credential)
-                        } else {
+                        }
+                        else {
                             $this.Connect($null)
                         }
-                    } else {
+                    }
+                    else {
                         throw ('"{0} {1}: {2}' -f $_.Exception.Response.StatusCode.value__, $_.Exception.Response.StatusDescription, $_ | Out-String )
                     }
                 }
             }
-        } else {
-            # token
-            # By default, access tokens are long-lived (90 day default). Refreshing the token should be handled outside of this class, so that the
-            #  refresh token and access token can be properly maintained and passed to the script.
 
-            # We have to assume a good token here and ensure Invoke-TPPRestMethod catches and handles the condition where a token expires
+            'token' {
+                if ( $this.Token.RefreshExpires ) {
+                    Write-Verbose ("Refresh token expires: {0}, Current: {1}" -f $this.Token.RefreshExpires, (Get-Date).ToUniversalTime())
+                }
+
+                $newToken = New-TppToken -VenafiSession $this
+                $this.Token = $newToken
+                $this.Expires = $newToken.Expires
+            }
+
+            'tpp' {
+                # handled by key/token above
+            }
+
+            'vaas' {
+                # nothing yet
+            }
+
+            Default {
+                throw "Unknown auth type $AuthType"
+            }
         }
         return $AuthType
     }
@@ -119,7 +150,8 @@ class VenafiSession {
                 Username = $Credential.UserName
                 Password = $Credential.GetNetworkCredential().Password
             }
-        } else {
+        }
+        else {
             $params.Method = 'Get'
             $params.UriLeaf = 'authorize/integrated'
             $params.UseDefaultCredentials = $true

@@ -1,14 +1,14 @@
 <#
 .SYNOPSIS
-Get an OAuth Access and Refresh Token from TPP
+Get a new access token or refresh an existing one
 
 .DESCRIPTION
-Get an OAuth access and refresh token to be used with New-VenafiSession or other scripts/utilities that take such a token.
-Accepts username/password credential, scope, and ClientId to get a token grant from specified TPP server.
+Get an access token and refresh token (if enabled) to be used with New-VenafiSession or other scripts/utilities that take such a token.
+You can also refresh an existing access token if you have the associated refresh token.
+Authentication can be provided as integrated, credential, or certificate.
 
 .PARAMETER AuthServer
-Auth server or url, venafi.company.com or https://venafi.company.com.
-If just the server name is provided, https:// will be appended.
+Auth server or url, eg. venafi.company.com
 
 .PARAMETER ClientId
 Applcation Id configured in Venafi for token-based authentication
@@ -27,7 +27,13 @@ Username / password credential used to request API Token
 A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
 .PARAMETER Certificate
-Certificate used to request API token
+Certificate used to request API token.  Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/21.1SDK/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
+
+.PARAMETER RefreshToken
+Provide RefreshToken along with ClientId to obtain a new access and refresh token.  Format should be a pscredential where the password is the refresh token.
+
+.PARAMETER VenafiSession
+VenafiSession object created from New-VenafiSession method.
 
 .EXAMPLE
 New-TppToken -AuthServer 'https://mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Credential $credential
@@ -41,12 +47,20 @@ Get a new token with Integrated authentication
 New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Certificate $cert
 Get a new token with certificate authentication
 
+.EXAMPLE
+New-TppToken -AuthServer 'mytppserver.example.com' -ClientId 'MyApp' -RefreshToken $refreshCred
+Refresh an existing access token by providing the refresh token directly
+
+.EXAMPLE
+New-TppToken -VenafiSession $mySession
+Refresh an existing access token by providing a VenafiSession object
+
 .INPUTS
 None
 
 .OUTPUTS
 PSCustomObject with the following properties:
-    AuthUrl
+    Server
     AccessToken
     RefreshToken
     Scope
@@ -54,6 +68,7 @@ PSCustomObject with the following properties:
     TokenType
     ClientId
     Expires
+    RefreshExpires (This property is null when TPP version is less than 21.1)
 #>
 function New-TppToken {
 
@@ -63,7 +78,10 @@ function New-TppToken {
 
 
     param (
-        [Parameter(Mandatory)]
+        [Parameter(ParameterSetName = 'OAuth', Mandatory)]
+        [Parameter(ParameterSetName = 'Integrated', Mandatory)]
+        [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -76,131 +94,171 @@ function New-TppToken {
         [Alias('Server')]
         [string] $AuthServer,
 
-        [Parameter(Mandatory)]
+        [Parameter(ParameterSetName = 'OAuth', Mandatory)]
+        [Parameter(ParameterSetName = 'Integrated', Mandatory)]
+        [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [string] $ClientId,
 
-        [Parameter(Mandatory)]
+        [Parameter(ParameterSetName = 'OAuth', Mandatory)]
+        [Parameter(ParameterSetName = 'Integrated', Mandatory)]
+        [Parameter(ParameterSetName = 'Certificate', Mandatory)]
         [hashtable] $Scope,
 
-        [Parameter(Mandatory, ParameterSetName = 'OAuth')]
+        [Parameter(ParameterSetName = 'OAuth', Mandatory)]
         [System.Management.Automation.PSCredential] $Credential,
 
         [Parameter(ParameterSetName = 'Integrated')]
         [Parameter(ParameterSetName = 'OAuth')]
         [string] $State,
 
-        [Parameter(Mandatory, ParameterSetName = 'Certificate')]
-        [X509Certificate] $Certificate
+        [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [X509Certificate] $Certificate,
+
+        [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
+        [pscredential] $RefreshToken,
+
+        [Parameter(ParameterSetName = 'RefreshSession', Mandatory)]
+        [ValidateScript( {
+                if ( -not $_.Token.RefreshToken ) {
+                    throw 'VenafiSession does not have a refresh token.  To get a new access token, create a new session with New-VenafiSession.'
+                }
+
+                if ( $_.Token.RefreshExpires -and $_.Token.RefreshExpires -lt (Get-Date) ) {
+                    throw "The refresh token has expired.  Retrieve a new access token with New-VenafiSession."
+                }
+
+                $true
+            })]
+        [VenafiSession] $VenafiSession
+
     )
 
-    $AuthUrl = $AuthServer
-    # add prefix if just server url was provided
-    if ( $AuthServer -notlike 'https://*') {
-        $AuthUrl = 'https://{0}' -f $AuthUrl
-    }
-
-    $scopeString = @(
-        $scope.GetEnumerator() | ForEach-Object {
-            if ($_.Value) {
-                '{0}:{1}' -f $_.Key, $_.Value
-            }
-            else {
-                $_.Key
-            }
-        }
-    ) -join ';'
-
     $params = @{
-        Method    = 'Post'
-        ServerUrl = $AuthUrl
-        UriRoot   = 'vedauth'
-        Body      = @{
-            client_id = $ClientId
-            scope     = $scopeString
+        Method  = 'Post'
+        UriRoot = 'vedauth'
+        Body    = @{}
+    }
+
+    if ( $PsCmdlet.ParameterSetName -eq 'RefreshSession' ) {
+        $params.ServerUrl = $VenafiSession.Token.Server
+        $params.UriLeaf = 'authorize/token'
+        $params.Body = @{
+            client_id     = $VenafiSession.Token.ClientId
+            refresh_token = $VenafiSession.Token.RefreshToken.GetNetworkCredential().password
+        }
+
+        # workaround for bug pre 21.3 where client id needs to be lowercase
+        if ( $VenafiSession.Version -lt [Version]::new('21', '3', '0') ) {
+            $params.Body.client_id = $params.Body.client_id.ToLower()
+        }
+    }
+    else {
+
+        $AuthUrl = $AuthServer
+        # add prefix if just server url was provided
+        if ( $AuthServer -notlike 'https://*') {
+            $AuthUrl = 'https://{0}' -f $AuthUrl
+        }
+        $params.ServerUrl = $AuthUrl
+
+        if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
+            $params.UriLeaf = 'authorize/token'
+            $params.Body = @{
+                client_id     = $ClientId
+                refresh_token = $RefreshToken.GetNetworkCredential().Password
+            }
+        }
+        else {
+            # obtain new token
+            $scopeString = @(
+                $scope.GetEnumerator() | ForEach-Object {
+                    if ($_.Value) {
+                        '{0}:{1}' -f $_.Key, $_.Value
+                    }
+                    else {
+                        $_.Key
+                    }
+                }
+            ) -join ';'
+
+            $params.Body = @{
+                client_id = $ClientId
+                scope     = $scopeString
+            }
+            $params.UriLeaf = 'authorize/{0}' -f $PSCmdlet.ParameterSetName.ToLower()
+
+            switch ($PsCmdlet.ParameterSetName) {
+
+                'Integrated' {
+                    $params.UseDefaultCredentials = $true
+                }
+
+                'OAuth' {
+                    $params.Body.username = $Credential.UserName
+                    $params.Body.password = $Credential.GetNetworkCredential().Password
+                }
+
+                'Certificate' {
+                    $params.Certificate = $Certificate
+                }
+
+                Default {
+                    throw ('Unknown parameter set {0}' -f $PSCmdlet.ParameterSetName)
+                }
+            }
+
+            if ( $State ) {
+                $params.Body.state = $State
+            }
+
         }
     }
 
-    switch ($PsCmdlet.ParameterSetName) {
+    if ( $PSCmdlet.ShouldProcess($params.ServerUrl, 'New access token') ) {
 
-        'Integrated' {
-            $params.UriLeaf = 'authorize/integrated'
-            $params.UseDefaultCredentials = $true
+        if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
+            try {
+                $response = Invoke-TppRestMethod @params
+            }
+            catch {
+                # workaround bug pre 21.3 where client_id must be lowercase
+                if ( $_ -like '*The client_id value being requested with the refresh token does not match the client_id of the access token making the call*') {
+                    $params.Body.client_id = $params.Body.client_id.ToLower()
+                    $response = Invoke-TppRestMethod @params
+                }
+                else {
+                    throw $_
+                }
+            }
         }
-
-        'OAuth' {
-            $params.UriLeaf = 'authorize/oauth'
-            $params.Body.username = $Credential.UserName
-            $params.Body.password = $Credential.GetNetworkCredential().Password
+        else {
+            $response = Invoke-TppRestMethod @params
         }
-
-        'Certificate' {
-            $params.UriLeaf = 'authorize/certificate'
-            $params.Certificate = $Certificate
-        }
-
-        Default {
-            throw ('Unknown parameter set {0}' -f $PSCmdlet.ParameterSetName)
-        }
-    }
-
-    if ( $State ) {
-        $params.Body.state = $State
-    }
-
-    if ( $PSCmdlet.ShouldProcess($AuthUrl, 'New token') ) {
-
-        $response = Invoke-TppRestMethod @params
 
         $response | Write-VerboseWithSecret
 
-        [PSCustomObject] @{
-            Server       = $AuthUrl
-            AccessToken  = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
-            RefreshToken = New-Object System.Management.Automation.PSCredential('RefreshToken', ($response.refresh_token | ConvertTo-SecureString -AsPlainText -Force))
-            Scope        = $response.scope
-            Identity     = $response.identity
-            TokenType    = $response.token_type
-            ClientId     = $ClientId
-            Expires      = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.Expires)
+        $newToken = [PSCustomObject] @{
+            Server         = $params.ServerUrl
+            AccessToken    = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
+            RefreshToken   = $null
+            Scope          = $Scope
+            Identity       = $response.identity
+            TokenType      = $response.token_type
+            ClientId       = $params.Body.client_id
+            Expires        = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.Expires)
+            RefreshExpires = $null
         }
+
+        if ( $response.refresh_token ) {
+            $newToken.RefreshToken = New-Object System.Management.Automation.PSCredential('RefreshToken', ($response.refresh_token | ConvertTo-SecureString -AsPlainText -Force))
+            # refresh_until added in 21.1
+            if ($response.refresh_until) {
+                $newToken.RefreshExpires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.refresh_until)
+            }
+        }
+
+        $newToken
     }
+
 }
-<#
-## Refresh Token
-
- Write-Verbose ("RefreshUntil: {0}, Current: {1}" -f $this.Token.RefreshUntil, (Get-Date).ToUniversalTime())
-                if ( $this.Token.RefreshUntil -and $this.Token.RefreshUntil -lt (Get-Date) ) {
-                    throw "The refresh token has expired.  You must create a new session with New-VenafiSession."
-                }
-
-                if ( $this.Token.RefreshToken ) {
-
-                    $params = @{
-                        Method    = 'Post'
-                        AuthServer = $this.AuthServer
-                        UriRoot   = 'vedauth'
-                        UriLeaf   = 'authorize/token'
-                        Body      = @{
-                            refresh_token = $this.Token.RefreshToken
-                            client_id     = $this.Token.ClientId
-                        }
-                    }
-                    $response = Invoke-TppRestMethod @params
-
-                    Write-Verbose ($response | Out-String)
-
-                    $this.Expires = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.expires)
-                    $this.Token = [PSCustomObject]@{
-                        AccessToken  = $response.access_token
-                        RefreshToken = $response.refresh_token
-                        Scope        = $response.scope
-                        Identity     = $this.Token.Identity
-                        ClientId     = $this.Token.ClientId
-                        TokenType    = $response.token_type
-                        RefreshUntil = ([datetime] '1970-01-01 00:00:00').AddSeconds($response.refresh_until)
-                    }
-
-                } else {
-                    throw "The token has expired and no refresh token exists.  You must create a new session with New-VenafiSession."
-                }
-#>

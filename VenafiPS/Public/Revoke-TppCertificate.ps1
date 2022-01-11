@@ -63,7 +63,7 @@ Revoke the certificate with a reason of the CA being compromised and wait for it
 http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppCertificate/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Revoke-TppCertificate.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppCertificate.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____24

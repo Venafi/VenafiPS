@@ -1,92 +1,152 @@
 # Set-TppAttribute
 
 ## SYNOPSIS
-Adds a value to an attribute
+Sets a value on an objects attribute or policies (policy attributes)
 
 ## SYNTAX
 
+### Object (Default)
 ```
-Set-TppAttribute [-Path] <String[]> [-AttributeName] <String> [-Value] <String[]> [-NoClobber]
- [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-VenafiSession <VenafiSession>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### Policy
+```
+Set-TppAttribute -Path <String> -Attribute <Hashtable> [-Policy] -ClassName <String> [-Lock]
+ [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Write a value to the object's configuration. 
-This function will append by default. 
-Attributes can have multiple values which may not be the intended use. 
-To ensure you only have one value for an attribute, use the Overwrite switch.
+Set the value on an objects attribute. 
+The attribute can either be built-in or custom.
+You can also set policies (policy attributes).
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com -AttributeName 'My custom field Label' -Value 'new custom value'
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Consumers'='\VED\Policy\myappobject.company.com'}
 ```
 
-Set value on custom field. 
-This will add to any existing value.
+Set a value on an object
 
 ### EXAMPLE 2
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com -AttributeName 'Consumers' -Value '\VED\Policy\myappobject.company.com' -Overwrite
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'}
 ```
 
-Set value on a certificate by overwriting any existing values
+Set value on custom field
+
+### EXAMPLE 3
+```
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'} -BypassValidation
+```
+
+Set value on custom field bypassing field validation
+
+### EXAMPLE 4
+```
+Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
+```
+
+Set a policy attribute
+
+### EXAMPLE 5
+```
+Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
+```
+
+Set a policy attribute and lock the value
 
 ## PARAMETERS
 
 ### -Path
-{{ Fill Path Description }}
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases: DN
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName)
-Accept wildcard characters: False
-```
-
-### -AttributeName
-Name of the attribute to modify. 
-If modifying a custom field, use the Label.
+Path to the object to modify
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: DN
 
 Required: True
-Position: 2
+Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -Value
-Value or list of values to write to the attribute.
+### -Attribute
+Hashtable with names and values to be set. 
+If setting a custom field, you can use either the name or guid as the key.
 
 ```yaml
-Type: String[]
+Type: Hashtable
 Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 3
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -NoClobber
-Append existing values as opposed to replacing which is the default
+### -BypassValidation
+Bypass data validation. 
+Only appicable to custom fields.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: Object
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Policy
+Set policies (aka policy attributes) instead of object attributes
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Policy
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ClassName
+Required when setting policy attributes. 
+Provide the class name to set the value for.
+If unsure of the class name, add the value through the TPP UI and go to Support-\>Policy Attributes to find it.
+
+```yaml
+Type: String
+Parameter Sets: Policy
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Lock
+Lock the value on the policy. 
+Only applicable to setting policies.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Policy
 Aliases:
 
 Required: False
@@ -106,7 +166,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 4
+Position: Named
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -151,17 +211,18 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Path
 ## OUTPUTS
 
-### PSCustomObject with the following properties:
-###     DN = path to object
-###     Success = boolean indicating success or failure
-###     Error = Error message in case of failure
+### None
 ## NOTES
 
 ## RELATED LINKS
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Set-TppAttribute.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addvalue.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____4](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addvalue.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____4)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-writepolicy.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-writepolicy.php)
 

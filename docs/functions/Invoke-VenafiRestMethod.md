@@ -1,31 +1,41 @@
 # Invoke-VenafiRestMethod
 
 ## SYNOPSIS
-Generic REST API call
+Ability to execute REST API calls which don't exist in a dedicated function yet
 
 ## SYNTAX
 
 ### Session (Default)
 ```
-Invoke-VenafiRestMethod -VenafiSession <VenafiSession> [-Method <String>] [-UriRoot <String>] -UriLeaf <String>
- [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
+Invoke-VenafiRestMethod [-VenafiSession <VenafiSession>] [-Method <String>] [-UriRoot <String>]
+ -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
 ```
 
 ### URL
 ```
-Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredentials] [-Method <String>] [-UriRoot <String>]
- -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
+Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
+ [-Method <String>] [-UriRoot <String>] -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>]
+ [-FullResponse] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Generic REST API call
+Ability to execute REST API calls which don't exist in a dedicated function yet
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-
+Invoke-VenafiRestMethod -Method Delete -UriLeaf 'Discovery/{1345311e-83c5-4945-9b4b-1da0a17c45c6}'
 ```
+
+Api call
+
+### EXAMPLE 2
+```
+Invoke-VenafiRestMethod -Method Post -UriLeaf 'Certificates/Revoke' -Body @{'CertificateDN'='\ved\policy\mycert.com'}
+```
+
+Api call with optional payload
 
 ## PARAMETERS
 
@@ -39,9 +49,9 @@ Type: VenafiSession
 Parameter Sets: Session
 Aliases:
 
-Required: True
+Required: False
 Position: Named
-Default value: None
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -61,17 +71,32 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -UseDefaultCredentials
-{{ Fill UseDefaultCredentials Description }}
+### -UseDefaultCredential
+{{ Fill UseDefaultCredential Description }}
 
 ```yaml
 Type: SwitchParameter
+Parameter Sets: URL
+Aliases: UseDefaultCredentials
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Certificate
+{{ Fill Certificate Description }}
+
+```yaml
+Type: X509Certificate
 Parameter Sets: URL
 Aliases:
 
 Required: False
 Position: Named
-Default value: False
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -37,21 +37,21 @@ Optionally, you can remove the application objects and corresponding orphaned de
 
 ### EXAMPLE 1
 ```
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
 ```
 
 Remove a single application object association
 
 ### EXAMPLE 2
 ```
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -OrphanCleanup
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -OrphanCleanup
 ```
 
 Disassociate and delete the application object
 
 ### EXAMPLE 3
 ```
-Remove-TppCertificateAssocation -Path '\ved\policy\my cert' -RemoveAll
+Remove-TppCertificateAssociation -Path '\ved\policy\my cert' -RemoveAll
 ```
 
 Remove all certificate associations
@@ -201,7 +201,7 @@ You must have:
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociation/](http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociation/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCertificateAssociation.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCertificateAssociation.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificateAssociation.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificateAssociation.ps1)
 
 [https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Dissociate.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____8](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Dissociate.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____8)
 

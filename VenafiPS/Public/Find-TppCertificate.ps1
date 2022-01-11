@@ -108,6 +108,9 @@ Find certificate created after this date and time
 .PARAMETER CreatedBefore
 Find certificate created before this date and time
 
+.PARAMETER CertificateType
+Find certificate by category of usage. Use CodeSigning, Device, Server, and/or User.
+
 .PARAMETER ManagementType
 Find certificates with a Management type of Unassigned, Monitoring, Enrollment, or Provisioning
 
@@ -177,7 +180,7 @@ Renew all certificates expiring before a certain date
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppCertificate.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCertificate.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____4
@@ -324,6 +327,10 @@ function Find-TppCertificate {
         [datetime] $CreatedBefore,
 
         [Parameter()]
+        [ValidateSet('CodeSigning', 'Device', 'Server', 'User')]
+        [String[]] $CertificateType,
+
+        [Parameter()]
         [TppManagementType[]] $ManagementType,
 
         [Parameter()]
@@ -370,7 +377,7 @@ function Find-TppCertificate {
             $params.Method = 'Head'
             $params['FullResponse'] = $true
         }
-        
+
         switch ($PSBoundParameters.Keys) {
             'CreatedDate' {
                 $params.Body.Add( 'CreatedOn', ($CreatedDate | ConvertTo-UtcIso8601) )
@@ -380,6 +387,9 @@ function Find-TppCertificate {
             }
             'CreatedAfter' {
                 $params.Body.Add( 'CreatedOnGreater', ($CreatedAfter | ConvertTo-UtcIso8601) )
+            }
+            'CertificateType' {
+                $params.Body.Add( 'CertificateType', $CertificateType  -join ',' )
             }
             'Offset' {
                 $params.Body.Add( 'Offset', $Offset )

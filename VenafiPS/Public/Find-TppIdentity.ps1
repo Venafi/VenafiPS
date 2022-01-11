@@ -38,22 +38,20 @@ PSCustomObject with the following properties:
 
 .EXAMPLE
 Find-TppIdentity -Name 'greg' -IncludeUsers
-
-Find user identities with the name greg
+Find only user identities with the name greg
 
 .EXAMPLE
 'greg', 'brownstein' | Find-TppIdentity
-
 Find all identity types with the name greg and brownstein
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppIdentity/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Find-TppIdentity.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____5
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php
 #>
 function Find-TppIdentity {
 

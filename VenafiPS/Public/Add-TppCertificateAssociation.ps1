@@ -29,18 +29,18 @@ InputObject, Path
 None
 
 .EXAMPLE
-Add-TppCertificateAssocation -CertificatePath '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
+Add-TppCertificateAssociation -CertificatePath '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
 Add a single application object association
 
 .EXAMPLE
-Add-TppCertificateAssocation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -PushCertificate
+Add-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -PushCertificate
 Add the association and push the certificate
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppCertificateAssociation/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Add-TppCertificateAssociation.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1
 
 .LINK
 https://docs.venafi.com/Docs/19.2SDK/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php?tocpath=REST%20API%20reference%7CCertificates%20programming%20interface%7C_____6

@@ -26,10 +26,12 @@ If not provided and the CN is also missing, the name becomes the first Domain Na
 Finally, if none of the above are found, the serial number is used.
 
 .PARAMETER PrivateKey
-The private key data. Requires a Password. For a PEM certificate, the private key is in either the RSA or PKCS#8 format. If the CertificateData field contains a PKCS#12 formatted certificate, this parameter is ignored because only one private key is allowed.
+Private key data; requires a value for Password.
+For a PEM certificate, the private key is in either the RSA or PKCS#8 format.
+Do not provide for a PKCS#12 certificate as the private key is already included.
 
 .PARAMETER Password
-Password required when including a private key.
+Password required if the certificate has a private key.
 
 .PARAMETER Reconcile
 Controls certificate and corresponding private key replacement.
@@ -37,7 +39,7 @@ By default, this function will import and replace the certificate regardless of 
 By using this parameter, this function will import, but use newest. Only import the certificate when no Certificate object exists with a past, present, or current version of the imported certificate.
 If a match is found between the Certificate object and imported certificate, activate the certificate with the most current 'Valid From' date.
 Archive the unused certificate, even if it is the imported certificate, to the History tab.
-See https://github.com/gdbarron/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
+See https://github.com/Venafi/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
 
 .PARAMETER PassThru
 Return a TppObject representing the newly imported object.
@@ -55,8 +57,8 @@ None
 .OUTPUTS
 TppObject, if PassThru provided
 
-.NOTES
-Must have Master Admin permission or must have View, Read, Write, Create and Private Key Write permission to the Certificate object.
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Import.php
 #>
 function Import-TppCertificate {
     [CmdletBinding(DefaultParameterSetName = 'ByFile')]
@@ -67,7 +69,8 @@ function Import-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid Policy path"
                 }
             })]
@@ -79,7 +82,8 @@ function Import-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-Path ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid path"
                 }
             })]
@@ -87,20 +91,27 @@ function Import-TppCertificate {
 
         [Parameter(Mandatory, ParameterSetName = 'ByData')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [ValidateNotNullOrEmpty()]
         [String] $CertificateData,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [String] $Name,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [Hashtable] $EnrollmentAttribute,
 
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [ValidateNotNullOrEmpty()]
         [String] $PrivateKey,
 
+        [Parameter(ParameterSetName = 'ByFile')]
+        [Parameter(ParameterSetName = 'ByData')]
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [ValidateNotNullOrEmpty()]
         [SecureString] $Password,
 
         [Parameter()]
@@ -117,28 +128,43 @@ function Import-TppCertificate {
 
         $VenafiSession.Validate() | Out-Null
 
+    }
+
+    process {
+
+        Write-Verbose $PSCmdlet.ParameterSetName
+
         if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
             # get cert data from file
-            $CertificateData = Get-Content -Path $CertificatePath -Raw
+            if ($PSVersionTable.PSVersion.Major -lt 6) {
+                $cert = Get-Content $CertificatePath -Encoding Byte
+            }
+            else {
+                $cert = Get-Content $CertificatePath -AsByteStream
+            }
+
+            $thisCertData = [System.Convert]::ToBase64String($cert)
+        }
+        else {
+            $thisCertData = $CertificateData
         }
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = 'certificates/import'
-            Body       = @{
+            Method        = 'Post'
+            UriLeaf       = 'certificates/import'
+            Body          = @{
                 PolicyDN        = $PolicyPath
-                CertificateData = $CertificateData
+                CertificateData = $thisCertData
             }
         }
 
         if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {
             $updatedAttribute = @($EnrollmentAttribute.GetEnumerator() | ForEach-Object { @{'Name' = $_.name; 'Value' = $_.value } })
             $params.Body.CASpecificAttributes = $updatedAttribute
-
         }
 
-        if ( $PSBoundParameters.ContainsKey('Reconcile') ) {
+        if ( $Reconcile.IsPresent ) {
             $params.Body.Reconcile = 'true'
         }
 
@@ -146,20 +172,20 @@ function Import-TppCertificate {
             $params.Body.ObjectName = $Name
         }
 
+
+        if ( $PSBoundParameters.ContainsKey('Password') ) {
+            $params.Body.Password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
+        }
+
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
             $params.Body.PrivateKeyData = $PrivateKey
-            $plainTextPassword = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
-            $params.Body.Password = $plainTextPassword
         }
 
         $response = Invoke-TppRestMethod @params
         Write-Verbose ('Successfully imported certificate')
 
-        if ( $PassThru ) {
-            $response.CertificateDN | Get-TppObject
+        if ( $PassThru.IsPresent ) {
+            Get-TppObject -Guid $response.Guid
         }
-    }
-
-    process {
     }
 }

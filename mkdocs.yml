@@ -11,17 +11,22 @@ pages:
     - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
     - ConvertTo-TppGuid: functions/ConvertTo-TppGuid.md
     - ConvertTo-TppPath: functions/ConvertTo-TppPath.md
+    - Convert-TppObject: functions/Convert-TppObject.md
     - Export-VenafiCertificate: functions/Export-VenafiCertificate.md
     - Find-TppCertificate: functions/Find-TppCertificate.md
+    - Find-TppClient: functions/Find-TppClient.md
     - Find-TppCodeSignEnvironment: functions/Find-TppCodeSignEnvironment.md
     - Find-TppCodeSignProject: functions/Find-TppCodeSignProject.md
     - Find-TppCodeSignTemplate: functions/Find-TppCodeSignTemplate.md
     - Find-TppIdentity: functions/Find-TppIdentity.md
     - Find-TppObject: functions/Find-TppObject.md
+    - Find-TppVaultId: functions/Find-TppVaultId.md
     - Get-TppAttribute: functions/Get-TppAttribute.md
+    - Get-TppClassAttribute: functions/Get-TppClassAttribute.md
     - Get-TppCodeSignConfig: functions/Get-TppCodeSignConfig.md
     - Get-TppCodeSignEnvironment: functions/Get-TppCodeSignEnvironment.md
     - Get-TppCodeSignProject: functions/Get-TppCodeSignProject.md
+    - Get-TppCredential: functions/Get-TppCredential.md
     - Get-TppCustomField: functions/Get-TppCustomField.md
     - Get-TppIdentity: functions/Get-TppIdentity.md
     - Get-TppIdentityAttribute: functions/Get-TppIdentityAttribute.md
@@ -36,6 +41,7 @@ pages:
     - Import-TppCertificate: functions/Import-TppCertificate.md
     - Invoke-TppCertificatePush: functions/Invoke-TppCertificatePush.md
     - Invoke-TppCertificateRenewal: functions/Invoke-TppCertificateRenewal.md
+    - Invoke-VenafiCertificateAction: functions/Invoke-VenafiCertificateAction.md
     - Invoke-VenafiRestMethod: functions/Invoke-VenafiRestMethod.md
     - Move-TppObject: functions/Move-TppObject.md
     - New-TppCapiApplication: functions/New-TppCapiApplication.md
@@ -49,6 +55,7 @@ pages:
     - Read-TppLog: functions/Read-TppLog.md
     - Remove-TppCertificate: functions/Remove-TppCertificate.md
     - Remove-TppCertificateAssociation: functions/Remove-TppCertificateAssociation.md
+    - Remove-TppClient: functions/Remove-TppClient.md
     - Remove-TppCodeSignEnvironment: functions/Remove-TppCodeSignEnvironment.md
     - Remove-TppCodeSignProject: functions/Remove-TppCodeSignProject.md
     - Remove-TppPermission: functions/Remove-TppPermission.md
@@ -57,10 +64,12 @@ pages:
     - Revoke-TppToken: functions/Revoke-TppToken.md
     - Set-TppAttribute: functions/Set-TppAttribute.md
     - Set-TppCodeSignProjectStatus: functions/Set-TppCodeSignProjectStatus.md
+    - Set-TppCredential: functions/Set-TppCredential.md
     - Set-TppPermission: functions/Set-TppPermission.md
     - Set-TppWorkflowTicketStatus: functions/Set-TppWorkflowTicketStatus.md
     - Test-ModuleHash: functions/Test-ModuleHash.md
     - Test-TppIdentity: functions/Test-TppIdentity.md
     - Test-TppObject: functions/Test-TppObject.md
+    - Test-TppToken: functions/Test-TppToken.md
     - Write-TppLog: functions/Write-TppLog.md
 

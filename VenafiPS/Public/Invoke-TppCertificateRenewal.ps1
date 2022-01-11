@@ -34,7 +34,7 @@ Invoke-TppCertificateRenewal -Path '\VED\Policy\My folder\app.mycompany.com'
 http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Invoke-TppCertificateRenewal.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-renew.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____16

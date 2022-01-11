@@ -22,6 +22,10 @@ Valid values include 'Code Signing', 'Device', 'Server' (same as default), and '
 .PARAMETER CertificateAuthorityDN
 The Distinguished Name (DN) of the Trust Protection Platform Certificate Authority Template object for enrolling the certificate. If the value is missing, use the default CADN
 
+.PARAMETER CertificateAuthorityAttribute
+Name/value pairs providing any CA attributes to store with the Certificate object.
+During enrollment, these values will be submitted to the CA.
+
 .PARAMETER ManagementType
 The level of management that Trust Protection Platform applies to the certificate:
 - Enrollment: Default. Issue a new certificate, renewed certificate, or key generation request to a CA for enrollment. Do not automatically provision the certificate.
@@ -63,7 +67,7 @@ Create certificate including subject alternate names
 http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/New-TppCertificate.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCertificate.ps1
 
 .LINK
 https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7CPOST%20Certificates%252FRequest%7C_____0
@@ -80,7 +84,8 @@ function New-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -104,13 +109,17 @@ function New-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
         [Alias('CertificateAuthorityDN')]
         [Alias('CADN')]
         [String] $CertificateAuthorityPath,
+
+        [Parameter()]
+        [Hashtable] $CertificateAuthorityAttribute,
 
         [Parameter()]
         [TppManagementType] $ManagementType,
@@ -145,7 +154,8 @@ function New-TppCertificate {
                         'Email' {
                             try {
                                 $null = [mailaddress]$thisValue
-                            } catch {
+                            }
+                            catch {
                                 ('''{0}'' is not a valid email' -f $thisValue)
                             }
                         }
@@ -161,7 +171,8 @@ function New-TppCertificate {
                         'IPAddress' {
                             try {
                                 $null = [ipaddress]$thisValue
-                            } catch {
+                            }
+                            catch {
                                 ('''{0}'' is not a valid IP Address' -f $thisValue)
                             }
                         }
@@ -181,14 +192,27 @@ function New-TppCertificate {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = 'certificates/request'
-            Body       = @{
+            Method        = 'Post'
+            UriLeaf       = 'certificates/request'
+            Body          = @{
                 PolicyDN             = $Path
                 Origin               = 'VenafiPS'
-                CASpecificAttributes = @{
-                    'Name'  = 'Origin'
-                    'Value' = 'VenafiPS'
+                CASpecificAttributes = @(
+                    @{
+                        'Name'  = 'Origin'
+                        'Value' = 'VenafiPS'
+                    }
+                )
+            }
+        }
+
+        if ( $PSBoundParameters.ContainsKey('CertificateAuthorityAttribute') ) {
+            $CertificateAuthorityAttribute.GetEnumerator() | ForEach-Object {
+
+                $params.Body.CASpecificAttributes +=
+                @{
+                    'Name'  = $_.Key
+                    'Value' = $_.Value
                 }
             }
         }
@@ -244,7 +268,8 @@ function New-TppCertificate {
 
                     [TppObject] $returnObject
                 }
-            } catch {
+            }
+            catch {
                 Write-Error $_
                 continue
             }

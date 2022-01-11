@@ -42,10 +42,10 @@ Remove a certificate and automatically remove all associations
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificate/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Code/Public/Remove-TppCertificate.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Certificates-Guid.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____9
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Certificates-Guid.php
 
 #>
 function Remove-TppCertificate {
@@ -53,10 +53,7 @@ function Remove-TppCertificate {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
-
-        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByPath')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -87,16 +84,16 @@ function Remove-TppCertificate {
 
     process {
 
-        if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-            $path = $InputObject.Path
-            $guid = $InputObject.Guid
-        } else {
-            $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
-        }
+        # if ( $PSBoundParameters.ContainsKey('InputObject') ) {
+        #     $path = $InputObject.Path
+        #     $guid = $InputObject.Guid
+        # } else {
+        #     $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
+        # }
 
         # ensure either there are no associations or the force flag was provided
-        $associatedApps = $Guid |
-        Get-TppAttribute -Attribute "Consumers" -EffectivePolicy -VenafiSession $VenafiSession |
+        $associatedApps = $Path |
+        Get-TppAttribute -Attribute "Consumers" -Effective -VenafiSession $VenafiSession |
         Select-Object -ExpandProperty Value
 
         if ( $associatedApps ) {
@@ -108,11 +105,12 @@ function Remove-TppCertificate {
             }
         }
 
-        $params.UriLeaf = "Certificates/$Guid"
+        $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
+        $params.UriLeaf = "Certificates/$guid"
 
         if ( $PSCmdlet.ShouldProcess($Path, 'Remove certificate and all associations') ) {
-            Remove-TppCertificateAssociation -Path $Path -All -VenafiSession $VenafiSession
-            Invoke-TppRestMethod @params
+            Remove-TppCertificateAssociation -Path $Path -All -VenafiSession $VenafiSession -Confirm:$false
+            Invoke-TppRestMethod @params | Out-Null
         }
     }
 }

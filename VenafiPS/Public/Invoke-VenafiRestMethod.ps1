@@ -1,9 +1,9 @@
 <#
 .SYNOPSIS
-Generic REST API call
+Ability to execute REST API calls which don't exist in a dedicated function yet
 
 .DESCRIPTION
-Generic REST API call
+Ability to execute REST API calls which don't exist in a dedicated function yet
 
 .PARAMETER VenafiSession
 VenafiSession object from New-VenafiSession.
@@ -29,21 +29,31 @@ None
 PSCustomObject
 
 .EXAMPLE
+Invoke-VenafiRestMethod -Method Delete -UriLeaf 'Discovery/{1345311e-83c5-4945-9b4b-1da0a17c45c6}'
+Api call
+
+.EXAMPLE
+Invoke-VenafiRestMethod -Method Post -UriLeaf 'Certificates/Revoke' -Body @{'CertificateDN'='\ved\policy\mycert.com'}
+Api call with optional payload
 
 #>
 function Invoke-VenafiRestMethod {
     [CmdletBinding(DefaultParameterSetName = 'Session')]
     param (
-        [Parameter(Mandatory, ParameterSetName = 'Session')]
+        [Parameter(ParameterSetName = 'Session')]
         [ValidateNotNullOrEmpty()]
-        [VenafiSession] $VenafiSession,
+        [VenafiSession] $VenafiSession = $script:VenafiSession,
 
         [Parameter(Mandatory, ParameterSetName = 'URL')]
         [ValidateNotNullOrEmpty()]
         [String] $ServerUrl,
 
         [Parameter(ParameterSetName = 'URL')]
-        [switch] $UseDefaultCredentials,
+        [Alias('UseDefaultCredentials')]
+        [switch] $UseDefaultCredential,
+
+        [Parameter(ParameterSetName = 'URL')]
+        [X509Certificate] $Certificate,
 
         [Parameter()]
         [ValidateSet("Get", "Post", "Patch", "Put", "Delete", 'Head')]
@@ -136,11 +146,21 @@ function Invoke-VenafiRestMethod {
         }
     }
 
-    if ( $UseDefaultCredentials ) {
+    if ( $UseDefaultCredential.IsPresent -and $Certificate ) {
+        throw 'You cannot use UseDefaultCredential and Certificate parameters together'
+    }
+
+    if ( $UseDefaultCredential.IsPresent ) {
         $params.Add('UseDefaultCredentials', $true)
     }
 
     $params | Write-VerboseWithSecret
+
+    # ConvertTo-Json, used in Write-VerboseWithSecret, has an issue with certificates
+    # add this param after
+    if ( $Certificate ) {
+        $params.Add('Certificate', $Certificate)
+    }
 
     $oldProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'
@@ -175,11 +195,11 @@ function Invoke-VenafiRestMethod {
                     try {
                         $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
                         $verboseOutput.Message | Write-VerboseWithSecret
-                        Write-Warning ('This ''{0}'' call requires a trailing slash, please create an issue at https://github.com/gdbarron/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{0}/{1}' -f $UriRoot, $UriLeaf))
+                        Write-Warning ('This ''{0}'' call requires a trailing slash, please create an issue at https://github.com/Venafi/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{0}/{1}' -f $UriRoot, $UriLeaf))
                     }
                     catch {
                         # this didn't work, provide details from pre slash call
-                        throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )                    
+                        throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )
                     }
                 }
             }
@@ -189,8 +209,9 @@ function Invoke-VenafiRestMethod {
             }
         }
     }
-
-    $ProgressPreference = $oldProgressPreference
+    finally {
+        $ProgressPreference = $oldProgressPreference
+    }
 
     if ( $FullResponse.IsPresent ) {
         $response

@@ -20,8 +20,9 @@ Export-VenafiCertificate -CertificateId <String> -Format <String> [-OutPath <Str
 
 ### TppJks
 ```
-Export-VenafiCertificate -CertificateId <String> -Format <String> -FriendlyName <String>
- -KeystorePassword <SecureString> [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Export-VenafiCertificate -CertificateId <String> -Format <String> [-IncludeChain] -FriendlyName <String>
+ [-PrivateKeyPassword <SecureString>] -KeystorePassword <SecureString> [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -38,28 +39,28 @@ Get certificate data from Venafi as a Service
 
 ### EXAMPLE 2
 ```
-$cert | Get-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
+$cert | Export-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
 ```
 
 Get certificate data and save to a file, TPP
 
 ### EXAMPLE 3
 ```
-$cert | Get-VenafiCertificate -Format 'PKCS #7' -IncludeChain
+$cert | Export-VenafiCertificate -Format 'PKCS #7' -IncludeChain
 ```
 
 Get one or more certificates with the certificate chain included, TPP
 
 ### EXAMPLE 4
 ```
-$cert | Get-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
+$cert | Export-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
 ```
 
 Get one or more certificates with private key included, TPP
 
 ### EXAMPLE 5
 ```
-$cert | Get-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
+$cert | Export-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
 ```
 
 Get certificates in JKS format, TPP
@@ -124,7 +125,7 @@ TPP Only.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Tpp
+Parameter Sets: Tpp, TppJks
 Aliases:
 
 Required: False
@@ -165,7 +166,8 @@ Accept wildcard characters: False
 ```
 
 ### -IncludePrivateKey
-{{ Fill IncludePrivateKey Description }}
+DEPRECATED.
+Provide a value for -PrivateKeyPassword.
 
 ```yaml
 Type: SwitchParameter
@@ -193,7 +195,7 @@ You must adhere to the following rules:
 
 ```yaml
 Type: SecureString
-Parameter Sets: Tpp
+Parameter Sets: Tpp, TppJks
 Aliases: SecurePassword
 
 Required: False
@@ -205,7 +207,7 @@ Accept wildcard characters: False
 
 ### -KeystorePassword
 Password required to retrieve the certificate in JKS format. 
-TPP Only. 
+TPP Only.
 You must adhere to the following rules:
 - Password is at least 12 characters.
 - Comprised of at least three of the following:
