@@ -169,7 +169,7 @@ Find-TppCertificate -Path '\VED\Policy\My Policy' -Recursive
 Find all certificates in a specific path and all subfolders
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 | Get-TppCertificateDetail
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 | Get-VenafiCertificate
 Get detailed certificate info on the first 5 certificates expiring before a certain date
 
 .EXAMPLE
