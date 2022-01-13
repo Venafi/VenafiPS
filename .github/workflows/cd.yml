@@ -9,6 +9,8 @@ jobs:
       module_name: VenafiPS
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.CD_TOKEN }}
       - name: Update psd and psm version
         shell: pwsh
         run: |
