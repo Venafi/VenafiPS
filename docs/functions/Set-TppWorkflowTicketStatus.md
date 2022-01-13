@@ -19,16 +19,14 @@ Set workflow ticket status for a certificate
 ### EXAMPLE 1
 ```
 Get-TppWorkflowTicket -Path '\VED\policy\myapp.company.com' | Set-TppWorkflowTicketStatus -Status Approved
-```
-
 Approve all tickets for a certificate
+```
 
 ### EXAMPLE 2
 ```
 Get-TppWorkflowTicket -Path '\VED\policy\myapp.company.com' | Set-TppWorkflowTicketStatus -Status 'Approved After' -ScheduledStart (Get-Date).AaaDays(3) -Explanation 'weekend upgrade'
-```
-
 Approve all tickets for a certificate after a certain date with an explanation
+```
 
 ## PARAMETERS
 

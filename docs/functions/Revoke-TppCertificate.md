@@ -18,23 +18,20 @@ Requests that an existing certificate be revoked.
 ### EXAMPLE 1
 ```
 $cert | Revoke-TppCertificate -Reason 2
-```
-
 Revoke the certificate with a reason of the CA being compromised
+```
 
 ### EXAMPLE 2
 ```
 $cert | Revoke-TppCertificate -Force
-```
-
 Revoke the certificate bypassing the confirmation prompt
+```
 
 ### EXAMPLE 3
 ```
 Revoke-TppCertificate -Path '\VED\Policy\My folder\app.mycompany.com' -Reason 2 -Wait
-```
-
 Revoke the certificate with a reason of the CA being compromised and wait for it to complete
+```
 
 ## PARAMETERS
 

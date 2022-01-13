@@ -24,16 +24,14 @@ Venafi as a Service only, not for TPP.
 ### EXAMPLE 1
 ```
 Get-VaasApplication
-```
-
 Get info for all applications
+```
 
 ### EXAMPLE 2
 ```
 Get-VaasApplication -ApplicationId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-```
-
 Get info for a specific application
+```
 
 ## PARAMETERS
 

@@ -44,37 +44,32 @@ Authentication can be provided as integrated, credential, or certificate.
 ### EXAMPLE 1
 ```
 New-TppToken -AuthServer 'https://mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Credential $credential
-```
-
 Get a new token with OAuth
+```
 
 ### EXAMPLE 2
 ```
 New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId'
-```
-
 Get a new token with Integrated authentication
+```
 
 ### EXAMPLE 3
 ```
 New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Certificate $cert
-```
-
 Get a new token with certificate authentication
+```
 
 ### EXAMPLE 4
 ```
 New-TppToken -AuthServer 'mytppserver.example.com' -ClientId 'MyApp' -RefreshToken $refreshCred
-```
-
 Refresh an existing access token by providing the refresh token directly
+```
 
 ### EXAMPLE 5
 ```
 New-TppToken -VenafiSession $mySession
-```
-
 Refresh an existing access token by providing a VenafiSession object
+```
 
 ## PARAMETERS
 

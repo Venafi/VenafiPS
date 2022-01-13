@@ -26,16 +26,14 @@ You can opt to remove permissions for a specific user or all assigned
 ### EXAMPLE 1
 ```
 Find-TppObject -Path '\VED\Policy\My folder' | Remove-TppPermission
-```
-
 Remove all permissions from a specific object
+```
 
 ### EXAMPLE 2
 ```
 Find-TppObject -Path '\VED' -Recursive | Remove-TppPermission -IdentityId 'AD+blah:879s8d7f9a8ds7f9s8d7f9'
-```
-
 Remove all permissions for a specific user
+```
 
 ## PARAMETERS
 

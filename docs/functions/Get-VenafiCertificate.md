@@ -29,44 +29,38 @@ Get certificate information, either all available to the api key provided or by 
 ### EXAMPLE 1
 ```
 Get-VenafiCertificate
-```
-
 Get certificate info for all certs
+```
 
 ### EXAMPLE 2
 ```
 Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-```
-
 Get certificate info for a specific cert on Venafi as a Serivce
+```
 
 ### EXAMPLE 3
 ```
 Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
-```
-
 Get certificate info for a specific cert on TPP
+```
 
 ### EXAMPLE 4
 ```
 Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions
-```
-
 Get certificate info for a specific cert on TPP, including historical versions of the certificate.
+```
 
 ### EXAMPLE 5
 ```
 Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions -ExcludeRevoked -ExcludeExpired
-```
-
 Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
+```
 
 ### EXAMPLE 6
 ```
 Find-TppCertificate | Get-VenafiCertificate
-```
-
 Get certificate info for all certs in TPP
+```
 
 ## PARAMETERS
 
@@ -89,6 +83,7 @@ Accept wildcard characters: False
 
 ### -IncludePreviousVersions
 Returns details about previous (historical) versions of a certificate (only from TPP).
+This option will add a property named PreviousVersions to the returned object.
 
 ```yaml
 Type: SwitchParameter

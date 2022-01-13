@@ -20,9 +20,8 @@ See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Cr
 ### EXAMPLE 1
 ```
 Set-TppCredential -Path '\VED\Policy\Password Credential' -Value @{'Password'='my-new-password'}
-```
-
 Set a value
+```
 
 ## PARAMETERS
 

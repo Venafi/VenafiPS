@@ -19,23 +19,20 @@ Read entries from the TPP log
 ### EXAMPLE 1
 ```
 Read-TppLog -First 10
-```
-
 Get the most recent 10 log items
+```
 
 ### EXAMPLE 2
 ```
 $capiObject | Read-TppLog
-```
-
 Find all events for a specific object
+```
 
 ### EXAMPLE 3
 ```
 Read-TppLog -EventId '00130003'
-```
-
 Find all events with event ID '00130003', Certificate Monitor - Certificate Expiration Notice
+```
 
 ## PARAMETERS
 

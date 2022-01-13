@@ -18,23 +18,20 @@ Generic use function to create a new object if a specific function hasn't been c
 ### EXAMPLE 1
 ```
 New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}
-```
-
 Create a new device
+```
 
 ### EXAMPLE 2
 ```
 New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'} -PassThru
-```
-
 Create a new device and return the resultant object
+```
 
 ### EXAMPLE 3
 ```
 New-TppObject -Path '\VED\Policy\Test Device\App' -Class 'Basic' -Attribute @{'Driver Name'='appbasic';'Certificate'='\Ved\Policy\mycert.com'}
-```
-
 Create a new Basic application and associate it to a device and certificate
+```
 
 ## PARAMETERS
 

@@ -30,30 +30,26 @@ Create a new CAPI application
 ### EXAMPLE 1
 ```
 New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path
-```
-
 Create a new application
+```
 
 ### EXAMPLE 2
 ```
 New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -WebSiteName 'mysite' -BindingIp '1.2.3.4'
-```
-
 Create a new application and update IIS
+```
 
 ### EXAMPLE 3
 ```
 New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -WebSiteName 'mysite' -BindingIp '1.2.3.4' -PushCertificate
-```
-
 Create a new application, update IIS, and push the certificate to the new app
+```
 
 ### EXAMPLE 4
 ```
 New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -PassThru
-```
-
 Create a new application and return a TppObject for the newly created app
+```
 
 ## PARAMETERS
 
@@ -244,7 +240,7 @@ Accept wildcard characters: False
 ```
 
 ### -CreateBinding
-Specify that Trust Protection Platform should create an IIS web site binding if the one specified doesnâ€™t already exist.
+Specify that Trust Protection Platform should create an IIS web site binding if the one specified doesn't already exist.
 
 ```yaml
 Type: Boolean

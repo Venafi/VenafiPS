@@ -51,37 +51,32 @@ For more info on policies and how they are different than attributes, see https:
 ### EXAMPLE 1
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com'
-```
-
 Retrieve all values for an object, excluding values assigned by policy
+```
 
 ### EXAMPLE 2
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'driver name'
-```
-
 Retrieve the value for a specific attribute
+```
 
 ### EXAMPLE 3
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'Contact' -Effective
-```
-
 Retrieve the effective value for a specific attribute
+```
 
 ### EXAMPLE 4
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -All
-```
-
 Retrieve all effective values for an object
+```
 
 ### EXAMPLE 5
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder' -Policy -Class 'X509 Certificate' -AttributeName 'Contact'
-```
-
 Retrieve the policy attribute value for the specified policy folder
+```
 
 ## PARAMETERS
 

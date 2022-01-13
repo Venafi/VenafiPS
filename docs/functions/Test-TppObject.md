@@ -23,12 +23,11 @@ Provided with either a DN path or GUID, find out if an object exists.
 ### EXAMPLE 1
 ```
 $multDNs | Test-TppObject
-```
-
 Object                    Exists
 --------                  -----
 \VED\Policy\My folder1    True
 \VED\Policy\My folder2    False
+```
 
 Test for existence by Path
 

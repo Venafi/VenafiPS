@@ -1,3 +1,6 @@
+## 4.0.1
+- Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)
+
 ## 4.0.0
 - Moved to Venafi GitHub org, rebranded
 - **License is now Apache 2.0**

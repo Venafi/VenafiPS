@@ -17,16 +17,14 @@ Get code sign environment details
 ### EXAMPLE 1
 ```
 Get-TppCodeSignEnvironment -Path '\ved\code signing\projects\my_project\my_env'
-```
-
 Get a code sign environment
+```
 
 ### EXAMPLE 2
 ```
 $envObj | Get-TppCodeSignEnvironment
-```
-
 Get a environment after searching using Find-TppCodeSignEnvironment
+```
 
 ## PARAMETERS
 
@@ -104,5 +102,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppCodeSignEnvironment.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppCodeSignEnvironment.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-GetEnvironment.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____9](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-GetEnvironment.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____9)
+[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-GetEnvironment.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____9]()
 

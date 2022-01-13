@@ -9,9 +9,9 @@ pages:
   - Change Log: changelog.md
   - Functions:
     - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
+    - Convert-TppObject: functions/Convert-TppObject.md
     - ConvertTo-TppGuid: functions/ConvertTo-TppGuid.md
     - ConvertTo-TppPath: functions/ConvertTo-TppPath.md
-    - Convert-TppObject: functions/Convert-TppObject.md
     - Export-VenafiCertificate: functions/Export-VenafiCertificate.md
     - Find-TppCertificate: functions/Find-TppCertificate.md
     - Find-TppClient: functions/Find-TppClient.md

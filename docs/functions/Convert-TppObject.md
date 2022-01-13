@@ -17,9 +17,8 @@ Change the class/object type of an existing object
 ### EXAMPLE 1
 ```
 Convert-TppObject -Path '\ved\policy\' -Class 'X509 Device Certificate'
-```
-
 Convert an object to a different type
+```
 
 ## PARAMETERS
 
