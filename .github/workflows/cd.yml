@@ -28,6 +28,13 @@ jobs:
           "New version: $newVersion"
           # set version to be used in later steps
           "venafips_new_version=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Update changelog
+        shell: pwsh
+        run: |
+          $newVersionString = '## ${{ env.venafips_new_version }}'
+          $releaseNotes = Get-Content -Path '${{ github.workspace }}/RELEASE.md' -Raw
+          $changelog = Get-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Raw
+          Set-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Value ($newVersionString + $releaseNotes + $changelog)
       - name: Install platyPS module
         shell: pwsh
         run: |
@@ -103,18 +110,19 @@ jobs:
           } | ConvertTo-Json | Out-File -FilePath ${{ github.workspace }}/hash.json
       - name: Upload hash.json artifact
         uses: actions/upload-artifact@v2
-        if: github.ref == 'refs/heads/main'
         with:
           name: hash.json
           path: ${{ github.workspace }}/hash.json
-#       - name: Create GitHub release
-#         uses: softprops/action-gh-release@v1
-#         with:
-#           files: ${{ github.workspace }}/hash.json
-#           tag_name: v${{ env.venafips_new_version }}
-#           body_path: ${{ github.workspace }}/RELEASE.md
-#           draft: true
-#       - name: Publish
-#         shell: pwsh
-#         run: |
-#           Publish-Module -Path "${{ github.workspace }}/${{ env.module_name }}" -NuGetApiKey ${{ secrets.NUGET_KEY }} -Verbose
+      - name: Create GitHub release
+        if: github.ref == 'refs/heads/main'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: ${{ github.workspace }}/hash.json
+          tag_name: v${{ env.venafips_new_version }}
+          body_path: ${{ github.workspace }}/RELEASE.md
+          draft: true
+      - name: Publish
+        if: github.ref == 'refs/heads/main'
+        shell: pwsh
+        run: |
+          Publish-Module -Path "${{ github.workspace }}/${{ env.module_name }}" -NuGetApiKey ${{ secrets.NUGET_KEY }} -Verbose
