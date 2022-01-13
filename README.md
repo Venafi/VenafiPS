@@ -88,6 +88,13 @@ Now you can take that certificate 'TppObject' and find all log entries associate
 $cert | Read-TppLog
 ```
 
+To perform many of the core certificate actions, we will use `Invoke-VenafiCertificateAction`.  For example, to create a new session and renew a certificate, use the following:
+
+```powershell
+New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'}
+Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Renew
+```
+
 You can also have multiple sessions at once, either to the same server with different credentials or different servers.
 This can be helpful to determine the difference between what different users can access or perhaps compare folder structures across environments.  The below will compare the objects one user can see vs. another.
 

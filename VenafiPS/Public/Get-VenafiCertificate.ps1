@@ -10,6 +10,7 @@ Certificate identifier.  For Venafi as a Service, this is the unique guid.  For 
 
 .PARAMETER IncludePreviousVersions
 Returns details about previous (historical) versions of a certificate (only from TPP).
+This option will add a property named PreviousVersions to the returned object.
 
 .PARAMETER ExcludeExpired
 Omits expired versions of the previous (historical) versions of a certificate (only from TPP).
