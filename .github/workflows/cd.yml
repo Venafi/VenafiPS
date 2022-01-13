@@ -34,7 +34,7 @@ jobs:
           $newVersionString = '## ${{ env.venafips_new_version }}'
           $releaseNotes = Get-Content -Path '${{ github.workspace }}/RELEASE.md' -Raw
           $changelog = Get-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Raw
-          Set-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Value ($newVersionString + '`r`n' + $releaseNotes + '`r`n' + $changelog)
+          Set-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Value ($newVersionString + "`r`n" + $releaseNotes + "`r`n" + $changelog)
       - name: Install platyPS module
         shell: pwsh
         run: |
