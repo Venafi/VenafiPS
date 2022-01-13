@@ -106,14 +106,14 @@ jobs:
         with:
           name: hash.json
           path: ${{ github.workspace }}/hash.json
-      - name: Create GitHub release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: ${{ github.workspace }}/hash.json
-          tag_name: v${{ env.venafips_new_version }}
-          body_path: ${{ github.workspace }}/RELEASE.md
-          draft: true
-      - name: Publish
-        shell: pwsh
-        run: |
-          Publish-Module -Path "${{ github.workspace }}/${{ env.module_name }}" -NuGetApiKey ${{ secrets.NUGET_KEY }} -Verbose
+#       - name: Create GitHub release
+#         uses: softprops/action-gh-release@v1
+#         with:
+#           files: ${{ github.workspace }}/hash.json
+#           tag_name: v${{ env.venafips_new_version }}
+#           body_path: ${{ github.workspace }}/RELEASE.md
+#           draft: true
+#       - name: Publish
+#         shell: pwsh
+#         run: |
+#           Publish-Module -Path "${{ github.workspace }}/${{ env.module_name }}" -NuGetApiKey ${{ secrets.NUGET_KEY }} -Verbose
