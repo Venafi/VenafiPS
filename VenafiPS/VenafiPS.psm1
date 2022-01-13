@@ -26,7 +26,7 @@ foreach ( $folder in $folders) {
 }
 
 $script:CloudUrl = 'https://api.venafi.cloud'
-$script:ModuleVersion = '((NEW_VERSION))'
+$script:ModuleVersion = '4.0.1'
 
 $Script:VenafiSession = New-Object 'VenafiSession'
 Export-ModuleMember -Variable VenafiSession
@@ -52,3 +52,4 @@ Export-ModuleMember -Alias *
 
 # Force TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+

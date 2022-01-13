@@ -81,79 +81,68 @@ Tokens and VaaS keys can be saved in a vault for future calls.
 ### EXAMPLE 1
 ```
 New-VenafiSession -Server venafitpp.mycompany.com
-```
-
 Create key-based session using Windows Integrated authentication
+```
 
 ### EXAMPLE 2
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred
-```
-
 Create key-based session using Windows Integrated authentication
+```
 
 ### EXAMPLE 3
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
-```
-
 Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
+```
 
 ### EXAMPLE 4
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -Certificate $myCert -ClientId MyApp -Scope @{'certificate'='manage'}
-```
-
 Create token-based session using a client certificate
+```
 
 ### EXAMPLE 5
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
-```
-
 Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
+```
 
 ### EXAMPLE 6
 ```
 $sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
-```
-
 Create session and return the session object instead of setting to script scope variable
+```
 
 ### EXAMPLE 7
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $accessCred
-```
-
 Create session using an access token obtained outside this module
+```
 
 ### EXAMPLE 8
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp
-```
-
 Create session using a refresh token
+```
 
 ### EXAMPLE 9
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh
-```
-
 Create session using a refresh token and store the newly created refresh token in the vault
+```
 
 ### EXAMPLE 10
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh -VaultMetadata
-```
-
 Create session using a refresh token, store the newly created refresh token in the vault, and store the server and clientid with the secret
+```
 
 ### EXAMPLE 11
 ```
 New-VenafiSession -VaasKey $cred
-```
-
 Create session against Venafi as a Service
+```
 
 ## PARAMETERS
 

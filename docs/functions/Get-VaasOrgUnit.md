@@ -24,16 +24,14 @@ Venafi as a Service only, not for TPP.
 ### EXAMPLE 1
 ```
 Get-VaasOrgUnit
-```
-
 Get info for all org units
+```
 
 ### EXAMPLE 2
 ```
 Get-VaasOrgUnit -OrgUnitId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-```
-
 Get info for a specific org unit
+```
 
 ## PARAMETERS
 

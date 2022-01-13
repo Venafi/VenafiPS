@@ -17,9 +17,8 @@ Find vault IDs in the secret store by their attributes and associated values
 ### EXAMPLE 1
 ```
 Find-TppVaultId -Attribute @{'Serial'='0812E11D213DE8E07890BCC1234567'}
-```
-
 Find a vault id
+```
 
 ## PARAMETERS
 

@@ -26,16 +26,14 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 ### EXAMPLE 1
 ```
 Invoke-VenafiRestMethod -Method Delete -UriLeaf 'Discovery/{1345311e-83c5-4945-9b4b-1da0a17c45c6}'
-```
-
 Api call
+```
 
 ### EXAMPLE 2
 ```
 Invoke-VenafiRestMethod -Method Post -UriLeaf 'Certificates/Revoke' -Body @{'CertificateDN'='\ved\policy\mycert.com'}
-```
-
 Api call with optional payload
+```
 
 ## PARAMETERS
 

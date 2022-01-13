@@ -18,16 +18,14 @@ Add a new policy folder
 ### EXAMPLE 1
 ```
 $newPolicy = New-TppPolicy -Path '\VED\Policy\Existing Policy Folder\New Policy Folder' -PassThru
-```
-
 Create policy returning the policy object created
+```
 
 ### EXAMPLE 2
 ```
 New-TppPolicy -Path '\VED\Policy\Existing Policy Folder\New Policy Folder' -Description 'this is awesome'
-```
-
 Create policy with description
+```
 
 ## PARAMETERS
 

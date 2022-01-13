@@ -19,23 +19,20 @@ This will only be successful if the certificate management type is Provisioning 
 ### EXAMPLE 1
 ```
 $cert | Invoke-TppCertificatePush
-```
-
 Push certificate to all associated applications, certificate object piped
+```
 
 ### EXAMPLE 2
 ```
 Invoke-TppCertificatePush -CertificatePath '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
-```
-
 Push to a specific application associated with a certificate
+```
 
 ### EXAMPLE 3
 ```
 Invoke-TppCertificatePush -Path '\ved\policy\my cert'
-```
-
 Push certificate to all associated applications
+```
 
 ## PARAMETERS
 

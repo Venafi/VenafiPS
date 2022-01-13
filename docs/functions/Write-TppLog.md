@@ -30,9 +30,8 @@ It is not permitted to write to the default log.
 ### EXAMPLE 1
 ```
 Write-TppLog -CustomEventGroup '0200' -EventId '0001' -Component '\ved\policy\mycert.com'
-```
-
 Log an event to a custom group
+```
 
 ## PARAMETERS
 

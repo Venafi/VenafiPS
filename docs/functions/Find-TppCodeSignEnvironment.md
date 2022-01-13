@@ -24,16 +24,14 @@ This will search across projects.
 ### EXAMPLE 1
 ```
 Find-TppCodeSignEnvironment
-```
-
 Get all code sign environments
+```
 
 ### EXAMPLE 2
 ```
 Find-TppCodeSignEnvironment -Name Development
-```
-
 Find all environments that match the name Development
+```
 
 ## PARAMETERS
 

@@ -28,16 +28,14 @@ Get details about workflow tickets associated with a certificate.
 ### EXAMPLE 1
 ```
 Get-TppWorkflowTicket -Path '\VED\policy\myapp.company.com'
-```
-
 Get ticket details for 1 certificate
+```
 
 ### EXAMPLE 2
 ```
 $certs | Get-TppWorkflowTicket
-```
-
 Get ticket details for multiple certificates
+```
 
 ## PARAMETERS
 

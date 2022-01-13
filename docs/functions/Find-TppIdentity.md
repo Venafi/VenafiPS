@@ -25,16 +25,14 @@ You can specify individual identity types to search for or all
 ### EXAMPLE 1
 ```
 Find-TppIdentity -Name 'greg' -IncludeUsers
-```
-
 Find only user identities with the name greg
+```
 
 ### EXAMPLE 2
 ```
 'greg', 'brownstein' | Find-TppIdentity
-```
-
 Find all identity types with the name greg and brownstein
+```
 
 ## PARAMETERS
 

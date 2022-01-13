@@ -28,31 +28,26 @@ Use the TPP API call 'Authorize/Verify' to test if the current token is valid.
 ### EXAMPLE 1
 ```
 Test-TppToken
-```
-
 Verify that accesstoken stored in $VenafiSession object is valid.
+```
 
 ### EXAMPLE 2
 ```
 $TppToken | Test-TppToken
+Verify that token object from pipeline is valid. Can be used to validate directly object from New-TppToken.
 ```
-
-Verify that token object from pipeline is valid.
-Can be used to validate directly object from New-TppToken.
 
 ### EXAMPLE 3
 ```
 Test-TppToken -AuthServer 'mytppserver.example.com' -AccessToken $cred
-```
-
 Verify that PsCredential object containing accesstoken is valid.
+```
 
 ### EXAMPLE 4
 ```
 Test-TppToken -GrantDetail
-```
-
 Verify that accesstoken stored in $VenafiSession object is valid and return PsCustomObject as output with details.
+```
 
 ## PARAMETERS
 

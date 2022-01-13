@@ -23,16 +23,14 @@ Search for specific code sign projects or return all
 ### EXAMPLE 1
 ```
 Find-TppCodeSignProject
-```
-
 Get all code sign projects
+```
 
 ### EXAMPLE 2
 ```
 Find-TppCodeSignProject -Name CSTest
-```
-
 Find all projects that match the name CSTest
+```
 
 ## PARAMETERS
 

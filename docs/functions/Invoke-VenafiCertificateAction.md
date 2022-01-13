@@ -50,16 +50,14 @@ When supported by the platform, you can Retire, Reset, Renew, Push, Validate, or
 ### EXAMPLE 1
 ```
 Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Revoke
-```
-
 Perform an action
+```
 
 ### EXAMPLE 2
 ```
 Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameters @{'Comments'='Key compromised'}
-```
-
 Perform an action sending additional parameters.
+```
 
 ## PARAMETERS
 
