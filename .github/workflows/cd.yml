@@ -20,14 +20,21 @@ jobs:
           [version]$version = $manifest.ModuleVersion
           [version]$newVersion = "{0}.{1}.{2}" -f $Version.Major, $Version.Minor, ($Version.Build + 1)
           Update-ModuleManifest -Path $manifestPath -ModuleVersion $newVersion
-          
+
           # update-modulemanifest introduces whitepsace so get rid of it
           (Get-Content $manifestPath).TrimEnd() | Set-Content $manifestPath
-          
+
           ((Get-Content -Path $modulePath -Raw).Replace('((NEW_VERSION))', $newVersion)) | Set-Content -Path $modulePath
           "New version: $newVersion"
           # set version to be used in later steps
           "venafips_new_version=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
+      - name: Update changelog
+        shell: pwsh
+        run: |
+          $newVersionString = '## ${{ env.venafips_new_version }}'
+          $releaseNotes = Get-Content -Path '${{ github.workspace }}/RELEASE.md' -Raw
+          $changelog = Get-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Raw
+          Set-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Value ($newVersionString + "`r`n" + $releaseNotes + "`r`n`r`n" + $changelog)
       - name: Install platyPS module
         shell: pwsh
         run: |
@@ -87,6 +94,7 @@ jobs:
           git add ${{ env.module_name }}
           git add docs
           git add mkdocs.yml
+          git add CHANGELOG.md
           git status
           git commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
           git push
@@ -113,7 +121,6 @@ jobs:
           files: ${{ github.workspace }}/hash.json
           tag_name: v${{ env.venafips_new_version }}
           body_path: ${{ github.workspace }}/RELEASE.md
-          draft: true
       - name: Publish
         if: github.ref == 'refs/heads/main'
         shell: pwsh
