@@ -103,6 +103,7 @@ jobs:
           } | ConvertTo-Json | Out-File -FilePath ${{ github.workspace }}/hash.json
       - name: Upload hash.json artifact
         uses: actions/upload-artifact@v2
+        if: github.ref == 'refs/heads/main'
         with:
           name: hash.json
           path: ${{ github.workspace }}/hash.json
