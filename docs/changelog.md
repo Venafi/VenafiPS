@@ -1,4 +1,4 @@
-## 4.0.4- Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)## 4.0.1
+## 4.0.5- Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)## 4.0.1
 - Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)
 
 ## 4.0.0
