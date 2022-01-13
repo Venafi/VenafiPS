@@ -19,9 +19,8 @@ Provide an array of client IDs to remove a large list at once.
 ### EXAMPLE 1
 ```
 Remove-TppClient -ClientId 1234
-```
-
 Remove a client
+```
 
 ## PARAMETERS
 

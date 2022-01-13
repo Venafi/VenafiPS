@@ -17,16 +17,14 @@ Get information about registered Server Agent or Agentless clients.
 ### EXAMPLE 1
 ```
 Find-TppClient
-```
-
 Find all clients
+```
 
 ### EXAMPLE 2
 ```
 Find-TppClient -ClientType Portal
-```
-
 Find clients with the specific type
+```
 
 ## PARAMETERS
 

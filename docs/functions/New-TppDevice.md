@@ -19,16 +19,14 @@ Add a new device with optional attributes
 ### EXAMPLE 1
 ```
 $newPolicy = New-TppDevice -Path '\VED\Policy\MyFolder\device' -PassThru
-```
-
 Create device with full path to device and returning the object created
+```
 
 ### EXAMPLE 2
 ```
 $policyPath | New-TppDevice -DeviceName 'myDevice' -Hostname 1.2.3.4
-```
-
 Pipe policy path and provide device details
+```
 
 ## PARAMETERS
 

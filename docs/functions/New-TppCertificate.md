@@ -29,24 +29,20 @@ Enrolls or provisions a new certificate
 ### EXAMPLE 1
 ```
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template'
-```
-
 Create certificate by name
+```
 
 ### EXAMPLE 2
 ```
 New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -PassThru
+Create certificate using common name.  Return the created object.
 ```
-
-Create certificate using common name. 
-Return the created object.
 
 ### EXAMPLE 3
 ```
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
-```
-
 Create certificate including subject alternate names
+```
 
 ## PARAMETERS
 

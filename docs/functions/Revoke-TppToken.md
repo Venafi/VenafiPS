@@ -30,23 +30,20 @@ This could be an access token retrieved from this module or from other means.
 ### EXAMPLE 1
 ```
 Revoke-TppToken
-```
-
 Revoke token stored in session variable $VenafiSession from New-VenafiSession
+```
 
 ### EXAMPLE 2
 ```
 Revoke-TppToken -Force
-```
-
 Revoke token bypassing confirmation prompt
+```
 
 ### EXAMPLE 3
 ```
 Revoke-TppToken -AuthServer venafi.company.com -AccessToken $cred
-```
-
 Revoke a token obtained from TPP, not necessarily via VenafiPS
+```
 
 ## PARAMETERS
 

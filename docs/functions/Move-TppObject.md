@@ -18,9 +18,8 @@ Move an object of any type
 ### EXAMPLE 1
 ```
 Move-TppObject -SourceDN '\VED\Policy\My Folder\mycert.company.com' -TargetDN '\VED\Policy\New Folder\mycert.company.com'
-```
-
 Moves mycert.company.com to a new Policy folder
+```
 
 ## PARAMETERS
 

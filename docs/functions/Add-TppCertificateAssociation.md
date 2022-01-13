@@ -26,16 +26,14 @@ Optionally, you can push the certificate once the association is complete.
 ### EXAMPLE 1
 ```
 Add-TppCertificateAssociation -CertificatePath '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
-```
-
 Add a single application object association
+```
 
 ### EXAMPLE 2
 ```
 Add-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -PushCertificate
-```
-
 Add the association and push the certificate
+```
 
 ## PARAMETERS
 

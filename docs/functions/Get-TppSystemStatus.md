@@ -17,9 +17,8 @@ Returns service module statuses for Trust Protection Platform, Log Server, and T
 ### EXAMPLE 1
 ```
 Get-TppSystemStatus
-```
-
 Get the status
+```
 
 ## PARAMETERS
 

@@ -17,9 +17,8 @@ Returns the TPP version
 ### EXAMPLE 1
 ```
 Get-TppVersion
-```
-
 Get the version
+```
 
 ## PARAMETERS
 

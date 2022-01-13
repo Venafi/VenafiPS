@@ -18,9 +18,8 @@ Object returned will depend on the credential type.
 ### EXAMPLE 1
 ```
 Get-TppCredential -Path '\VED\Policy\MySecureCred'
-```
-
 Get a credential
+```
 
 ## PARAMETERS
 

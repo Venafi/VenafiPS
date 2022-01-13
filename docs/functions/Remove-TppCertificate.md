@@ -21,23 +21,20 @@ and to the Application and Device objects if they are to be deleted automaticall
 ### EXAMPLE 1
 ```
 $cert | Remove-TppCertificate
-```
-
 Remove a certificate via pipeline
+```
 
 ### EXAMPLE 2
 ```
 Remove-TppCertificate -Path '\ved\policy\my cert'
-```
-
 Remove a certificate
+```
 
 ### EXAMPLE 3
 ```
 Remove-TppCertificate -Path '\ved\policy\my cert' -force
-```
-
 Remove a certificate and automatically remove all associations
+```
 
 ## PARAMETERS
 
