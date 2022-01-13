@@ -1,3 +1,6 @@
+## 4.0.10
+- Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)
+
 ## 4.0.9
 - Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)
 ## 4.0.8
@@ -259,6 +262,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
