@@ -9,6 +9,8 @@ jobs:
       module_name: VenafiPS
     steps:
       - uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.CD_TOKEN }}
       - name: Update psd and psm version
         shell: pwsh
         run: |
@@ -85,7 +87,7 @@ jobs:
           git add ${{ env.module_name }}
           git add docs
           git add mkdocs.yml
-          git status -v
+          git status
           git commit -m "Update manifest and docs to ${{ env.venafips_new_version }}"
           git push
       - name: Generate file hash
@@ -105,6 +107,7 @@ jobs:
           name: hash.json
           path: ${{ github.workspace }}/hash.json
       - name: Create GitHub release
+        if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v1
         with:
           files: ${{ github.workspace }}/hash.json
@@ -112,6 +115,7 @@ jobs:
           body_path: ${{ github.workspace }}/RELEASE.md
           draft: true
       - name: Publish
+        if: github.ref == 'refs/heads/main'
         shell: pwsh
         run: |
           Publish-Module -Path "${{ github.workspace }}/${{ env.module_name }}" -NuGetApiKey ${{ secrets.NUGET_KEY }} -Verbose
