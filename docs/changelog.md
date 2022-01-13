@@ -1,4 +1,6 @@
-## 4.0.6`r`n- Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)`r`n## 4.0.0
+## 4.0.7
+- Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)
+## 4.0.0
 - Moved to Venafi GitHub org, rebranded
 - **License is now Apache 2.0**
 - Add `Find-TppClient` to get information about registered Server Agents or Agentless clients
@@ -253,5 +255,6 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
