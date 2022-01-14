@@ -46,7 +46,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppToken/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppToken.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Revoke-Token.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Revoke-Token.php
 
 #>
 function Revoke-TppToken {

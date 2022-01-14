@@ -37,7 +37,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppIdentity/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppIdentity.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____15
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php
 
 #>
 function Test-TppIdentity {
@@ -50,7 +50,7 @@ function Test-TppIdentity {
                 if ( $_ | Test-TppIdentityFormat ) {
                     $true
                 } else {
-                    throw "'$_' is not a valid Prefixed Universal Id format.  See https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-IdentityInformation.php."
+                    throw "'$_' is not a valid Prefixed Universal Id format.  See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-IdentityInformation.php."
                 }
             })]
         [Alias('PrefixedUniversal', 'Contact', 'IdentityId')]

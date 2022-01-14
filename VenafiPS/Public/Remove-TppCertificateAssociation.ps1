@@ -50,7 +50,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificateAssociat
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificateAssociation.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Dissociate.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____8
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Dissociate.php
 
 .NOTES
 You must have:

@@ -59,7 +59,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Write-TppLog/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Write-TppLog.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____3
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Log.php
 
 #>
 function Write-TppLog {

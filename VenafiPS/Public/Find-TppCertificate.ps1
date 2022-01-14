@@ -183,10 +183,10 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCertificate.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____4
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____10
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php
 
 .LINK
 https://msdn.microsoft.com/en-us/library/system.web.httputility(v=vs.110).aspx

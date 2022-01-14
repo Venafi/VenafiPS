@@ -37,7 +37,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-renew.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____16
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-renew.php
 
 #>
 function Invoke-TppCertificateRenewal {
