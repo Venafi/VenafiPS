@@ -82,7 +82,7 @@ function New-TppCustomField {
         [string]$Type,
 
         [Parameter()]
-        [string[]]$AllowedValues,
+        [string[]]$AllowedValue,
 
         [Parameter()]
         [string]$Single,
