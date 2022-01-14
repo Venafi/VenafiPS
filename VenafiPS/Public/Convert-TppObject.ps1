@@ -5,7 +5,7 @@ Change the class/object type of an existing object
 .DESCRIPTION
 Change the class/object type of an existing object.
 Please note, changing the class does NOT change any attributes and must be done separately.
-Using -PassThru will allow you to pass the input to other functions including Set-TppAttribute.
+Using -PassThru will allow you to pass the input to other functions including Set-TppAttribute; see the examples.
 
 .PARAMETER Path
 Path to the object
@@ -35,7 +35,7 @@ Convert an object to a different type, return the updated object and update attr
 
 .EXAMPLE
 Find-TppObject -Class Basic | Convert-TppObject -Class 'capi' -PassThru | Set-TppAttribute -Attribute @{'Driver Name'='appcapi'}
-Convert many objects
+Convert multiple objects to a different type, return the updated objects and update attributes
 
 .LINK
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Convert-TppObject.ps1
