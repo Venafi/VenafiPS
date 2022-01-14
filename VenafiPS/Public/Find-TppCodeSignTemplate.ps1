@@ -32,7 +32,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCodeSignProject/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignProject.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.3/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-EnumerateProjects.php
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-EnumerateProjects.php
 
 #>
 function Find-TppCodeSignTemplate {

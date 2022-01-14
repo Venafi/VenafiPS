@@ -18,7 +18,7 @@ Hashtable with Scopes and privilege restrictions.
 The key is the scope and the value is one or more privilege restrictions separated by commas.
 A privilege restriction of none or read, use a value of $null.
 Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
-See https://docs.venafi.com/Docs/20.1/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
+See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
 
 .PARAMETER Credential
 Username / password credential used to request API Token
