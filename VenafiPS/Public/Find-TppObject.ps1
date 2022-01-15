@@ -91,6 +91,7 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config
 function Find-TppObject {
 
     [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
+    [OutputType([TppObject])]
     [Alias('fto')]
 
     param (

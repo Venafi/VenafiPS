@@ -31,6 +31,7 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemS
 function Get-TppVersion {
 
     [CmdletBinding()]
+    [OutputType([System.Version])]
 
     param (
         [Parameter()]

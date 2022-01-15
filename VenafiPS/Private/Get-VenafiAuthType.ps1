@@ -1,6 +1,8 @@
 function Get-VenafiAuthType {
 
     [CmdletBinding()]
+    [OutputType([System.String])]
+
     param (
 
         [Parameter(Mandatory, ValueFromPipeline)]

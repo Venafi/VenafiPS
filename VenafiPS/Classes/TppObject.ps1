@@ -20,6 +20,7 @@ class TppObject {
             # split-path -parent doesn't work on this path so use this workaround
             return $this.Path.Replace(("\{0}" -f $leafName), "")
         }
+        $this | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Path } -Force
     }
 
     TppObject (

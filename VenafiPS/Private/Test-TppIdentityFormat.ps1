@@ -1,6 +1,8 @@
 function Test-TppIdentityFormat {
 
     [CmdletBinding()]
+    [OutputType([System.Boolean])]
+
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string] $Identity,

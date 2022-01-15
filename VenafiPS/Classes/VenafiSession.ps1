@@ -176,6 +176,27 @@ class VenafiSession {
             $this.Credential = $initHash.Credential
         }
         $this.CustomField = $null
+
+        $this | Add-Member -MemberType ScriptProperty -Name Platform -Value {
+            if ( $this.ServerUrl -eq $script:CloudUrl ) {
+                'VaaS'
+            }
+            else {
+                'TPP'
+            }
+        }
+
+        $this | Add-Member -MemberType ScriptProperty -Name AuthType -Value {
+            if ( $this.Key ) {
+                'Key'
+            }
+            elseif ($this.Token ) {
+                'Token'
+            }
+            else {
+                $null
+            }
+        }
     }
 }
 
