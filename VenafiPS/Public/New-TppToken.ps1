@@ -75,7 +75,7 @@ function New-TppToken {
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Integrated')]
     [OutputType([PSCustomObject])]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Generating cred from api call response data')]
-
+    [OutputType([System.Boolean])]
 
     param (
         [Parameter(ParameterSetName = 'OAuth', Mandatory)]

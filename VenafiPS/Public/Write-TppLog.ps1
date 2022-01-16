@@ -117,7 +117,7 @@ function Write-TppLog {
         throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.'
     }
 
-    $VenafiSession.Validate() | Out-Null
+    $VenafiSession.Validate('TPP')
 
     # the event id is the group id coupled with the event id
     $fullEventId = "$CustomEventGroup$EventId"

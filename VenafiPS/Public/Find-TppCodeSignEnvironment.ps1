@@ -46,7 +46,7 @@ function Find-TppCodeSignEnvironment {
     )
 
     begin {
-        $VenafiSession.Validate('token') | Out-Null
+        $VenafiSession.Validate('TPP', 'token')
         $projects = Find-TppCodeSignProject | Get-TppCodeSignProject
     }
 

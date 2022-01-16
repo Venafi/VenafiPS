@@ -122,6 +122,8 @@ function Export-VenafiCertificate {
     )
 
     begin {
+        $VenafiSession.Validate()
+
         $params = @{
             VenafiSession = $VenafiSession
             Body          = @{
@@ -129,9 +131,7 @@ function Export-VenafiCertificate {
             }
         }
 
-        $authType = $VenafiSession.Validate()
-
-        if ( $authType -eq 'vaas' ) {
+        if ( $VenafiSession.Platform -eq 'VaaS' ) {
 
             if ( $Format -notin 'PEM', 'DER') {
                 throw 'Venafi as a Service only supports PEM and DER formats'

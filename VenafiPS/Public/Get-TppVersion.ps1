@@ -38,7 +38,7 @@ function Get-TppVersion {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate() | Out-Null
+    $VenafiSession.Validate('TPP')
 
     $params = @{
         VenafiSession = $VenafiSession

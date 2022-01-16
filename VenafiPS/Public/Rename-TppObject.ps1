@@ -60,7 +60,7 @@ function Rename-TppObject {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate('tpp') | Out-Null
+    $VenafiSession.Validate('TPP')
 
     $params = @{
         VenafiSession = $VenafiSession

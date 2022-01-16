@@ -63,6 +63,8 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Autho
 function Test-TppToken {
 
     [CmdletBinding(DefaultParameterSetName = 'AccessToken')]
+    [OutputType([System.Boolean])]
+
     param (
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [ValidateScript( {

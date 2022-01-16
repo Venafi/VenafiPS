@@ -64,7 +64,6 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r
 function New-TppObject {
 
     [CmdletBinding(DefaultParameterSetName = 'NonApplicationObject', SupportsShouldProcess)]
-    [OutputType([TppObject])]
 
     param (
         [Parameter(Mandatory)]
@@ -97,7 +96,7 @@ function New-TppObject {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate() | Out-Null
+    $VenafiSession.Validate('TPP')
 
     # ensure the object doesn't already exist
     # if ( Test-TppObject -Path $Path -ExistOnly -VenafiSession $VenafiSession ) {

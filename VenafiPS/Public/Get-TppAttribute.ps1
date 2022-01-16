@@ -140,7 +140,7 @@ function Get-TppAttribute {
 
     begin {
 
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         if ( $Guid ) {
             Write-Warning '-Guid will be deprecated in a future release.  Please use -Path instead.'

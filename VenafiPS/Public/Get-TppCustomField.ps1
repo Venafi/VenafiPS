@@ -59,7 +59,7 @@ function Get-TppCustomField {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
     }
 
     process {

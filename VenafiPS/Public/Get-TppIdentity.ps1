@@ -78,7 +78,7 @@ function Get-TppIdentity {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         Switch ($PsCmdlet.ParameterSetName)	{
             'Id' {

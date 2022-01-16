@@ -136,7 +136,7 @@ function New-TppCertificate {
 
     begin {
 
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         if ( $PSBoundParameters.ContainsKey('SubjectAltName') ) {
 

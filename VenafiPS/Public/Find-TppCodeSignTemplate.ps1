@@ -47,7 +47,7 @@ function Find-TppCodeSignTemplate {
     )
 
     begin {
-        $VenafiSession.Validate('token') | Out-Null
+        $VenafiSession.Validate('TPP', 'token')
 
         $params = @{
             VenafiSession = $VenafiSession

@@ -73,7 +73,7 @@ function Move-TppObject {
     )
 
     begin {
-        $VenafiSession.Validate('tpp') | Out-Null
+        $VenafiSession.Validate('TPP')
     }
 
     process {

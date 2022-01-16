@@ -64,7 +64,7 @@ function Get-TppObject {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate()
     }
 
     process {

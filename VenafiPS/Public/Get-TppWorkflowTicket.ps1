@@ -85,7 +85,7 @@ function Get-TppWorkflowTicket {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
         Write-Verbose ("Parameter set {0}" -f $PsCmdlet.ParameterSetName)
     }
 
