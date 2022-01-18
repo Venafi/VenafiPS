@@ -80,24 +80,41 @@ function Invoke-VenafiRestMethod {
         'Session' {
             $ServerUrl = $VenafiSession.ServerUrl
 
-            switch ($VenafiSession | Get-VenafiAuthType) {
-                'key' {
+            if ( $VenafiSession.Platform -eq 'VaaS' ) {
+                $hdr = @{
+                    "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
+                }
+            } else {
+                # TPP
+                if ( $VenafiSession.AuthType -eq 'Token' ) {
+                    $hdr = @{
+                        'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
+                    }
+                } else {
+                    # key based tpp
                     $hdr = @{
                         "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
                     }
                 }
-                'token' {
-                    $hdr = @{
-                        'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                    }
-                }
-                'vaas' {
-                    $hdr = @{
-                        "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
-                    }
-                }
-                Default {}
             }
+            # switch ($VenafiSession | Get-VenafiAuthType) {
+            #     'key' {
+            #         $hdr = @{
+            #             "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
+            #         }
+            #     }
+            #     'token' {
+            #         $hdr = @{
+            #             'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
+            #         }
+            #     }
+            #     'vaas' {
+            #         $hdr = @{
+            #             "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
+            #         }
+            #     }
+            #     Default {}
+            # }
 
             $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
 
