@@ -1,7 +1,7 @@
 class VenafiSession {
 
     [string] $ServerUrl
-    [datetime] $Expires
+    # [datetime] $Expires
     [PSCustomObject] $Key
     [PSCustomObject] $Token
     [PSCustomObject] $CustomField
@@ -102,7 +102,7 @@ class VenafiSession {
 
                 $newToken = New-TppToken -VenafiSession $this
                 $this.Token = $newToken
-                $this.Expires = $newToken.Expires
+                # $this.Expires = $newToken.Expires
             }
         } else {
             # no refresh for vaas
@@ -250,10 +250,11 @@ class VenafiSession {
         }
 
         $response = Invoke-TppRestMethod @params
-        $this.Expires = $response.ValidUntil
+        # $this.Expires = $response.ValidUntil
         $this.Key = [pscustomobject] @{
             ApiKey     = $response.ApiKey
             Credential = $Credential
+            Expires = $response.ValidUntil
         }
     }
 
@@ -284,6 +285,18 @@ class VenafiSession {
             }
             elseif ($this.Token ) {
                 'Token'
+            }
+            else {
+                $null
+            }
+        }
+
+        $this | Add-Member -MemberType ScriptProperty -Name Expires -Value {
+            if ( $this.Token ) {
+                $this.Token.Expires
+            }
+            elseif ($this.Key ) {
+                $this.Key.Expires
             }
             else {
                 $null

@@ -341,17 +341,18 @@ function New-VenafiSession {
 
             $token = New-TppToken @params -Verbose:$isVerbose
             $newSession.Token = $token
-            $newSession.Expires = $token.Expires
+            # $newSession.Expires = $token.Expires
         }
 
         'AccessToken' {
             $newSession.Token = [PSCustomObject]@{
                 Server      = $authServerUrl
                 AccessToken = $AccessToken
+                Expires = (Get-Date).AddMonths(12)
             }
             # we don't have the expiry so create one
             # rely on the api call itself to fail if access token is invalid
-            $newSession.Expires = (Get-Date).AddMonths(12)
+            # $newSession.Expires = (Get-Date).AddMonths(12)
         }
 
         'VaultAccessToken' {
@@ -383,10 +384,11 @@ function New-VenafiSession {
                 $newSession.Token = [PSCustomObject]@{
                     Server      = $authServerUrl
                     AccessToken = $tokenSecret
+                    Expires = (Get-Date).AddMonths(12)
                 }
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
-                $newSession.Expires = (Get-Date).AddMonths(12)
+                # $newSession.Expires = (Get-Date).AddMonths(12)
             }
         }
 
@@ -399,7 +401,7 @@ function New-VenafiSession {
 
             $newToken = New-TppToken @params
             $newSession.Token = $newToken
-            $newSession.Expires = $newToken.Expires
+            # $newSession.Expires = $newToken.Expires
         }
 
         'VaultRefreshToken' {
@@ -436,7 +438,9 @@ function New-VenafiSession {
 
             $newToken = New-TppToken @params
             $newSession.Token = $newToken
-            $newSession.Expires = $newToken.Expires
+            # $newSession.Expires = $newToken.Expires
+            $newSession.ServerUrl = $newToken.Server
+            Write-Verbose ('server: {0}' -f $newToken.Server)
         }
 
         'Vaas' {
