@@ -122,6 +122,10 @@ Create session using a refresh token, store the newly created refresh token in t
 New-VenafiSession -VaasKey $cred
 Create session against Venafi as a Service
 
+.EXAMPLE
+New-VenafiSession -VaultVaasKeyName vaas-key
+Create session against Venafi as a Service with a key stored in a vault
+
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
 
@@ -341,18 +345,16 @@ function New-VenafiSession {
 
             $token = New-TppToken @params -Verbose:$isVerbose
             $newSession.Token = $token
-            # $newSession.Expires = $token.Expires
         }
 
         'AccessToken' {
             $newSession.Token = [PSCustomObject]@{
                 Server      = $authServerUrl
                 AccessToken = $AccessToken
+                # we don't have the expiry so create one
+                # rely on the api call itself to fail if access token is invalid
                 Expires = (Get-Date).AddMonths(12)
             }
-            # we don't have the expiry so create one
-            # rely on the api call itself to fail if access token is invalid
-            # $newSession.Expires = (Get-Date).AddMonths(12)
         }
 
         'VaultAccessToken' {
@@ -438,7 +440,6 @@ function New-VenafiSession {
 
             $newToken = New-TppToken @params
             $newSession.Token = $newToken
-            # $newSession.Expires = $newToken.Expires
             $newSession.Server = $newToken.Server
             Write-Verbose ('server: {0}' -f $newToken.Server)
         }
