@@ -365,7 +365,7 @@ function New-VenafiSession {
             $secretInfo = Get-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
 
             if ( $secretInfo.Metadata.Count -gt 0 ) {
-                $newSession.ServerUrl = $secretInfo.Metadata.Server
+                $newSession.Server = $secretInfo.Metadata.Server
                 $newSession.Expires = $secretInfo.Metadata.Expires
                 $newSession.Token = [PSCustomObject]@{
                     Server      = $secretInfo.Metadata.AuthServer
@@ -487,7 +487,7 @@ function New-VenafiSession {
             throw 'Vaulting metadata requires either -VaultAccessTokenName or -VaultRefreshTokenName is provided'
         }
         $metadata = @{
-            Server     = $newSession.ServerUrl
+            Server     = $newSession.Server
             AuthServer = $newSession.Token.Server
             ClientId   = $newSession.Token.ClientId
             Expires    = $newSession.Expires
