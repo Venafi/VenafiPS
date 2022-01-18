@@ -293,7 +293,7 @@ function New-VenafiSession {
 
     if ( $PSCmdlet.ParameterSetName -like 'Vault*') {
         # ensure the appropriate setup has been performed
-        if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement)) {
+        if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement -ListAvailable)) {
             throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a vault named ''VenafiPS''.  See the github readme for guidance, https://github.com/Venafi/VenafiPS#tokenkey-secret-storage.'
         }
 
