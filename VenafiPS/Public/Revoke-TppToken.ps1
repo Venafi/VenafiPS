@@ -94,7 +94,7 @@ function Revoke-TppToken {
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
                 $params.VenafiSession = $VenafiSession
-                $target = $VenafiSession.ServerUrl
+                $target = $VenafiSession.Server
             }
 
             'AccessToken' {
@@ -104,7 +104,7 @@ function Revoke-TppToken {
                     $AuthUrl = 'https://{0}' -f $AuthUrl
                 }
 
-                $params.ServerUrl = $target = $AuthUrl
+                $params.Server = $target = $AuthUrl
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().Password }
             }
 
@@ -113,7 +113,7 @@ function Revoke-TppToken {
                     throw 'Not a valid TppToken'
                 }
 
-                $params.ServerUrl = $target = $TppToken.Server
+                $params.Server = $target = $TppToken.Server
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $TppToken.AccessToken.GetNetworkCredential().password }
             }
 

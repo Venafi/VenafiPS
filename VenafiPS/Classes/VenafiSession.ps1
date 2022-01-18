@@ -1,6 +1,6 @@
 class VenafiSession {
 
-    [string] $ServerUrl
+    [string] $Server
     # [datetime] $Expires
     [PSCustomObject] $Key
     [PSCustomObject] $Token
@@ -69,7 +69,7 @@ class VenafiSession {
                 try {
                     $params = @{
                         Method      = 'Get'
-                        Uri         = ("{0}/vedsdk/authorize/checkvalid" -f $this.ServerUrl)
+                        Uri         = ("{0}/vedsdk/authorize/checkvalid" -f $this.Server)
                         Headers     = @{
                             "X-Venafi-Api-Key" = $this.Key.ApiKey
                         }
@@ -145,12 +145,12 @@ class VenafiSession {
     #     # make sure the auth type and url we have match
     #     # this keeps folks from calling a vaas function with a token and vice versa
     #     if ( $AuthType -eq 'vaas' ) {
-    #         if ( $this.ServerUrl -ne $script:CloudUrl ) {
+    #         if ( $this.Server -ne $script:CloudUrl ) {
     #             throw 'This function is only accessible for Venafi as a Service, not TPP'
     #         }
     #     }
     #     else {
-    #         if ( $this.ServerUrl -eq $script:CloudUrl ) {
+    #         if ( $this.Server -eq $script:CloudUrl ) {
     #             throw 'This function is only accessible for TPP, not Venafi as a Service'
     #         }
     #     }
@@ -171,7 +171,7 @@ class VenafiSession {
     #             try {
     #                 $params = @{
     #                     Method      = 'Get'
-    #                     Uri         = ("{0}/vedsdk/authorize/checkvalid" -f $this.ServerUrl)
+    #                     Uri         = ("{0}/vedsdk/authorize/checkvalid" -f $this.Server)
     #                     Headers     = @{
     #                         "X-Venafi-Api-Key" = $this.Key.ApiKey
     #                     }
@@ -227,12 +227,12 @@ class VenafiSession {
         [PSCredential] $Credential
     ) {
 
-        if ( -not ($this.ServerUrl) ) {
-            throw "You must provide a value for ServerUrl"
+        if ( -not ($this.Server) ) {
+            throw "You must provide a value for Server"
         }
 
         $params = @{
-            ServerUrl = $this.ServerUrl
+            Server = $this.Server
         }
 
         if ( $Credential ) {
@@ -260,18 +260,18 @@ class VenafiSession {
 
     hidden [void] _init ([Hashtable] $initHash) {
 
-        if ( -not ($initHash.ServerUrl) ) {
-            throw "ServerUrl is required"
+        if ( -not ($initHash.Server) ) {
+            throw "Server is required"
         }
 
-        $this.ServerUrl = $initHash.ServerUrl
+        $this.Server = $initHash.Server
         if ( $initHash.Credential ) {
             $this.Credential = $initHash.Credential
         }
         $this.CustomField = $null
 
         $this | Add-Member -MemberType ScriptProperty -Name Platform -Value {
-            if ( $this.ServerUrl -eq $script:CloudUrl ) {
+            if ( $this.Server -eq $script:CloudUrl ) {
                 'VaaS'
             }
             else {

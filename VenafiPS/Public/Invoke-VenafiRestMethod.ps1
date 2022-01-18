@@ -46,7 +46,8 @@ function Invoke-VenafiRestMethod {
 
         [Parameter(Mandatory, ParameterSetName = 'URL')]
         [ValidateNotNullOrEmpty()]
-        [String] $ServerUrl,
+        [Alias('ServerUrl')]
+        [String] $Server,
 
         [Parameter(ParameterSetName = 'URL')]
         [Alias('UseDefaultCredentials')]
@@ -78,7 +79,7 @@ function Invoke-VenafiRestMethod {
 
     switch ($PSCmdLet.ParameterSetName) {
         'Session' {
-            $ServerUrl = $VenafiSession.ServerUrl
+            $Server = $VenafiSession.Server
 
             if ( $VenafiSession.Platform -eq 'VaaS' ) {
                 $hdr = @{
@@ -116,12 +117,12 @@ function Invoke-VenafiRestMethod {
             #     Default {}
             # }
 
-            $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
+            $uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
 
         }
 
         'URL' {
-            $uri = '{0}/{1}/{2}' -f $ServerUrl, $UriRoot, $UriLeaf
+            $uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
         }
 
         Default {}

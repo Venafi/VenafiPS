@@ -283,7 +283,7 @@ function New-VenafiSession {
     }
 
     $newSession = [VenafiSession] @{
-        ServerUrl = $serverUrl
+        Server = $serverUrl
     }
 
     # use this to know if we need to re-store vault entry metadata when it already exists and -VaultMetadata not provided
@@ -439,17 +439,17 @@ function New-VenafiSession {
             $newToken = New-TppToken @params
             $newSession.Token = $newToken
             # $newSession.Expires = $newToken.Expires
-            $newSession.ServerUrl = $newToken.Server
+            $newSession.Server = $newToken.Server
             Write-Verbose ('server: {0}' -f $newToken.Server)
         }
 
         'Vaas' {
-            $newSession.ServerUrl = $script:CloudUrl
+            $newSession.Server = $script:CloudUrl
             $newSession.Key = $VaasKey
         }
 
         'VaultVaasKey' {
-            $newSession.ServerUrl = $script:CloudUrl
+            $newSession.Server = $script:CloudUrl
             $keySecret = Get-Secret -Name $VaultVaasKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
             if ( -not $keySecret ) {
                 throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."

@@ -126,7 +126,7 @@ function Test-TppToken {
                     $AuthUrl = 'https://{0}' -f $AuthUrl
                 }
 
-                $params.ServerUrl = $AuthUrl
+                $params.Server = $AuthUrl
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().password }
             }
 
@@ -135,7 +135,7 @@ function Test-TppToken {
                     throw 'Not a valid TppToken'
                 }
 
-                $params.ServerUrl = $TppToken.Server
+                $params.Server = $TppToken.Server
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $TppToken.AccessToken.GetNetworkCredential().password }
             }
 

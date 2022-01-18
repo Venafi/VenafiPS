@@ -141,7 +141,7 @@ function New-TppToken {
     }
 
     if ( $PsCmdlet.ParameterSetName -eq 'RefreshSession' ) {
-        $params.ServerUrl = $VenafiSession.Token.Server
+        $params.Server = $VenafiSession.Token.Server
         $params.UriLeaf = 'authorize/token'
         $params.Body = @{
             client_id     = $VenafiSession.Token.ClientId
@@ -160,7 +160,7 @@ function New-TppToken {
         if ( $AuthServer -notlike 'https://*') {
             $AuthUrl = 'https://{0}' -f $AuthUrl
         }
-        $params.ServerUrl = $AuthUrl
+        $params.Server = $AuthUrl
 
         if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
             $params.UriLeaf = 'authorize/token'
@@ -215,7 +215,7 @@ function New-TppToken {
         }
     }
 
-    if ( $PSCmdlet.ShouldProcess($params.ServerUrl, 'New access token') ) {
+    if ( $PSCmdlet.ShouldProcess($params.Server, 'New access token') ) {
 
         if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
             try {
@@ -239,7 +239,7 @@ function New-TppToken {
         $response | Write-VerboseWithSecret
 
         $newToken = [PSCustomObject] @{
-            Server         = $params.ServerUrl
+            Server         = $params.Server
             AccessToken    = New-Object System.Management.Automation.PSCredential('AccessToken', ($response.access_token | ConvertTo-SecureString -AsPlainText -Force))
             RefreshToken   = $null
             Scope          = $Scope
