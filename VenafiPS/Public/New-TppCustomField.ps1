@@ -77,7 +77,7 @@ function New-TppCustomField {
         [string[]]$Class,
 
         [Parameter(Mandatory)]
-        [ValidateSet('1', '2', '4', '5')]
+        [ValidateSet('String', 'List', 'DateTime', 'Identity')]
         [ValidateNotNullOrEmpty()]
         [string]$Type,
 
@@ -126,6 +126,16 @@ function New-TppCustomField {
 
         $resultObj = @()
 
+        if ( $Type -eq 'String' ) {
+            $ItemType = '1'
+        } elseif ( $Type -eq 'List' ) {
+            $ItemType = '2'
+        } elseif ( $Type -eq 'DateTime' ) {
+            $ItemType = '4'
+        } elseif ( $Type -eq 'Identity' ) {
+            $ItemType = '5'
+        }
+
         $params = @{
             VenafiSession = $VenafiSession
             Method     = 'Post'
@@ -135,7 +145,7 @@ function New-TppCustomField {
                     "Name" = $Name
                     "Classes" = @($Class)
                     "Label" = $Label
-                    "Type" = $Type
+                    "Type" = $ItemType
                     "Mandatory" = $Mandatory.ToString().ToLower()
                     "Policyable" = $Policyable.ToString().ToLower()
                     "RenderHidden" = $RenderHidden.ToString().ToLower()
@@ -148,8 +158,8 @@ function New-TppCustomField {
         if ( $PSBoundParameters.ContainsKey('Help') ) {
             $params.Body.Item['Help'] = $Help
         }
-        if ( $PSBoundParameters.ContainsKey('AllowedValues') ) {
-            $params.Body.Item['AllowedValues'] = @($AllowedValues)
+        if ( $PSBoundParameters.ContainsKey('AllowedValue') ) {
+            $params.Body.Item['AllowedValues'] = @($AllowedValue)
         }
         if ( $PSBoundParameters.ContainsKey('Single') ) {
             $params.Body.Item['Single'] = $Single
@@ -164,19 +174,19 @@ function New-TppCustomField {
 
     end {
         if ( $PSCmdlet.ShouldProcess($Label) ) {
+            
             $response = Invoke-VenafiRestMethod @params
 
-            try {
-                if (( $PassThru ) -and ( $response.Result -eq [TppMetadataResult]::Success )) {
+            if ( $response.Result -eq [TppMetadataResult]::Success ) {
+                if (( $PassThru )) {
                     $resultObj = [PSCustomObject] @{
-                    "DN"    = $response.Item.DN
+                    "Path"    = $response.Item.DN
                     "Label" = $response.Item.Label
                     "Name"  = $response.Item.Name
                     "Guid"  = [guid]$response.Item.Guid
                     "Type"  = $response.Item.Type
                     "Class" = $response.Item.Classes
                     }
-
                     if ($response.Item.Mandatory) {
                     $resultObj | Add-Member -MemberType NoteProperty -Name "Mandatory" -Value $response.Item.Mandatory
                     }
@@ -210,10 +220,9 @@ function New-TppCustomField {
                     if ($response.Item.RegularExpression) {
                     $resultObj | Add-Member -MemberType NoteProperty -Name "RegularExpression" -Value $response.Item.RegularExpression
                     }
-
-                    [TppObject] $resultObj
+                    return $resultObj
                 }
-            } catch {
+            } else {
                 throw $response.Error
             }
         }
