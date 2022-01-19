@@ -16,7 +16,7 @@ Label of new custom field
 Class of new custom field, either 'Device' or 'X509 Certificate'
 
 .PARAMETER Type
-Type of new custom field
+Type of new custom field, one of 'String', 'List', 'DateTime', 'Identity'
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -45,7 +45,7 @@ Query returns a PSCustomObject with the following properties:
     Type
 
 .EXAMPLE
-New-TppCustomField -Name "Last Date" -Label "Last Date" -Class "X509 Certificate" -Type "1" -RenderReadOnly -Help "Last Date of certificate import"
+New-TppCustomField -Name "Last Date" -Label "Last Date" -Class "X509 Certificate" -Type "String" -RenderReadOnly -Help "Last Date of certificate import"
 Create new custom field for certificates
 
 .LINK
