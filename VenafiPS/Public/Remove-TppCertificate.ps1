@@ -66,7 +66,7 @@ function Remove-TppCertificate {
         [String] $Path,
 
         [Parameter()]
-        [switch] $Force,
+        [switch] $RemoveConsumer,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -83,34 +83,21 @@ function Remove-TppCertificate {
     }
 
     process {
-
-        # if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-        #     $path = $InputObject.Path
-        #     $guid = $InputObject.Guid
-        # } else {
-        #     $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
-        # }
-
-        # ensure either there are no associations or the force flag was provided
-        $associatedApps = $Path |
-        Get-TppAttribute -Attribute "Consumers" -Effective -VenafiSession $VenafiSession |
-        Select-Object -ExpandProperty Value
-
-        if ( $associatedApps ) {
-            if ( $Force ) {
-                $params.Body = @{'ApplicationDN' = @($associatedApps) }
-            } else {
-                Write-Error ("Path '{0}' has associations and cannot be removed.  Provide -Force to override." -f $Path)
-                Return
-            }
-        }
-
         $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
         $params.UriLeaf = "Certificates/$guid"
 
         if ( $PSCmdlet.ShouldProcess($Path, 'Remove certificate and all associations') ) {
-            Remove-TppCertificateAssociation -Path $Path -All -VenafiSession $VenafiSession -Confirm:$false
-            Invoke-TppRestMethod @params | Out-Null
+            if ($RemoveConsumer) {
+                $associatedApps = $Path | Get-TppAttribute -Attribute "Consumers" -Effective -VenafiSession $VenafiSession | Select-Object -ExpandProperty Value
+                if ( $associatedApps ) {
+                    Remove-TppCertificateAssociation -Path $Path -ApplicationPath $associatedApps -VenafiSession $VenafiSession -Confirm:$false
+                } else {
+                    Write-Error ("Path '{0}' has associations and cannot be removed.  Provide -Force to override." -f $Path)
+                    Return
+                }
+            }
+
+            Invoke-VenafiRestMethod @params | Out-Null
         }
     }
 }
