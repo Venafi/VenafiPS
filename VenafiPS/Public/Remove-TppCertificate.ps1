@@ -4,9 +4,7 @@ Remove a certificate
 
 .DESCRIPTION
 Removes a Certificate object, all associated objects including pending workflow tickets, and the corresponding Secret Store vault information.
-All associations must be removed for the certificate to be removed.
-You must either be a Master Admin or have Delete permission to the Certificate object
-and to the Application and Device objects if they are to be deleted automatically with -Force
+You must either be a Master Admin or have Delete permission to the objects and have certificate:delete token scope.
 
 .PARAMETER InputObject
 TppObject which represents a unique object
@@ -14,8 +12,8 @@ TppObject which represents a unique object
 .PARAMETER Path
 Path to the certificate to remove
 
-.PARAMETER Force
-Provide this switch to force all associations to be removed prior to certificate removal
+.PARAMETER KeepAssociatedApps
+Provide this switch to remove associations prior to certificate removal
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -32,11 +30,11 @@ Remove a certificate via pipeline
 
 .EXAMPLE
 Remove-TppCertificate -Path '\ved\policy\my cert'
-Remove a certificate
+Remove a certificate and any associated app
 
 .EXAMPLE
-Remove-TppCertificate -Path '\ved\policy\my cert' -force
-Remove a certificate and automatically remove all associations
+Remove-TppCertificate -Path '\ved\policy\my cert' -KeepAssociatedApps
+Remove a certificate and first remove all associations, keeping the apps
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificate/
