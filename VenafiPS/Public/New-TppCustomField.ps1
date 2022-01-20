@@ -19,7 +19,7 @@ Class of new custom field, either 'Device' or 'X509 Certificate'
 Type of new custom field, one of 'String', 'List', 'DateTime', 'Identity'
 
 .PARAMETER AllowedValue
-(Optional) An array of allowable values for the Custom Field.
+An array of allowable values for the Custom Field.
 
 .PARAMETER Single
 Controls the number of input selections. If not used the user can select 
@@ -27,10 +27,10 @@ multiple values for the Custom Field. Otherwise the user can select only
 one value
 
 .PARAMETER Help
-(Optional) The tool tip to show to the user how to populate the Custom Field.
+The tool tip to show to the user how to populate the Custom Field.
 
 .PARAMETER ErrorMessage
-(Optional) The error message that you define for this Custom Field.
+The error message that you define for this Custom Field.
 
 .PARAMETER Mandatory
 Determines if a value is required in the custom field. If not used a value is
@@ -41,7 +41,7 @@ Determines if the custom field can be used in a policy setting to apply to
 all objects in the policy. If not used the custom field cannot apply to a policy.
 
 .PARAMETER RegEx
-(Optional) The regular expression to control user input.
+The regular expression to control user input.
 
 .PARAMETER RenderHidden
 Controls the visibility of the custom field in the UI. By default custom fields
