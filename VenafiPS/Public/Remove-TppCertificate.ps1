@@ -91,9 +91,6 @@ function Remove-TppCertificate {
                 $associatedApps = $Path | Get-TppAttribute -Attribute "Consumers" -Effective -VenafiSession $VenafiSession | Select-Object -ExpandProperty Value
                 if ( $associatedApps ) {
                     Remove-TppCertificateAssociation -Path $Path -ApplicationPath $associatedApps -VenafiSession $VenafiSession -Confirm:$false
-                } else {
-                    Write-Error ("Path '{0}' has associations and cannot be removed.  Provide -Force to override." -f $Path)
-                    Return
                 }
             }
 
