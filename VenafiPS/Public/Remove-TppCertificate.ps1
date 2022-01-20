@@ -66,7 +66,7 @@ function Remove-TppCertificate {
         [String] $Path,
 
         [Parameter()]
-        [switch] $RemoveConsumer,
+        [switch] $KeepAssociatedApps,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -87,7 +87,7 @@ function Remove-TppCertificate {
         $params.UriLeaf = "Certificates/$guid"
 
         if ( $PSCmdlet.ShouldProcess($Path, 'Remove certificate and all associations') ) {
-            if ($RemoveConsumer) {
+            if ($KeepAssociatedApps) {
                 $associatedApps = $Path | Get-TppAttribute -Attribute "Consumers" -Effective -VenafiSession $VenafiSession | Select-Object -ExpandProperty Value
                 if ( $associatedApps ) {
                     Remove-TppCertificateAssociation -Path $Path -ApplicationPath $associatedApps -VenafiSession $VenafiSession -Confirm:$false
