@@ -18,14 +18,47 @@ Class of new custom field, either 'Device' or 'X509 Certificate'
 .PARAMETER Type
 Type of new custom field, one of 'String', 'List', 'DateTime', 'Identity'
 
-.PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+.PARAMETER AllowedValue
+(Optional) An array of allowable values for the Custom Field.
 
-.INPUTS
-None
+.PARAMETER Single
+Controls the number of input selections. If not used the user can select 
+multiple values for the Custom Field. Otherwise the user can select only
+one value
 
-.OUTPUTS
-Query returns a PSCustomObject with the following properties:
+.PARAMETER Help
+(Optional) The tool tip to show to the user how to populate the Custom Field.
+
+.PARAMETER ErrorMessage
+(Optional) The error message that you define for this Custom Field.
+
+.PARAMETER Mandatory
+Determines if a value is required in the custom field. If not used a value is
+optional, otherwise the user must enter a value.
+
+.PARAMETER Policyable
+Determines if the custom field can be used in a policy setting to apply to
+all objects in the policy. If not used the custom field cannot apply to a policy.
+
+.PARAMETER RegEx
+(Optional) The regular expression to control user input.
+
+.PARAMETER RenderHidden
+Controls the visibility of the custom field in the UI. By default custom fields
+are visible in the class they are created for. This switch hides them.
+
+.PARAMETER RenderReadOnly
+Controls if the custom field is read only. By default a user can change the custom
+field value. This switch makes it the custom field value cannot be changed.
+
+.PARAMETER DateOnly
+Controls if the custom field requires a calendar date. By default a date is not required.
+
+.PARAMETER TimeOnly
+Controls if the custom field requires a time of day. By default a time is not required.
+
+.PARAMETER PassThru
+Return a PSCustomObject with the following properties:
     AllowedValues
     Class
     DateOnly
@@ -43,6 +76,15 @@ Query returns a PSCustomObject with the following properties:
     Single
     TimeOnly
     Type
+
+.PARAMETER VenafiSession
+Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+
+.INPUTS
+None
+
+.OUTPUTS
+PSCustomObject, if PassThru provided
 
 .EXAMPLE
 New-TppCustomField -Name "Last Date" -Label "Last Date" -Class "X509 Certificate" -Type "String" -RenderReadOnly -Help "Last Date of certificate import"
@@ -85,7 +127,7 @@ function New-TppCustomField {
         [string[]]$AllowedValue,
 
         [Parameter()]
-        [string]$Single,
+        [switch]$Single,
 
         [Parameter()]
         [string]$Help,
@@ -146,6 +188,7 @@ function New-TppCustomField {
                     "Classes" = @($Class)
                     "Label" = $Label
                     "Type" = $ItemType
+                    "Single" = $Single.ToString().ToLower()
                     "Mandatory" = $Mandatory.ToString().ToLower()
                     "Policyable" = $Policyable.ToString().ToLower()
                     "RenderHidden" = $RenderHidden.ToString().ToLower()
@@ -160,9 +203,6 @@ function New-TppCustomField {
         }
         if ( $PSBoundParameters.ContainsKey('AllowedValue') ) {
             $params.Body.Item['AllowedValues'] = @($AllowedValue)
-        }
-        if ( $PSBoundParameters.ContainsKey('Single') ) {
-            $params.Body.Item['Single'] = $Single
         }
         if ( $PSBoundParameters.ContainsKey('ErrorMessage') ) {
             $params.Body.Item['ErrorMessage'] = $ErrorMessage
