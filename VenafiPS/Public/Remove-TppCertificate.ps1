@@ -6,9 +6,6 @@ Remove a certificate
 Removes a Certificate object, all associated objects including pending workflow tickets, and the corresponding Secret Store vault information.
 You must either be a Master Admin or have Delete permission to the objects and have certificate:delete token scope.
 
-.PARAMETER InputObject
-TppObject which represents a unique object
-
 .PARAMETER Path
 Path to the certificate to remove
 
@@ -19,7 +16,7 @@ Provide this switch to remove associations prior to certificate removal
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-InputObject or Path
+Path
 
 .OUTPUTS
 None
@@ -56,7 +53,8 @@ function Remove-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -75,16 +73,19 @@ function Remove-TppCertificate {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Delete'
-            UriLeaf    = 'placeholder'
+            Method        = 'Delete'
+            UriLeaf       = 'placeholder'
         }
+
+        # use in shouldprocess messaging below
+        $appsMessage = if ($KeepAssociatedApps) { 'but keep associated apps' } else { 'and associated apps' }
     }
 
     process {
         $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
         $params.UriLeaf = "Certificates/$guid"
 
-        if ( $PSCmdlet.ShouldProcess($Path, 'Remove certificate and all associations') ) {
+        if ( $PSCmdlet.ShouldProcess($Path, "Remove certificate $appsMessage") ) {
             if ($KeepAssociatedApps) {
                 $associatedApps = $Path | Get-TppAttribute -Attribute "Consumers" -Effective -VenafiSession $VenafiSession | Select-Object -ExpandProperty Value
                 if ( $associatedApps ) {
