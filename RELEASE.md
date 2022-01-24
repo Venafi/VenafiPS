@@ -1,1 +1,9 @@
-- Help updates, [#56](https://github.com/Venafi/VenafiPS/issues/56)
+- **BREAKING CHANGE**: Fix [#4](https://github.com/Venafi/VenafiPS/issues/4), Remove-TppCertificate deletes associated objects by default, add `-KeepAssociatedApps` and remove `-Force`
+- Add pipeline support to `-SourcePath` in `Move-TppObject`.  Use this to move multiple objects to the same target path.
+- Add `New-TppCustomField`
+- Add `-PassThru` option to `Convert-TppObject`.  This is helpful in piping to Set-TppAttribute to update the driver and any other attributes needed.
+- Update `Find-TppObject` class search to default to searching all policies recursively if no path provided
+- Add Platform and AuthType properties to VenafiSession class.  This helps better define and validate tpp vs vaas and key vs token.
+- Cleanup all docs.venafi.com links to reference 'current' instead of a specific version
+- Fix [#63](https://github.com/Venafi/VenafiPS/issues/63), New-VenafiSession vault params fail if SecretManagement module not loaded in current session
+- Better document token/key secret usage in readme
