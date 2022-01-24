@@ -122,5 +122,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppObject.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-isvalid.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____25](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-isvalid.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____25)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-isvalid.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-isvalid.php)
 
