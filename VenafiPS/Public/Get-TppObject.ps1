@@ -54,7 +54,7 @@ function Get-TppObject {
         [Alias('DN')]
         [String[]] $Path,
 
-        [Parameter(Mandatory, ParameterSetName = 'ByGuid', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ByGuid', ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [Alias('ObjectGuid')]
         [guid[]] $Guid,
@@ -64,7 +64,7 @@ function Get-TppObject {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
     }
 
     process {

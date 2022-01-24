@@ -82,7 +82,7 @@ function Find-TppIdentity {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $identityType = 0
         # determine settings to use

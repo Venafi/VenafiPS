@@ -81,7 +81,7 @@ function Get-VenafiCertificate {
 
     begin {
 
-        $authType = $VenafiSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -119,8 +119,8 @@ function Get-VenafiCertificate {
 
     process {
 
-        switch ($authType) {
-            'vaas' {
+        switch ($VenafiSession.Platform) {
+            'VaaS' {
                 $params.UriRoot = 'outagedetection/v1'
                 $params.UriLeaf = "certificates"
 

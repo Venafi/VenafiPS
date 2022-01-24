@@ -49,10 +49,10 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppWorkflowTicket/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppWorkflowTicket.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____7
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____6
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php
 
 #>
 function Get-TppWorkflowTicket {
@@ -85,7 +85,7 @@ function Get-TppWorkflowTicket {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
         Write-Verbose ("Parameter set {0}" -f $PsCmdlet.ParameterSetName)
     }
 

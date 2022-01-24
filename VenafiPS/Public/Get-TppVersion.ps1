@@ -25,19 +25,20 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppVersion/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppVersion.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatusVersion.php?tocpath=Web%20SDK%7CSystemStatus%20programming%20interface%7C_____9
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatusVersion.php
 
 #>
 function Get-TppVersion {
 
     [CmdletBinding()]
+    [OutputType([System.Version])]
 
     param (
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate() | Out-Null
+    $VenafiSession.Validate('TPP')
 
     $params = @{
         VenafiSession = $VenafiSession

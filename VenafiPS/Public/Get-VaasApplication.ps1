@@ -39,7 +39,7 @@ function Get-VaasApplication {
     )
 
     begin {
-        $VenafiSession.Validate('vaas') | Out-Null
+        $VenafiSession.Validate('VaaS')
 
         $params = @{
             VenafiSession = $VenafiSession

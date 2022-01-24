@@ -79,7 +79,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Read-TppLog/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____2
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php
 
 #>
 function Read-TppLog {
@@ -134,7 +134,7 @@ function Read-TppLog {
 
     begin {
 
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $params = @{
             VenafiSession = $VenafiSession
