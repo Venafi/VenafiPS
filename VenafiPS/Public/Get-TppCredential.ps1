@@ -53,7 +53,7 @@ function Get-TppCredential {
     )
 
     begin {
-        $VenafiSession.Validate('tpp') | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $params = @{
             VenafiSession = $VenafiSession

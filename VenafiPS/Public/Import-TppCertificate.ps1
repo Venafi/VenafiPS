@@ -126,7 +126,7 @@ function Import-TppCertificate {
 
     begin {
 
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
     }
 

@@ -43,7 +43,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppCertificateAssociation
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1
 
 .LINK
-https://docs.venafi.com/Docs/19.2SDK/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php?tocpath=REST%20API%20reference%7CCertificates%20programming%20interface%7C_____6
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php
 
 .NOTES
 You must have:
@@ -90,7 +90,7 @@ function Add-TppCertificateAssociation {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $params = @{
             VenafiSession = $VenafiSession

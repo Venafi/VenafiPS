@@ -96,7 +96,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php
 
 #>
 function New-TppCapiApplication {
@@ -195,7 +195,7 @@ function New-TppCapiApplication {
 
     begin {
 
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         if ( $PushCertificate.IsPresent -and (-not $PSBoundParameters.ContainsKey('CertificatePath')) ) {
             throw 'A CertificatePath must be provided when using PushCertificate'

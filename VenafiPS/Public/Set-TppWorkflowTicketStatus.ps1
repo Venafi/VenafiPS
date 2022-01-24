@@ -47,7 +47,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____10
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php
 
 #>
 function Set-TppWorkflowTicketStatus {
@@ -96,7 +96,7 @@ function Set-TppWorkflowTicketStatus {
             }
         }
 
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
     }
 
     process {

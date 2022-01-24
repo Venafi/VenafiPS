@@ -10,7 +10,7 @@ Full path, including name, for the object to be created.
 
 .PARAMETER Class
 Class name of the new object.
-See https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php for more info.
+See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php for more info.
 
 .PARAMETER Attribute
 Hashtable with initial values for the new object.
@@ -55,10 +55,10 @@ https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php
 
 #>
 function New-TppObject {
@@ -96,7 +96,7 @@ function New-TppObject {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate() | Out-Null
+    $VenafiSession.Validate('TPP')
 
     # ensure the object doesn't already exist
     # if ( Test-TppObject -Path $Path -ExistOnly -VenafiSession $VenafiSession ) {

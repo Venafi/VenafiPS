@@ -52,10 +52,10 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppPermission/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppPermission.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Permissions-object-guid-principal.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____8
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Permissions-object-guid-principal.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Permissions-object-guid-principal.php?tocpath=Web%20SDK%7CPermissions%20programming%20interface%7C_____9
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Permissions-object-guid-principal.php
 
 .NOTES
 Confirmation impact is set to Medium, set ConfirmPreference accordingly.
@@ -88,7 +88,7 @@ function Set-TppPermission {
                     $true
                 }
                 else {
-                    throw "'$_' is not a valid Prefixed Universal Id format.  See https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-IdentityInformation.php."
+                    throw "'$_' is not a valid Prefixed Universal Id format.  See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-IdentityInformation.php."
                 }
             })]
         [Alias('PrefixedUniversalId', 'ID')]
@@ -105,7 +105,7 @@ function Set-TppPermission {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $params = @{
             VenafiSession = $VenafiSession

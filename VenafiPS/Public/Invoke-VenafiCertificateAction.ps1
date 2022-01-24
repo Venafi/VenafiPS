@@ -115,7 +115,7 @@ function Invoke-VenafiCertificateAction {
     )
 
     begin {
-        $authType = $VenafiSession.Validate()
+        $VenafiSession.Validate()
     }
 
     process {
@@ -131,8 +131,8 @@ function Invoke-VenafiCertificateAction {
             Method        = 'Post'
         }
 
-        switch ($authType) {
-            'vaas' {
+        switch ($VenafiSession.Platform) {
+            'VaaS' {
 
                 $params.UriRoot = 'outagedetection/v1'
 

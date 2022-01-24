@@ -57,12 +57,14 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppToken/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php
 
 #>
 function Test-TppToken {
 
     [CmdletBinding(DefaultParameterSetName = 'AccessToken')]
+    [OutputType([System.Boolean])]
+
     param (
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [ValidateScript( {
@@ -124,7 +126,7 @@ function Test-TppToken {
                     $AuthUrl = 'https://{0}' -f $AuthUrl
                 }
 
-                $params.ServerUrl = $AuthUrl
+                $params.Server = $AuthUrl
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().password }
             }
 
@@ -133,7 +135,7 @@ function Test-TppToken {
                     throw 'Not a valid TppToken'
                 }
 
-                $params.ServerUrl = $TppToken.Server
+                $params.Server = $TppToken.Server
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $TppToken.AccessToken.GetNetworkCredential().password }
             }
 

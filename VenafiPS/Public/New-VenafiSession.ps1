@@ -122,6 +122,10 @@ Create session using a refresh token, store the newly created refresh token in t
 New-VenafiSession -VaasKey $cred
 Create session against Venafi as a Service
 
+.EXAMPLE
+New-VenafiSession -VaultVaasKeyName vaas-key
+Create session against Venafi as a Service with a key stored in a vault
+
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
 
@@ -129,19 +133,19 @@ http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VenafiSession.ps1
 
 .LINK
-https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____1
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Authorize.php
 
 .LINK
-https://docs.venafi.com/Docs/19.4/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-GET-Authorize-Integrated.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CWeb%20SDK%20reference%7CAuthentication%20programming%20interfaces%7C_____3
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-GET-Authorize-Integrated.php
 
 .LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Authorize-Integrated.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____10
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-Authorize-Integrated.php
 
 .LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____11
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php
 
 .LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php?tocpath=Platform%20SDK%7CAuth%20REST%20for%20token%20management%7C_____9
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php
 
 .LINK
 https://github.com/PowerShell/SecretManagement
@@ -283,7 +287,7 @@ function New-VenafiSession {
     }
 
     $newSession = [VenafiSession] @{
-        ServerUrl = $serverUrl
+        Server = $serverUrl
     }
 
     # use this to know if we need to re-store vault entry metadata when it already exists and -VaultMetadata not provided
@@ -293,7 +297,7 @@ function New-VenafiSession {
 
     if ( $PSCmdlet.ParameterSetName -like 'Vault*') {
         # ensure the appropriate setup has been performed
-        if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement)) {
+        if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement -ListAvailable)) {
             throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a vault named ''VenafiPS''.  See the github readme for guidance, https://github.com/Venafi/VenafiPS#tokenkey-secret-storage.'
         }
 
@@ -341,17 +345,16 @@ function New-VenafiSession {
 
             $token = New-TppToken @params -Verbose:$isVerbose
             $newSession.Token = $token
-            $newSession.Expires = $token.Expires
         }
 
         'AccessToken' {
             $newSession.Token = [PSCustomObject]@{
                 Server      = $authServerUrl
                 AccessToken = $AccessToken
+                # we don't have the expiry so create one
+                # rely on the api call itself to fail if access token is invalid
+                Expires = (Get-Date).AddMonths(12)
             }
-            # we don't have the expiry so create one
-            # rely on the api call itself to fail if access token is invalid
-            $newSession.Expires = (Get-Date).AddMonths(12)
         }
 
         'VaultAccessToken' {
@@ -364,7 +367,7 @@ function New-VenafiSession {
             $secretInfo = Get-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
 
             if ( $secretInfo.Metadata.Count -gt 0 ) {
-                $newSession.ServerUrl = $secretInfo.Metadata.Server
+                $newSession.Server = $secretInfo.Metadata.Server
                 $newSession.Expires = $secretInfo.Metadata.Expires
                 $newSession.Token = [PSCustomObject]@{
                     Server      = $secretInfo.Metadata.AuthServer
@@ -383,10 +386,11 @@ function New-VenafiSession {
                 $newSession.Token = [PSCustomObject]@{
                     Server      = $authServerUrl
                     AccessToken = $tokenSecret
+                    Expires = (Get-Date).AddMonths(12)
                 }
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
-                $newSession.Expires = (Get-Date).AddMonths(12)
+                # $newSession.Expires = (Get-Date).AddMonths(12)
             }
         }
 
@@ -399,7 +403,7 @@ function New-VenafiSession {
 
             $newToken = New-TppToken @params
             $newSession.Token = $newToken
-            $newSession.Expires = $newToken.Expires
+            # $newSession.Expires = $newToken.Expires
         }
 
         'VaultRefreshToken' {
@@ -436,16 +440,17 @@ function New-VenafiSession {
 
             $newToken = New-TppToken @params
             $newSession.Token = $newToken
-            $newSession.Expires = $newToken.Expires
+            $newSession.Server = $newToken.Server
+            Write-Verbose ('server: {0}' -f $newToken.Server)
         }
 
         'Vaas' {
-            $newSession.ServerUrl = $script:CloudUrl
+            $newSession.Server = $script:CloudUrl
             $newSession.Key = $VaasKey
         }
 
         'VaultVaasKey' {
-            $newSession.ServerUrl = $script:CloudUrl
+            $newSession.Server = $script:CloudUrl
             $keySecret = Get-Secret -Name $VaultVaasKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
             if ( -not $keySecret ) {
                 throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
@@ -483,7 +488,7 @@ function New-VenafiSession {
             throw 'Vaulting metadata requires either -VaultAccessTokenName or -VaultRefreshTokenName is provided'
         }
         $metadata = @{
-            Server     = $newSession.ServerUrl
+            Server     = $newSession.Server
             AuthServer = $newSession.Token.Server
             ClientId   = $newSession.Token.ClientId
             Expires    = $newSession.Expires

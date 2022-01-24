@@ -24,6 +24,7 @@ ConvertTo-TppGuid -Path '\ved\policy\convertme'
 function ConvertTo-TppGuid {
 
     [CmdletBinding()]
+    [OutputType([System.Guid])]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
