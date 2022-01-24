@@ -13,7 +13,7 @@ Invoke-VenafiRestMethod [-VenafiSession <VenafiSession>] [-Method <String>] [-Ur
 
 ### URL
 ```
-Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
+Invoke-VenafiRestMethod -Server <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
  [-Method <String>] [-UriRoot <String>] -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>]
  [-FullResponse] [<CommonParameters>]
 ```
@@ -54,13 +54,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ServerUrl
-{{ Fill ServerUrl Description }}
+### -Server
+{{ Fill Server Description }}
 
 ```yaml
 Type: String
 Parameter Sets: URL
-Aliases:
+Aliases: ServerUrl
 
 Required: True
 Position: Named

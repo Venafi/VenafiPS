@@ -201,5 +201,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppCertificate.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppCertificate.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____24](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____24)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php)
 

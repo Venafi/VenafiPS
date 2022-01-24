@@ -109,7 +109,7 @@ Hashtable with Scopes and privilege restrictions.
 The key is the scope and the value is one or more privilege restrictions separated by commas.
 A privilege restriction of none or read, use a value of $null.
 Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
-See https://docs.venafi.com/Docs/20.1/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CAuth%20SDK%20reference%20for%20token%20management%7C_____6 for more info.
+See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
 
 ```yaml
 Type: Hashtable
@@ -155,7 +155,7 @@ Accept wildcard characters: False
 
 ### -Certificate
 Certificate used to request API token. 
-Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/21.1SDK/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
+Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/current/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
 
 ```yaml
 Type: X509Certificate

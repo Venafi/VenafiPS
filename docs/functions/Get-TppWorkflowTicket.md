@@ -128,7 +128,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppWorkflowTicket.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppWorkflowTicket.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____7](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____7)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____6](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____6)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php)
 

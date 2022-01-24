@@ -47,6 +47,7 @@ pages:
     - New-TppCapiApplication: functions/New-TppCapiApplication.md
     - New-TppCertificate: functions/New-TppCertificate.md
     - New-TppCodeSignProject: functions/New-TppCodeSignProject.md
+    - New-TppCustomField: functions/New-TppCustomField.md
     - New-TppDevice: functions/New-TppDevice.md
     - New-TppObject: functions/New-TppObject.md
     - New-TppPolicy: functions/New-TppPolicy.md

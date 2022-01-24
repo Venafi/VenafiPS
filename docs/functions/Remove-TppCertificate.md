@@ -6,15 +6,13 @@ Remove a certificate
 ## SYNTAX
 
 ```
-Remove-TppCertificate [-Path] <String> [-Force] [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-TppCertificate [-Path] <String> [-KeepAssociatedApps] [[-VenafiSession] <VenafiSession>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Removes a Certificate object, all associated objects including pending workflow tickets, and the corresponding Secret Store vault information.
-All associations must be removed for the certificate to be removed.
-You must either be a Master Admin or have Delete permission to the Certificate object
-and to the Application and Device objects if they are to be deleted automatically with -Force
+You must either be a Master Admin or have Delete permission to the objects and have certificate:delete token scope.
 
 ## EXAMPLES
 
@@ -27,13 +25,13 @@ Remove a certificate via pipeline
 ### EXAMPLE 2
 ```
 Remove-TppCertificate -Path '\ved\policy\my cert'
-Remove a certificate
+Remove a certificate and any associated app
 ```
 
 ### EXAMPLE 3
 ```
-Remove-TppCertificate -Path '\ved\policy\my cert' -force
-Remove a certificate and automatically remove all associations
+Remove-TppCertificate -Path '\ved\policy\my cert' -KeepAssociatedApps
+Remove a certificate and first remove all associations, keeping the apps
 ```
 
 ## PARAMETERS
@@ -53,8 +51,8 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -Force
-Provide this switch to force all associations to be removed prior to certificate removal
+### -KeepAssociatedApps
+Provide this switch to remove associations prior to certificate removal
 
 ```yaml
 Type: SwitchParameter
@@ -120,7 +118,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### InputObject or Path
+### Path
 ## OUTPUTS
 
 ### None
