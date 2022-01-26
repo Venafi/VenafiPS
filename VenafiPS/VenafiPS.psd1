@@ -128,7 +128,7 @@ PrivateData = @{
         ProjectUri = 'https://github.com/Venafi/VenafiPS'
 
         # A URL to an icon representing this module.
-        IconUri = 'https://raw.githubusercontent.com/gdbarron/VenafiPS/main/images/Ven_circleV_logo.png'
+        IconUri = 'https://raw.githubusercontent.com/gdbarron/VenafiPS/main/images/venafi_logo.png'
 
         # ReleaseNotes of this module
         ReleaseNotes = 'https://github.com/Venafi/VenafiPS/blob/main/CHANGELOG.md'
