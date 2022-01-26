@@ -1,8 +1,6 @@
-<div style="text-align: center;">
-
-[![Venafi](images/full_venafi_logo.png)](https://www.venafi.com/)
-
-</div>
+<p align="center">
+  <img src="images/full_venafi_logo.png" alt="Venafi"/>
+</p>
 
 # VenafiPS - Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!
 
