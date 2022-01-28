@@ -9,7 +9,7 @@ Enrolls or provisions a new certificate
 ```
 New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-CertificateType <String>]
  [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
- [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-PassThru]
+ [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-PassThru]
  [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -17,7 +17,7 @@ New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-Certif
 ```
 New-TppCertificate -Path <String> -CommonName <String> [-CertificateType <String>]
  [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
- [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-PassThru]
+ [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-PassThru]
  [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -34,11 +34,17 @@ Create certificate by name
 
 ### EXAMPLE 2
 ```
+New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -CustomField @{''=''}
+Create certificate and update custom fields
+```
+
+### EXAMPLE 3
+```
 New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -PassThru
 Create certificate using common name.  Return the created object.
 ```
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
 Create certificate including subject alternate names
@@ -108,8 +114,7 @@ Accept wildcard characters: False
 
 ### -CertificateType
 Type of certificate to be created.
-No value provided will default to X509 Server Certificate.
-Valid values include 'Code Signing', 'Device', 'Server' (same as default), and 'User'.
+No value provided will default to X.509 Server Certificate.
 
 ```yaml
 Type: String
@@ -185,6 +190,23 @@ You can provide more than 1 of the same SAN type with multiple hashtables.
 
 ```yaml
 Type: Hashtable[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CustomField
+Hashtable of custom field(s) to be updated when creating the certificate.
+This is required when the custom fields are mandatory.
+The key is the name, not guid, of the custom field.
+
+```yaml
+Type: Hashtable
 Parameter Sets: (All)
 Aliases:
 

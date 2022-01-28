@@ -1,3 +1,9 @@
+## 4.1.1
+- [#69](https://github.com/Venafi/VenafiPS/issues/69), add `-CustomField` property to `New-TppCertificate`, required when working with mandatory custom fields.
+- Update `New-TppCertificate` to ensure `-CertificateType` property is honored
+- Update with new Venafi logo
+
+
 ## 4.1.0
 - **BREAKING CHANGE**: Fix [#4](https://github.com/Venafi/VenafiPS/issues/4), Remove-TppCertificate deletes associated objects by default, add `-KeepAssociatedApps` and remove `-Force`
 - Add pipeline support to `-SourcePath` in `Move-TppObject`.  Use this to move multiple objects to the same target path.
@@ -268,4 +274,5 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
