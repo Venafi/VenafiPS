@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="images/full_venafi_logo.png" alt="Venafi"/>
+</p>
+
 # VenafiPS - Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!
 
 ![PSSA](https://github.com/Venafi/VenafiPS/actions/workflows/powershell-analysis.yml/badge.svg)
