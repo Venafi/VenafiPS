@@ -16,8 +16,7 @@ Subject Common Name.  If Name isn't provided, CommonName will be used.
 
 .PARAMETER CertificateType
 Type of certificate to be created.
-No value provided will default to X509 Server Certificate.
-Valid values include 'Code Signing', 'Device', 'Server' (same as default), and 'User'.
+No value provided will default to X.509 Server Certificate.
 
 .PARAMETER CertificateAuthorityDN
 The Distinguished Name (DN) of the Trust Protection Platform Certificate Authority Template object for enrolling the certificate. If the value is missing, use the default CADN
@@ -39,6 +38,11 @@ The value must be 1 or more hashtables with the SAN type and value.
 Acceptable SAN types are OtherName, Email, DNS, URI, and IPAddress.
 You can provide more than 1 of the same SAN type with multiple hashtables.
 
+.PARAMETER CustomField
+Hashtable of custom field(s) to be updated when creating the certificate.
+This is required when the custom fields are mandatory.
+The key is the name, not guid, of the custom field.
+
 .PARAMETER PassThru
 Return a TppObject representing the newly created certificate.
 
@@ -54,6 +58,10 @@ TppObject, if PassThru is provided
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template'
 Create certificate by name
+
+.EXAMPLE
+New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -CustomField @{''=''}
+Create certificate and update custom fields
 
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -PassThru
@@ -101,7 +109,6 @@ function New-TppCertificate {
         [String] $CommonName,
 
         [Parameter()]
-        [ValidateSet('Code Signing', 'Device', 'Server', 'User')]
         [String] $CertificateType,
 
         [Parameter()]
@@ -126,6 +133,9 @@ function New-TppCertificate {
 
         [Parameter()]
         [Hashtable[]] $SubjectAltName,
+
+        [Parameter()]
+        [Hashtable] $CustomField,
 
         [Parameter()]
         [switch] $PassThru,
@@ -206,6 +216,10 @@ function New-TppCertificate {
             }
         }
 
+        if ( $CertificateType ) {
+            $params.Body.Add('CertificateType', $CertificateType)
+        }
+
         if ( $PSBoundParameters.ContainsKey('CertificateAuthorityAttribute') ) {
             $CertificateAuthorityAttribute.GetEnumerator() | ForEach-Object {
 
@@ -242,6 +256,17 @@ function New-TppCertificate {
             $params.Body.Add('SubjectAltNames', $newSan)
         }
 
+        if ( $PSBoundParameters.ContainsKey('CustomField') ) {
+            $newCf = $CustomField.GetEnumerator() | ForEach-Object {
+
+                @{
+                    'Name'   = $_.Key
+                    'Values' = @($_.Value)
+                }
+            }
+            $params.Body.Add('CustomFields', @($newCf))
+        }
+
     }
 
     process {
@@ -251,22 +276,11 @@ function New-TppCertificate {
         if ( $PSCmdlet.ShouldProcess($Path, 'Create new certificate') ) {
 
             try {
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
                 Write-Verbose ($response | Out-String)
 
                 if ( $PassThru ) {
-                    $returnObject = @{
-                        Name     = $Name
-                        TypeName = 'X509 Server Certificate'
-                        Path     = $response.CertificateDN
-                        Guid     = $response.Guid.Trim('{}')
-                    }
-
-                    if ( $PSBoundParameters.CertificateType ) {
-                        $returnObject.TypeName = $CertificateType
-                    }
-
-                    [TppObject] $returnObject
+                    Get-TppObject -Path $response.CertificateDN -VenafiSession $VenafiSession
                 }
             }
             catch {
