@@ -16,8 +16,7 @@ Subject Common Name.  If Name isn't provided, CommonName will be used.
 
 .PARAMETER CertificateType
 Type of certificate to be created.
-No value provided will default to X509 Server Certificate.
-Valid values include 'Code Signing', 'Device', 'Server' (same as default), and 'User'.
+No value provided will default to X.509 Server Certificate.
 
 .PARAMETER CertificateAuthorityDN
 The Distinguished Name (DN) of the Trust Protection Platform Certificate Authority Template object for enrolling the certificate. If the value is missing, use the default CADN
@@ -110,7 +109,6 @@ function New-TppCertificate {
         [String] $CommonName,
 
         [Parameter()]
-        [ValidateSet('Code Signing', 'Device', 'Server', 'User')]
         [String] $CertificateType,
 
         [Parameter()]
@@ -218,6 +216,10 @@ function New-TppCertificate {
             }
         }
 
+        if ( $CertificateType ) {
+            $params.Body.Add('CertificateType', $CertificateType)
+        }
+
         if ( $PSBoundParameters.ContainsKey('CertificateAuthorityAttribute') ) {
             $CertificateAuthorityAttribute.GetEnumerator() | ForEach-Object {
 
@@ -274,22 +276,11 @@ function New-TppCertificate {
         if ( $PSCmdlet.ShouldProcess($Path, 'Create new certificate') ) {
 
             try {
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
                 Write-Verbose ($response | Out-String)
 
                 if ( $PassThru ) {
-                    $returnObject = @{
-                        Name     = $Name
-                        TypeName = 'X509 Server Certificate'
-                        Path     = $response.CertificateDN
-                        Guid     = $response.Guid.Trim('{}')
-                    }
-
-                    if ( $PSBoundParameters.CertificateType ) {
-                        $returnObject.TypeName = $CertificateType
-                    }
-
-                    [TppObject] $returnObject
+                    Get-TppObject -Path $response.CertificateDN -VenafiSession $VenafiSession
                 }
             }
             catch {
