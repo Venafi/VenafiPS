@@ -39,6 +39,11 @@ The value must be 1 or more hashtables with the SAN type and value.
 Acceptable SAN types are OtherName, Email, DNS, URI, and IPAddress.
 You can provide more than 1 of the same SAN type with multiple hashtables.
 
+.PARAMETER CustomField
+Hashtable of custom field(s) to be updated when creating the certificate.
+This is required when the custom fields are mandatory.
+The key is the name, not guid, of the custom field.
+
 .PARAMETER PassThru
 Return a TppObject representing the newly created certificate.
 
@@ -54,6 +59,10 @@ TppObject, if PassThru is provided
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template'
 Create certificate by name
+
+.EXAMPLE
+New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -CustomField @{''=''}
+Create certificate and update custom fields
 
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -PassThru
@@ -126,6 +135,9 @@ function New-TppCertificate {
 
         [Parameter()]
         [Hashtable[]] $SubjectAltName,
+
+        [Parameter()]
+        [Hashtable] $CustomField,
 
         [Parameter()]
         [switch] $PassThru,
@@ -240,6 +252,17 @@ function New-TppCertificate {
                 }
             )
             $params.Body.Add('SubjectAltNames', $newSan)
+        }
+
+        if ( $PSBoundParameters.ContainsKey('CustomField') ) {
+            $newCf = $CustomField.GetEnumerator() | ForEach-Object {
+
+                @{
+                    'Name'   = $_.Key
+                    'Values' = @($_.Value)
+                }
+            }
+            $params.Body.Add('CustomFields', @($newCf))
         }
 
     }
