@@ -359,6 +359,7 @@ function Find-TppCertificate {
         [Switch] $CountOnly,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 

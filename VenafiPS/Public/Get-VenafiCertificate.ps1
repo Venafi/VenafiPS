@@ -76,6 +76,7 @@ function Get-VenafiCertificate {
         [switch] $ExcludeRevoked,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
