@@ -5,12 +5,14 @@ Write entries to the TPP log
 .DESCRIPTION
 Write entries to the log for custom event groups.
 It is not permitted to write to the default log.
+Ensure the group and event id are correct as the api will not fail if incorrect.
 
 .PARAMETER CustomEventGroup
-Custom Event Group ID, 4 characters.
+ID containing hex values between 0100-0299 referring to the created custom group.
 
 .PARAMETER EventId
-Event ID from within the EventGroup provided.  Only provide the 4 character event id, do not precede with group ID.
+Event ID from within the EventGroup provided, a 4 character hex value.
+Only provide the 4 character event id, do not precede with group ID.
 
 .PARAMETER Component
 Path to the item this event is associated with
@@ -71,11 +73,23 @@ function Write-TppLog {
         [string] $EventGroup,
 
         [Parameter(Mandatory, ParameterSetName = 'CustomGroup')]
-        [ValidateLength(4, 4)]
+        [ValidateScript({
+            if ( $_ -match '^0[1-2]\d\d$' ) {
+                $true
+            } else {
+                throw "$_ is an invalid group.  Custom event groups must be betwen 0100-0299."
+            }
+        })]
         [string] $CustomEventGroup,
 
         [Parameter(Mandatory)]
-        [ValidateLength(4, 4)]
+        [ValidateScript({
+            if ( $_ -match '^[0-9a-fA-F]{4}$' ) {
+                $true
+            } else {
+                throw "$_ is an invalid event ID.  Event IDs must be a 4 character hex value."
+            }
+        })]
         [string] $EventId,
 
         [Parameter(Mandatory)]
@@ -114,7 +128,7 @@ function Write-TppLog {
     )
 
     if ( $PSCmdlet.ParameterSetName -eq 'DefaultGroup' ) {
-        throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.'
+        throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.  -EventGroup will be deprecated in a future release.'
     }
 
     $VenafiSession.Validate('TPP')
@@ -130,7 +144,6 @@ function Write-TppLog {
         Method     = 'Post'
         UriLeaf    = 'Log/'
         Body       = @{
-            GroupID   = $CustomEventGroup
             ID        = $decEventId
             Component = $Component
         }
