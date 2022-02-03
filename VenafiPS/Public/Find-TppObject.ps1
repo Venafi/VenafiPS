@@ -92,6 +92,7 @@ function Find-TppObject {
 
     [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
     [Alias('fto')]
+    [OutputType([TppObject])]
 
     param (
         [Parameter(ParameterSetName = 'FindByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
