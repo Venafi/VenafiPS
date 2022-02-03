@@ -13,22 +13,6 @@ class VenafiSession {
         $this._init($initHash)
     }
 
-    VenafiSession ([psobject] $Session) {
-        if ( $Session.GetType().Name -ne 'VenafiSession' ) {
-            throw 'Only VenafiSession objects are permitted'
-        }
-
-        $this._init(
-            @{
-                Server      = $Session.Server
-                Key         = $Session.Key
-                Token       = $Session.Token
-                CustomField = $Session.CustomField
-                Version     = $Session.Version
-            }
-        )
-    }
-
     [void] Validate() {
         $this.Validate($this.Platform, $this.AuthType)
     }
