@@ -57,7 +57,7 @@ PowerShellVersion = '5.1'
 # RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-# ScriptsToProcess = @()
+ScriptsToProcess = @('Classes\TppObject.ps1','Classes\TppPermission.ps1','Classes\VenafiSession.ps1','Enum\TppCertificateStage.ps1','Enum\TppCodeSignProjectStatus.ps1','Enum\TppCodeSignResult.ps1','Enum\TppConfigResult.ps1','Enum\TppEventSeverity.ps1','Enum\TppIdentityType.ps1','Enum\TppManagementType.ps1','Enum\TppMetadataResult.ps1','Enum\TppWorkflowResult.ps1')
 
 # Type files (.ps1xml) to be loaded when importing this module
 # TypesToProcess = @()
@@ -93,7 +93,7 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'Revoke-TppToken', 'Set-TppAttribute', 'Set-TppCodeSignProjectStatus',
                'Set-TppCredential', 'Set-TppPermission',
                'Set-TppWorkflowTicketStatus', 'Test-ModuleHash', 'Test-TppIdentity',
-               'Test-TppObject', 'Test-TppToken', 'Write-TppLog', 'Get-VenafiSessionClass'
+               'Test-TppObject', 'Test-TppToken', 'Write-TppLog'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

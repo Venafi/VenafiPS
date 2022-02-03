@@ -14,6 +14,10 @@ class VenafiSession {
     }
 
     VenafiSession ([psobject] $Session) {
+        if ( $Session.GetType().Name -ne 'VenafiSession' ) {
+            throw 'Only VenafiSession objects are permitted'
+        }
+
         $this._init(
             @{
                 Server      = $Session.Server
