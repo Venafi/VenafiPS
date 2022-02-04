@@ -5,7 +5,7 @@ Find certificates based on various attributes
 .DESCRIPTION
 Find certificates based on various attributes.
 Supports standard PS paging parameters First, Skip, and IncludeTotalCount.
-If -First not provided, the default return is 1000 records.
+If -First or -IncludeTotalCount not provided, the default return is 1000 records.
 
 .PARAMETER Path
 Starting path to search from
