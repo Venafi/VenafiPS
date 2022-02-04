@@ -148,35 +148,39 @@ TppObject, Int when CountOnly provided
 
 .EXAMPLE
 Find-TppCertificate -ExpireBefore "2018-01-01"
-Find all certificates expiring before a certain date
+Find certificates expiring before a certain date
 
 .EXAMPLE
 Find-TppCertificate -ExpireBefore "2018-01-01" -First 5
 Find 5 certificates expiring before a certain date
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Offset 2
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
 
 .EXAMPLE
 Find-TppCertificate -Path '\VED\Policy\My Policy'
-Find all certificates in a specific path
+Find certificates in a specific path
 
 .EXAMPLE
 Find-TppCertificate -Issuer 'CN=Example Root CA, O=Venafi,Inc., L=Salt Lake City, S=Utah, C=US'
-Find all certificates by issuer
+Find certificates by issuer
 
 .EXAMPLE
 Find-TppCertificate -Path '\VED\Policy\My Policy' -Recursive
-Find all certificates in a specific path and all subfolders
+Find certificates in a specific path and all subfolders
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 | Get-VenafiCertificate
-Get detailed certificate info on the first 5 certificates expiring before a certain date
+Find-TppCertificate | Get-VenafiCertificate
+Get detailed certificate info
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2019-09-01" | Invoke-TppCertificateRenewal
+Find-TppCertificate -ExpireBefore "2019-09-01" -IncludeTotalCount | Invoke-VenafiCertificateAction -Renew
 Renew all certificates expiring before a certain date
+
+.EXAMPLE
+Find-TppCertificate -First 5000 -IncludeTotalCount
+Find all certificates, paging 5000 at a time
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/
