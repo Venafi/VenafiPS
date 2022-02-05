@@ -1,3 +1,10 @@
+## 4.1.2
+- [#71](https://github.com/Venafi/VenafiPS/issues/71), add group and event id validation to `Write-TppLog` as well as help updates
+- Add the ability to access classes and enums outside the module
+- Add paging to `Find-TppCertificate`, deprecation messaging for `-Limit` and `-Offset` in favor of PS standard `-First` and `-Skip`
+- Update `Get-VenafiCertificate` to ensure empty values for some date properties don't cause an exception
+
+
 ## 4.1.1
 - [#69](https://github.com/Venafi/VenafiPS/issues/69), add `-CustomField` property to `New-TppCertificate`, required when working with mandatory custom fields.
 - Update `New-TppCertificate` to ensure `-CertificateType` property is honored
@@ -274,5 +281,6 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 

@@ -7,7 +7,7 @@ Find certificates based on various attributes
 
 ### NoPath (Default)
 ```
-Find-TppCertificate [-First <Int32>] [-Offset <Int32>] [-Country <String>] [-CommonName <String>]
+Find-TppCertificate [-Limit <Int32>] [-Offset <Int32>] [-Country <String>] [-CommonName <String>]
  [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>] [-KeySizeGreaterThan <Int32>]
  [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>] [-OrganizationUnit <String[]>]
  [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>] [-SanUpn <String>]
@@ -17,12 +17,13 @@ Find-TppCertificate [-First <Int32>] [-Offset <Int32>] [-Country <String>] [-Com
  [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [-IncludeTotalCount]
+ [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Find-TppCertificate -Path <String> [-Recursive] [-First <Int32>] [-Offset <Int32>] [-Country <String>]
+Find-TppCertificate -Path <String> [-Recursive] [-Limit <Int32>] [-Offset <Int32>] [-Country <String>]
  [-CommonName <String>] [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>]
  [-KeySizeGreaterThan <Int32>] [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>]
  [-OrganizationUnit <String[]>] [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>]
@@ -32,12 +33,13 @@ Find-TppCertificate -Path <String> [-Recursive] [-First <Int32>] [-Offset <Int32
  [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [-IncludeTotalCount]
+ [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Find-TppCertificate -Guid <Guid> [-Recursive] [-First <Int32>] [-Offset <Int32>] [-Country <String>]
+Find-TppCertificate -Guid <Guid> [-Recursive] [-Limit <Int32>] [-Offset <Int32>] [-Country <String>]
  [-CommonName <String>] [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>]
  [-KeySizeGreaterThan <Int32>] [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>]
  [-OrganizationUnit <String[]>] [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>]
@@ -47,18 +49,21 @@ Find-TppCertificate -Guid <Guid> [-Recursive] [-First <Int32>] [-Offset <Int32>]
  [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [-IncludeTotalCount]
+ [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Find certificates based on various attributes
+Find certificates based on various attributes.
+Supports standard PS paging parameters First, Skip, and IncludeTotalCount.
+If -First or -IncludeTotalCount not provided, the default return is 1000 records.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
 Find-TppCertificate -ExpireBefore "2018-01-01"
-Find all certificates expiring before a certain date
+Find certificates expiring before a certain date
 ```
 
 ### EXAMPLE 2
@@ -69,38 +74,44 @@ Find 5 certificates expiring before a certain date
 
 ### EXAMPLE 3
 ```
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Offset 2
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
 ```
 
 ### EXAMPLE 4
 ```
 Find-TppCertificate -Path '\VED\Policy\My Policy'
-Find all certificates in a specific path
+Find certificates in a specific path
 ```
 
 ### EXAMPLE 5
 ```
 Find-TppCertificate -Issuer 'CN=Example Root CA, O=Venafi,Inc., L=Salt Lake City, S=Utah, C=US'
-Find all certificates by issuer
+Find certificates by issuer
 ```
 
 ### EXAMPLE 6
 ```
 Find-TppCertificate -Path '\VED\Policy\My Policy' -Recursive
-Find all certificates in a specific path and all subfolders
+Find certificates in a specific path and all subfolders
 ```
 
 ### EXAMPLE 7
 ```
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 | Get-VenafiCertificate
-Get detailed certificate info on the first 5 certificates expiring before a certain date
+Find-TppCertificate | Get-VenafiCertificate
+Get detailed certificate info
 ```
 
 ### EXAMPLE 8
 ```
-Find-TppCertificate -ExpireBefore "2019-09-01" | Invoke-TppCertificateRenewal
+Find-TppCertificate -ExpireBefore "2019-09-01" -IncludeTotalCount | Invoke-VenafiCertificateAction -Renew
 Renew all certificates expiring before a certain date
+```
+
+### EXAMPLE 9
+```
+Find-TppCertificate -First 5000 -IncludeTotalCount
+Find all certificates, paging 5000 at a time
 ```
 
 ## PARAMETERS
@@ -150,19 +161,17 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -First
-Limit how many items are returned. 
-Default is 0 for no limit.
-It is definitely recommended to filter on another property when searching with no limit.
+### -Limit
+{{ Fill Limit Description }}
 
 ```yaml
 Type: Int32
 Parameter Sets: (All)
-Aliases: Limit
+Aliases:
 
 Required: False
 Position: Named
-Default value: 0
+Default value: 1000
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -771,6 +780,56 @@ Aliases:
 Required: False
 Position: Named
 Default value: $script:VenafiSession
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IncludeTotalCount
+Reports the total number of objects in the data set (an integer) followed by the selected objects.
+If the cmdlet cannot determine the total count, it displays "Unknown total count." The integer has an Accuracy property that indicates the reliability of the total count value.
+The value of Accuracy ranges from 0.0 to 1.0 where 0.0 means that the cmdlet could not count the objects, 1.0 means that the count is exact, and a value between 0.0 and 1.0 indicates an increasingly reliable estimate.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Skip
+Ignores the specified number of objects and then gets the remaining objects.
+Enter the number of objects to skip.
+
+```yaml
+Type: UInt64
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -First
+Limit how many items are returned. 
+Default is 0 for no limit.
+It is definitely recommended to filter on another property when searching with no limit.
+
+```yaml
+Type: UInt64
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
