@@ -76,6 +76,7 @@ function Get-VenafiCertificate {
         [switch] $ExcludeRevoked,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
@@ -180,9 +181,15 @@ function Get-VenafiCertificate {
                     }
 
                     # object transformations
-                    $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
-                    $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
-                    $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
+                    # put in try/catch in case datetime conversion fails
+                    try {
+                        $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
+                        $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
+                        $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
+                    }
+                    catch {
+
+                    }
                     $response | Select-Object @selectProps
 
                 }

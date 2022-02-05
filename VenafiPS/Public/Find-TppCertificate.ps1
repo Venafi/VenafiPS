@@ -3,7 +3,9 @@
 Find certificates based on various attributes
 
 .DESCRIPTION
-Find certificates based on various attributes
+Find certificates based on various attributes.
+Supports standard PS paging parameters First, Skip, and IncludeTotalCount.
+If -First or -IncludeTotalCount not provided, the default return is 1000 records.
 
 .PARAMETER Path
 Starting path to search from
@@ -146,35 +148,39 @@ TppObject, Int when CountOnly provided
 
 .EXAMPLE
 Find-TppCertificate -ExpireBefore "2018-01-01"
-Find all certificates expiring before a certain date
+Find certificates expiring before a certain date
 
 .EXAMPLE
 Find-TppCertificate -ExpireBefore "2018-01-01" -First 5
 Find 5 certificates expiring before a certain date
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Offset 2
+Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
 
 .EXAMPLE
 Find-TppCertificate -Path '\VED\Policy\My Policy'
-Find all certificates in a specific path
+Find certificates in a specific path
 
 .EXAMPLE
 Find-TppCertificate -Issuer 'CN=Example Root CA, O=Venafi,Inc., L=Salt Lake City, S=Utah, C=US'
-Find all certificates by issuer
+Find certificates by issuer
 
 .EXAMPLE
 Find-TppCertificate -Path '\VED\Policy\My Policy' -Recursive
-Find all certificates in a specific path and all subfolders
+Find certificates in a specific path and all subfolders
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 | Get-VenafiCertificate
-Get detailed certificate info on the first 5 certificates expiring before a certain date
+Find-TppCertificate | Get-VenafiCertificate
+Get detailed certificate info
 
 .EXAMPLE
-Find-TppCertificate -ExpireBefore "2019-09-01" | Invoke-TppCertificateRenewal
+Find-TppCertificate -ExpireBefore "2019-09-01" -IncludeTotalCount | Invoke-VenafiCertificateAction -Renew
 Renew all certificates expiring before a certain date
+
+.EXAMPLE
+Find-TppCertificate -First 5000 -IncludeTotalCount
+Find all certificates, paging 5000 at a time
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/
@@ -194,7 +200,7 @@ https://msdn.microsoft.com/en-us/library/system.web.httputility(v=vs.110).aspx
 #>
 function Find-TppCertificate {
 
-    [CmdletBinding(DefaultParameterSetName = 'NoPath')]
+    [CmdletBinding(DefaultParameterSetName = 'NoPath', SupportsPaging)]
 
     param (
 
@@ -220,8 +226,7 @@ function Find-TppCertificate {
         [Switch] $Recursive,
 
         [Parameter()]
-        [Alias('Limit')]
-        [int] $First = 0,
+        [int] $Limit = 1000,
 
         [Parameter()]
         [int] $Offset,
@@ -358,6 +363,7 @@ function Find-TppCertificate {
         [Switch] $CountOnly,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
@@ -369,13 +375,31 @@ function Find-TppCertificate {
             Method        = 'Get'
             UriLeaf       = 'certificates/'
             Body          = @{
-                Limit = $First
+                Limit = 1000
             }
+            FullResponse  = $true
+        }
+
+        if ( $PSBoundParameters.ContainsKey('Limit') ) {
+            Write-Warning '-Limit parameter to be deprecated, please use -First'
+            $params.Body.Limit = $Limit
+        }
+
+        if ($PSCmdlet.PagingParameters.First -ne [uint64]::MaxValue) {
+            $params.Body.Limit = $PSCmdlet.PagingParameters.First
+        }
+
+        if ( $PSBoundParameters.ContainsKey('Offset') ) {
+            Write-Warning '-Offset parameter to be deprecated, please use -Skip'
+            $params.Body.Offset = $Offset
+        }
+
+        if ($PSCmdlet.PagingParameters.Skip) {
+            $params.Body.Offset = $PSCmdlet.PagingParameters.Skip
         }
 
         if ( $CountOnly.IsPresent ) {
             $params.Method = 'Head'
-            $params['FullResponse'] = $true
         }
 
         switch ($PSBoundParameters.Keys) {
@@ -389,10 +413,7 @@ function Find-TppCertificate {
                 $params.Body.Add( 'CreatedOnGreater', ($CreatedAfter | ConvertTo-UtcIso8601) )
             }
             'CertificateType' {
-                $params.Body.Add( 'CertificateType', $CertificateType  -join ',' )
-            }
-            'Offset' {
-                $params.Body.Add( 'Offset', $Offset )
+                $params.Body.Add( 'CertificateType', $CertificateType -join ',' )
             }
             'Country' {
                 $params.Body.Add( 'C', $Country )
@@ -515,18 +536,66 @@ function Find-TppCertificate {
             }
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
-        if ( $CountOnly.IsPresent ) {
-            $response.Headers.'X-Record-Count'
+        if ( $CountOnly ) {
+            return $response.Headers.'X-Record-Count'
+        }
+
+        $totalRecordCount = 0
+        if ($PSVersionTable.PSVersion.Major -lt 6) {
+            $totalRecordCount = [int]$response.Headers.'X-Record-Count'
         }
         else {
-            $response.Certificates.ForEach{
-                [TppObject] @{
-                    Name     = $_.Name
-                    TypeName = $_.SchemaClass
-                    Path     = $_.DN
-                    Guid     = [guid] $_.Guid
+            $totalRecordCount = [int]($response.Headers.'X-Record-Count'[0])
+        }
+        Write-Verbose "Total number of records for this query: $totalRecordCount"
+
+        $content = $response.content | ConvertFrom-Json
+        $content.Certificates.ForEach{
+            [TppObject] @{
+                Name     = $_.Name
+                TypeName = $_.SchemaClass
+                Path     = $_.DN
+                Guid     = [guid] $_.Guid
+            }
+        }
+
+        # if option to get all records was provided, loop and get them all
+        if ( $PSCmdlet.PagingParameters.IncludeTotalCount ) {
+
+            $setPoint = $params.Body.Offset + $params.Body.Limit
+
+            while ($totalRecordCount -gt $setPoint) {
+
+                # up the offset so we get the next set of records
+                $params.Body.Offset += $params.Body.Limit
+                $setPoint = $params.Body.Offset + $params.Body.Limit
+
+                $end = if ( $totalRecordCount -lt $setPoint ) {
+                    $totalRecordCount
+                }
+                else {
+                    $setPoint
+                }
+
+                Write-Verbose ('getting {0}-{1} of {2}' -f ($params.Body.Offset + 1), $end, $totalRecordCount)
+                try {
+                    $response = Invoke-VenafiRestMethod @params -Verbose:$false
+                }
+                catch {
+                    $ProgressPreference = $oldProgressPreference
+                    throw $_
+                }
+
+                $content = $response.content | ConvertFrom-Json
+                $content.Certificates.ForEach{
+                    [TppObject] @{
+                        Name     = $_.Name
+                        TypeName = $_.SchemaClass
+                        Path     = $_.DN
+                        Guid     = [guid] $_.Guid
+                    }
                 }
             }
         }

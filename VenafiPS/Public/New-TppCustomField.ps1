@@ -22,7 +22,7 @@ Type of new custom field, one of 'String', 'List', 'DateTime', 'Identity'
 An array of allowable values for the Custom Field.
 
 .PARAMETER Single
-Controls the number of input selections. If not used the user can select 
+Controls the number of input selections. If not used the user can select
 multiple values for the Custom Field. Otherwise the user can select only
 one value
 
@@ -170,31 +170,34 @@ function New-TppCustomField {
 
         if ( $Type -eq 'String' ) {
             $ItemType = '1'
-        } elseif ( $Type -eq 'List' ) {
+        }
+        elseif ( $Type -eq 'List' ) {
             $ItemType = '2'
-        } elseif ( $Type -eq 'DateTime' ) {
+        }
+        elseif ( $Type -eq 'DateTime' ) {
             $ItemType = '4'
-        } elseif ( $Type -eq 'Identity' ) {
+        }
+        elseif ( $Type -eq 'Identity' ) {
             $ItemType = '5'
         }
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = 'Metadata/DefineItem'
-            Body       = @{
+            Method        = 'Post'
+            UriLeaf       = 'Metadata/DefineItem'
+            Body          = @{
                 "Item" = @{
-                    "Name" = $Name
-                    "Classes" = @($Class)
-                    "Label" = $Label
-                    "Type" = $ItemType
-                    "Single" = $Single.ToString().ToLower()
-                    "Mandatory" = $Mandatory.ToString().ToLower()
-                    "Policyable" = $Policyable.ToString().ToLower()
-                    "RenderHidden" = $RenderHidden.ToString().ToLower()
+                    "Name"           = $Name
+                    "Classes"        = @($Class)
+                    "Label"          = $Label
+                    "Type"           = $ItemType
+                    "Single"         = $Single.ToString().ToLower()
+                    "Mandatory"      = $Mandatory.ToString().ToLower()
+                    "Policyable"     = $Policyable.ToString().ToLower()
+                    "RenderHidden"   = $RenderHidden.ToString().ToLower()
                     "RenderReadOnly" = $RenderReadOnly.ToString().ToLower()
-                    "DateOnly" = $DateOnly.ToString().ToLower()
-                    "TimeOnly" = $TimeOnly.ToString().ToLower()
+                    "DateOnly"       = $DateOnly.ToString().ToLower()
+                    "TimeOnly"       = $TimeOnly.ToString().ToLower()
                 }
             }
         }
@@ -214,55 +217,56 @@ function New-TppCustomField {
 
     end {
         if ( $PSCmdlet.ShouldProcess($Label) ) {
-            
+
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -eq [TppMetadataResult]::Success ) {
                 if (( $PassThru )) {
                     $resultObj = [PSCustomObject] @{
-                    "Path"    = $response.Item.DN
-                    "Label" = $response.Item.Label
-                    "Name"  = $response.Item.Name
-                    "Guid"  = [guid]$response.Item.Guid
-                    "Type"  = $response.Item.Type
-                    "Class" = $response.Item.Classes
+                        "Path"  = $response.Item.DN
+                        "Label" = $response.Item.Label
+                        "Name"  = $response.Item.Name
+                        "Guid"  = [guid]$response.Item.Guid
+                        "Type"  = $response.Item.Type
+                        "Class" = $response.Item.Classes
                     }
                     if ($response.Item.Mandatory) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "Mandatory" -Value $response.Item.Mandatory
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "Mandatory" -Value $response.Item.Mandatory
                     }
                     if ($response.Item.Policyable) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "Policyable" -Value $response.Item.Policyable
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "Policyable" -Value $response.Item.Policyable
                     }
                     if ($response.Item.RenderHidden) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "RenderHidden" -Value $response.Item.RenderHidden
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "RenderHidden" -Value $response.Item.RenderHidden
                     }
                     if ($response.Item.RenderReadOnly) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "RenderReadOnly" -Value $response.Item.RenderReadOnly
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "RenderReadOnly" -Value $response.Item.RenderReadOnly
                     }
                     if ($response.Item.DateOnly) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "DateOnly" -Value $response.Item.DateOnly
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "DateOnly" -Value $response.Item.DateOnly
                     }
                     if ($response.Item.TimeOnly) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "TimeOnly" -Value $response.Item.TimeOnly
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "TimeOnly" -Value $response.Item.TimeOnly
                     }
                     if ($response.Item.Help) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "Help" -Value $response.Item.Help
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "Help" -Value $response.Item.Help
                     }
                     if ($response.Item.AllowedValues) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "AllowedValues" -Value $response.Item.AllowedValues
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "AllowedValues" -Value $response.Item.AllowedValues
                     }
                     if ($response.Item.Single) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "Single" -Value $response.Item.Single
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "Single" -Value $response.Item.Single
                     }
                     if ($response.Item.ErrorMessage) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "ErrorMessage" -Value $response.Item.ErrorMessage
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "ErrorMessage" -Value $response.Item.ErrorMessage
                     }
                     if ($response.Item.RegularExpression) {
-                    $resultObj | Add-Member -MemberType NoteProperty -Name "RegularExpression" -Value $response.Item.RegularExpression
+                        $resultObj | Add-Member -MemberType NoteProperty -Name "RegularExpression" -Value $response.Item.RegularExpression
                     }
                     return $resultObj
                 }
-            } else {
+            }
+            else {
                 throw $response.Error
             }
         }

@@ -64,6 +64,7 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r
 function New-TppObject {
 
     [CmdletBinding(DefaultParameterSetName = 'NonApplicationObject', SupportsShouldProcess)]
+    [OutputType([TppObject])]
 
     param (
         [Parameter(Mandatory)]
