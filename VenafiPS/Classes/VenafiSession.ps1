@@ -102,7 +102,8 @@ class VenafiSession {
                 $newToken = New-TppToken -VenafiSession $this
                 $this.Token = $newToken
             }
-        } else {
+        }
+        else {
             # no refresh for vaas
         }
     }
@@ -138,7 +139,7 @@ class VenafiSession {
         $this.Key = [pscustomobject] @{
             ApiKey     = $response.ApiKey
             Credential = $Credential
-            Expires = $response.ValidUntil
+            Expires    = $response.ValidUntil
         }
     }
 
@@ -148,11 +149,11 @@ class VenafiSession {
             throw "Server is required"
         }
 
-        $this.Server = $initHash.Server
-        if ( $initHash.Credential ) {
-            $this.Credential = $initHash.Credential
+        $initHash.GetEnumerator() | ForEach-Object {
+            if ( $_.Value ) {
+                $this.$($_.Key)=$_.Value
+            }
         }
-        $this.CustomField = $null
 
         $this | Add-Member -MemberType ScriptProperty -Name Platform -Value {
             if ( $this.Server -eq $script:CloudUrl ) {
