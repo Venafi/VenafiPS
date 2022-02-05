@@ -91,7 +91,7 @@ jobs:
         run: |
           git config --global user.name 'Greg Brownstein'
           git config --global user.email 'greg@jagtechnical.com'
-          git add VenafiPS.psd1
+          git add VenafiPS/VenafiPS.psd1
           git add docs
           git add mkdocs.yml
           git add CHANGELOG.md
