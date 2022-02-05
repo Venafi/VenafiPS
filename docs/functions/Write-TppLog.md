@@ -24,6 +24,7 @@ Write-TppLog -CustomEventGroup <String> -EventId <String> -Component <String> [-
 ## DESCRIPTION
 Write entries to the log for custom event groups.
 It is not permitted to write to the default log.
+Ensure the group and event id are correct as the api will not fail if incorrect.
 
 ## EXAMPLES
 
@@ -51,7 +52,7 @@ Accept wildcard characters: False
 ```
 
 ### -CustomEventGroup
-Custom Event Group ID, 4 characters.
+ID containing hex values between 0100-0299 referring to the created custom group.
 
 ```yaml
 Type: String
@@ -66,7 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -EventId
-Event ID from within the EventGroup provided. 
+Event ID from within the EventGroup provided, a 4 character hex value.
 Only provide the 4 character event id, do not precede with group ID.
 
 ```yaml

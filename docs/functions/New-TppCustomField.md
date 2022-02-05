@@ -104,7 +104,7 @@ Accept wildcard characters: False
 
 ### -Single
 Controls the number of input selections.
-If not used the user can select 
+If not used the user can select
 multiple values for the Custom Field.
 Otherwise the user can select only
 one value
