@@ -47,6 +47,9 @@ Hashtable of custom field(s) to be updated when creating the certificate.
 This is required when the custom fields are mandatory.
 The key is the name, not guid, of the custom field.
 
+.PARAMETER NoWorkToDo
+Turn off lifecycle processing for this certificate update
+
 .PARAMETER PassThru
 Return a TppObject representing the newly created certificate.
 
@@ -150,6 +153,9 @@ function New-TppCertificate {
         [Hashtable] $CustomField,
 
         [Parameter()]
+        [switch] $NoWorkToDo,
+
+        [Parameter()]
         [switch] $PassThru,
 
         [Parameter()]
@@ -225,6 +231,7 @@ function New-TppCertificate {
                         'Value' = 'VenafiPS'
                     }
                 )
+                SetWorkToDo          = -not $NoWorkToDo
             }
         }
 
