@@ -8,17 +8,18 @@ immediate renewal. The certificate must not be in error, already being processed
 configured for Monitoring in order for it be renewable. You must have Write access
 to the certificate object being renewed.
 
-.PARAMETER InputObject
-TppObject which represents a unique object
-
 .PARAMETER Path
-Path to the certificate to remove
+Path to the certificate to renew
+
+.PARAMETER Csr
+Optional PKCS#10 Certificate Signing Request (CSR).
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-InputObject or Path
+Path
 
 .OUTPUTS
 PSCustomObject with the following properties:
@@ -29,6 +30,10 @@ PSCustomObject with the following properties:
 
 .EXAMPLE
 Invoke-TppCertificateRenewal -Path '\VED\Policy\My folder\app.mycompany.com'
+
+.EXAMPLE
+Invoke-TppCertificateRenewal -Path '\VED\Policy\My folder\app.mycompany.com' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
+Renew certificate using a CSR
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/
