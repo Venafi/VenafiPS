@@ -50,6 +50,10 @@ The key is the name, not guid, of the custom field.
 .PARAMETER NoWorkToDo
 Turn off lifecycle processing for this certificate update
 
+.PARAMETER Device
+A list of hashtables for devices/apps to be created.
+See https://docs.venafi.com/Docs/21.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-requestProvision.php for an example.
+
 .PARAMETER PassThru
 Return a TppObject representing the newly created certificate.
 
@@ -154,6 +158,9 @@ function New-TppCertificate {
 
         [Parameter()]
         [switch] $NoWorkToDo,
+
+        [Parameter()]
+        [hashtable[]] $Device,
 
         [Parameter()]
         [switch] $PassThru,
@@ -290,6 +297,9 @@ function New-TppCertificate {
             $params.Body.Add('CustomFields', @($newCf))
         }
 
+        if ( $Device ) {
+            $params.Body.Add('Devices', $Device)
+        }
     }
 
     process {
