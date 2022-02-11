@@ -5,12 +5,16 @@ Test if a Tpp token is valid
 .DESCRIPTION
 Use the TPP API call 'Authorize/Verify' to test if the current token is valid.
 
-.PARAMETER AuthServer
+.PARAMETER Server
 Auth server or url, venafi.company.com or https://venafi.company.com.
+This will be used to access vedauth for token-based authentication.
 If just the server name is provided, https:// will be appended.
 
 .PARAMETER AccessToken
 Access token retrieved outside this module.  Provide a credential object with the access token as the password.
+
+.PARAMETER VaultAccessTokenName
+Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
 
 .PARAMETER TppToken
 Token object obtained from New-TppToken
@@ -43,8 +47,12 @@ $TppToken | Test-TppToken
 Verify that token object from pipeline is valid. Can be used to validate directly object from New-TppToken.
 
 .EXAMPLE
-Test-TppToken -AuthServer 'mytppserver.example.com' -AccessToken $cred
+Test-TppToken -Server venafitpp.mycompany.com -AccessToken $cred
 Verify that PsCredential object containing accesstoken is valid.
+
+.EXAMPLE
+Test-TppToken -VaultAccessTokenName access-token
+Verify access token stored in VenafiPS vault
 
 .EXAMPLE
 Test-TppToken -GrantDetail
@@ -67,6 +75,7 @@ function Test-TppToken {
 
     param (
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
+        [Parameter(ParameterSetName = 'VaultAccessToken')]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
@@ -76,14 +85,18 @@ function Test-TppToken {
                 }
             }
         )]
-        [Alias('Server')]
-        [string] $AuthServer,
+        [Alias('ServerUrl')]
+        [string] $Server,
 
         [Parameter(Mandatory, ParameterSetName = 'AccessToken', ValueFromPipeline)]
         [PSCredential] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipeline)]
         [pscustomobject] $TppToken,
+
+        [Parameter(Mandatory, ParameterSetName = 'VaultAccessToken')]
+        [Parameter(ParameterSetName = 'AccessToken')]
+        [string] $VaultAccessTokenName,
 
         [Parameter()]
         [switch] $GrantDetail,
@@ -120,14 +133,47 @@ function Test-TppToken {
             }
 
             'AccessToken' {
-                $AuthUrl = $AuthServer
+                $serverUrl = $Server
                 # add prefix if just server url was provided
-                if ( $AuthServer -notlike 'https://*') {
-                    $AuthUrl = 'https://{0}' -f $AuthUrl
+                if ( $Server -notlike 'https://*') {
+                    $serverUrl = 'https://{0}' -f $serverUrl
                 }
 
-                $params.Server = $AuthUrl
+                $params.Server = $serverUrl
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().password }
+            }
+
+            'VaultAccessToken' {
+                # ensure the appropriate setup has been performed
+                if ( -not (Get-Module -Name Microsoft.PowerShell.SecretManagement -ListAvailable)) {
+                    throw 'The module Microsoft.PowerShell.SecretManagement is required as well as a vault named ''VenafiPS''.  See the github readme for guidance, https://github.com/Venafi/VenafiPS#tokenkey-secret-storage.'
+                }
+
+                $vault = Get-SecretVault -Name 'VenafiPS' -ErrorAction SilentlyContinue
+                if ( -not $vault ) {
+                    throw 'A SecretManagement vault named ''VenafiPS'' could not be found'
+                }
+
+                $tokenSecret = Get-Secret -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+                if ( -not $tokenSecret ) {
+                    throw "'$VaultAccessTokenName' secret not found in vault VenafiPS."
+                }
+
+                # check if metadata was stored
+                $secretInfo = Get-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+
+                if ( $secretInfo.Metadata.Count -gt 0 ) {
+                    $params.Server = $secretInfo.Metadata.Server
+                    $params.Header = @{'Authorization' = 'Bearer {0}' -f $tokenSecret.GetNetworkCredential().password }
+                }
+                else {
+                    if ( -not $Server ) {
+                        throw '-Server is a required parameter as it wasn''t stored with -VaultMetadata'
+                    }
+
+                    $params.Server  = $ServerUrl
+                    $params.Header = @{'Authorization' = 'Bearer {0}' -f $tokenSecret.GetNetworkCredential().password }
+                }
             }
 
             'TppToken' {
