@@ -46,10 +46,7 @@ function Invoke-TppCertificateRenewal {
     [Alias('itcr')]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
-
-        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByPath')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -63,6 +60,9 @@ function Invoke-TppCertificateRenewal {
         [String] $Path,
 
         [Parameter()]
+        [string] $Csr,
+
+        [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
@@ -71,9 +71,9 @@ function Invoke-TppCertificateRenewal {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = 'certificates/renew'
-            Body       = @{
+            Method        = 'Post'
+            UriLeaf       = 'certificates/renew'
+            Body          = @{
                 CertificateDN = ''
             }
         }
@@ -81,15 +81,16 @@ function Invoke-TppCertificateRenewal {
 
     process {
 
-        if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-            $path = $InputObject.Path
-        }
-
         if ( $PSCmdlet.ShouldProcess($Path, 'Renew certificate') ) {
 
             write-verbose "Renewing $Path..."
 
             $params.Body.CertificateDN = $Path
+
+            if ( $Csr ) {
+                $params.Body.PKCS10 = $Csr -replace "`n|`r", ""
+            }
+
             $response = Invoke-TppRestMethod @params
 
             $response | Add-Member @{'Path' = $Path } -PassThru

@@ -14,6 +14,10 @@ Name of the certifcate.  If not provided, the name will be the same as the subje
 .PARAMETER CommonName
 Subject Common Name.  If Name isn't provided, CommonName will be used.
 
+.PARAMETER Csr
+The PKCS#10 Certificate Signing Request (CSR).
+If this value is provided, any Subject DN fields and the KeyBitSize in the request are ignored.
+
 .PARAMETER CertificateType
 Type of certificate to be created.
 No value provided will default to X.509 Server Certificate.
@@ -60,6 +64,10 @@ New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAut
 Create certificate by name
 
 .EXAMPLE
+New-TppCertificate -Path '\ved\policy\folder' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
+Create certificate using a CSR
+
+.EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -CustomField @{''=''}
 Create certificate and update custom fields
 
@@ -70,6 +78,7 @@ Create certificate using common name.  Return the created object.
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
 Create certificate including subject alternate names
+
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/
@@ -107,6 +116,9 @@ function New-TppCertificate {
         [Parameter(Mandatory, ParameterSetName = 'BySubject')]
         [Alias('Subject')]
         [String] $CommonName,
+
+        [Parameter()]
+        [string] $Csr,
 
         [Parameter()]
         [String] $CertificateType,
@@ -229,6 +241,10 @@ function New-TppCertificate {
                     'Value' = $_.Value
                 }
             }
+        }
+
+        if ( $Csr ) {
+            $params.Body.Add('PKCS10', $Csr -replace "`n|`r", "")
         }
 
         if ( $PSBoundParameters.ContainsKey('CertificateAuthorityPath') ) {
