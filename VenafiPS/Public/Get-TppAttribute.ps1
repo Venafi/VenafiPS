@@ -18,8 +18,7 @@ To be deprecated; use -Path instead.
 Object Guid.  Just providing Guid will return all attributes.
 
 .PARAMETER Attribute
-Retrieve values for these specific attributes.
-For custom fields, the label can be provided instead of the guid.
+Only retrieve the value/values for this attribute
 
 .PARAMETER Effective
 Get the objects attribute value, once policies have been applied.
@@ -204,14 +203,9 @@ function Get-TppAttribute {
             # api which allows passing a list
             $configValues = foreach ($thisAttribute in $Attribute) {
 
-                $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute }
-
                 $params = $baseParams.Clone()
-                if ( $customField ) {
-                    $params.Body += @{ AttributeName = $customField.Guid }
-                }
-                else {
-                    $params.Body += @{ AttributeName = $thisAttribute }
+                $params.Body += @{
+                    AttributeName = $thisAttribute
                 }
 
                 # add the class for a policy call
@@ -252,13 +246,12 @@ function Get-TppAttribute {
             # convert custom field guids to names
             foreach ($thisConfigValue in $configValues) {
 
-                $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name -or $_.Label -eq $thisConfigValue.Name }
+                $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name }
                 $thisConfigValue | Add-Member @{
                     'IsCustomField' = [bool]$customField
                     'CustomName'    = $null
                 }
                 if ( $customField ) {
-                    $thisConfigValue.Name = $customField.Name
                     $thisConfigValue.CustomName = $customField.Label
                 }
 
