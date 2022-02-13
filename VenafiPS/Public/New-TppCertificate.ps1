@@ -64,6 +64,7 @@ See the example.
 
 .PARAMETER PassThru
 Return a TppObject representing the newly created certificate.
+If devices and/or applications were created, a 'Device' property will be available as well.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -73,6 +74,7 @@ None
 
 .OUTPUTS
 TppObject, if PassThru is provided
+If devices and/or applications were created, a 'Device' property will be available as well.
 
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template'
