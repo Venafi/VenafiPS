@@ -11,7 +11,7 @@ The individual identity, group identity, or distribution group prefixed universa
 .PARAMETER IncludeAssociated
 Include all associated identity groups and folders
 
-.PARAMETER GetMembers
+.PARAMETER IncludeMembers
 Include all individual members if the ID is a group
 
 .PARAMETER Me
@@ -29,14 +29,14 @@ PSCustomObject with the following properties:
     ID
     Path
     Associated (if -IncludeAssociated provided)
-    Members (if -GetMembers provided)
+    Members (if -IncludeMembers provided)
 .EXAMPLE
 Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7'
 
 Get identity details from an id
 
 .EXAMPLE
-Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -GetMembers
+Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeMembers
 
 Get identity details and if the identity is a group it will also return the members
 
@@ -83,7 +83,7 @@ function Get-TppIdentity {
         [Switch] $IncludeAssociated,
 
         [Parameter(ParameterSetName = 'Id')]
-        [Switch] $GetMembers,
+        [Switch] $IncludeMembers,
 
         [Parameter(Mandatory, ParameterSetName = 'Me')]
         [Switch] $Me,
@@ -134,7 +134,7 @@ function Get-TppIdentity {
                         $response | Add-Member @{ 'Associated' = $associated.Identities }
                     }
 
-                    if (($response.IsGroup) -and ($GetMembers))  {
+                    if (($response.IsGroup) -and ($IncludeMembers))  {
                         $params.UriLeaf = 'Identity/GetMembers'
                         $params.Body.Add("ResolveNested","1");
                         $members = Invoke-VenafiRestMethod @params
