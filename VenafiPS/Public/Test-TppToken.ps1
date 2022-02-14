@@ -112,7 +112,13 @@ function Test-TppToken {
             UriRoot = 'vedauth'
             UriLeaf = 'Authorize/Verify'
         }
-    }
+
+        $serverUrl = $AuthServer
+        # add prefix if just server url was provided
+        if ( $serverUrl -notlike 'https://*') {
+            $serverUrl = 'https://{0}' -f $serverUrl
+        }
+}
 
     process {
 
@@ -134,12 +140,6 @@ function Test-TppToken {
             }
 
             'AccessToken' {
-                $serverUrl = $AuthServer
-                # add prefix if just server url was provided
-                if ( $AuthServer -notlike 'https://*') {
-                    $serverUrl = 'https://{0}' -f $serverUrl
-                }
-
                 $params.Server = $serverUrl
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().password }
             }
@@ -171,11 +171,6 @@ function Test-TppToken {
                         throw '-AuthServer is a required parameter as it wasn''t stored with New-VenafiSession -VaultMetadata'
                     }
 
-                    $serverUrl = $AuthServer
-                    # add prefix if just server url was provided
-                    if ( $AuthServer -notlike 'https://*') {
-                        $serverUrl = 'https://{0}' -f $serverUrl
-                    }
                     $params.Server = $serverUrl
                 }
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $tokenSecret.GetNetworkCredential().password }
