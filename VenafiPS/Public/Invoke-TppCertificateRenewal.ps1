@@ -8,17 +8,18 @@ immediate renewal. The certificate must not be in error, already being processed
 configured for Monitoring in order for it be renewable. You must have Write access
 to the certificate object being renewed.
 
-.PARAMETER InputObject
-TppObject which represents a unique object
-
 .PARAMETER Path
-Path to the certificate to remove
+Path to the certificate to renew
+
+.PARAMETER Csr
+Optional PKCS#10 Certificate Signing Request (CSR).
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Session object created from New-VenafiSession method.
+The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-InputObject or Path
+Path
 
 .OUTPUTS
 PSCustomObject with the following properties:
@@ -29,6 +30,10 @@ PSCustomObject with the following properties:
 
 .EXAMPLE
 Invoke-TppCertificateRenewal -Path '\VED\Policy\My folder\app.mycompany.com'
+
+.EXAMPLE
+Invoke-TppCertificateRenewal -Path '\VED\Policy\My folder\app.mycompany.com' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
+Renew certificate using a CSR
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/
@@ -46,10 +51,7 @@ function Invoke-TppCertificateRenewal {
     [Alias('itcr')]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
-
-        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ByPath')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -63,6 +65,9 @@ function Invoke-TppCertificateRenewal {
         [String] $Path,
 
         [Parameter()]
+        [string] $Csr,
+
+        [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
@@ -71,9 +76,9 @@ function Invoke-TppCertificateRenewal {
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Post'
-            UriLeaf    = 'certificates/renew'
-            Body       = @{
+            Method        = 'Post'
+            UriLeaf       = 'certificates/renew'
+            Body          = @{
                 CertificateDN = ''
             }
         }
@@ -81,15 +86,16 @@ function Invoke-TppCertificateRenewal {
 
     process {
 
-        if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-            $path = $InputObject.Path
-        }
-
         if ( $PSCmdlet.ShouldProcess($Path, 'Renew certificate') ) {
 
             write-verbose "Renewing $Path..."
 
             $params.Body.CertificateDN = $Path
+
+            if ( $Csr ) {
+                $params.Body.PKCS10 = $Csr -replace "`n|`r", ""
+            }
+
             $response = Invoke-TppRestMethod @params
 
             $response | Add-Member @{'Path' = $Path } -PassThru

@@ -14,6 +14,10 @@ Name of the certifcate.  If not provided, the name will be the same as the subje
 .PARAMETER CommonName
 Subject Common Name.  If Name isn't provided, CommonName will be used.
 
+.PARAMETER Csr
+The PKCS#10 Certificate Signing Request (CSR).
+If this value is provided, any Subject DN fields and the KeyBitSize in the request are ignored.
+
 .PARAMETER CertificateType
 Type of certificate to be created.
 No value provided will default to X.509 Server Certificate.
@@ -43,8 +47,24 @@ Hashtable of custom field(s) to be updated when creating the certificate.
 This is required when the custom fields are mandatory.
 The key is the name, not guid, of the custom field.
 
+.PARAMETER NoWorkToDo
+Turn off lifecycle processing for this certificate update
+
+.PARAMETER Device
+An array of hashtables for devices to be created.
+Available parameters can be found at https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php.
+If provisioning applications as well, those should be provided with the Application parameter.
+
+.PARAMETER Application
+An array of hashtables for applications to be created.
+Available parameters can be found at https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request-ApplicationsParameter.php.
+In addition to the application parameters, a key/value must be provided for the associated device.
+The key needs to be 'DeviceName' and the value is the ObjectName from the device.
+See the example.
+
 .PARAMETER PassThru
 Return a TppObject representing the newly created certificate.
+If devices and/or applications were created, a 'Device' property will be available as well.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -54,10 +74,15 @@ None
 
 .OUTPUTS
 TppObject, if PassThru is provided
+If devices and/or applications were created, a 'Device' property will be available as well.
 
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template'
 Create certificate by name
+
+.EXAMPLE
+New-TppCertificate -Path '\ved\policy\folder' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
+Create certificate using a CSR
 
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -CustomField @{''=''}
@@ -70,6 +95,10 @@ Create certificate using common name.  Return the created object.
 .EXAMPLE
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
 Create certificate including subject alternate names
+
+.EXAMPLE
+New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -Device @{'PolicyDN'=$DevicePath; 'ObjectName'='MyDevice'; 'Host'='1.2.3.4'} -Application @{'DeviceName'='MyDevice'; 'ObjectName'='BasicApp'; 'DriverName'='appbasic'}
+Create a new certificate with associated device and app objects
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/
@@ -101,12 +130,18 @@ function New-TppCertificate {
         [String] $Path,
 
         [Parameter(Mandatory, ParameterSetName = 'ByName', ValueFromPipeline)]
+        [Parameter(Mandatory, ParameterSetName = 'ByNameWithDevice', ValueFromPipeline)]
         [String] $Name,
 
         [Parameter(ParameterSetName = 'ByName')]
+        [Parameter(ParameterSetName = 'ByNameWithDevice')]
         [Parameter(Mandatory, ParameterSetName = 'BySubject')]
+        [Parameter(Mandatory, ParameterSetName = 'BySubjectWithDevice')]
         [Alias('Subject')]
         [String] $CommonName,
+
+        [Parameter()]
+        [string] $Csr,
 
         [Parameter()]
         [String] $CertificateType,
@@ -136,6 +171,19 @@ function New-TppCertificate {
 
         [Parameter()]
         [Hashtable] $CustomField,
+
+        [Parameter()]
+        [switch] $NoWorkToDo,
+
+        [Parameter(ParameterSetName = 'ByName')]
+        [Parameter(Mandatory, ParameterSetName = 'ByNameWithDevice')]
+        [Parameter(ParameterSetName = 'BySubject')]
+        [Parameter(Mandatory, ParameterSetName = 'BySubjectWithDevice')]
+        [hashtable[]] $Device,
+
+        [Parameter(ParameterSetName = 'ByNameWithDevice')]
+        [Parameter(ParameterSetName = 'BySubjectWithDevice')]
+        [hashtable[]] $Application,
 
         [Parameter()]
         [switch] $PassThru,
@@ -213,6 +261,7 @@ function New-TppCertificate {
                         'Value' = 'VenafiPS'
                     }
                 )
+                SetWorkToDo          = -not $NoWorkToDo
             }
         }
 
@@ -229,6 +278,10 @@ function New-TppCertificate {
                     'Value' = $_.Value
                 }
             }
+        }
+
+        if ( $Csr ) {
+            $params.Body.Add('PKCS10', $Csr -replace "`n|`r", "")
         }
 
         if ( $PSBoundParameters.ContainsKey('CertificateAuthorityPath') ) {
@@ -267,6 +320,30 @@ function New-TppCertificate {
             $params.Body.Add('CustomFields', @($newCf))
         }
 
+        if ( $Device ) {
+            # convert apps to array of custom objects to make it easier to search
+            $appCustom = @($Application | ForEach-Object { [pscustomobject] $_ })
+
+            # loop through devices and append any apps found
+            $updatedDevice = foreach ($thisDevice in $Device) {
+
+                $thisApplication = $appCustom | Where-Object { $_.DeviceName -eq $thisDevice.ObjectName }
+
+                if ( $thisApplication ) {
+                    $finalAppList = foreach ($app in $thisApplication | Select-Object -Property * -ExcludeProperty DeviceName) {
+                        $ht = @{}
+                        $app.psobject.properties | ForEach-Object { $ht[$_.Name] = $_.Value }
+                        $ht
+                    }
+
+                    $thisDevice.Applications = @($finalAppList)
+                }
+
+                $thisDevice
+            }
+            $params.Body.Add('Devices', @($updatedDevice))
+
+        }
     }
 
     process {
@@ -280,7 +357,14 @@ function New-TppCertificate {
                 Write-Verbose ($response | Out-String)
 
                 if ( $PassThru ) {
-                    Get-TppObject -Path $response.CertificateDN -VenafiSession $VenafiSession
+                    $newCert = Get-TppObject -Path $response.CertificateDN -VenafiSession $VenafiSession
+                    if ( $Device ) {
+                        $newCert | Add-Member @{ 'Device' = @{'Path' = $response.Devices.DN} }
+                        if ( $Application ) {
+                            $newCert.Device.Application = $response.Devices.Applications.DN
+                        }
+                    }
+                    $newCert
                 }
             }
             catch {
