@@ -15,8 +15,8 @@ Access token retrieved outside this module.  Provide a credential object with th
 
 .PARAMETER VaultAccessTokenName
 Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
-Note: '-Server' parameter is required if the vault does not contain saved metadata. See
-New-VenafiSession -VaultMetaData
+Note: '-Server' parameter is required if the vault does not contain saved metadata.
+See New-VenafiSession -VaultMetaData
 
 .PARAMETER TppToken
 Token object obtained from New-TppToken
@@ -134,9 +134,9 @@ function Test-TppToken {
             }
 
             'AccessToken' {
-                $serverUrl = $Server
+                $serverUrl = $AuthServer
                 # add prefix if just server url was provided
-                if ( $Server -notlike 'https://*') {
+                if ( $AuthServer -notlike 'https://*') {
                     $serverUrl = 'https://{0}' -f $serverUrl
                 }
 
@@ -165,16 +165,20 @@ function Test-TppToken {
 
                 if ( $secretInfo.Metadata.Count -gt 0 ) {
                     $params.Server = $secretInfo.Metadata.AuthServer
-                    $params.Header = @{'Authorization' = 'Bearer {0}' -f $tokenSecret.GetNetworkCredential().password }
                 }
                 else {
-                    if ( -not $Server ) {
-                        throw '-Server is a required parameter as it wasn''t stored with -VaultMetadata'
+                    if ( -not $AuthServer ) {
+                        throw '-AuthServer is a required parameter as it wasn''t stored with New-VenafiSession -VaultMetadata'
                     }
 
-                    $params.Server  = $ServerUrl
-                    $params.Header = @{'Authorization' = 'Bearer {0}' -f $tokenSecret.GetNetworkCredential().password }
+                    $serverUrl = $AuthServer
+                    # add prefix if just server url was provided
+                    if ( $AuthServer -notlike 'https://*') {
+                        $serverUrl = 'https://{0}' -f $serverUrl
+                    }
+                    $params.Server = $serverUrl
                 }
+                $params.Header = @{'Authorization' = 'Bearer {0}' -f $tokenSecret.GetNetworkCredential().password }
             }
 
             'TppToken' {
@@ -195,7 +199,7 @@ function Test-TppToken {
 
         $response = Invoke-VenafiRestMethod @params -FullResponse
 
-        if ( $GrantDetail.IsPresent ) {
+        if ( $GrantDetail ) {
 
             switch ([int]$response.StatusCode) {
 
