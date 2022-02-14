@@ -5,16 +5,9 @@ Renew a certificate
 
 ## SYNTAX
 
-### ByObject
 ```
-Invoke-TppCertificateRenewal -InputObject <TppObject> [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
-```
-
-### ByPath
-```
-Invoke-TppCertificateRenewal -Path <String> [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Invoke-TppCertificateRenewal [-Path] <String> [[-Csr] <String>] [[-VenafiSession] <VenafiSession>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -33,40 +26,46 @@ to the certificate object being renewed.
 Invoke-TppCertificateRenewal -Path '\VED\Policy\My folder\app.mycompany.com'
 ```
 
-## PARAMETERS
-
-### -InputObject
-TppObject which represents a unique object
-
-```yaml
-Type: TppObject
-Parameter Sets: ByObject
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
+### EXAMPLE 2
+```
+Invoke-TppCertificateRenewal -Path '\VED\Policy\My folder\app.mycompany.com' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
+Renew certificate using a CSR
 ```
 
+## PARAMETERS
+
 ### -Path
-Path to the certificate to remove
+Path to the certificate to renew
 
 ```yaml
 Type: String
-Parameter Sets: ByPath
+Parameter Sets: (All)
 Aliases: DN, CertificateDN
 
 Required: True
-Position: Named
+Position: 1
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -Csr
+Optional PKCS#10 Certificate Signing Request (CSR).
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
+Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
@@ -75,7 +74,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 3
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -117,7 +116,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### InputObject or Path
+### Path
 ## OUTPUTS
 
 ### PSCustomObject with the following properties:

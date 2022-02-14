@@ -114,7 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -Attribute
-{{ Fill Attribute Description }}
+Only retrieve the value/values for this attribute
 
 ```yaml
 Type: String[]

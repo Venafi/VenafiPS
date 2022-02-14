@@ -1,3 +1,13 @@
+## 4.1.3
+- Add `-Csr` parameter to `New-TppCertificate` and `Invoke-TppCertificateRenewal`, [#76](https://github.com/Venafi/VenafiPS/issues/76)
+- Add `-Device` and `-Application` parameters to `New-TppCertificate` to allow creation of devices and apps
+- Add `NoWorkToDo` parameter to `New-TppCertificate` to turn off processing for that update
+- Fix revision part of version being -1 when running `Get-TppVersion`, [#80](https://github.com/Venafi/VenafiPS/issues/80)
+- Fix Invoke-VenafiRestMethod alias not working in PS v5 in VenafiSession, [#85](https://github.com/Venafi/VenafiPS/issues/85)
+- Fix duplicate parameter error using `-IncludeAssociated` in `Get-TppIdentity`, [#82](https://github.com/Venafi/VenafiPS/issues/82)
+- Update vault usage in readme, [#78](https://github.com/Venafi/VenafiPS/issues/78)
+
+
 ## 4.1.2
 - [#71](https://github.com/Venafi/VenafiPS/issues/71), add group and event id validation to `Write-TppLog` as well as help updates
 - Add the ability to access classes and enums outside the module
@@ -281,6 +291,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
