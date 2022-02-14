@@ -17,7 +17,7 @@ Path to the object to retrieve configuration attributes.  Just providing DN will
 To be deprecated; use -Path instead.
 Object Guid.  Just providing Guid will return all attributes.
 
-.PARAMETER AttributeName
+.PARAMETER Attribute
 Only retrieve the value/values for this attribute
 
 .PARAMETER Effective
@@ -248,7 +248,7 @@ function Get-TppAttribute {
 
                 $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name }
                 $thisConfigValue | Add-Member @{
-                    'IsCustomField' = $null -ne $customField
+                    'IsCustomField' = [bool]$customField
                     'CustomName'    = $null
                 }
                 if ( $customField ) {
@@ -257,13 +257,7 @@ function Get-TppAttribute {
 
                 $thisConfigValue
             }
-
-            # [PSCustomObject] @{
-            #     Path      = $thisPath
-            #     Attribute = $updatedConfigValues
-            # }
         }
-        # }
     }
 
     end {

@@ -115,7 +115,9 @@ function Get-TppIdentity {
                     $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID
 
                     if ( $IncludeAssociated ) {
-                        $associated = Invoke-VenafiRestMethod @params -UriLeaf 'Identity/GetAssociatedEntries'
+                        $assocParams = $params.Clone()
+                        $assocParams.UriLeaf = 'Identity/GetAssociatedEntries'
+                        $associated = Invoke-VenafiRestMethod @assocParams
                         $response | Add-Member @{ 'Associated' = $associated.Identities }
                     }
 

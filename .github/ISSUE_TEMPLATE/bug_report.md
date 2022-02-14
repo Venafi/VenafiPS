@@ -15,7 +15,7 @@ assignees: ''
 
 ```
 Operating System:
-VenafiTppPS version:
+VenafiPS version:
 PowerShell version:
 ```
 

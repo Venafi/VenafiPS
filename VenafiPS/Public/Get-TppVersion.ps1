@@ -47,8 +47,7 @@ function Get-TppVersion {
     }
 
     try {
-        $ver = [Version]((Invoke-TppRestMethod @params).Version)
-        [Version]::new($ver.Major, $ver.Minor, $ver.Build)
+        [Version]((Invoke-VenafiRestMethod @params).Version)
     }
     catch {
         Throw ("Getting the version failed with the following error: {0}.  This feature was introduced in v18.3." -f $_)
