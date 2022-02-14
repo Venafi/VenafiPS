@@ -15,6 +15,8 @@ Access token retrieved outside this module.  Provide a credential object with th
 
 .PARAMETER VaultAccessTokenName
 Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
+Note: '-Server' parameter is required if the vault does not contain saved metadata. See
+New-VenafiSession -VaultMetaData
 
 .PARAMETER TppToken
 Token object obtained from New-TppToken
@@ -85,8 +87,8 @@ function Test-TppToken {
                 }
             }
         )]
-        [Alias('ServerUrl')]
-        [string] $Server,
+        [Alias('Server')]
+        [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'AccessToken', ValueFromPipeline)]
         [PSCredential] $AccessToken,
@@ -95,7 +97,6 @@ function Test-TppToken {
         [pscustomobject] $TppToken,
 
         [Parameter(Mandatory, ParameterSetName = 'VaultAccessToken')]
-        [Parameter(ParameterSetName = 'AccessToken')]
         [string] $VaultAccessTokenName,
 
         [Parameter()]
@@ -163,7 +164,7 @@ function Test-TppToken {
                 $secretInfo = Get-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
 
                 if ( $secretInfo.Metadata.Count -gt 0 ) {
-                    $params.Server = $secretInfo.Metadata.Server
+                    $params.Server = $secretInfo.Metadata.AuthServer
                     $params.Header = @{'Authorization' = 'Bearer {0}' -f $tokenSecret.GetNetworkCredential().password }
                 }
                 else {
