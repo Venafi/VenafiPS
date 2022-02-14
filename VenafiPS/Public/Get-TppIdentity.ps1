@@ -11,6 +11,9 @@ The individual identity, group identity, or distribution group prefixed universa
 .PARAMETER IncludeAssociated
 Include all associated identity groups and folders
 
+.PARAMETER IncludeMembers
+Include all individual members if the ID is a group
+
 .PARAMETER Me
 Returns the identity of the authenticated user
 
@@ -26,11 +29,16 @@ PSCustomObject with the following properties:
     ID
     Path
     Associated (if -IncludeAssociated provided)
+    Members (if -IncludeMembers provided)
 
 .EXAMPLE
 Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7'
 
 Get identity details from an id
+.EXAMPLE
+Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeMembers
+
+Get identity details and if the identity is a group it will also return the members
 
 .EXAMPLE
 Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeAssociated
@@ -56,6 +64,10 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identit
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetAssociatedEntries.php
+
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetMembers.php
+
 #>
 function Get-TppIdentity {
 
@@ -69,6 +81,10 @@ function Get-TppIdentity {
 
         [Parameter(ParameterSetName = 'Id')]
         [Switch] $IncludeAssociated,
+
+        [Parameter(ParameterSetName = 'Id')]
+        [Switch] $IncludeMembers,
+
 
         [Parameter(Mandatory, ParameterSetName = 'Me')]
         [Switch] $Me,
@@ -119,6 +135,14 @@ function Get-TppIdentity {
                         $assocParams.UriLeaf = 'Identity/GetAssociatedEntries'
                         $associated = Invoke-VenafiRestMethod @assocParams
                         $response | Add-Member @{ 'Associated' = $associated.Identities }
+                    }
+
+                    if (($response.IsGroup) -and ($IncludeMembers))  {
+                        $assocParams = $params.Clone()                       
+                        $assocParams.UriLeaf = 'Identity/GetMembers'
+                        $assocParams.Body.Add("ResolveNested","1");
+                        $members = Invoke-VenafiRestMethod @assocParams
+                        $response | Add-Member @{ 'Members' = $members.Identities}
                     }
 
                     $response
