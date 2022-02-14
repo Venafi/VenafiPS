@@ -5,7 +5,7 @@ Test if a Tpp token is valid
 .DESCRIPTION
 Use the TPP API call 'Authorize/Verify' to test if the current token is valid.
 
-.PARAMETER Server
+.PARAMETER AuthServer
 Auth server or url, venafi.company.com or https://venafi.company.com.
 This will be used to access vedauth for token-based authentication.
 If just the server name is provided, https:// will be appended.
@@ -49,12 +49,16 @@ $TppToken | Test-TppToken
 Verify that token object from pipeline is valid. Can be used to validate directly object from New-TppToken.
 
 .EXAMPLE
-Test-TppToken -Server venafitpp.mycompany.com -AccessToken $cred
+Test-TppToken -AuthServer venafi.mycompany.com -AccessToken $cred
 Verify that PsCredential object containing accesstoken is valid.
 
 .EXAMPLE
 Test-TppToken -VaultAccessTokenName access-token
-Verify access token stored in VenafiPS vault
+Verify access token stored in VenafiPS vault, metadata stored with secret
+
+.EXAMPLE
+Test-TppToken -VaultAccessTokenName access-token -AuthServer venafi.mycompany.com
+Verify access token stored in VenafiPS vault providing server to authenticate against
 
 .EXAMPLE
 Test-TppToken -GrantDetail
@@ -118,7 +122,7 @@ function Test-TppToken {
         if ( $serverUrl -notlike 'https://*') {
             $serverUrl = 'https://{0}' -f $serverUrl
         }
-}
+    }
 
     process {
 
