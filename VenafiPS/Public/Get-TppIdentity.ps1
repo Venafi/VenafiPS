@@ -93,6 +93,8 @@ function Get-TppIdentity {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
+
+    
     begin {
         $VenafiSession.Validate('TPP')
 
@@ -134,15 +136,16 @@ function Get-TppIdentity {
                         $assocParams = $params.Clone()
                         $assocParams.UriLeaf = 'Identity/GetAssociatedEntries'
                         $associated = Invoke-VenafiRestMethod @assocParams
-                        $response | Add-Member @{ 'Associated' = $associated.Identities }
+                        $response | Add-Member @{ 'Associated' = $associated.Identities | script:Format-Output }
                     }
 
                     if (($response.IsGroup) -and ($IncludeMembers))  {
                         $assocParams = $params.Clone()                       
                         $assocParams.UriLeaf = 'Identity/GetMembers'
-                        $assocParams.Body.Add("ResolveNested","1");
+                        $assocParams.Body.ResolveNested="1"
                         $members = Invoke-VenafiRestMethod @assocParams
-                        $response | Add-Member @{ 'Members' = $members.Identities}
+                        $response | Add-Member @{ 'Members' = $members.Identities | script:Format-Output }
+                
                     }
 
                     $response
@@ -157,15 +160,24 @@ function Get-TppIdentity {
         }
 
         if ( $idOut ) {
-            $idOut | Select-Object `
-            @{
-                n = 'ID'
-                e = { $_.PrefixedUniversal }
-            },
-            @{
-                n = 'Path'
-                e = { $_.FullName }
-            }, * -ExcludeProperty PrefixedUniversal, FullName, Prefix, PrefixedName, Type, Universal
+            $idOut | script:Format-Output
         }
     }
+
+}
+filter script:Format-Output
+{
+
+
+     $_ | Select-Object `
+     @{
+         n = 'ID'
+         e = { $_.PrefixedUniversal }
+     },
+     @{
+         n = 'Path'
+         e = { $_.FullName }
+     }, * -ExcludeProperty PrefixedUniversal, FullName, Prefix, PrefixedName, Type, Universal
+
+    
 }
