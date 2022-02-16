@@ -1,3 +1,10 @@
+## 4.1.4
+- Add `-IncludeMembers` parameter to `Get-TppIdentity` to include members if the identity is a group, [#83](https://github.com/Venafi/VenafiPS/issues/83)
+- Update `Get-TppIdentity` to return `IsGroup` for all objects, not just ones where IsGroup is true
+- Update `Get-TppIdentity -IncludeAssociated` to return the property `Associated` for all objects, not just ones where there was a value
+- Add `-VaultAccessTokenName` to `Test-TppToken` to validate a token stored in a vault, [#81](https://github.com/Venafi/VenafiPS/issues/81)
+
+
 ## 4.1.3
 - Add `-Csr` parameter to `New-TppCertificate` and `Invoke-TppCertificateRenewal`, [#76](https://github.com/Venafi/VenafiPS/issues/76)
 - Add `-Device` and `-Application` parameters to `New-TppCertificate` to allow creation of devices and apps
@@ -291,6 +298,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
