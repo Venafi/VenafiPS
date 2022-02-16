@@ -1,7 +1,4 @@
-- Add `-Csr` parameter to `New-TppCertificate` and `Invoke-TppCertificateRenewal`, [#76](https://github.com/Venafi/VenafiPS/issues/76)
-- Add `-Device` and `-Application` parameters to `New-TppCertificate` to allow creation of devices and apps
-- Add `NoWorkToDo` parameter to `New-TppCertificate` to turn off processing for that update
-- Fix revision part of version being -1 when running `Get-TppVersion`, [#80](https://github.com/Venafi/VenafiPS/issues/80)
-- Fix Invoke-VenafiRestMethod alias not working in PS v5 in VenafiSession, [#85](https://github.com/Venafi/VenafiPS/issues/85)
-- Fix duplicate parameter error using `-IncludeAssociated` in `Get-TppIdentity`, [#82](https://github.com/Venafi/VenafiPS/issues/82)
-- Update vault usage in readme, [#78](https://github.com/Venafi/VenafiPS/issues/78)
+- Add `-IncludeMembers` parameter to `Get-TppIdentity` to include members if the identity is a group, [#83](https://github.com/Venafi/VenafiPS/issues/83)
+- Update `Get-TppIdentity` to return `IsGroup` for all objects, not just ones where IsGroup is true
+- Update `Get-TppIdentity -IncludeAssociated` to return the property `Associated` for all objects, not just ones where there was a value
+- Add `-VaultAccessTokenName` to `Test-TppToken` to validate a token stored in a vault, [#81](https://github.com/Venafi/VenafiPS/issues/81)
