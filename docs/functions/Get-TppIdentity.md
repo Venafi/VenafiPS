@@ -7,7 +7,8 @@ Get identity details
 
 ### Id (Default)
 ```
-Get-TppIdentity -ID <String[]> [-IncludeAssociated] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppIdentity -ID <String[]> [-IncludeAssociated] [-IncludeMembers] [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ### Me
@@ -29,12 +30,19 @@ Get identity details from an id
 
 ### EXAMPLE 2
 ```
+Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeMembers
+```
+
+Get identity details and if the identity is a group it will also return the members
+
+### EXAMPLE 3
+```
 Get-TppIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeAssociated
 ```
 
 Get identity details from an id and include associated groups/folders
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Get-TppIdentity -Me
 ```
@@ -60,6 +68,21 @@ Accept wildcard characters: False
 
 ### -IncludeAssociated
 Include all associated identity groups and folders
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Id
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IncludeMembers
+Include all individual members if the ID is a group
 
 ```yaml
 Type: SwitchParameter
@@ -117,6 +140,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ###     ID
 ###     Path
 ###     Associated (if -IncludeAssociated provided)
+###     Members (if -IncludeMembers provided)
 ## NOTES
 
 ## RELATED LINKS
@@ -130,4 +154,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identity-Self.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Identity-Self.php)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetAssociatedEntries.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetAssociatedEntries.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetMembers.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-GetMembers.php)
 
