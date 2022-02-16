@@ -94,7 +94,7 @@ function Get-TppIdentity {
     )
 
 
-    
+
     begin {
         $VenafiSession.Validate('TPP')
 
@@ -136,16 +136,19 @@ function Get-TppIdentity {
                         $assocParams = $params.Clone()
                         $assocParams.UriLeaf = 'Identity/GetAssociatedEntries'
                         $associated = Invoke-VenafiRestMethod @assocParams
-                        $response | Add-Member @{ 'Associated' = $associated.Identities | script:Format-Output }
+                        $response | Add-Member @{ 'Associated' = $null }
+                        $response.Associated = $associated.Identities | script:Format-Output
                     }
 
-                    if (($response.IsGroup) -and ($IncludeMembers))  {
-                        $assocParams = $params.Clone()                       
-                        $assocParams.UriLeaf = 'Identity/GetMembers'
-                        $assocParams.Body.ResolveNested="1"
-                        $members = Invoke-VenafiRestMethod @assocParams
-                        $response | Add-Member @{ 'Members' = $members.Identities | script:Format-Output }
-                
+                    if ( $IncludeMembers ) {
+                        $response | Add-Member @{ 'Members' = $null }
+                        if ( $response.IsGroup ) {
+                            $assocParams = $params.Clone()
+                            $assocParams.UriLeaf = 'Identity/GetMembers'
+                            $assocParams.Body.ResolveNested = "1"
+                            $members = Invoke-VenafiRestMethod @assocParams
+                            $response.Members = $members.Identities | script:Format-Output
+                        }
                     }
 
                     $response
@@ -165,19 +168,25 @@ function Get-TppIdentity {
     }
 
 }
-filter script:Format-Output
-{
-
-
-     $_ | Select-Object `
-     @{
-         n = 'ID'
-         e = { $_.PrefixedUniversal }
-     },
-     @{
-         n = 'Path'
-         e = { $_.FullName }
-     }, * -ExcludeProperty PrefixedUniversal, FullName, Prefix, PrefixedName, Type, Universal
-
-    
+filter script:Format-Output {
+    $_ | Select-Object `
+    @{
+        n = 'ID'
+        e = { $_.PrefixedUniversal }
+    },
+    @{
+        n = 'Path'
+        e = { $_.FullName }
+    },
+    @{
+        n = 'IsGroup'
+        e = {
+            if ( $_.IsGroup) {
+                $_.IsGroup
+            }
+            else {
+                $false
+            }
+        }
+    }, * -ExcludeProperty PrefixedUniversal, FullName, Prefix, PrefixedName, Type, Universal, IsGroup
 }
