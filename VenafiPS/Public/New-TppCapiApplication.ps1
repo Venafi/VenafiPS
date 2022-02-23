@@ -204,8 +204,9 @@ function New-TppCapiApplication {
         if ( -not $PSBoundParameters.ContainsKey('SkipExistenceCheck') ) {
 
             if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
-                $certPath = (Split-Path $CertificatePath -Parent)
-                $certName = (Split-Path $CertificatePath -Leaf)
+                $certName = (Split-Path -Path $CertificatePath -Leaf)
+                $certPath -replace ('\\+{0}' -f $certName), ''
+
                 $certObject = Find-TppCertificate -Path $certPath -VenafiSession $VenafiSession
 
                 if ( -not $certObject -or ($certName -notin $certObject.Name) ) {
