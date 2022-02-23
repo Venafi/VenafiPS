@@ -135,6 +135,9 @@ function Get-TppAttribute {
         [string] $ClassName,
 
         [Parameter()]
+        [switch] $AsValue,
+
+        [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
@@ -242,6 +245,10 @@ function Get-TppAttribute {
         if ( $configValues ) {
 
             $configValues = @($configValues)
+
+            if ( $configValues.Count -eq 1 -and $AsValue ) {
+                return $configValues.Value
+            }
 
             # convert custom field guids to names
             foreach ($thisConfigValue in $configValues) {
