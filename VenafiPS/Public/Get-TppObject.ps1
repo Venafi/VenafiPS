@@ -42,12 +42,13 @@ function Get-TppObject {
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -71,7 +72,8 @@ function Get-TppObject {
 
         if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
             $inputObject = $Path
-        } else {
+        }
+        else {
             $inputObject = $Guid
         }
 

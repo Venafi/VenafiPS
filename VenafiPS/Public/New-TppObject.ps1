@@ -99,16 +99,6 @@ function New-TppObject {
 
     $VenafiSession.Validate('TPP')
 
-    # ensure the object doesn't already exist
-    # if ( Test-TppObject -Path $Path -ExistOnly -VenafiSession $VenafiSession ) {
-    #     throw ("New object to be created, {0}, already exists" -f $Path)
-    # }
-
-    # ensure the parent folder exists
-    # if ( -not (Test-TppObject -Path (Split-Path -Path $Path -Parent) -ExistOnly -VenafiSession $VenafiSession) ) {
-    #     throw ("The parent folder, {0}, of your new object does not exist" -f (Split-Path -Path $Path -Parent))
-    # }
-
     if ( $PushCertificate.IsPresent -and (-not $Attribute.Certificate) ) {
         Write-Warning 'A ''Certificate'' key containing the certificate path must be provided for Attribute when using PushCertificate, eg. -Attribute @{''Certificate''=''\Ved\Policy\mycert.com''}.  Certificate provisioning will not take place.'
     }

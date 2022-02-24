@@ -110,7 +110,8 @@ function New-TppCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -125,7 +126,8 @@ function New-TppCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -137,7 +139,8 @@ function New-TppCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -204,8 +207,9 @@ function New-TppCapiApplication {
         if ( -not $PSBoundParameters.ContainsKey('SkipExistenceCheck') ) {
 
             if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
-                $certPath = (Split-Path $CertificatePath -Parent)
-                $certName = (Split-Path $CertificatePath -Leaf)
+                $certName = (Split-Path -Path $CertificatePath -Leaf)
+                $certPath = $CertificatePath -replace ('\\+{0}' -f $certName), ''
+
                 $certObject = Find-TppCertificate -Path $certPath -VenafiSession $VenafiSession
 
                 if ( -not $certObject -or ($certName -notin $certObject.Name) ) {
@@ -225,12 +229,12 @@ function New-TppCapiApplication {
         }
 
         $params = @{
-            Path       = ''
-            Class      = 'CAPI'
-            Attribute  = @{
+            Path          = ''
+            Class         = 'CAPI'
+            Attribute     = @{
                 'Driver Name' = 'appcapi'
             }
-            PassThru   = $true
+            PassThru      = $true
             VenafiSession = $VenafiSession
         }
 
@@ -283,8 +287,9 @@ function New-TppCapiApplication {
             # ensure the parent path exists and is of type device
             if ( $PSBoundParameters.ContainsKey('ApplicationName') ) {
                 $devicePath = $Path
-            } else {
-                $devicePath = (Split-Path $Path -Parent)
+            }
+            else {
+                $devicePath = $Path -replace ('\\+{0}' -f (Split-Path $Path -Leaf)), ''
             }
 
             $device = Get-TppObject -Path $devicePath -VenafiSession $VenafiSession
@@ -293,7 +298,8 @@ function New-TppCapiApplication {
                 if ( $device.TypeName -ne 'Device' ) {
                     throw ('A device object could not be found at ''{0}''' -f $devicePath)
                 }
-            } else {
+            }
+            else {
                 throw ('No object was found at the parent path ''{0}''' -f $devicePath)
             }
         }
@@ -302,7 +308,8 @@ function New-TppCapiApplication {
             $appPaths = $ApplicationName | ForEach-Object {
                 $Path + "\$_"
             }
-        } else {
+        }
+        else {
             $appPaths = @($Path)
         }
 
@@ -323,7 +330,7 @@ function New-TppCapiApplication {
                 $params = @{
                     CertificatePath = $CertificatePath
                     ApplicationPath = $appPaths
-                    VenafiSession      = $VenafiSession
+                    VenafiSession   = $VenafiSession
                 }
 
                 Invoke-TppCertificatePush @params
