@@ -9,16 +9,15 @@ class TppObject {
         [string] $TypeName,
         [guid] $Guid
     ) {
-        $this.Path = $Path
+        $this.Path = $Path.Replace('\\', '\')
         $this.TypeName = $TypeName
         $this.Guid = $Guid
         $this | Add-Member -MemberType ScriptProperty -Name Name -Value {
-            Split-Path $this.Path -Leaf
+            Split-Path -Path $this.Path -Leaf
         }
         $this | Add-Member -MemberType ScriptProperty -Name ParentPath -Value {
-            $leafName = Split-Path $this.Path -Leaf
             # split-path -parent doesn't work on this path so use this workaround
-            return $this.Path.Replace(("\{0}" -f $leafName), "")
+            $this.Path -replace ('\\+{0}' -f $this.Name), ''
         }
         $this | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Path } -Force
     }

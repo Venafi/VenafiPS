@@ -538,10 +538,6 @@ function Find-TppCertificate {
 
         $response = Invoke-VenafiRestMethod @params
 
-        if ( $CountOnly ) {
-            return $response.Headers.'X-Record-Count'
-        }
-
         $totalRecordCount = 0
         if ($PSVersionTable.PSVersion.Major -lt 6) {
             $totalRecordCount = [int]$response.Headers.'X-Record-Count'
@@ -549,12 +545,16 @@ function Find-TppCertificate {
         else {
             $totalRecordCount = [int]($response.Headers.'X-Record-Count'[0])
         }
+
+        if ( $CountOnly ) {
+            return $totalRecordCount
+        }
+
         Write-Verbose "Total number of records for this query: $totalRecordCount"
 
         $content = $response.content | ConvertFrom-Json
         $content.Certificates.ForEach{
             [TppObject] @{
-                Name     = $_.Name
                 TypeName = $_.SchemaClass
                 Path     = $_.DN
                 Guid     = [guid] $_.Guid
@@ -591,7 +591,6 @@ function Find-TppCertificate {
                 $content = $response.content | ConvertFrom-Json
                 $content.Certificates.ForEach{
                     [TppObject] @{
-                        Name     = $_.Name
                         TypeName = $_.SchemaClass
                         Path     = $_.DN
                         Guid     = [guid] $_.Guid
