@@ -1,4 +1,3 @@
-- Add `-IncludeMembers` parameter to `Get-TppIdentity` to include members if the identity is a group, [#83](https://github.com/Venafi/VenafiPS/issues/83)
-- Update `Get-TppIdentity` to return `IsGroup` for all objects, not just ones where IsGroup is true
-- Update `Get-TppIdentity -IncludeAssociated` to return the property `Associated` for all objects, not just ones where there was a value
-- Add `-VaultAccessTokenName` to `Test-TppToken` to validate a token stored in a vault, [#81](https://github.com/Venafi/VenafiPS/issues/81)
+- Add support for double slash paths used by the adaptable framework, [#75](https://github.com/Venafi/VenafiPS/issues/75)
+- Add `AsValue` parameter to `Get-TppAttribute` making it easy to retrieve just the value when 1 attribute is requested
+- Update return type when using `Find-TppCertificate -CountOnly` from string to int
