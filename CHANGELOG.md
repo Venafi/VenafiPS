@@ -1,3 +1,9 @@
+## 4.1.5
+- Add support for double slash paths used by the adaptable framework, [#75](https://github.com/Venafi/VenafiPS/issues/75)
+- Add `AsValue` parameter to `Get-TppAttribute` making it easy to retrieve just the value when 1 attribute is requested
+- Update return type when using `Find-TppCertificate -CountOnly` from string to int
+
+
 ## 4.1.4
 - Add `-IncludeMembers` parameter to `Get-TppIdentity` to include members if the identity is a group, [#83](https://github.com/Venafi/VenafiPS/issues/83)
 - Update `Get-TppIdentity` to return `IsGroup` for all objects, not just ones where IsGroup is true
@@ -298,6 +304,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

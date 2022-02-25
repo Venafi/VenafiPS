@@ -7,34 +7,36 @@ Get object attributes as well as policies (policy attributes)
 
 ### ByPath (Default)
 ```
-Get-TppAttribute -Path <String> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Path <String> [-Attribute <String[]>] [-AsValue] [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ### PolicyPath
 ```
-Get-TppAttribute -Path <String> -Attribute <String[]> [-Policy] -ClassName <String>
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Policy] -ClassName <String> [-AsValue]
  [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### AllEffectivePath
 ```
-Get-TppAttribute -Path <String> [-All] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Path <String> [-All] [-AsValue] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### EffectiveByPath
 ```
-Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppAttribute -Guid <Guid> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Guid <Guid> [-Attribute <String[]>] [-AsValue] [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ### EffectiveByGuid
 ```
-Get-TppAttribute -Guid <Guid> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Guid <Guid> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
@@ -202,6 +204,21 @@ Aliases:
 Required: True
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -AsValue
+{{ Fill AsValue Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
