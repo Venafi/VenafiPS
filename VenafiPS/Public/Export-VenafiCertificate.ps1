@@ -186,11 +186,13 @@ function Export-VenafiCertificate {
 
     process {
 
-        if ( $authType -eq 'vaas' ) {
+        if ( $VenafiSession.Platform -eq 'VaaS' ) {
             $params.UriRoot = 'outagedetection/v1'
             $params.UriLeaf = "certificates/$CertificateId/contents"
             $params.Method = 'Get'
-            Invoke-TppRestMethod @params
+            $params.FullResponse = $true
+            $response = Invoke-TppRestMethod @params
+            $response.Content
         }
         else {
             $params.Method = 'Post'

@@ -156,7 +156,7 @@ class VenafiSession {
         }
 
         $this | Add-Member -MemberType ScriptProperty -Name Platform -Value {
-            if ( $this.Server -eq $script:CloudUrl ) {
+            if ( $this.Server -eq 'https://api.venafi.cloud' ) {
                 'VaaS'
             }
             else {
