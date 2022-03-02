@@ -1,3 +1,8 @@
+## 4.1.6
+- Fix `VenafiSession` reporting incorrect session platform on PS v5
+- Fix `Export-VenafiCertificate` for VaaS failing with ConvertTo-Json error
+
+
 ## 4.1.5
 - Add support for double slash paths used by the adaptable framework, [#75](https://github.com/Venafi/VenafiPS/issues/75)
 - Add `AsValue` parameter to `Get-TppAttribute` making it easy to retrieve just the value when 1 attribute is requested
@@ -304,6 +309,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
