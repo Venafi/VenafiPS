@@ -1,3 +1,2 @@
-- Add support for double slash paths used by the adaptable framework, [#75](https://github.com/Venafi/VenafiPS/issues/75)
-- Add `AsValue` parameter to `Get-TppAttribute` making it easy to retrieve just the value when 1 attribute is requested
-- Update return type when using `Find-TppCertificate -CountOnly` from string to int
+- Fix `VenafiSession` reporting incorrect session platform on PS v5
+- Fix `Export-VenafiCertificate` for VaaS failing with ConvertTo-Json error
