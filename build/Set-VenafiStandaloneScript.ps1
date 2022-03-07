@@ -185,7 +185,7 @@ process {
 
         # get module function calls and add to list of functions to be added
 
-        $moduleFunction = $module.Functions | Where-Object { $_.Name -eq $cmd.CommandElements.Value }
+        $moduleFunction = $module.Functions | Where-Object { $_.Name -eq ($cmd.CommandElements.Value | Select-Object -First 1) }
 
         if ( $moduleFunction -and $cmd.CommandElements.Value -notin $functionsToAdd.Name ) {
             Write-Verbose ('Adding direct function {0}' -f $moduleFunction.Name)
@@ -197,7 +197,7 @@ process {
             foreach ($thisFunctionItem in $functionItems) {
                 switch ($thisFunctionItem.Type) {
                     'CommandAst' {
-                        $moduleFunctionInner = $moduleFunctions | Where-Object { $_.Name -eq $thisFunctionItem.CommandElements.Value }
+                        $moduleFunctionInner = $module.Functions | Where-Object { $_.Name -eq ($thisFunctionItem.CommandElements.Value | Select-Object -First 1) }
                         if ( $moduleFunctionInner -and $thisFunctionItem.CommandElements.Value -notin $functionsToAdd.Name ) {
                             Write-Verbose ('Adding nested function {0} used in {1}' -f $moduleFunctionInner.Name, $moduleFunction.Name)
                             $functionsToAdd += $moduleFunctionInner
@@ -226,7 +226,8 @@ process {
         $addOffset = $Script.Ast.BeginBlock.Extent.StartOffset + 1
     }
     else {
-        $addOffset = $Script.Ast.Extent.EndScriptPosition.Offset
+        # $addOffset = $Script.Ast.Extent.EndScriptPosition.Offset
+        $addOffset = $Script.Ast.Extent.StartScriptPosition.Offset
     }
 
     # build the full function string and write to new script
