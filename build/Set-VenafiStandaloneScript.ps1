@@ -147,7 +147,7 @@ begin {
                 $params.RequiredVersion = $Version
             }
 
-            $thisModule = Import-Module @params
+            $thisModule = Import-Module @params | Where-Object {$_.Name -eq $ModuleName}
 
             if ( $thisModule ) {
                 # must precreate the scriptblock to ensure $ModuleName is expanded
