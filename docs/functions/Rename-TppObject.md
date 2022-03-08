@@ -17,16 +17,14 @@ Rename and/or move an object
 ### EXAMPLE 1
 ```
 Rename-TppObject -Path '\VED\Policy\My Devices\OldDeviceName' -NewPath '\ved\policy\my devices\NewDeviceName'
-```
-
 Rename an object
+```
 
 ### EXAMPLE 2
 ```
 Rename-TppObject -Path '\VED\Policy\My Devices\DeviceName' -NewPath '\ved\policy\new devices folder\DeviceName'
-```
-
 Move an object
+```
 
 ## PARAMETERS
 
@@ -90,7 +88,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Rename-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Rename-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php)
 

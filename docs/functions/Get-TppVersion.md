@@ -17,9 +17,8 @@ Returns the TPP version
 ### EXAMPLE 1
 ```
 Get-TppVersion
-```
-
 Get the version
+```
 
 ## PARAMETERS
 
@@ -54,7 +53,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppVersion/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppVersion/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppVersion.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppVersion.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppVersion.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppVersion.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatusVersion.php?tocpath=Web%20SDK%7CSystemStatus%20programming%20interface%7C_____9](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatusVersion.php?tocpath=Web%20SDK%7CSystemStatus%20programming%20interface%7C_____9)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatusVersion.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatusVersion.php)
 

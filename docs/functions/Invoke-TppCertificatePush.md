@@ -19,23 +19,20 @@ This will only be successful if the certificate management type is Provisioning 
 ### EXAMPLE 1
 ```
 $cert | Invoke-TppCertificatePush
-```
-
 Push certificate to all associated applications, certificate object piped
+```
 
 ### EXAMPLE 2
 ```
 Invoke-TppCertificatePush -CertificatePath '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
-```
-
 Push to a specific application associated with a certificate
+```
 
 ### EXAMPLE 3
 ```
 Invoke-TppCertificatePush -Path '\ved\policy\my cert'
-```
-
 Push certificate to all associated applications
+```
 
 ## PARAMETERS
 
@@ -101,7 +98,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificatePush/](http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificatePush/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificatePush.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificatePush.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificatePush.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificatePush.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Push.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____15](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Push.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____15)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Push.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Push.php)
 

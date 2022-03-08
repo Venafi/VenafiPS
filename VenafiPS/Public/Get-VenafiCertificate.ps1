@@ -10,6 +10,7 @@ Certificate identifier.  For Venafi as a Service, this is the unique guid.  For 
 
 .PARAMETER IncludePreviousVersions
 Returns details about previous (historical) versions of a certificate (only from TPP).
+This option will add a property named PreviousVersions to the returned object.
 
 .PARAMETER ExcludeExpired
 Omits expired versions of the previous (historical) versions of a certificate (only from TPP).
@@ -75,12 +76,13 @@ function Get-VenafiCertificate {
         [switch] $ExcludeRevoked,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $authType = $VenafiSession.Validate()
+        $VenafiSession.Validate()
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -118,8 +120,8 @@ function Get-VenafiCertificate {
 
     process {
 
-        switch ($authType) {
-            'vaas' {
+        switch ($VenafiSession.Platform) {
+            'VaaS' {
                 $params.UriRoot = 'outagedetection/v1'
                 $params.UriLeaf = "certificates"
 
@@ -179,9 +181,15 @@ function Get-VenafiCertificate {
                     }
 
                     # object transformations
-                    $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
-                    $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
-                    $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
+                    # put in try/catch in case datetime conversion fails
+                    try {
+                        $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
+                        $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
+                        $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
+                    }
+                    catch {
+
+                    }
                     $response | Select-Object @selectProps
 
                 }

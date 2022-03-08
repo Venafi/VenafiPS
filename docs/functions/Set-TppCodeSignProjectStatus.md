@@ -18,9 +18,8 @@ Set project status
 ### EXAMPLE 1
 ```
 Set-TppCodeSignProject -Path '\ved\code signing\projects\my_project' -Status Pending
-```
-
 Update project status
+```
 
 ## PARAMETERS
 
@@ -118,7 +117,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppCodeSignProjectStatus/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppCodeSignProjectStatus/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppCodeSignProjectStatus.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-UpdateProjectStatus.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____14](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-UpdateProjectStatus.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____14)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-UpdateProjectStatus.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-UpdateProjectStatus.php)
 

@@ -1,1 +1,2 @@
-- Convert dates from ISO 8601 to datetime objects in `Get-VenafiCertificate`
+- Fix `VenafiSession` reporting incorrect session platform on PS v5
+- Fix `Export-VenafiCertificate` for VaaS failing with ConvertTo-Json error

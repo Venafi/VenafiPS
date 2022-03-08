@@ -50,16 +50,14 @@ When supported by the platform, you can Retire, Reset, Renew, Push, Validate, or
 ### EXAMPLE 1
 ```
 Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Revoke
-```
-
 Perform an action
+```
 
 ### EXAMPLE 2
 ```
 Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameters @{'Comments'='Key compromised'}
-```
-
 Perform an action sending additional parameters.
+```
 
 ## PARAMETERS
 
@@ -255,7 +253,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/](http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Reset.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Reset.php)
 

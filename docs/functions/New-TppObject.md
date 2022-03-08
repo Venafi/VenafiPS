@@ -18,23 +18,20 @@ Generic use function to create a new object if a specific function hasn't been c
 ### EXAMPLE 1
 ```
 New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}
-```
-
 Create a new device
+```
 
 ### EXAMPLE 2
 ```
 New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'} -PassThru
-```
-
 Create a new device and return the resultant object
+```
 
 ### EXAMPLE 3
 ```
 New-TppObject -Path '\VED\Policy\Test Device\App' -Class 'Basic' -Attribute @{'Driver Name'='appbasic';'Certificate'='\Ved\Policy\mycert.com'}
-```
-
 Create a new Basic application and associate it to a device and certificate
+```
 
 ## PARAMETERS
 
@@ -55,7 +52,7 @@ Accept wildcard characters: False
 
 ### -Class
 Class name of the new object.
-See https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php for more info.
+See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php for more info.
 
 ```yaml
 Type: String
@@ -179,11 +176,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php)
 

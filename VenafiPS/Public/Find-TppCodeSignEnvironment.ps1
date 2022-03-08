@@ -29,13 +29,14 @@ Find all environments that match the name Development
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCodeSignEnvironment/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignEnvironment.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignEnvironment.ps1
 
 #>
 function Find-TppCodeSignEnvironment {
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '',	Justification = 'Param is being used, possible pssa bug?')]
+    [OutputType([TppObject])]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
@@ -46,7 +47,7 @@ function Find-TppCodeSignEnvironment {
     )
 
     begin {
-        $VenafiSession.Validate('token') | Out-Null
+        $VenafiSession.Validate('TPP', 'token')
         $projects = Find-TppCodeSignProject | Get-TppCodeSignProject
     }
 

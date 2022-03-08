@@ -26,16 +26,14 @@ Optionally, you can push the certificate once the association is complete.
 ### EXAMPLE 1
 ```
 Add-TppCertificateAssociation -CertificatePath '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi'
-```
-
 Add a single application object association
+```
 
 ### EXAMPLE 2
 ```
 Add-TppCertificateAssociation -Path '\ved\policy\my cert' -ApplicationPath '\ved\policy\my capi' -PushCertificate
-```
-
 Add the association and push the certificate
+```
 
 ## PARAMETERS
 
@@ -166,7 +164,7 @@ You must have:
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppCertificateAssociation/](http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppCertificateAssociation/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1)
 
-[https://docs.venafi.com/Docs/19.2SDK/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php?tocpath=REST%20API%20reference%7CCertificates%20programming%20interface%7C_____6](https://docs.venafi.com/Docs/19.2SDK/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php?tocpath=REST%20API%20reference%7CCertificates%20programming%20interface%7C_____6)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/API_Reference/r-SDK-POST-Certificates-Associate.php)
 

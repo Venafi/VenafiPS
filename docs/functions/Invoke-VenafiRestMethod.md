@@ -13,7 +13,7 @@ Invoke-VenafiRestMethod [-VenafiSession <VenafiSession>] [-Method <String>] [-Ur
 
 ### URL
 ```
-Invoke-VenafiRestMethod -ServerUrl <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
+Invoke-VenafiRestMethod -Server <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
  [-Method <String>] [-UriRoot <String>] -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>]
  [-FullResponse] [<CommonParameters>]
 ```
@@ -26,16 +26,14 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 ### EXAMPLE 1
 ```
 Invoke-VenafiRestMethod -Method Delete -UriLeaf 'Discovery/{1345311e-83c5-4945-9b4b-1da0a17c45c6}'
-```
-
 Api call
+```
 
 ### EXAMPLE 2
 ```
 Invoke-VenafiRestMethod -Method Post -UriLeaf 'Certificates/Revoke' -Body @{'CertificateDN'='\ved\policy\mycert.com'}
-```
-
 Api call with optional payload
+```
 
 ## PARAMETERS
 
@@ -56,13 +54,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ServerUrl
-{{ Fill ServerUrl Description }}
+### -Server
+{{ Fill Server Description }}
 
 ```yaml
 Type: String
 Parameter Sets: URL
-Aliases:
+Aliases: ServerUrl
 
 Required: True
 Position: Named

@@ -57,7 +57,7 @@ Perform an action sending additional parameters.
 http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificateRenewal/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificateRenewal.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Reset.php
@@ -115,7 +115,7 @@ function Invoke-VenafiCertificateAction {
     )
 
     begin {
-        $authType = $VenafiSession.Validate()
+        $VenafiSession.Validate()
     }
 
     process {
@@ -131,8 +131,8 @@ function Invoke-VenafiCertificateAction {
             Method        = 'Post'
         }
 
-        switch ($authType) {
-            'vaas' {
+        switch ($VenafiSession.Platform) {
+            'VaaS' {
 
                 $params.UriRoot = 'outagedetection/v1'
 

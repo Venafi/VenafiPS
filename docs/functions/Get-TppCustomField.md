@@ -17,9 +17,8 @@ Get details about custom fields
 ### EXAMPLE 1
 ```
 Get-TppCustomField -Class 'X509 Certificate'
-```
-
 Get custom fields for certificates
+```
 
 ## PARAMETERS
 
@@ -87,5 +86,5 @@ All custom fields are retrieved upon inital connect to the server and a property
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCustomField/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCustomField/)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php?tocpath=Web%20SDK%7CMetadata%20custom%20fields%20programming%20interface%7C_____10](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php?tocpath=Web%20SDK%7CMetadata%20custom%20fields%20programming%20interface%7C_____10)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php)
 

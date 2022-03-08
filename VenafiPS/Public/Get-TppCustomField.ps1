@@ -42,7 +42,7 @@ Get custom fields for certificates
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCustomField/
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php?tocpath=Web%20SDK%7CMetadata%20custom%20fields%20programming%20interface%7C_____10
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-GetItemsForClass.php
 
 .NOTES
 All custom fields are retrieved upon inital connect to the server and a property of VenafiSession
@@ -59,7 +59,7 @@ function Get-TppCustomField {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
     }
 
     process {

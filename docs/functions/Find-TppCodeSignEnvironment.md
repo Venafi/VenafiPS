@@ -24,16 +24,14 @@ This will search across projects.
 ### EXAMPLE 1
 ```
 Find-TppCodeSignEnvironment
-```
-
 Get all code sign environments
+```
 
 ### EXAMPLE 2
 ```
 Find-TppCodeSignEnvironment -Name Development
-```
-
 Find all environments that match the name Development
+```
 
 ## PARAMETERS
 
@@ -83,5 +81,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCodeSignEnvironment/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCodeSignEnvironment/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignEnvironment.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignEnvironment.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignEnvironment.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignEnvironment.ps1)
 

@@ -3,13 +3,18 @@
 Change the class/object type of an existing object
 
 .DESCRIPTION
-Change the class/object type of an existing object
+Change the class/object type of an existing object.
+Please note, changing the class does NOT change any attributes and must be done separately.
+Using -PassThru will allow you to pass the input to other functions including Set-TppAttribute; see the examples.
 
 .PARAMETER Path
 Path to the object
 
 .PARAMETER Class
 New class/type
+
+.PARAMETER PassThru
+Return a TppObject representing the newly converted object
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -18,16 +23,30 @@ Session object created from New-VenafiSession method.  The value defaults to the
 Path
 
 .OUTPUTS
-None
+TppObject, if -PassThru provided
 
 .EXAMPLE
 Convert-TppObject -Path '\ved\policy\' -Class 'X509 Device Certificate'
 Convert an object to a different type
 
+.EXAMPLE
+Convert-TppObject -Path '\ved\policy\device\app' -Class 'CAPI' -PassThru | Set-TppAttribute -Attribute @{'Driver Name'='appcapi'}
+Convert an object to a different type, return the updated object and update attributes
+
+.EXAMPLE
+Find-TppObject -Class Basic | Convert-TppObject -Class 'capi' -PassThru | Set-TppAttribute -Attribute @{'Driver Name'='appcapi'}
+Convert multiple objects to a different type, return the updated objects and update attributes
+
+.LINK
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Convert-TppObject.ps1
+
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-mutateobject.php
+
 #>
 function Convert-TppObject {
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -43,8 +62,10 @@ function Convert-TppObject {
         [String] $Path,
 
         [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
         [String] $Class,
+
+        [Parameter()]
+        [switch] $PassThru,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -52,7 +73,7 @@ function Convert-TppObject {
 
     begin {
 
-        $VenafiSession.Validate('tpp') | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -68,10 +89,18 @@ function Convert-TppObject {
 
         $params.Body.ObjectDN = $Path
 
-        $response = Invoke-VenafiRestMethod @params
+        if ( $PSCmdlet.ShouldProcess($Path, "Convert to type $Class") ) {
 
-        if ( $response.Result -ne [TppConfigResult]::Success ) {
-            throw $response.Error
+            $response = Invoke-TppRestMethod @params
+
+            if ( $response.Result -eq [TppConfigResult]::Success ) {
+                if ( $PassThru ) {
+                    [TppObject]::new($Path, $VenafiSession)
+                }
+            }
+            else {
+                Write-Error $response.Error
+            }
         }
     }
 }

@@ -17,7 +17,7 @@ Path to the object to retrieve configuration attributes.  Just providing DN will
 To be deprecated; use -Path instead.
 Object Guid.  Just providing Guid will return all attributes.
 
-.PARAMETER AttributeName
+.PARAMETER Attribute
 Only retrieve the value/values for this attribute
 
 .PARAMETER Effective
@@ -75,7 +75,7 @@ Retrieve the policy attribute value for the specified policy folder
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php
@@ -135,12 +135,15 @@ function Get-TppAttribute {
         [string] $ClassName,
 
         [Parameter()]
+        [switch] $AsValue,
+
+        [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         if ( $Guid ) {
             Write-Warning '-Guid will be deprecated in a future release.  Please use -Path instead.'
@@ -243,12 +246,16 @@ function Get-TppAttribute {
 
             $configValues = @($configValues)
 
+            if ( $configValues.Count -eq 1 -and $AsValue ) {
+                return $configValues.Value
+            }
+
             # convert custom field guids to names
             foreach ($thisConfigValue in $configValues) {
 
                 $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name }
                 $thisConfigValue | Add-Member @{
-                    'IsCustomField' = $null -ne $customField
+                    'IsCustomField' = [bool]$customField
                     'CustomName'    = $null
                 }
                 if ( $customField ) {
@@ -257,13 +264,7 @@ function Get-TppAttribute {
 
                 $thisConfigValue
             }
-
-            # [PSCustomObject] @{
-            #     Path      = $thisPath
-            #     Attribute = $updatedConfigValues
-            # }
         }
-        # }
     }
 
     end {

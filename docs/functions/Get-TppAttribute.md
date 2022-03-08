@@ -7,34 +7,36 @@ Get object attributes as well as policies (policy attributes)
 
 ### ByPath (Default)
 ```
-Get-TppAttribute -Path <String> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Path <String> [-Attribute <String[]>] [-AsValue] [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ### PolicyPath
 ```
-Get-TppAttribute -Path <String> -Attribute <String[]> [-Policy] -ClassName <String>
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Policy] -ClassName <String> [-AsValue]
  [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### AllEffectivePath
 ```
-Get-TppAttribute -Path <String> [-All] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Path <String> [-All] [-AsValue] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### EffectiveByPath
 ```
-Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppAttribute -Guid <Guid> [-Attribute <String[]>] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Guid <Guid> [-Attribute <String[]>] [-AsValue] [-VenafiSession <VenafiSession>]
+ [<CommonParameters>]
 ```
 
 ### EffectiveByGuid
 ```
-Get-TppAttribute -Guid <Guid> -Attribute <String[]> [-Effective] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Guid <Guid> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <VenafiSession>]
  [<CommonParameters>]
 ```
 
@@ -51,37 +53,32 @@ For more info on policies and how they are different than attributes, see https:
 ### EXAMPLE 1
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com'
-```
-
 Retrieve all values for an object, excluding values assigned by policy
+```
 
 ### EXAMPLE 2
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'driver name'
-```
-
 Retrieve the value for a specific attribute
+```
 
 ### EXAMPLE 3
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'Contact' -Effective
-```
-
 Retrieve the effective value for a specific attribute
+```
 
 ### EXAMPLE 4
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -All
-```
-
 Retrieve all effective values for an object
+```
 
 ### EXAMPLE 5
 ```
 Get-TppAttribute -Path '\VED\Policy\My Folder' -Policy -Class 'X509 Certificate' -AttributeName 'Contact'
-```
-
 Retrieve the policy attribute value for the specified policy folder
+```
 
 ## PARAMETERS
 
@@ -119,7 +116,7 @@ Accept wildcard characters: False
 ```
 
 ### -Attribute
-{{ Fill Attribute Description }}
+Only retrieve the value/values for this attribute
 
 ```yaml
 Type: String[]
@@ -211,6 +208,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -AsValue
+{{ Fill AsValue Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VenafiSession
 Session object created from New-VenafiSession method. 
 The value defaults to the script session object $VenafiSession.
@@ -247,7 +259,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php)
 

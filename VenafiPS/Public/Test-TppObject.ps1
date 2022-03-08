@@ -41,10 +41,10 @@ Retrieve existence for only one object
 http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Test-TppObject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppObject.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-isvalid.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____25
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-isvalid.php
 
 #>
 function Test-TppObject {
@@ -75,7 +75,7 @@ function Test-TppObject {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $params = @{
             VenafiSession = $VenafiSession

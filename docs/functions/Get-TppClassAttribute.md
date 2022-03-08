@@ -17,9 +17,8 @@ List all attributes for a specified class, helpful for validation or to pass to 
 ### EXAMPLE 1
 ```
 Get-TppClassAttribute -ClassName 'X509 Server Certificate'
-```
-
 Get all attributes for the specified class
+```
 
 ## PARAMETERS
 

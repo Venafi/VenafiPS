@@ -28,16 +28,14 @@ Get details about workflow tickets associated with a certificate.
 ### EXAMPLE 1
 ```
 Get-TppWorkflowTicket -Path '\VED\policy\myapp.company.com'
-```
-
 Get ticket details for 1 certificate
+```
 
 ### EXAMPLE 2
 ```
 $certs | Get-TppWorkflowTicket
-```
-
 Get ticket details for multiple certificates
+```
 
 ## PARAMETERS
 
@@ -128,9 +126,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppWorkflowTicket/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppWorkflowTicket/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppWorkflowTicket.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppWorkflowTicket.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppWorkflowTicket.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppWorkflowTicket.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____7](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____7)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-enumerate.php)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____6](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____6)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-details.php)
 

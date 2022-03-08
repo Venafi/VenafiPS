@@ -15,9 +15,10 @@ New path
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-none
+SourcePath (Path)
 
 .OUTPUTS
+n/a
 
 .EXAMPLE
 Move-TppObject -SourceDN '\VED\Policy\My Folder\mycert.company.com' -TargetDN '\VED\Policy\New Folder\mycert.company.com'
@@ -30,25 +31,28 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Move-TppObject/
 http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Move-TppObject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Move-TppObject.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____35
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php
 
 #>
 function Move-TppObject {
-    [CmdletBinding()]
+
+    [CmdletBinding(SupportsShouldProcess)]
+
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
-        [Alias('SourceDN')]
+        [Alias('SourceDN', 'Path')]
         [String] $SourcePath,
 
         [Parameter(Mandatory)]
@@ -56,7 +60,8 @@ function Move-TppObject {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -67,31 +72,29 @@ function Move-TppObject {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate() | Out-Null
-
-    # ensure the object to rename already exists
-    if ( -not (Test-TppObject -Path $SourcePath -ExistOnly -VenafiSession $VenafiSession) ) {
-        throw ("Source path '{0}' does not exist" -f $SourcePath)
+    begin {
+        $VenafiSession.Validate('TPP')
     }
 
-    # ensure the new object doesn't already exist
-    if ( Test-TppObject -Path $TargetPath -ExistOnly -VenafiSession $VenafiSession) {
-        throw ("Target path '{0}' already exists" -f $TargetPath)
-    }
+    process {
 
-    $params = @{
-        VenafiSession = $VenafiSession
-        Method     = 'Post'
-        UriLeaf    = 'config/RenameObject'
-        Body       = @{
-            ObjectDN    = $SourcePath
-            NewObjectDN = $TargetPath
+        if ( $PSCmdlet.ShouldProcess($SourcePath, "Move to $TargetPath") ) {
+
+            $params = @{
+                VenafiSession = $VenafiSession
+                Method        = 'Post'
+                UriLeaf       = 'config/RenameObject'
+                Body          = @{
+                    ObjectDN    = $SourcePath
+                    NewObjectDN = $TargetPath
+                }
+            }
+
+            $response = Invoke-TppRestMethod @params
+
+            if ( $response.Result -ne [TppConfigResult]::Success ) {
+                Write-Error $response.Error
+            }
         }
-    }
-
-    $response = Invoke-VenafiRestMethod @params
-
-    if ( $response.Result -ne [TppConfigResult]::Success ) {
-        throw $response.Error
     }
 }

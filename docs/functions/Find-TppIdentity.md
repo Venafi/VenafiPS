@@ -25,16 +25,14 @@ You can specify individual identity types to search for or all
 ### EXAMPLE 1
 ```
 Find-TppIdentity -Name 'greg' -IncludeUsers
-```
-
 Find only user identities with the name greg
+```
 
 ### EXAMPLE 2
 ```
 'greg', 'brownstein' | Find-TppIdentity
-```
-
 Find all identity types with the name greg and brownstein
+```
 
 ## PARAMETERS
 
@@ -163,7 +161,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppIdentity/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppIdentity/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppIdentity.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php)
 

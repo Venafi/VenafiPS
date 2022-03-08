@@ -122,6 +122,8 @@ function Export-VenafiCertificate {
     )
 
     begin {
+        $VenafiSession.Validate()
+
         $params = @{
             VenafiSession = $VenafiSession
             Body          = @{
@@ -129,9 +131,7 @@ function Export-VenafiCertificate {
             }
         }
 
-        $authType = $VenafiSession.Validate()
-
-        if ( $authType -eq 'vaas' ) {
+        if ( $VenafiSession.Platform -eq 'VaaS' ) {
 
             if ( $Format -notin 'PEM', 'DER') {
                 throw 'Venafi as a Service only supports PEM and DER formats'
@@ -186,11 +186,13 @@ function Export-VenafiCertificate {
 
     process {
 
-        if ( $authType -eq 'vaas' ) {
+        if ( $VenafiSession.Platform -eq 'VaaS' ) {
             $params.UriRoot = 'outagedetection/v1'
             $params.UriLeaf = "certificates/$CertificateId/contents"
             $params.Method = 'Get'
-            Invoke-VenafiRestMethod @params
+            $params.FullResponse = $true
+            $response = Invoke-TppRestMethod @params
+            $response.Content
         }
         else {
             $params.Method = 'Post'

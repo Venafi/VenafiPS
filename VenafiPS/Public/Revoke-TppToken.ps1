@@ -43,10 +43,10 @@ Revoke a token obtained from TPP, not necessarily via VenafiPS
 http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppToken/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppToken.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppToken.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.1SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Revoke-Token.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Revoke-Token.php
 
 #>
 function Revoke-TppToken {
@@ -94,7 +94,7 @@ function Revoke-TppToken {
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
                 $params.VenafiSession = $VenafiSession
-                $target = $VenafiSession.ServerUrl
+                $target = $VenafiSession.Server
             }
 
             'AccessToken' {
@@ -104,7 +104,7 @@ function Revoke-TppToken {
                     $AuthUrl = 'https://{0}' -f $AuthUrl
                 }
 
-                $params.ServerUrl = $target = $AuthUrl
+                $params.Server = $target = $AuthUrl
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().Password }
             }
 
@@ -113,7 +113,7 @@ function Revoke-TppToken {
                     throw 'Not a valid TppToken'
                 }
 
-                $params.ServerUrl = $target = $TppToken.Server
+                $params.Server = $target = $TppToken.Server
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $TppToken.AccessToken.GetNetworkCredential().password }
             }
 

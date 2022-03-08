@@ -19,23 +19,20 @@ Read entries from the TPP log
 ### EXAMPLE 1
 ```
 Read-TppLog -First 10
-```
-
 Get the most recent 10 log items
+```
 
 ### EXAMPLE 2
 ```
 $capiObject | Read-TppLog
-```
-
 Find all events for a specific object
+```
 
 ### EXAMPLE 3
 ```
 Read-TppLog -EventId '00130003'
-```
-
 Find all events with event ID '00130003', Certificate Monitor - Certificate Expiration Notice
+```
 
 ## PARAMETERS
 
@@ -238,7 +235,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Read-TppLog/](http://VenafiPS.readthedocs.io/en/latest/functions/Read-TppLog/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Read-TppLog.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____2](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____2)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php)
 

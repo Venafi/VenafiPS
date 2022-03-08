@@ -44,37 +44,32 @@ Authentication can be provided as integrated, credential, or certificate.
 ### EXAMPLE 1
 ```
 New-TppToken -AuthServer 'https://mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Credential $credential
-```
-
 Get a new token with OAuth
+```
 
 ### EXAMPLE 2
 ```
 New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId'
-```
-
 Get a new token with Integrated authentication
+```
 
 ### EXAMPLE 3
 ```
 New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Certificate $cert
-```
-
 Get a new token with certificate authentication
+```
 
 ### EXAMPLE 4
 ```
 New-TppToken -AuthServer 'mytppserver.example.com' -ClientId 'MyApp' -RefreshToken $refreshCred
-```
-
 Refresh an existing access token by providing the refresh token directly
+```
 
 ### EXAMPLE 5
 ```
 New-TppToken -VenafiSession $mySession
-```
-
 Refresh an existing access token by providing a VenafiSession object
+```
 
 ## PARAMETERS
 
@@ -114,7 +109,7 @@ Hashtable with Scopes and privilege restrictions.
 The key is the scope and the value is one or more privilege restrictions separated by commas.
 A privilege restriction of none or read, use a value of $null.
 Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
-See https://docs.venafi.com/Docs/20.1/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php?tocpath=Topics%20by%20Guide%7CDeveloper%27s%20Guide%7CAuth%20SDK%20reference%20for%20token%20management%7C_____6 for more info.
+See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
 
 ```yaml
 Type: Hashtable
@@ -160,7 +155,7 @@ Accept wildcard characters: False
 
 ### -Certificate
 Certificate used to request API token. 
-Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/21.1SDK/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
+Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/current/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
 
 ```yaml
 Type: X509Certificate

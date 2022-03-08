@@ -22,10 +22,10 @@ Get the status
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppSystemStatus/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppSystemStatus.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppSystemStatus.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatus.php?tocpath=Web%20SDK%7CSystemStatus%20programming%20interface%7C_____3
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-SystemStatus.php
 
 #>
 function Get-TppSystemStatus {
@@ -37,7 +37,7 @@ function Get-TppSystemStatus {
 
     Write-Warning "Possible bug with Venafi TPP API causing this to fail"
 
-    $VenafiSession.Validate() | Out-Null
+    $VenafiSession.Validate('TPP')
 
     $params = @{
         VenafiSession = $VenafiSession

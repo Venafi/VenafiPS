@@ -92,7 +92,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppIdentity/](http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppIdentity/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Test-TppIdentity.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Test-TppIdentity.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppIdentity.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppIdentity.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____15](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php?tocpath=Web%20SDK%7CIdentity%20programming%20interface%7C_____15)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php)
 

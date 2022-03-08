@@ -10,6 +10,11 @@ Test if a Tpp token is valid
 Test-TppToken -AuthServer <String> -AccessToken <PSCredential> [-GrantDetail] [<CommonParameters>]
 ```
 
+### VaultAccessToken
+```
+Test-TppToken [-AuthServer <String>] -VaultAccessTokenName <String> [-GrantDetail] [<CommonParameters>]
+```
+
 ### TppToken
 ```
 Test-TppToken -TppToken <PSObject> [-GrantDetail] [<CommonParameters>]
@@ -28,36 +33,44 @@ Use the TPP API call 'Authorize/Verify' to test if the current token is valid.
 ### EXAMPLE 1
 ```
 Test-TppToken
-```
-
 Verify that accesstoken stored in $VenafiSession object is valid.
+```
 
 ### EXAMPLE 2
 ```
 $TppToken | Test-TppToken
+Verify that token object from pipeline is valid. Can be used to validate directly object from New-TppToken.
 ```
-
-Verify that token object from pipeline is valid.
-Can be used to validate directly object from New-TppToken.
 
 ### EXAMPLE 3
 ```
-Test-TppToken -AuthServer 'mytppserver.example.com' -AccessToken $cred
-```
-
+Test-TppToken -AuthServer venafi.mycompany.com -AccessToken $cred
 Verify that PsCredential object containing accesstoken is valid.
+```
 
 ### EXAMPLE 4
 ```
-Test-TppToken -GrantDetail
+Test-TppToken -VaultAccessTokenName access-token
+Verify access token stored in VenafiPS vault, metadata stored with secret
 ```
 
+### EXAMPLE 5
+```
+Test-TppToken -VaultAccessTokenName access-token -AuthServer venafi.mycompany.com
+Verify access token stored in VenafiPS vault providing server to authenticate against
+```
+
+### EXAMPLE 6
+```
+Test-TppToken -GrantDetail
 Verify that accesstoken stored in $VenafiSession object is valid and return PsCustomObject as output with details.
+```
 
 ## PARAMETERS
 
 ### -AuthServer
 Auth server or url, venafi.company.com or https://venafi.company.com.
+This will be used to access vedauth for token-based authentication.
 If just the server name is provided, https:// will be appended.
 
 ```yaml
@@ -66,6 +79,18 @@ Parameter Sets: AccessToken
 Aliases: Server
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: String
+Parameter Sets: VaultAccessToken
+Aliases: Server
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -100,6 +125,23 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByValue)
+Accept wildcard characters: False
+```
+
+### -VaultAccessTokenName
+Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
+Note: '-Server' parameter is required if the vault does not contain saved metadata.
+See New-VenafiSession -VaultMetaData
+
+```yaml
+Type: String
+Parameter Sets: VaultAccessToken
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -157,7 +199,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppToken/](http://VenafiPS.readthedocs.io/en/latest/functions/Test-TppToken/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Test-TppToken.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php?tocpath=Auth%20SDK%20reference%20for%20token%20management%7C_____13)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-GET-Authorize-Verify.php)
 

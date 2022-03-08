@@ -27,37 +27,32 @@ You can also set policies (policy attributes).
 ### EXAMPLE 1
 ```
 Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Consumers'='\VED\Policy\myappobject.company.com'}
-```
-
 Set a value on an object
+```
 
 ### EXAMPLE 2
 ```
 Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'}
-```
-
 Set value on custom field
+```
 
 ### EXAMPLE 3
 ```
 Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'} -BypassValidation
-```
-
 Set value on custom field bypassing field validation
+```
 
 ### EXAMPLE 4
 ```
 Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
-```
-
 Set a policy attribute
+```
 
 ### EXAMPLE 5
 ```
 Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
-```
-
 Set a policy attribute and lock the value
+```
 
 ## PARAMETERS
 
@@ -218,7 +213,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php)
 

@@ -19,16 +19,14 @@ Add a new device with optional attributes
 ### EXAMPLE 1
 ```
 $newPolicy = New-TppDevice -Path '\VED\Policy\MyFolder\device' -PassThru
-```
-
 Create device with full path to device and returning the object created
+```
 
 ### EXAMPLE 2
 ```
 $policyPath | New-TppDevice -DeviceName 'myDevice' -Hostname 1.2.3.4
-```
-
 Pipe policy path and provide device details
+```
 
 ## PARAMETERS
 
@@ -186,9 +184,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppDevice/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppDevice/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppDevice.ps1)
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
 

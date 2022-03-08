@@ -4,24 +4,19 @@ Remove a certificate
 
 .DESCRIPTION
 Removes a Certificate object, all associated objects including pending workflow tickets, and the corresponding Secret Store vault information.
-All associations must be removed for the certificate to be removed.
-You must either be a Master Admin or have Delete permission to the Certificate object
-and to the Application and Device objects if they are to be deleted automatically with -Force
-
-.PARAMETER InputObject
-TppObject which represents a unique object
+You must either be a Master Admin or have Delete permission to the objects and have certificate:delete token scope.
 
 .PARAMETER Path
 Path to the certificate to remove
 
-.PARAMETER Force
-Provide this switch to force all associations to be removed prior to certificate removal
+.PARAMETER KeepAssociatedApps
+Provide this switch to remove associations prior to certificate removal
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
 .INPUTS
-InputObject or Path
+Path
 
 .OUTPUTS
 None
@@ -32,17 +27,17 @@ Remove a certificate via pipeline
 
 .EXAMPLE
 Remove-TppCertificate -Path '\ved\policy\my cert'
-Remove a certificate
+Remove a certificate and any associated app
 
 .EXAMPLE
-Remove-TppCertificate -Path '\ved\policy\my cert' -force
-Remove a certificate and automatically remove all associations
+Remove-TppCertificate -Path '\ved\policy\my cert' -KeepAssociatedApps
+Remove a certificate and first remove all associations, keeping the apps
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificate/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Certificates-Guid.php
@@ -58,7 +53,8 @@ function Remove-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -66,50 +62,37 @@ function Remove-TppCertificate {
         [String] $Path,
 
         [Parameter()]
-        [switch] $Force,
+        [switch] $KeepAssociatedApps,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $params = @{
             VenafiSession = $VenafiSession
-            Method     = 'Delete'
-            UriLeaf    = 'placeholder'
+            Method        = 'Delete'
+            UriLeaf       = 'placeholder'
         }
+
+        # use in shouldprocess messaging below
+        $appsMessage = if ($KeepAssociatedApps) { 'but keep associated apps' } else { 'and associated apps' }
     }
 
     process {
-
-        # if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-        #     $path = $InputObject.Path
-        #     $guid = $InputObject.Guid
-        # } else {
-        #     $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
-        # }
-
-        # ensure either there are no associations or the force flag was provided
-        $associatedApps = $Path |
-        Get-TppAttribute -Attribute "Consumers" -Effective -VenafiSession $VenafiSession |
-        Select-Object -ExpandProperty Value
-
-        if ( $associatedApps ) {
-            if ( $Force ) {
-                $params.Body = @{'ApplicationDN' = @($associatedApps) }
-            } else {
-                Write-Error ("Path '{0}' has associations and cannot be removed.  Provide -Force to override." -f $Path)
-                Return
-            }
-        }
-
         $guid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
         $params.UriLeaf = "Certificates/$guid"
 
-        if ( $PSCmdlet.ShouldProcess($Path, 'Remove certificate and all associations') ) {
-            Remove-TppCertificateAssociation -Path $Path -All -VenafiSession $VenafiSession -Confirm:$false
+        if ( $PSCmdlet.ShouldProcess($Path, "Remove certificate $appsMessage") ) {
+            if ($KeepAssociatedApps) {
+                $associatedApps = $Path | Get-TppAttribute -Attribute "Consumers" -Effective -VenafiSession $VenafiSession | Select-Object -ExpandProperty Value
+                if ( $associatedApps ) {
+                    Remove-TppCertificateAssociation -Path $Path -ApplicationPath $associatedApps -VenafiSession $VenafiSession -Confirm:$false
+                }
+            }
+
             Invoke-VenafiRestMethod @params | Out-Null
         }
     }

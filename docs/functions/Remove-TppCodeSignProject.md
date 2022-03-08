@@ -19,17 +19,14 @@ You must be a code sign admin or owner of the project.
 ### EXAMPLE 1
 ```
 Remove-TppCodeSignProject -Path '\ved\code signing\projects\my_project'
-```
-
 Delete a project
+```
 
 ### EXAMPLE 2
 ```
 $projectObj | Remove-TppCodeSignProject
+Remove 1 or more projects.  Get projects with Find-TppCodeSignProject
 ```
-
-Remove 1 or more projects. 
-Get projects with Find-TppCodeSignProject
 
 ## PARAMETERS
 
@@ -110,7 +107,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCodeSignProject/](http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCodeSignProject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCodeSignProject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCodeSignProject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCodeSignProject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCodeSignProject.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteProject.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____7](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteProject.php?tocpath=CodeSign%20Protect%20Admin%20REST%C2%A0API%7CProjects%20and%20environments%7C_____7)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteProject.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteProject.php)
 

@@ -1,6 +1,8 @@
 name: PSScriptAnalyzer
 
-on: [pull_request, workflow_dispatch]
+on: 
+  workflow_dispatch:
+  
 jobs:
   lint:
     name: Run PSSA
@@ -10,9 +12,9 @@ jobs:
     - name: lint
       uses: devblackops/github-action-psscriptanalyzer@master
       with:
-        rootPath: VenafiPS
+        rootPath: /VenafiPS/
         settingsPath: /.github/workflows/pssa_settings.psd1
-        sendComment: true
+        sendComment: false
         repoToken: ${{ secrets.GITHUB_TOKEN }}
         failOnErrors: true
         failOnWarnings: true

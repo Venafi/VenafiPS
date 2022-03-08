@@ -18,23 +18,20 @@ Requests that an existing certificate be revoked.
 ### EXAMPLE 1
 ```
 $cert | Revoke-TppCertificate -Reason 2
-```
-
 Revoke the certificate with a reason of the CA being compromised
+```
 
 ### EXAMPLE 2
 ```
 $cert | Revoke-TppCertificate -Force
-```
-
 Revoke the certificate bypassing the confirmation prompt
+```
 
 ### EXAMPLE 3
 ```
 Revoke-TppCertificate -Path '\VED\Policy\My folder\app.mycompany.com' -Reason 2 -Wait
-```
-
 Revoke the certificate with a reason of the CA being compromised and wait for it to complete
+```
 
 ## PARAMETERS
 
@@ -202,7 +199,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-TppCertificate/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppCertificate.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppCertificate.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppCertificate.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-TppCertificate.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____24](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____24)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php)
 

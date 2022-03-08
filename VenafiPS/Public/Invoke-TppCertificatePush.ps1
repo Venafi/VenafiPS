@@ -38,10 +38,10 @@ Push certificate to all associated applications
 http://VenafiPS.readthedocs.io/en/latest/functions/Invoke-TppCertificatePush/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificatePush.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Invoke-TppCertificatePush.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Push.php?tocpath=Web%20SDK%7CCertificates%20programming%20interface%7C_____15
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Push.php
 
 #>
 function Invoke-TppCertificatePush {
@@ -76,7 +76,7 @@ function Invoke-TppCertificatePush {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
 
         $params = @{
             VenafiSession = $VenafiSession

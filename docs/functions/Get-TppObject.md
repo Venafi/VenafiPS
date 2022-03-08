@@ -7,7 +7,7 @@ Get object information
 
 ### ByPath
 ```
-Get-TppObject -Path <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppObject [-Path] <String[]> [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ### ByGuid
@@ -46,7 +46,7 @@ Parameter Sets: ByPath
 Aliases: DN
 
 Required: True
-Position: Named
+Position: 1
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
@@ -63,7 +63,7 @@ Aliases: ObjectGuid
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: True (ByValue)
 Accept wildcard characters: False
 ```
 
@@ -98,5 +98,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1)
 

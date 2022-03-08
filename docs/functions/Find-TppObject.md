@@ -35,66 +35,56 @@ Find objects by path, class, or pattern.
 ### EXAMPLE 1
 ```
 Find-TppObject
-```
-
 Get all objects recursively starting from \ved\policy
+```
 
 ### EXAMPLE 2
 ```
 Find-TppObject -Path '\VED\Policy\certificates'
-```
-
 Get all objects in the root of a specific folder
+```
 
 ### EXAMPLE 3
 ```
 Find-TppObject -Path '\VED\Policy\My Folder' -Recursive
-```
-
 Get all objects in a folder and subfolders
+```
 
 ### EXAMPLE 4
 ```
 Find-TppObject -Path '\VED\Policy' -Pattern '*test*'
-```
-
 Get items in a specific folder filtering the path
+```
 
 ### EXAMPLE 5
 ```
 Find-TppObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
-```
-
 Get objects of a specific type
+```
 
 ### EXAMPLE 6
 ```
 Find-TppObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-```
-
 Get all objects of a specific type where the path is of a specific pattern
+```
 
 ### EXAMPLE 7
 ```
 Find-TppObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-```
-
 Get objects for multiple types
+```
 
 ### EXAMPLE 8
 ```
 Find-TppObject -Pattern '*f5*'
+Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
 ```
-
-Find objects with the specific name. 
-All objects under \ved\policy (the default) will be searched.
 
 ### EXAMPLE 9
 ```
 Find-TppObject -Pattern 'awesome*' -Attribute 'Description'
-```
-
 Find objects where the specific attribute matches the pattern
+```
 
 ## PARAMETERS
 
@@ -228,7 +218,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php)
 

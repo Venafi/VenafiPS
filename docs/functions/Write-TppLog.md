@@ -24,15 +24,15 @@ Write-TppLog -CustomEventGroup <String> -EventId <String> -Component <String> [-
 ## DESCRIPTION
 Write entries to the log for custom event groups.
 It is not permitted to write to the default log.
+Ensure the group and event id are correct as the api will not fail if incorrect.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
 Write-TppLog -CustomEventGroup '0200' -EventId '0001' -Component '\ved\policy\mycert.com'
-```
-
 Log an event to a custom group
+```
 
 ## PARAMETERS
 
@@ -52,7 +52,7 @@ Accept wildcard characters: False
 ```
 
 ### -CustomEventGroup
-Custom Event Group ID, 4 characters.
+ID containing hex values between 0100-0299 referring to the created custom group.
 
 ```yaml
 Type: String
@@ -67,7 +67,7 @@ Accept wildcard characters: False
 ```
 
 ### -EventId
-Event ID from within the EventGroup provided. 
+Event ID from within the EventGroup provided, a 4 character hex value.
 Only provide the 4 character event id, do not precede with group ID.
 
 ```yaml
@@ -284,7 +284,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Write-TppLog/](http://VenafiPS.readthedocs.io/en/latest/functions/Write-TppLog/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Write-TppLog.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Write-TppLog.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Write-TppLog.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Write-TppLog.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____3](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Log.php?tocpath=Web%20SDK%7CLog%20programming%20interface%7C_____3)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Log.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Log.php)
 

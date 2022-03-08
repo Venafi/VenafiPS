@@ -76,7 +76,7 @@ Find objects where the specific attribute matches the pattern
 http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php
@@ -92,6 +92,7 @@ function Find-TppObject {
 
     [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
     [Alias('fto')]
+    [OutputType([TppObject])]
 
     param (
         [Parameter(ParameterSetName = 'FindByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -136,7 +137,7 @@ function Find-TppObject {
     )
 
     begin {
-        $VenafiSession.Validate('tpp') | Out-Null
+        $VenafiSession.Validate('TPP')
     }
 
     process {
@@ -157,21 +158,19 @@ function Find-TppObject {
                 $params.Body['AttributeNames'] = $Attribute
             }
 
-            {$_ -in 'FindByPath', 'FindByPattern'} {
-                $params.UriLeaf = 'config/enumerate'
+            {$_ -in 'FindByPath', 'FindByPattern', 'FindByClass'} {
                 # if a path wasn't provided, default to recursive enumeration of \ved\policy
                 if ( -not $PSBoundParameters.ContainsKey('Path') ) {
                     $params.Body['Recursive'] = 'true'
                 }
             }
 
-            # 'FindByPattern' {
-            #     $params.UriLeaf = 'config/enumerate'
-            # }
+            {$_ -in 'FindByPath', 'FindByPattern'} {
+                $params.UriLeaf = 'config/enumerate'
+            }
 
             'FindByClass' {
                 $params.UriLeaf = 'config/FindObjectsOfClass'
-                $params.Body['ObjectDN'] = $Path
             }
 
         }
@@ -217,9 +216,8 @@ function Find-TppObject {
 
         foreach ($object in $objects) {
             [TppObject] @{
-                Name     = $object.Name
-                TypeName = $object.TypeName
                 Path     = $object.DN
+                TypeName = $object.TypeName
                 Guid     = $object.Guid
             }
         }

@@ -6,38 +6,33 @@ Remove a certificate
 ## SYNTAX
 
 ```
-Remove-TppCertificate [-Path] <String> [-Force] [[-VenafiSession] <VenafiSession>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-TppCertificate [-Path] <String> [-KeepAssociatedApps] [[-VenafiSession] <VenafiSession>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Removes a Certificate object, all associated objects including pending workflow tickets, and the corresponding Secret Store vault information.
-All associations must be removed for the certificate to be removed.
-You must either be a Master Admin or have Delete permission to the Certificate object
-and to the Application and Device objects if they are to be deleted automatically with -Force
+You must either be a Master Admin or have Delete permission to the objects and have certificate:delete token scope.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
 $cert | Remove-TppCertificate
-```
-
 Remove a certificate via pipeline
+```
 
 ### EXAMPLE 2
 ```
 Remove-TppCertificate -Path '\ved\policy\my cert'
+Remove a certificate and any associated app
 ```
-
-Remove a certificate
 
 ### EXAMPLE 3
 ```
-Remove-TppCertificate -Path '\ved\policy\my cert' -force
+Remove-TppCertificate -Path '\ved\policy\my cert' -KeepAssociatedApps
+Remove a certificate and first remove all associations, keeping the apps
 ```
-
-Remove a certificate and automatically remove all associations
 
 ## PARAMETERS
 
@@ -56,8 +51,8 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -Force
-Provide this switch to force all associations to be removed prior to certificate removal
+### -KeepAssociatedApps
+Provide this switch to remove associations prior to certificate removal
 
 ```yaml
 Type: SwitchParameter
@@ -123,7 +118,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### InputObject or Path
+### Path
 ## OUTPUTS
 
 ### None
@@ -133,7 +128,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCertificate/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCertificate.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Certificates-Guid.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-Certificates-Guid.php)
 

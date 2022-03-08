@@ -34,7 +34,7 @@ Get an object by guid
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1
 
 #>
 function Get-TppObject {
@@ -42,19 +42,20 @@ function Get-TppObject {
     [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
         [Alias('DN')]
         [String[]] $Path,
 
-        [Parameter(Mandatory, ParameterSetName = 'ByGuid', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ByGuid', ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [Alias('ObjectGuid')]
         [guid[]] $Guid,
@@ -64,14 +65,15 @@ function Get-TppObject {
     )
 
     begin {
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate('TPP')
     }
 
     process {
 
         if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
             $inputObject = $Path
-        } else {
+        }
+        else {
             $inputObject = $Guid
         }
 

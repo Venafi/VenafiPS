@@ -19,16 +19,14 @@ Set workflow ticket status for a certificate
 ### EXAMPLE 1
 ```
 Get-TppWorkflowTicket -Path '\VED\policy\myapp.company.com' | Set-TppWorkflowTicketStatus -Status Approved
-```
-
 Approve all tickets for a certificate
+```
 
 ### EXAMPLE 2
 ```
 Get-TppWorkflowTicket -Path '\VED\policy\myapp.company.com' | Set-TppWorkflowTicketStatus -Status 'Approved After' -ScheduledStart (Get-Date).AaaDays(3) -Explanation 'weekend upgrade'
-```
-
 Approve all tickets for a certificate after a certain date with an explanation
+```
 
 ## PARAMETERS
 
@@ -172,7 +170,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/](http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppWorkflowTicketStatus/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppWorkflowTicketStatus.ps1)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____10](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php?tocpath=Web%20SDK%7CWorkflow%20Ticket%20programming%20interface%7C_____10)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Workflow-ticket-updatestatus.php)
 

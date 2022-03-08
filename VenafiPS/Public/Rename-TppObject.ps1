@@ -31,7 +31,7 @@ Move an object
 http://VenafiPS.readthedocs.io/en/latest/functions/Rename-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Rename-TppObject.ps1
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-renameobject.php
@@ -60,7 +60,7 @@ function Rename-TppObject {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate('tpp') | Out-Null
+    $VenafiSession.Validate('TPP')
 
     $params = @{
         VenafiSession = $VenafiSession

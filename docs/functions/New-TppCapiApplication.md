@@ -30,30 +30,26 @@ Create a new CAPI application
 ### EXAMPLE 1
 ```
 New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path
-```
-
 Create a new application
+```
 
 ### EXAMPLE 2
 ```
 New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -WebSiteName 'mysite' -BindingIp '1.2.3.4'
-```
-
 Create a new application and update IIS
+```
 
 ### EXAMPLE 3
 ```
 New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -WebSiteName 'mysite' -BindingIp '1.2.3.4' -PushCertificate
-```
-
 Create a new application, update IIS, and push the certificate to the new app
+```
 
 ### EXAMPLE 4
 ```
 New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -PassThru
-```
-
 Create a new application and return a TppObject for the newly created app
+```
 
 ## PARAMETERS
 
@@ -244,7 +240,7 @@ Accept wildcard characters: False
 ```
 
 ### -CreateBinding
-Specify that Trust Protection Platform should create an IIS web site binding if the one specified doesnâ€™t already exist.
+Specify that Trust Protection Platform should create an IIS web site binding if the one specified doesn't already exist.
 
 ```yaml
 Type: Boolean
@@ -367,13 +363,13 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/](http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1)
 
-[https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1)
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/)
 
 [http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/)
 
-[https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9](https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php)
 

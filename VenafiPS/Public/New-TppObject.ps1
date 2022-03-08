@@ -10,7 +10,7 @@ Full path, including name, for the object to be created.
 
 .PARAMETER Class
 Class name of the new object.
-See https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php for more info.
+See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php for more info.
 
 .PARAMETER Attribute
 Hashtable with initial values for the new object.
@@ -49,21 +49,22 @@ TppObject, if PassThru provided
 http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1
 
 .LINK
-https://github.com/gdbarron/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php?tocpath=Web%20SDK%7CConfig%20programming%20interface%7C_____9
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php
 
 .LINK
-https://docs.venafi.com/Docs/20.4SDK/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php
 
 #>
 function New-TppObject {
 
     [CmdletBinding(DefaultParameterSetName = 'NonApplicationObject', SupportsShouldProcess)]
+    [OutputType([TppObject])]
 
     param (
         [Parameter(Mandatory)]
@@ -96,17 +97,7 @@ function New-TppObject {
         [VenafiSession] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate() | Out-Null
-
-    # ensure the object doesn't already exist
-    # if ( Test-TppObject -Path $Path -ExistOnly -VenafiSession $VenafiSession ) {
-    #     throw ("New object to be created, {0}, already exists" -f $Path)
-    # }
-
-    # ensure the parent folder exists
-    # if ( -not (Test-TppObject -Path (Split-Path -Path $Path -Parent) -ExistOnly -VenafiSession $VenafiSession) ) {
-    #     throw ("The parent folder, {0}, of your new object does not exist" -f (Split-Path -Path $Path -Parent))
-    # }
+    $VenafiSession.Validate('TPP')
 
     if ( $PushCertificate.IsPresent -and (-not $Attribute.Certificate) ) {
         Write-Warning 'A ''Certificate'' key containing the certificate path must be provided for Attribute when using PushCertificate, eg. -Attribute @{''Certificate''=''\Ved\Policy\mycert.com''}.  Certificate provisioning will not take place.'
