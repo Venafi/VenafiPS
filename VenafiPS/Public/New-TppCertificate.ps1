@@ -251,7 +251,7 @@ function New-TppCertificate {
         if ( $PSCmdlet.ShouldProcess($Path, 'Create new certificate') ) {
 
             try {
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
                 Write-Verbose ($response | Out-String)
 
                 if ( $PassThru ) {

@@ -110,7 +110,7 @@ function Remove-TppCertificate {
 
         if ( $PSCmdlet.ShouldProcess($Path, 'Remove certificate and all associations') ) {
             Remove-TppCertificateAssociation -Path $Path -All -VenafiSession $VenafiSession -Confirm:$false
-            Invoke-TppRestMethod @params | Out-Null
+            Invoke-VenafiRestMethod @params | Out-Null
         }
     }
 }

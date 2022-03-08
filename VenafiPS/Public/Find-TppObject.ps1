@@ -193,7 +193,7 @@ function Find-TppObject {
                 $thisClass = $_
                 $params.Body.Class = $thisClass
 
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 if ( $response.Result -eq [TppConfigResult]::Success ) {
                     $response.Objects
@@ -205,7 +205,7 @@ function Find-TppObject {
             }
         }
         else {
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -eq [TppConfigResult]::Success ) {
                 $objects = $response.Objects

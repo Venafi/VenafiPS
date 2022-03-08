@@ -72,7 +72,7 @@ function Get-TppCustomField {
             }
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Result -eq [TppMetadataResult]::Success ) {
             [PSCustomObject] @{

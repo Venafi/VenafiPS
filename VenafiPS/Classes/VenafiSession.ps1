@@ -157,7 +157,7 @@ class VenafiSession {
             $params.UseDefaultCredentials = $true
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
         $this.Expires = $response.ValidUntil
         $this.Key = [pscustomobject] @{
             ApiKey     = $response.ApiKey

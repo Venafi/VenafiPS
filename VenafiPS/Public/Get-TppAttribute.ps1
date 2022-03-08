@@ -215,7 +215,7 @@ function Get-TppAttribute {
                     }
                 }
 
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 if ( $response ) {
                     [PSCustomObject] @{
@@ -227,7 +227,7 @@ function Get-TppAttribute {
             }
         }
         else {
-            $response = Invoke-TppRestMethod @baseParams
+            $response = Invoke-VenafiRestMethod @baseParams
             if ( $response ) {
                 $configValues = $response.NameValues | Select-Object Name,
                 @{

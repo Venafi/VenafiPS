@@ -62,7 +62,7 @@ function ConvertTo-TppGuid {
 
         $params.Body.ObjectDN = $Path
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Result -eq [TppConfigResult]::Success ) {
             if ( $IncludeType ) {

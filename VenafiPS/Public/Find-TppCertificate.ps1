@@ -515,7 +515,7 @@ function Find-TppCertificate {
             }
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $CountOnly.IsPresent ) {
             $response.Headers.'X-Record-Count'

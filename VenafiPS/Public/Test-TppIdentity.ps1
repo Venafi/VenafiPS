@@ -84,7 +84,7 @@ function Test-TppIdentity {
 
             $params.Body.Id.PrefixedUniversal = $thisId
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $ExistOnly ) {
                 $null -ne $response.Id

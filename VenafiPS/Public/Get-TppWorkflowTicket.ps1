@@ -112,7 +112,7 @@ function Get-TppWorkflowTicket {
                 }
             }
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $response ) {
                 Write-Verbose ("Found {0} workflow tickets for certificate {1}" -f $response.GUIDs.count, $thisDn)
@@ -130,7 +130,7 @@ function Get-TppWorkflowTicket {
                 }
             }
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -eq [TppWorkflowResult]::Success ) {
                 $response | Add-Member @{

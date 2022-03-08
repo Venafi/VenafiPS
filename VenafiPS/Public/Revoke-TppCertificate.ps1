@@ -142,12 +142,12 @@ function Revoke-TppCertificate {
         }
 
         if ( $PSCmdlet.ShouldProcess($Path, 'Revoke certificate') ) {
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $Wait ) {
                 while (-not $response.Revoked) {
                     Start-Sleep -Seconds 1
-                    $response = Invoke-TppRestMethod @params
+                    $response = Invoke-VenafiRestMethod @params
                 }
             }
 

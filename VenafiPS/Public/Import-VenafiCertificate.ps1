@@ -39,7 +39,7 @@ By default, this function will import and replace the certificate regardless of 
 By using this parameter, this function will import, but use newest. Only import the certificate when no Certificate object exists with a past, present, or current version of the imported certificate.
 If a match is found between the Certificate object and imported certificate, activate the certificate with the most current 'Valid From' date.
 Archive the unused certificate, even if it is the imported certificate, to the History tab.
-See https://github.com/gdbarron/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
+See https://github.com/Venafi/VenafiPS/issues/88#issuecomment-600134145 for a flowchart of the reconciliation algorithm.
 
 .PARAMETER PassThru
 Return a TppObject representing the newly imported object.
@@ -60,11 +60,14 @@ TppObject, if PassThru provided
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Import.php
 #>
-function Import-TppCertificate {
+function Import-VenafiCertificate {
     [CmdletBinding(DefaultParameterSetName = 'ByFile')]
     param (
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'ByFile')]
+        [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
+        [Parameter(Mandatory, ParameterSetName = 'ByData')]
+        [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -91,6 +94,7 @@ function Import-TppCertificate {
 
         [Parameter(Mandatory, ParameterSetName = 'ByData')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [Parameter(Mandatory, ParameterSetName = 'VaaS')]
         [ValidateNotNullOrEmpty()]
         [String] $CertificateData,
 
@@ -117,6 +121,9 @@ function Import-TppCertificate {
         [Parameter()]
         [switch] $Reconcile,
 
+        [Parameter(Mandatory, ParameterSetName = 'VaaS')]
+        [string[]] $ApplicationId,
+
         [Parameter()]
         [switch] $PassThru,
 
@@ -126,7 +133,7 @@ function Import-TppCertificate {
 
     begin {
 
-        $VenafiSession.Validate() | Out-Null
+        $VenafiSession.Validate()
 
     }
 
@@ -134,58 +141,84 @@ function Import-TppCertificate {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
-            # get cert data from file
-            if ($PSVersionTable.PSVersion.Major -lt 6) {
-                $cert = Get-Content $CertificatePath -Encoding Byte
+        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+            $params = @{
+                VenafiSession = $VenafiSession
+                Method        = 'Post'
+                UriRoot       = 'outagedetection/v1'
+                UriLeaf       = "certificates"
+                Body          = @{
+                    'certificates'      = @(
+                        @{
+                            'certificate'    = $CertificateData
+                            'applicationIds' = @($ApplicationId)
+                        }
+                    )
+                    'overrideBlocklist' = $true
+                }
             }
-            else {
-                $cert = Get-Content $CertificatePath -AsByteStream
+            $response = Invoke-VenafiRestMethod @params
+            Write-Verbose ('Successfully imported certificate')
+
+            if ( $PassThru.IsPresent ) {
+                $response
             }
 
-            $thisCertData = [System.Convert]::ToBase64String($cert)
         }
         else {
-            $thisCertData = $CertificateData
-        }
+            if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
+                # get cert data from file
+                if ($PSVersionTable.PSVersion.Major -lt 6) {
+                    $cert = Get-Content $CertificatePath -Encoding Byte
+                }
+                else {
+                    $cert = Get-Content $CertificatePath -AsByteStream
+                }
 
-        $params = @{
-            VenafiSession = $VenafiSession
-            Method        = 'Post'
-            UriLeaf       = 'certificates/import'
-            Body          = @{
-                PolicyDN        = $PolicyPath
-                CertificateData = $thisCertData
+                $thisCertData = [System.Convert]::ToBase64String($cert)
             }
-        }
+            else {
+                $thisCertData = $CertificateData
+            }
 
-        if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {
-            $updatedAttribute = @($EnrollmentAttribute.GetEnumerator() | ForEach-Object { @{'Name' = $_.name; 'Value' = $_.value } })
-            $params.Body.CASpecificAttributes = $updatedAttribute
-        }
+            $params = @{
+                VenafiSession = $VenafiSession
+                Method        = 'Post'
+                UriLeaf       = 'certificates/import'
+                Body          = @{
+                    PolicyDN        = $PolicyPath
+                    CertificateData = $thisCertData
+                }
+            }
 
-        if ( $Reconcile.IsPresent ) {
-            $params.Body.Reconcile = 'true'
-        }
+            if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {
+                $updatedAttribute = @($EnrollmentAttribute.GetEnumerator() | ForEach-Object { @{'Name' = $_.name; 'Value' = $_.value } })
+                $params.Body.CASpecificAttributes = $updatedAttribute
+            }
 
-        if ( $PSBoundParameters.ContainsKey('Name') ) {
-            $params.Body.ObjectName = $Name
-        }
+            if ( $Reconcile.IsPresent ) {
+                $params.Body.Reconcile = 'true'
+            }
+
+            if ( $PSBoundParameters.ContainsKey('Name') ) {
+                $params.Body.ObjectName = $Name
+            }
 
 
-        if ( $PSBoundParameters.ContainsKey('Password') ) {
-            $params.Body.Password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
-        }
+            if ( $PSBoundParameters.ContainsKey('Password') ) {
+                $params.Body.Password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
+            }
 
-        if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
-            $params.Body.PrivateKeyData = $PrivateKey
-        }
+            if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
+                $params.Body.PrivateKeyData = $PrivateKey
+            }
 
-        $response = Invoke-VenafiRestMethod @params
-        Write-Verbose ('Successfully imported certificate')
+            $response = Invoke-VenafiRestMethod @params
+            Write-Verbose ('Successfully imported certificate')
 
-        if ( $PassThru.IsPresent ) {
-            Get-TppObject -Guid $response.Guid
+            if ( $PassThru.IsPresent ) {
+                Get-TppObject -Guid $response.Guid
+            }
         }
     }
 }

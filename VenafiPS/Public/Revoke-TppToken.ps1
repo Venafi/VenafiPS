@@ -129,7 +129,7 @@ function Revoke-TppToken {
         }
 
         if ( $PSCmdlet.ShouldProcess($target) ) {
-            Invoke-TppRestMethod @params
+            Invoke-VenafiRestMethod @params
         }
     }
 }

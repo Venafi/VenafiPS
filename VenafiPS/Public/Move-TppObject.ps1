@@ -89,7 +89,7 @@ function Move-TppObject {
         }
     }
 
-    $response = Invoke-TppRestMethod @params
+    $response = Invoke-VenafiRestMethod @params
 
     if ( $response.Result -ne [TppConfigResult]::Success ) {
         throw $response.Error

@@ -59,7 +59,7 @@ function Get-VaasOrgUnit {
             $params.UriLeaf += "/$OrgUnitId"
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.PSObject.Properties.Name -contains 'organizationalUnits' ) {
             $orgUnits = $response | Select-Object -ExpandProperty organizationalUnits

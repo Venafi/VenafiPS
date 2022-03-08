@@ -190,7 +190,7 @@ function Export-VenafiCertificate {
             $params.UriRoot = 'outagedetection/v1'
             $params.UriLeaf = "certificates/$CertificateId/contents"
             $params.Method = 'Get'
-            Invoke-TppRestMethod @params
+            Invoke-VenafiRestMethod @params
         }
         else {
             $params.Method = 'Post'
@@ -198,7 +198,7 @@ function Export-VenafiCertificate {
 
             $params.Body.CertificateDN = $CertificateId
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             Write-Verbose ($response | Format-List | Out-String)
 

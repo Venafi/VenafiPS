@@ -68,7 +68,7 @@ function Convert-TppObject {
 
         $params.Body.ObjectDN = $Path
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Result -ne [TppConfigResult]::Success ) {
             throw $response.Error

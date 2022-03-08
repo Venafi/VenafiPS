@@ -219,13 +219,13 @@ function New-TppToken {
 
         if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
             try {
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
             }
             catch {
                 # workaround bug pre 21.3 where client_id must be lowercase
                 if ( $_ -like '*The client_id value being requested with the refresh token does not match the client_id of the access token making the call*') {
                     $params.Body.client_id = $params.Body.client_id.ToLower()
-                    $response = Invoke-TppRestMethod @params
+                    $response = Invoke-VenafiRestMethod @params
                 }
                 else {
                     throw $_
@@ -233,7 +233,7 @@ function New-TppToken {
             }
         }
         else {
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
         }
 
         $response | Write-VerboseWithSecret

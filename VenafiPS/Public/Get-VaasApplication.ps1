@@ -55,7 +55,7 @@ function Get-VaasApplication {
             $params.UriLeaf += "/$ApplicationId"
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.PSObject.Properties.Name -contains 'applications' ) {
             $applications = $response | Select-Object -ExpandProperty applications

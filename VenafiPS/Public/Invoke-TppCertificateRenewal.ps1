@@ -90,7 +90,7 @@ function Invoke-TppCertificateRenewal {
             write-verbose "Renewing $Path..."
 
             $params.Body.CertificateDN = $Path
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             $response | Add-Member @{'Path' = $Path } -PassThru
         }

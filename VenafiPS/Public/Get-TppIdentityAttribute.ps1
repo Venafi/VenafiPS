@@ -94,7 +94,7 @@ function Get-TppIdentityAttribute {
 
                     $params.Body.AttributeName = $thisAttribute
 
-                    $response = Invoke-TppRestMethod @params
+                    $response = Invoke-VenafiRestMethod @params
                     if ( $response.Attributes ) {
                         $attribHash.$thisAttribute = $response.Attributes[0]
                     }
@@ -103,7 +103,7 @@ function Get-TppIdentityAttribute {
                 $attribsOut = [PSCustomObject] $attribHash
 
             } else {
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
                 $attribsOut = $response.Id
             }
 

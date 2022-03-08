@@ -46,7 +46,7 @@ function Get-TppVersion {
     }
 
     try {
-        $ver = [Version]((Invoke-TppRestMethod @params).Version)
+        $ver = [Version]((Invoke-VenafiRestMethod @params).Version)
         [Version]::new($ver.Major, $ver.Minor, $ver.Build)
     }
     catch {

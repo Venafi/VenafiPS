@@ -98,12 +98,12 @@ function Get-TppIdentity {
 
                     $params.Body.Id.PrefixedUniversal = $thisId
 
-                    $response = Invoke-TppRestMethod @params
+                    $response = Invoke-VenafiRestMethod @params
                 }
             }
 
             'Me' {
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 $idOut = $response.Identities | Select-Object -First 1
             }
