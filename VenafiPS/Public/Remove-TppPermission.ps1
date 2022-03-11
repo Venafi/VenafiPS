@@ -111,7 +111,7 @@ function Remove-TppPermission {
                 # get list of identities permissioned to this object
                 $getParams = $params.Clone()
                 $getParams.Method = 'Get'
-                $identities = Invoke-TppRestMethod @getParams
+                $identities = Invoke-VenafiRestMethod @getParams
             }
 
             foreach ( $thisIdentity in $identities ) {
@@ -131,7 +131,7 @@ function Remove-TppPermission {
 
                 if ( $PSCmdlet.ShouldProcess($thisGuid, "Remove permissions for $thisIdentity") ) {
                     try {
-                        Invoke-TppRestMethod @params
+                        Invoke-VenafiRestMethod @params
                     } catch {
                         Write-Error ("Failed to remove permissions on path $thisGuid, user/group $thisIdentity.  $_")
                     }

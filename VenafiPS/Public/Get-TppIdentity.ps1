@@ -156,7 +156,7 @@ function Get-TppIdentity {
             }
 
             'Me' {
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 $idOut = $response.Identities | Select-Object -First 1
             }

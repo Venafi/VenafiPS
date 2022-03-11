@@ -181,7 +181,7 @@ function Import-TppCertificate {
             $params.Body.PrivateKeyData = $PrivateKey
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
         Write-Verbose ('Successfully imported certificate')
 
         if ( $PassThru.IsPresent ) {

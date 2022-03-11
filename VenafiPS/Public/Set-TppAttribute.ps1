@@ -203,7 +203,7 @@ function Set-TppAttribute {
                     Locked        = [int]$Lock.ToBool()
                 }
 
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 if ( $response.Result -ne [TppConfigResult]::Success ) {
                     Write-Error $response.Error
@@ -221,7 +221,7 @@ function Set-TppAttribute {
                 AttributeData = $baseFields
             }
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -ne [TppConfigResult]::Success ) {
                 Write-Error $response.Error
@@ -237,7 +237,7 @@ function Set-TppAttribute {
                 KeepExisting = $true
             }
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -ne 0 ) {
                 Write-Error $response.Error

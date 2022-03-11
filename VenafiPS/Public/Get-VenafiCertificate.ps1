@@ -129,7 +129,7 @@ function Get-VenafiCertificate {
                     $params.UriLeaf += "/$CertificateId"
                 }
 
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 if ( $response.PSObject.Properties.Name -contains 'certificates' ) {
                     $certs = $response | Select-Object -ExpandProperty certificates

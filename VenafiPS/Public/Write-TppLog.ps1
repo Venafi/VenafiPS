@@ -183,7 +183,7 @@ function Write-TppLog {
 
     if ( $PSCmdlet.ShouldProcess($Component, 'Write log entry') ) {
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.LogResult -eq 1 ) {
             throw "Writing to the TPP log failed.  Ensure you have View permission and Read permission to the default SQL channel object."
