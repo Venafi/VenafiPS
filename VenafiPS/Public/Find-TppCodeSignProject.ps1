@@ -70,7 +70,7 @@ function Find-TppCodeSignProject {
             }
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Success ) {
             $allProjects += foreach ($thisProject in $response.Projects) {

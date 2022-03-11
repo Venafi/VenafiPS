@@ -57,7 +57,7 @@ function Get-TppCodeSignConfig {
 
     process {
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Success ) {
             $response.GlobalConfiguration

@@ -126,7 +126,7 @@ function Set-TppWorkflowTicketStatus {
 
             if ( $PSCmdlet.ShouldProcess($params.Body.GUID, 'Set workflow ticket status') ) {
 
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 if ( -not ($response.Result -eq [TppWorkflowResult]::Success) ) {
                     throw ("Error setting workflow ticket status, error is {0}" -f [enum]::GetName([TppWorkflowResult], $response.Result))

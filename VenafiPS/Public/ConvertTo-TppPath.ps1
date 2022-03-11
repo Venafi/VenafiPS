@@ -53,7 +53,7 @@ function ConvertTo-TppPath {
 
         $params.Body.ObjectGUID = "{$Guid}"
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Result -eq [TppConfigResult]::Success ) {
             if ( $PSBoundParameters.ContainsKey('IncludeType') ) {

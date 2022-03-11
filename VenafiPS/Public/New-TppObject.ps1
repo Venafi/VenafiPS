@@ -123,7 +123,7 @@ function New-TppObject {
 
     if ( $PSCmdlet.ShouldProcess($Path, ('Create {0} Object' -f $Class)) ) {
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Result -ne [TppConfigResult]::Success ) {
             Throw $response.Error

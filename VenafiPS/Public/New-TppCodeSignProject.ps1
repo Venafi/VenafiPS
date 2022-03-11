@@ -80,7 +80,7 @@ function New-TppCodeSignProject {
         $params.Body.Dn = $Path
 
         if ( $PSCmdlet.ShouldProcess($Path, 'New code sign project') ) {
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Success ) {
                 $response.Project | ConvertTo-TppCodeSignProject

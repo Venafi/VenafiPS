@@ -182,7 +182,7 @@ function Get-TppPermission {
 
             try {
                 # get list of identities permissioned to this object
-                $identities = Invoke-TppRestMethod @params
+                $identities = Invoke-VenafiRestMethod @params
             }
             catch {
                 Write-Error ('Couldn''t obtain list of permissions for {0}.  {1}' -f $thisTppObject.Path, $_ | Out-String)
@@ -217,7 +217,7 @@ function Get-TppPermission {
 
                 try {
 
-                    $response = Invoke-TppRestMethod @params
+                    $response = Invoke-VenafiRestMethod @params
 
                     # if no permissions are assigned, we won't get anything back
                     if ( $response ) {

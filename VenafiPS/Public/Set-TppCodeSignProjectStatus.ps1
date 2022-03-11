@@ -74,7 +74,7 @@ function Set-TppCodeSignProjectStatus {
         $params.Body.Dn = $Path
 
         if ( $PSCmdlet.ShouldProcess($Path, "Set project status to $Status") ) {
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( -not $response.Success ) {
                 Write-Error ('{0} : {1} : {2}' -f $response.Result, [enum]::GetName([TppCodeSignResult], $response.Result), $response.Error)

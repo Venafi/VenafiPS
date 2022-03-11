@@ -113,7 +113,7 @@ function Test-TppObject {
                 }
             }
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $ExistOnly ) {
                 $response.Result -eq [TppConfigResult]::Success

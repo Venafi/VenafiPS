@@ -97,6 +97,6 @@ function Invoke-TppCertificatePush {
 
     process {
         $params.Body.CertificateDN = $CertificatePath
-        $null = Invoke-TppRestMethod @params
+        $null = Invoke-VenafiRestMethod @params
     }
 }
