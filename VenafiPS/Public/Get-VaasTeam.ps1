@@ -1,6 +1,6 @@
 ﻿<#
 .SYNOPSIS
-Get Team info
+Get VaaS Team info
 
 .DESCRIPTION
 Get info for either a specific team or all teams.  Venafi as a Service only, not for TPP.
