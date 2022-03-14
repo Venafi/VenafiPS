@@ -132,13 +132,13 @@ function Find-TppIdentity {
             'Find' {
                 $response = $Name.ForEach{
                     $params.Body.Filter = $_
-                    Invoke-TppRestMethod @params
+                    Invoke-VenafiRestMethod @params
                 }
                 $ids = $response.Identities
             }
 
             'Me' {
-                $response = Invoke-TppRestMethod @params
+                $response = Invoke-VenafiRestMethod @params
 
                 $ids = $response.Identities | Select-Object -First 1
             }

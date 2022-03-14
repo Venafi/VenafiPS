@@ -117,7 +117,7 @@ function Add-TppCertificateAssociation {
         $params.Body.ApplicationDN = @($ApplicationPath)
 
         if ( $PSCmdlet.ShouldProcess($CertificatePath, 'Add association') ) {
-            $null = Invoke-TppRestMethod @params
+            $null = Invoke-VenafiRestMethod @params
         }
     }
 }

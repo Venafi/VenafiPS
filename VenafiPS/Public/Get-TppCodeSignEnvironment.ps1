@@ -94,7 +94,7 @@ function Get-TppCodeSignEnvironment {
     process {
 
         $params.Body.Dn = $Path
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Success ) {
             Write-Debug $response.CertificateEnvironment

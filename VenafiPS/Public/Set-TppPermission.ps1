@@ -152,7 +152,7 @@ function Set-TppPermission {
                 if ( $PSCmdlet.ShouldProcess($thisInputObject, "Set permission for $thisId") ) {
                     try {
 
-                        $response = Invoke-TppRestMethod @params
+                        $response = Invoke-VenafiRestMethod @params
                         switch ([int]$response.StatusCode) {
 
                             '201' {
@@ -166,7 +166,7 @@ function Set-TppPermission {
 
                                     Write-Verbose "Existing user/group found and Force option provided, updating existing permissions"
                                     $params.Method = 'Put'
-                                    $response = Invoke-TppRestMethod @params
+                                    $response = Invoke-VenafiRestMethod @params
                                     if ( [int]$response.StatusCode -ne '200' ) {
                                         Write-Error ('Failed to update permission with error {0}' -f $response.StatusDescription)
                                     }

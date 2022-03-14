@@ -70,7 +70,7 @@ function Find-TppCodeSignTemplate {
             }
         }
 
-        $response = Invoke-TppRestMethod @params
+        $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Success ) {
             $allTemplates += foreach ($thisTemplate in $response.CertificateTemplates) {

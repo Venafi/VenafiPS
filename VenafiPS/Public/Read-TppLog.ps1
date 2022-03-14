@@ -189,6 +189,6 @@ function Read-TppLog {
             $params.Body.Component = $Path
         }
 
-        Invoke-TppRestMethod @params | Select-Object -ExpandProperty LogEvents | Select-Object -Property @{'n' = 'EventId'; 'e' = { '{0:x8}' -f $_.Id } }, *
+        Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty LogEvents | Select-Object -Property @{'n' = 'EventId'; 'e' = { '{0:x8}' -f $_.Id } }, *
     }
 }

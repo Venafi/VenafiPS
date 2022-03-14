@@ -200,7 +200,7 @@ function Export-VenafiCertificate {
 
             $params.Body.CertificateDN = $CertificateId
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             Write-Verbose ($response | Format-List | Out-String)
 
