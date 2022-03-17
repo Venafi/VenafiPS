@@ -46,6 +46,10 @@ function ConvertTo-TppIdentity {
             e = { $_.FullName }
         },
         @{
+            n = 'FullName'
+            e = { $_.PrefixedName }
+        },
+        @{
             n = 'IsGroup'
             e = { $_.Type -ne 1 }
         } -ExcludeProperty PrefixedUniversal, FullName, Prefix, PrefixedName, Type, Universal, IsGroup
