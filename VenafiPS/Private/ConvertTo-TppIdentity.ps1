@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-Convert code sign certificate environment to something powershell friendly
+Convert identity to standard format
 
 .DESCRIPTION
-Convert code sign certificate environment to something powershell friendly
+Convert identity to standard format
 
 .PARAMETER InputObject
-Code sign certificate environment object
+Identity object
 
 .INPUTS
 InputObject
@@ -15,7 +15,7 @@ InputObject
 PSCustomObject
 
 .EXAMPLE
-$envObj | ConvertTo-TppCodeSignEnvironment
+$identityObj | ConvertTo-TppIdentity
 
 #>
 function ConvertTo-TppIdentity {

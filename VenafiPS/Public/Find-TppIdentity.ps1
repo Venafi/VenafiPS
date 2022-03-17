@@ -145,19 +145,7 @@ function Find-TppIdentity {
         }
 
         if ( $ids ) {
-            $ids | Select-Object `
-            @{
-                n = 'Name'
-                e = { $_.Name }
-            },
-            @{
-                n = 'ID'
-                e = { $_.PrefixedUniversal }
-            },
-            @{
-                n = 'Path'
-                e = { $_.FullName }
-            }
+            $ids | ConvertTo-TppIdentity
         }
     }
 }
