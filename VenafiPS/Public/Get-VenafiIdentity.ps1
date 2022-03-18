@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Get identity details
+Get user and group details
 
 .DESCRIPTION
 Returns user/group information for VaaS and TPP.
