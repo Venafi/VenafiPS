@@ -8,7 +8,7 @@ For VaaS, this returns user information.
 For TPP, this returns individual identity, group identity, or distribution groups from a local or non-local provider such as Active Directory.
 
 .PARAMETER ID
-For TPP this is the individual identity, group identity, or distribution group prefixed universal id.
+For TPP this is the individual identity, group identity, or distribution group prefixed universal id.  To search, use Find-TppIdentity.
 For VaaS this can either be the user id (guid) or username which is the email address.
 
 .PARAMETER IncludeAssociated
@@ -90,7 +90,7 @@ Get identity details for authenticated/current user, TPP or VaaS
 .EXAMPLE
 Get-VenafiIdentity -All
 
-Get all users from VaaS
+Get all users (VaaS) or all users/groups (TPP)
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppIdentity/
@@ -232,8 +232,11 @@ function Get-VenafiIdentity {
                 }
 
                 'All' {
-                    Write-Warning '-All not supported with TPP'
-                    Continue
+                    # no built-in api for this, get group objects and then get details
+                    $identities = Find-TppObject -Path '\VED\Identity' -Recursive -Class 'User', 'Group' -VenafiSession $VenafiSession
+                    foreach ($identity in $identities ) {
+                        Get-VenafiIdentity -ID ('local:{{{0}}}' -f $identity.guid) -VenafiSession $VenafiSession
+                    }
                 }
             }
 

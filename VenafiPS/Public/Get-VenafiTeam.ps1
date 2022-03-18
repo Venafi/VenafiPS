@@ -22,15 +22,23 @@ PSCustomObject
 
 .EXAMPLE
 Get-VenafiTeam -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+
 Get info for a VaaS team
 
 .EXAMPLE
 Get-VenafiTeam -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}'
+
 Get info for a TPP team
 
 .EXAMPLE
+Find-TppIdentity -Name MyTeamName | Get-VenafiTeam
+
+Search for a team and then get details
+
+.EXAMPLE
 Get-VenafiTeam -All
-Get info for all teams.  VaaS only.
+
+Get info for all teams
 
 .LINK
 https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=account-service#/Teams/get_2
@@ -87,7 +95,9 @@ function Get-VenafiTeam {
         }
         else {
             if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
-                $groups = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'Config/EnumerateObjectsDerivedFrom' -Body @{'DerivedFrom' = 'Group' } -VenafiSession $VenafiSession | Select-Object -ExpandProperty Objects
+
+                # no built-in api for this, get group objects and then get details
+                $groups = Find-TppObject -Path '\VED\Identity' -Recursive -Class 'Group' -VenafiSession $VenafiSession
                 foreach ($group in ($groups  | Where-Object { $_.Name -ne 'Everyone' })) {
                     Write-Verbose ('Processing group {0}' -f $group.Name)
                     Get-VenafiTeam -ID ('local:{0}' -f $group.guid) -VenafiSession $VenafiSession
@@ -119,7 +129,6 @@ function Get-VenafiTeam {
                 }
                 $out
             }
-
         }
     }
 }
