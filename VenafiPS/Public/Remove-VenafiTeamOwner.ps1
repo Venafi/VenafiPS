@@ -3,13 +3,20 @@
 Remove team owner
 
 .DESCRIPTION
-Remove a team owner from VaaS or TPP
+Remove a team owner from VaaS or TPP.
+By default, TPP will demote an owner to a member; see -Force to override this behavior.
 
 .PARAMETER ID
 Team ID
+For VaaS, this is the unique guid obtained from Get-VenafiTeam.
+For TPP, this is the ID property from Find-TppIdentity or Get-VenafiTeam.
 
 .PARAMETER Owner
 1 or more owners to remove from the team
+
+.PARAMETER Force
+TPP only.
+By default, TPP will demote an owner to a member role.  Use -Force to remove the user as a member as well.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -19,7 +26,7 @@ ID
 
 .EXAMPLE
 Remove-VenafiTeamOwner -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
-Remove ownrs from a team
+Remove owners from a team
 
 .EXAMPLE
 Remove-VenafiTeamOwner -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f3' -Confirm:$false
@@ -37,6 +44,9 @@ function Remove-VenafiTeamOwner {
 
         [Parameter(Mandatory)]
         [string[]] $Owner,
+
+        [Parameter()]
+        [switch] $Force,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -59,6 +69,10 @@ function Remove-VenafiTeamOwner {
             $params.Body = @{
                 'owners' = @($Owner)
             }
+
+            if ( $PSCmdlet.ShouldProcess($ID, "Delete team owners") ) {
+                Invoke-VenafiRestMethod @params | Out-Null
+            }
         }
         else {
             $teamName = Get-VenafiIdentity -ID $ID -VenafiSession $VenafiSession | Select-Object -ExpandProperty FullName
@@ -80,10 +94,14 @@ function Remove-VenafiTeamOwner {
                 'Team'   = @{'PrefixedName' = $teamName }
                 'Owners' = @($owners)
             }
-        }
 
-        if ( $PSCmdlet.ShouldProcess($ID, "Delete team owners") ) {
-            Invoke-VenafiRestMethod @params | Out-Null
+            if ( $PSCmdlet.ShouldProcess($ID, "Delete team owners") ) {
+                Invoke-VenafiRestMethod @params | Out-Null
+
+                if ( $Force ) {
+                    Remove-VenafiTeamMember -ID $ID -Member $Owner -VenafiSession $VenafiSession
+                }
+            }
         }
     }
 }

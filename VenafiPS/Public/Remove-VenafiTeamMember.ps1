@@ -7,6 +7,8 @@ Remove a team member from VaaS or TPP
 
 .PARAMETER ID
 Team ID
+For VaaS, this is the unique guid obtained from Get-VenafiTeam.
+For TPP, this is the ID property from Find-TppIdentity or Get-VenafiTeam.
 
 .PARAMETER Member
 1 or more members to remove from the team

@@ -7,8 +7,8 @@ Add owners to either a VaaS or TPP team
 
 .PARAMETER ID
 Team ID.
-For Venafi as a Service, this is the unique guid.
-TPP coming soon...
+For VaaS, this is the unique guid obtained from Get-VenafiTeam.
+For TPP, this is the ID property from Find-TppIdentity or Get-VenafiTeam.
 
 .PARAMETER Owner
 1 or more owners to add to the team
