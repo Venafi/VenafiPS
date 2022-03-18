@@ -49,7 +49,7 @@ function Get-VenafiTeam {
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [string] $ID,
 
-        [Parameter(Mandatory, ParameterSetName='All')]
+        [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
 
         [Parameter()]
@@ -87,32 +87,39 @@ function Get-VenafiTeam {
         }
         else {
             if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
-                throw "-All not supported for TPP"
-            }
-
-            # check if just a guid or prefixed universal id
-            if ( Test-TppIdentityFormat -Identity $ID ) {
-                $guid = [guid]($ID.Replace('local:', ''))
+                $groups = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'Config/EnumerateObjectsDerivedFrom' -Body @{'DerivedFrom' = 'Group' } -VenafiSession $VenafiSession | Select-Object -ExpandProperty Objects
+                foreach ($group in ($groups  | Where-Object { $_.Name -ne 'Everyone' })) {
+                    Write-Verbose ('Processing group {0}' -f $group.Name)
+                    Get-VenafiTeam -ID ('local:{0}' -f $group.guid) -VenafiSession $VenafiSession
+                }
             }
             else {
-                try {
-                    $guid = [guid] $ID
-                }
-                catch {
-                    Write-Error "$ID is not a valid team id"
-                    Continue
-                }
-            }
-            $params.UriLeaf = ('Teams/local/{{{0}}}' -f $guid.ToString())
 
-            $response = Invoke-VenafiRestMethod @params
+                # check if just a guid or prefixed universal id
+                if ( Test-TppIdentityFormat -Identity $ID ) {
+                    $guid = [guid]($ID.Replace('local:', ''))
+                }
+                else {
+                    try {
+                        $guid = [guid] $ID
+                    }
+                    catch {
+                        Write-Error "$ID is not a valid team id"
+                        Continue
+                    }
+                }
+                $params.UriLeaf = ('Teams/local/{{{0}}}' -f $guid.ToString())
 
-            $out = [pscustomobject] ($response.ID | ConvertTo-TppIdentity)
-            $out | Add-Member @{
-                Members = $response.Members | ConvertTo-TppIdentity
-                Owners  = $response.Owners | ConvertTo-TppIdentity
+                $response = Invoke-VenafiRestMethod @params
+
+                $out = [pscustomobject] ($response.ID | ConvertTo-TppIdentity)
+                $out | Add-Member @{
+                    Members = $response.Members | ConvertTo-TppIdentity
+                    Owners  = $response.Owners | ConvertTo-TppIdentity
+                }
+                $out
             }
-            $out
+
         }
     }
 }
