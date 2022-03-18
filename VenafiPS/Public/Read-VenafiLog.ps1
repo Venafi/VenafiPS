@@ -84,34 +84,42 @@ For VaaS:
 
 .EXAMPLE
 Read-VenafiLog -First 10
+
 Get the most recent 10 log items
 
 .EXAMPLE
 $capiObject | Read-VenafiLog
+
 Find all events for a specific TPP object
 
 .EXAMPLE
 Read-VenafiLog -EventId '00130003'
+
 Find all TPP events with event ID '00130003', Certificate Monitor - Certificate Expiration Notice
 
 .EXAMPLE
 Read-VenafiLog -Filter @('and', @('authenticationType', 'eq', 'NONE'))
+
 Filter VaaS log results
 
 .EXAMPLE
 Read-VenafiLog -Filter @('and', @('authenticationType', 'eq', 'NONE')) -First 5
+
 Get first 5 VaaS entries of filtered log results
 
 .EXAMPLE
 Read-VenafiLog -Filter @('and', @('activityDate', 'gt', (get-date).AddMonths(-1)), @('or', @('userId', 'eq', 'ab0feb46-8df7-47e7-8da9-f47ab314f26a'), @('userId', 'eq', '933c28de-6352-46f3-bc12-bd96077e8eae')))
+
 Advanced filtering of VaaS results.  This filter will find log entries by 1 of 2 people within the last month.
 
 .EXAMPLE
 Read-VenafiLog -Filter @('and', @('authenticationType', 'eq', 'NONE')) -Order 'activityDate'
+
 Filter VaaS log results and order them
 
 .EXAMPLE
 Read-VenafiLog -Filter @('and', @('authenticationType', 'eq', 'NONE')) -Order @{'activityDate'='desc'}
+
 Filter VaaS log results and order them descending
 
 .LINK
