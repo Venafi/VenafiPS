@@ -56,6 +56,13 @@ function Remove-VenafiTeamOwner {
 
         if ( $VenafiSession.Platform -eq 'VaaS' ) {
 
+            # get team details and ensure at least 1 owner will remain
+            $thisTeam = Get-VenafiTeam -ID $ID -VenafiSession $VenafiSession
+            $ownerCompare = Compare-Object -ReferenceObject $thisTeam.owners -DifferenceObject $Owner
+            if ( -not ($ownerCompare | Where-Object { $_.SideIndicator -eq '<=' }) ) {
+                throw 'A team must have at least one owner and you are attempting to remove them all'
+            }
+
             $params.Method = 'Delete'
             $params.UriLeaf = "teams/$ID/owners"
             $params.Body = @{
