@@ -57,7 +57,7 @@ function Add-VenafiTeamOwner {
         if ( $VenafiSession.Platform -eq 'VaaS' ) {
 
             $params.Method = 'Post'
-            $params.UriLeaf = "teams/$TeamId/owners"
+            $params.UriLeaf = "teams/$ID/owners"
             $params.Body = @{
                 'owners' = @($Owner)
             }

@@ -65,7 +65,7 @@ function Add-VenafiTeamMember {
         if ( $VenafiSession.Platform -eq 'VaaS' ) {
 
             $params.Method = 'Post'
-            $params.UriLeaf = "teams/$TeamId/members"
+            $params.UriLeaf = "teams/$ID/members"
             $params.Body = @{
                 'members' = @($Member)
             }
