@@ -61,10 +61,10 @@ function Remove-VenafiTeamMember {
             }
         }
         else {
-            $teamName = Get-VenafiIdentity -ID $ID | Select-Object -ExpandProperty FullName
+            $teamName = Get-VenafiIdentity -ID $ID -VenafiSession $VenafiSession | Select-Object -ExpandProperty FullName
             $members = foreach ($thisMember in $Member) {
                 if ( $thisMember.StartsWith('local') ) {
-                    $teamIdentity = Get-VenafiIdentity -ID $thisMember
+                    $teamIdentity = Get-VenafiIdentity -ID $thisMember -VenafiSession $VenafiSession
                     @{
                         'PrefixedName'      = $teamIdentity.FullName
                         'PrefixedUniversal' = $teamIdentity.ID
