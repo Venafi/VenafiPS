@@ -40,9 +40,9 @@ Nested filters are supported.
 For a complete list of comparison operators, see https://docs.venafi.cloud/api/about-api-search-operators/.
 
 .PARAMETER Order
-VaaS.  Array or multidimensional array of fields to Order on.
-Each array should be of the format @(field, asc/desc).
-If just the field name is provided, ascending will be used.
+VaaS.  Array of fields to order on.
+For each item in the array, you can provide a field name by itself; this will default to ascending.
+You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
@@ -121,6 +121,11 @@ Filter VaaS log results and order them
 Read-VenafiLog -Filter @('and', @('authenticationType', 'eq', 'NONE')) -Order @{'activityDate'='desc'}
 
 Filter VaaS log results and order them descending
+
+.EXAMPLE
+Read-VenafiLog -Filter @('and', @('authenticationType', 'eq', 'NONE')) -Order @{'activityDate'='desc'}, 'statusCode'
+
+Filter VaaS log results and order them by multiple fields
 
 .LINK
 https://api.venafi.cloud/webjars/swagger-ui/index.html?configUrl=/v3/api-docs/swagger-config#/Activity%20Logs/activitylogs_getByExpression

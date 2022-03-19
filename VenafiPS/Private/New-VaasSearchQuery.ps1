@@ -140,48 +140,37 @@ function New-VaasSearchQuery {
             $query.expression = New-VaasExpression -Filter $thisFilter
         }
 
-        $orderList = $order
 
         if ( $Order ) {
-
             $query.ordering.Add('orders', @())
 
-            # see if we're working with 1 array or multidimensional array
-            # we want multidimensional so convert if not
-            if ($Order[0].GetType().Name -eq 'String') {
-                $orderList = @(, $Order)
-            }
-        }
-
-        for ($i = 0; $i -lt $orderList.Count; $i++) {
-            $thisOrder = $orderList[$i]
-
-            switch ($thisOrder.Count) {
-                0 {
-                    # nothing to see here
-                    Continue
-                }
-
-                1 {
-                    $query.ordering.orders += @{
-                        'field'     = $thisOrder[0]
-                        'direction' = 'ASC'
-                    }
-                }
-
-                2 {
-                    if ( $thisOrder[1] -notin 'asc', 'desc' ) {
-                        throw ('Invalid order direction, {0}.  Provide either ''asc'' or ''desc''' -f $thisOrder[1])
+            @($Order) | ForEach-Object {
+                $thisOrder = $_
+                switch ($thisOrder.GetType().Name) {
+                    'String' {
+                        $query.ordering.orders += @{
+                            'field'     = $thisOrder
+                            'direction' = 'ASC'
+                        }
                     }
 
-                    $query.ordering.orders += @{
-                        'field'     = $thisOrder[0]
-                        'direction' = $thisOrder[1].ToUpper()
-                    }
-                }
+                    'HashTable' {
+                        $thisOrder.GetEnumerator() | ForEach-Object {
 
-                Default {
-                    throw ('Too many items for {0}, see the help' -f $thisOrder[0])
+                            if ( $_.Value -notin 'asc', 'desc' ) {
+                                throw ('Invalid order direction, {0}.  Provide either ''asc'' or ''desc''' -f $_.Value)
+                            }
+
+                            $query.ordering.orders += @{
+                                'field'     = $_.Key
+                                'direction' = $_.Value.ToUpper()
+                            }
+                        }
+                    }
+
+                    Default {
+                        throw 'Invalid format for Order'
+                    }
                 }
             }
         }
