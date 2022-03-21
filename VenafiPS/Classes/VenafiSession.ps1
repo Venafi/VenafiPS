@@ -52,7 +52,7 @@ class VenafiSession {
         # make sure the auth type and url we have match
         # this keeps folks from calling a vaas function with a token and vice versa
         if ( $Platform -ne $this.Platform ) {
-            throw "This function is only accessible for $Platform"
+            throw "This function or parameter set is only accessible for $Platform"
         }
 
         # expired, perform refresh
