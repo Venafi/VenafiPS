@@ -5,6 +5,7 @@ Read entries from the VaaS or TPP log
 .DESCRIPTION
 Read entries from the VaaS or TPP log.
 Supports -First for paging.
+Limit of 1000 records.
 
 .PARAMETER Path
 TPP.  Path to search for related records

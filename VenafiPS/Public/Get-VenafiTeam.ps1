@@ -11,6 +11,9 @@ Team ID, required for TPP.
 For VaaS, this is the team guid.
 For TPP, this is the local prefixed universal ID.  You can find the group ID with Find-TppIdentity.
 
+.PARAMETER All
+Provide this switch to get all teams
+
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
 
