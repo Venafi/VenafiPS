@@ -36,6 +36,11 @@ Remove-VenafiTeamMember -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Memb
 
 Remove members from a TPP team
 
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Teams-RemoveTeamMembers.php
+
+.LINK
+https://api.venafi.cloud/webjars/swagger-ui/index.html#/Teams/removeMember
 #>
 function Remove-VenafiTeamMember {
 

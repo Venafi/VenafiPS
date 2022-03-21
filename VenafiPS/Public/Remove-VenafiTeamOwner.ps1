@@ -36,6 +36,11 @@ Remove-VenafiTeamOwner -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner
 
 Remove owners from a TPP team
 
+.LINK
+https://api.venafi.cloud/webjars/swagger-ui/index.html#/Teams/removeOwner
+
+.LINK
+https://docs.venafi.com/Docs/21.4SDK/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Teams-DemoteTeamOwners.php
 #>
 function Remove-VenafiTeamOwner {
 

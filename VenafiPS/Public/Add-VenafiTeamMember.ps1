@@ -32,7 +32,7 @@ Add-VenafiTeamMember -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Member 
 Add members to a TPP team
 
 .LINK
-https://api.venafi.cloud/webjars/swagger-ui/index.html?configUrl=%2Fv3%2Fapi-docs%2Fswagger-config&urls.primaryName=outagedetection-service#/Teams/addMember
+https://api.venafi.cloud/webjars/swagger-ui/index.html#/Teams/addMember
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Teams-AddTeamMembers.php
