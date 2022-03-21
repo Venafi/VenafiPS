@@ -33,7 +33,8 @@ function Remove-VenafiTeam {
 
     param (
 
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Alias('Guid')]
         [string] $ID,
 
         [Parameter()]
