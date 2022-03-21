@@ -98,7 +98,6 @@ function New-VenafiTeam {
         }
 
         $response = Invoke-VenafiRestMethod @params
-
     }
     else {
 
