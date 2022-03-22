@@ -58,6 +58,7 @@ function Get-VenafiTeam {
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Alias('PrefixedUniversal', 'Guid')]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]

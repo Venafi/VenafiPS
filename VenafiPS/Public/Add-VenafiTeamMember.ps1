@@ -43,6 +43,7 @@ function Add-VenafiTeamMember {
     param (
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Alias('PrefixedUniversal', 'Guid')]
         [string] $ID,
 
         [Parameter(Mandatory)]

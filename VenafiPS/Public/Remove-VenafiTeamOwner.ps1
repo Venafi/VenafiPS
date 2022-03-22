@@ -49,6 +49,7 @@ function Remove-VenafiTeamOwner {
     param (
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Alias('PrefixedUniversal', 'Guid')]
         [string] $ID,
 
         [Parameter(Mandatory)]

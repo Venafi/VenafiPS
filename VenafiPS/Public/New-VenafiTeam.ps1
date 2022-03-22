@@ -36,6 +36,11 @@ New-VenafiTeam -Name 'My New Team' -Member 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2
 Create a new VaaS team
 
 .EXAMPLE
+New-VenafiTeam -Name 'My New Team' -Member 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4') -Role 'System Admin' -PassThru
+
+Create a new VaaS team returning the new team
+
+.EXAMPLE
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS'
 
 Create a new TPP team
@@ -138,7 +143,7 @@ function New-VenafiTeam {
             $params.Body.Add('Description', $Description)
         }
 
-        $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID | ConvertTo-TppIdentity
+        $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID | Get-VenafiTeam -VenafiSession $VenafiSession
     }
 
     if ( $PassThru ) {
