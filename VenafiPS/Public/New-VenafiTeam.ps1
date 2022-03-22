@@ -38,12 +38,38 @@ Create a new VaaS team
 .EXAMPLE
 New-VenafiTeam -Name 'My New Team' -Member 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4') -Role 'System Admin' -PassThru
 
+id                : a7d60730-a967-11ec-8832-4d051bf6d0b4
+name              : my_team
+systemRoles       : {SYSTEM_ADMIN}
+productRoles      :
+role              : SYSTEM_ADMIN
+members           : {443de910-a6cc-11ec-ad22-018e33741844}
+owners            : {0a2adae0-b22b-11ea-91f3-ebd6dea5452e}
+companyId         : 09b24f81-b22b-11ea-91f3-ebd6dea5452e
+userMatchingRules : {}
+modificationDate  : 3/21/2022 6:38:40 PM
+
 Create a new VaaS team returning the new team
 
 .EXAMPLE
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS'
 
 Create a new TPP team
+
+.EXAMPLE
+New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -PassThru
+
+Name     : my_team
+ID       : local:{a6053090-e309-49d9-98a7-28cbe7896c27}
+Path     : \VED\Identity\my_team
+FullName : local:my_team
+IsGroup  : True
+Members  : @{Name=sample-user; ID=local:{6baad36c-7cac-48c8-8e54-000cc22ad88f};
+           Path=\VED\Identity\sample-user; FullName=local:sample-user; IsGroup=False}
+Owners   : @{Name=sample-owner; ID=local:{d1a76bc7-d3a6-431b-9bea-d2d8780ecd86};
+           Path=\VED\Identity\sample-owner; FullName=local:sample-owner; IsGroup=False}
+
+Create a new TPP team returning the new team
 
 .LINK
 https://api.venafi.cloud/webjars/swagger-ui/index.html#/Teams/create_1
