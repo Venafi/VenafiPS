@@ -39,7 +39,7 @@ Create a new VaaS team
 New-VenafiTeam -Name 'My New Team' -Member 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4') -Role 'System Admin' -PassThru
 
 id                : a7d60730-a967-11ec-8832-4d051bf6d0b4
-name              : my_team
+name              : My New Team
 systemRoles       : {SYSTEM_ADMIN}
 productRoles      :
 role              : SYSTEM_ADMIN
@@ -59,10 +59,10 @@ Create a new TPP team
 .EXAMPLE
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -PassThru
 
-Name     : my_team
+Name     : My New Team
 ID       : local:{a6053090-e309-49d9-98a7-28cbe7896c27}
-Path     : \VED\Identity\my_team
-FullName : local:my_team
+Path     : \VED\Identity\My New Team
+FullName : local:My New Team
 IsGroup  : True
 Members  : @{Name=sample-user; ID=local:{6baad36c-7cac-48c8-8e54-000cc22ad88f};
            Path=\VED\Identity\sample-user; FullName=local:sample-user; IsGroup=False}

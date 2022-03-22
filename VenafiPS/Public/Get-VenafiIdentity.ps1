@@ -8,7 +8,7 @@ For VaaS, this returns user information.
 For TPP, this returns individual identity, group identity, or distribution groups from a local or non-local provider such as Active Directory.
 
 .PARAMETER ID
-For TPP this is the individual identity, group identity, or distribution group prefixed universal id.  To search, use Find-TppIdentity.
+For TPP this is the guid or prefixed universal id.  To search, use Find-TppIdentity.
 For VaaS this can either be the user id (guid) or username which is the email address.
 
 .PARAMETER IncludeAssociated
@@ -125,9 +125,10 @@ function Get-VenafiIdentity {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = "Parameter is used")]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [String[]] $ID,
+        [Alias('Guid')]
+        [String] $ID,
 
         [Parameter(ParameterSetName = 'Id')]
         [Switch] $IncludeAssociated,
@@ -193,35 +194,36 @@ function Get-VenafiIdentity {
 
                     $params.Method = 'Post'
                     $params.UriLeaf = 'Identity/Validate'
-                    $params.Add('Body', @{'ID' = @{'PrefixedUniversal' = '' } })
-
-                    $idOut = foreach ( $thisId in $ID ) {
-
-                        $params.Body.Id.PrefixedUniversal = $thisId
-
-                        $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID
-
-                        if ( $IncludeAssociated ) {
-                            $assocParams = $params.Clone()
-                            $assocParams.UriLeaf = 'Identity/GetAssociatedEntries'
-                            $associated = Invoke-VenafiRestMethod @assocParams
-                            $response | Add-Member @{ 'Associated' = $null }
-                            $response.Associated = $associated.Identities | ConvertTo-TppIdentity
-                        }
-
-                        if ( $IncludeMembers ) {
-                            $response | Add-Member @{ 'Members' = $null }
-                            if ( $response.IsGroup ) {
-                                $assocParams = $params.Clone()
-                                $assocParams.UriLeaf = 'Identity/GetMembers'
-                                $assocParams.Body.ResolveNested = "1"
-                                $members = Invoke-VenafiRestMethod @assocParams
-                                $response.Members = $members.Identities | ConvertTo-TppIdentity
-                            }
-                        }
-
-                        $response
+                    if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
+                        $guid = [guid] $ID
+                        $params.Add('Body', @{'ID' = @{'PrefixedUniversal' = ('local:{{{0}}}' -f $guid.ToString()) } })
                     }
+                    else {
+                        $params.Add('Body', @{'ID' = @{'PrefixedUniversal' = $ID } })
+                    }
+
+                    $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID
+
+                    if ( $IncludeAssociated ) {
+                        $assocParams = $params.Clone()
+                        $assocParams.UriLeaf = 'Identity/GetAssociatedEntries'
+                        $associated = Invoke-VenafiRestMethod @assocParams
+                        $response | Add-Member @{ 'Associated' = $null }
+                        $response.Associated = $associated.Identities | ConvertTo-TppIdentity
+                    }
+
+                    if ( $IncludeMembers ) {
+                        $response | Add-Member @{ 'Members' = $null }
+                        if ( $response.IsGroup ) {
+                            $assocParams = $params.Clone()
+                            $assocParams.UriLeaf = 'Identity/GetMembers'
+                            $assocParams.Body.ResolveNested = "1"
+                            $members = Invoke-VenafiRestMethod @assocParams
+                            $response.Members = $members.Identities | ConvertTo-TppIdentity
+                        }
+                    }
+
+                    $idOut = $response
                 }
 
                 'Me' {
