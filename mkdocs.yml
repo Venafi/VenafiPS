@@ -9,6 +9,8 @@ pages:
   - Change Log: changelog.md
   - Functions:
     - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
+    - Add-VenafiTeamMember: functions/Add-VenafiTeamMember.md
+    - Add-VenafiTeamOwner: functions/Add-VenafiTeamOwner.md
     - Convert-TppObject: functions/Convert-TppObject.md
     - ConvertTo-TppGuid: functions/ConvertTo-TppGuid.md
     - ConvertTo-TppPath: functions/ConvertTo-TppPath.md
@@ -28,7 +30,6 @@ pages:
     - Get-TppCodeSignProject: functions/Get-TppCodeSignProject.md
     - Get-TppCredential: functions/Get-TppCredential.md
     - Get-TppCustomField: functions/Get-TppCustomField.md
-    - Get-TppIdentity: functions/Get-TppIdentity.md
     - Get-TppIdentityAttribute: functions/Get-TppIdentityAttribute.md
     - Get-TppObject: functions/Get-TppObject.md
     - Get-TppPermission: functions/Get-TppPermission.md
@@ -38,6 +39,8 @@ pages:
     - Get-VaasApplication: functions/Get-VaasApplication.md
     - Get-VaasOrgUnit: functions/Get-VaasOrgUnit.md
     - Get-VenafiCertificate: functions/Get-VenafiCertificate.md
+    - Get-VenafiIdentity: functions/Get-VenafiIdentity.md
+    - Get-VenafiTeam: functions/Get-VenafiTeam.md
     - Import-TppCertificate: functions/Import-TppCertificate.md
     - Invoke-TppCertificatePush: functions/Invoke-TppCertificatePush.md
     - Invoke-TppCertificateRenewal: functions/Invoke-TppCertificateRenewal.md
@@ -53,13 +56,17 @@ pages:
     - New-TppPolicy: functions/New-TppPolicy.md
     - New-TppToken: functions/New-TppToken.md
     - New-VenafiSession: functions/New-VenafiSession.md
-    - Read-TppLog: functions/Read-TppLog.md
+    - New-VenafiTeam: functions/New-VenafiTeam.md
+    - Read-VenafiLog: functions/Read-VenafiLog.md
     - Remove-TppCertificate: functions/Remove-TppCertificate.md
     - Remove-TppCertificateAssociation: functions/Remove-TppCertificateAssociation.md
     - Remove-TppClient: functions/Remove-TppClient.md
     - Remove-TppCodeSignEnvironment: functions/Remove-TppCodeSignEnvironment.md
     - Remove-TppCodeSignProject: functions/Remove-TppCodeSignProject.md
     - Remove-TppPermission: functions/Remove-TppPermission.md
+    - Remove-VenafiTeam: functions/Remove-VenafiTeam.md
+    - Remove-VenafiTeamMember: functions/Remove-VenafiTeamMember.md
+    - Remove-VenafiTeamOwner: functions/Remove-VenafiTeamOwner.md
     - Rename-TppObject: functions/Rename-TppObject.md
     - Revoke-TppCertificate: functions/Revoke-TppCertificate.md
     - Revoke-TppToken: functions/Revoke-TppToken.md
