@@ -1,3 +1,20 @@
+## 4.2.0
+- Add `New-VaasSearchQuery` (private function) as the framework for VaaS searching including filtering, ordering, and paging.  This will be used by certificate search, log search, and probably more in the future.
+- Add `Read-VenafiLog` utilizing the new search framework for VaaS.  Merge existing `Read-TppLog` into 1 function to support both VaaS and TPP.
+- Add `Get-VenafiTeam` to retrieve all or specific team info, VaaS and TPP
+- Add `New-VenafiTeam` to create a new team, VaaS and TPP
+- Add `Remove-VenafiTeam` to remove a team, VaaS and TPP
+- Add `Add-VenafiTeamMember` to add a team member, VaaS and TPP
+- Add `Add-VenafiTeamOwner` to add a team owner, VaaS and TPP
+- Add `Remove-VenafiTeamMember` to remove a team member, VaaS and TPP
+- Add `Remove-VenafiTeamOwner` to remove a team owner, VaaS and TPP
+- Add `ConvertTo-TppIdentity` to standardize TPP identity objects
+- Add `Get-VenafiIdentity` to retrieve a specific identity, the current user, or all, VaaS and TPP.  This replaces `Get-TppIdentity`.  The ability to retrieve associated identities and group members has been extended to `-All`.
+- Change `Invoke-TppRestMethod` to `Invoke-VenafiRestMethod` in remaining internal module calls
+- Move key/token refresh messaging to TPP only in `VenafiSession` as no refresh for VaaS
+- Default `-UriRoot` in `Invoke-VenafiRestMethod` to v1 for VaaS
+
+
 ## 4.1.6
 - Fix `VenafiSession` reporting incorrect session platform on PS v5
 - Fix `Export-VenafiCertificate` for VaaS failing with ConvertTo-Json error
@@ -309,6 +326,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
