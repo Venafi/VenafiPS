@@ -194,12 +194,13 @@ function Get-VenafiIdentity {
 
                     $params.Method = 'Post'
                     $params.UriLeaf = 'Identity/Validate'
+                    $params.Body = @{'ID' = @{'PrefixedUniversal' = $null } }
                     if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
                         $guid = [guid] $ID
-                        $params.Add('Body', @{'ID' = @{'PrefixedUniversal' = ('local:{{{0}}}' -f $guid.ToString()) } })
+                        $params.Body.ID.PrefixedUniversal = 'local:{{{0}}}' -f $guid.ToString()
                     }
                     else {
-                        $params.Add('Body', @{'ID' = @{'PrefixedUniversal' = $ID } })
+                        $params.Body.ID.PrefixedUniversal = $ID
                     }
 
                     $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID

@@ -24,7 +24,7 @@ function ConvertTo-TppIdentity {
 
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
+        [AllowNull()]
         [PSCustomObject[]] $InputObject
     )
 
@@ -33,10 +33,6 @@ function ConvertTo-TppIdentity {
 
     process {
         $InputObject | Select-Object -Property `
-        @{
-            n = 'Name'
-            e = { $_.Name }
-        },
         @{
             n = 'ID'
             e = { $_.PrefixedUniversal }
@@ -52,6 +48,6 @@ function ConvertTo-TppIdentity {
         @{
             n = 'IsGroup'
             e = { $_.Type -ne 1 }
-        } -ExcludeProperty PrefixedUniversal, FullName, Prefix, PrefixedName, Type, Universal, IsGroup
+        }, * -ExcludeProperty PrefixedUniversal, FullName, Prefix, PrefixedName, Type, Universal, IsGroup
     }
 }
