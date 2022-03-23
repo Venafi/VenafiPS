@@ -101,7 +101,7 @@ function New-VenafiTeam {
         [string[]] $Product,
 
         [Parameter(ParameterSetName = 'TPP')]
-        [string[]] $Description,
+        [string] $Description,
 
         [Parameter()]
         [switch] $PassThru,
