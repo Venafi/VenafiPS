@@ -130,17 +130,19 @@ function Get-VenafiIdentity {
         [Alias('Guid')]
         [String] $ID,
 
-        [Parameter(ParameterSetName = 'Id')]
-        [Switch] $IncludeAssociated,
-
-        [Parameter(ParameterSetName = 'Id')]
-        [Switch] $IncludeMembers,
-
         [Parameter(Mandatory, ParameterSetName = 'Me')]
         [Switch] $Me,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [Switch] $All,
+
+        [Parameter(ParameterSetName = 'Id')]
+        [Parameter(ParameterSetName = 'All')]
+        [Switch] $IncludeAssociated,
+
+        [Parameter(ParameterSetName = 'Id')]
+        [Parameter(ParameterSetName = 'All')]
+        [Switch] $IncludeMembers,
 
         [Parameter()]
         [VenafiSession] $VenafiSession = $script:VenafiSession
@@ -236,7 +238,7 @@ function Get-VenafiIdentity {
 
                 'All' {
                     # no built-in api for this, get group objects and then get details
-                    Find-TppObject -Path '\VED\Identity' -Class 'User', 'Group' -VenafiSession $VenafiSession | Get-VenafiIdentity -VenafiSession $VenafiSession
+                    Find-TppObject -Path '\VED\Identity' -Class 'User', 'Group' -VenafiSession $VenafiSession | Get-VenafiIdentity -IncludeAssociated:$IncludeAssociated.IsPresent -IncludeMembers:$IncludeMembers.IsPresent -VenafiSession $VenafiSession
                 }
             }
 
