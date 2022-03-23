@@ -191,7 +191,7 @@ function Export-VenafiCertificate {
             $params.UriLeaf = "certificates/$CertificateId/contents"
             $params.Method = 'Get'
             $params.FullResponse = $true
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
             $response.Content
         }
         else {

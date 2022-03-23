@@ -91,7 +91,7 @@ function Convert-TppObject {
 
         if ( $PSCmdlet.ShouldProcess($Path, "Convert to type $Class") ) {
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -eq [TppConfigResult]::Success ) {
                 if ( $PassThru ) {

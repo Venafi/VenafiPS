@@ -96,7 +96,7 @@ function Invoke-TppCertificateRenewal {
                 $params.Body.PKCS10 = $Csr -replace "`n|`r", ""
             }
 
-            $response = Invoke-TppRestMethod @params
+            $response = Invoke-VenafiRestMethod @params
 
             $response | Add-Member @{'Path' = $Path } -PassThru
         }
