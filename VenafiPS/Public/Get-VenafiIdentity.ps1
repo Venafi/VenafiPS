@@ -163,6 +163,11 @@ function Get-VenafiIdentity {
     process {
 
         if ( $VenafiSession.Platform -eq 'VaaS' ) {
+
+            if ( $IncludeAssociated -or $IncludeMembers ) {
+                Write-Warning '-IncludeAssociated and -IncludeMembers are only applicable to TPP'
+            }
+
             Switch ($PsCmdlet.ParameterSetName)	{
                 'Id' {
                     # can search by user id (guid) or username
