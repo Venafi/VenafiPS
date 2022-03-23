@@ -57,7 +57,7 @@ function Get-VenafiTeam {
     [CmdletBinding()]
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
         [Alias('PrefixedUniversal', 'Guid')]
         [string] $ID,
 
@@ -101,11 +101,7 @@ function Get-VenafiTeam {
             if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
 
                 # no built-in api for this, get group objects and then get details
-                $groups = Find-TppObject -Path '\VED\Identity' -Recursive -Class 'Group' -VenafiSession $VenafiSession
-                foreach ($group in ($groups  | Where-Object { $_.Name -ne 'Everyone' })) {
-                    Write-Verbose ('Processing group {0}' -f $group.Name)
-                    Get-VenafiTeam -ID ('local:{0}' -f $group.guid) -VenafiSession $VenafiSession
-                }
+                Find-TppObject -Path '\VED\Identity' -Class 'Group' -VenafiSession $VenafiSession | Where-Object {$_.Name -ne 'Everyone'} | Get-VenafiTeam -VenafiSession $VenafiSession
             }
             else {
 

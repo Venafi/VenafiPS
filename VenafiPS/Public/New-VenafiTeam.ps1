@@ -174,10 +174,10 @@ function New-VenafiTeam {
             $params.Body.Add('Description', $Description)
         }
 
-        $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID | Get-VenafiTeam -VenafiSession $VenafiSession
+        $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID
     }
 
     if ( $PassThru ) {
-        $response
+        $response | Get-VenafiTeam -VenafiSession $VenafiSession
     }
 }
