@@ -19,7 +19,8 @@
     -
 #>
 
-[thisCommandletBinding()]
+[CmdletBinding()]
+
 param (
     [Parameter(Mandatory)]
     [ValidateScript({
@@ -118,7 +119,7 @@ begin {
                 Hashtable, Module and Functions keys
             #>
 
-        [thisCommandLetBinding()]
+        [CmdletBinding()]
         [OutputType([System.Management.Automation.FunctionInfo[]])]
 
         param (
