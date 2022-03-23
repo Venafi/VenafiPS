@@ -77,57 +77,34 @@ function Invoke-VenafiRestMethod {
         [switch] $FullResponse
     )
 
-    switch ($PSCmdLet.ParameterSetName) {
-        'Session' {
-            $Server = $VenafiSession.Server
+    if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
+        $Server = $VenafiSession.Server
 
-            if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+            $hdr = @{
+                "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
+            }
+            if ( -not $PSBoundParameters.ContainsKey('UriRoot') ) {
+                $UriRoot = 'v1'
+            }
+        }
+        else {
+            # TPP
+            if ( $VenafiSession.AuthType -eq 'Token' ) {
                 $hdr = @{
-                    "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
-                }
-            } else {
-                # TPP
-                if ( $VenafiSession.AuthType -eq 'Token' ) {
-                    $hdr = @{
-                        'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                    }
-                } else {
-                    # key based tpp
-                    $hdr = @{
-                        "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
-                    }
+                    'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
                 }
             }
-            # switch ($VenafiSession | Get-VenafiAuthType) {
-            #     'key' {
-            #         $hdr = @{
-            #             "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
-            #         }
-            #     }
-            #     'token' {
-            #         $hdr = @{
-            #             'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-            #         }
-            #     }
-            #     'vaas' {
-            #         $hdr = @{
-            #             "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
-            #         }
-            #     }
-            #     Default {}
-            # }
-
-            $uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
-
+            else {
+                # key based tpp
+                $hdr = @{
+                    "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
+                }
+            }
         }
-
-        'URL' {
-            $uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
-        }
-
-        Default {}
     }
 
+    $uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
 
     if ( $Header ) {
         $hdr += $Header

@@ -19,7 +19,8 @@ foreach ( $folder in $folders) {
             if ( $folder -eq 'Public' ) {
                 Export-ModuleMember -Function $thisFile.Basename
             }
-        } Catch {
+        }
+        Catch {
             Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
         }
     }
@@ -34,7 +35,6 @@ Export-ModuleMember -Variable VenafiSession
 $aliases = @{
     'ConvertTo-TppDN'          = 'ConvertTo-TppPath'
     'Get-TppWorkflowDetail'    = 'Get-TppWorkflowTicket'
-    'Get-TppIdentity'          = 'Find-TppIdentity'
     'Restore-TppCertificate'   = 'Invoke-TppCertificateRenewal'
     'Get-TppLog'               = 'Read-TppLog'
     'fto'                      = 'Find-TppObject'
@@ -44,6 +44,8 @@ $aliases = @{
     'Invoke-TppRestMethod'     = 'Invoke-VenafiRestMethod'
     'Get-TppCertificate'       = 'Export-VenafiCertificate'
     'Get-TppCertificateDetail' = 'Get-VenafiCertificate'
+    'Read-TppLog'              = 'Read-VenafiLog'
+    'Get-TppIdentity'          = 'Get-VenafiIdentity'
 }
 $aliases.GetEnumerator() | ForEach-Object {
     Set-Alias -Name $_.Key -Value $_.Value

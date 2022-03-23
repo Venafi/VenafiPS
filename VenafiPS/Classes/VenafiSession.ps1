@@ -52,18 +52,20 @@ class VenafiSession {
         # make sure the auth type and url we have match
         # this keeps folks from calling a vaas function with a token and vice versa
         if ( $Platform -ne $this.Platform ) {
-            throw "This function is only accessible for $Platform"
-        }
-
-        Write-Verbose ("Key/Token expires: {0}, Current (+2s): {1}" -f $this.Expires, (Get-Date).ToUniversalTime().AddSeconds(2))
-        if ( $this.Expires -gt (Get-Date).ToUniversalTime().AddSeconds(2) ) {
-            return
+            throw "This function or parameter set is only accessible for $Platform"
         }
 
         # expired, perform refresh
-        Write-Verbose 'Key/token expired.  Attempting refresh.'
-
         if ( $this.Platform -eq 'TPP' ) {
+
+            Write-Verbose ("Key/Token expires: {0}, Current (+2s): {1}" -f $this.Expires, (Get-Date).ToUniversalTime().AddSeconds(2))
+
+            if ( -not $this.Expires -or $this.Expires -gt (Get-Date).ToUniversalTime().AddSeconds(2) ) {
+                return
+            }
+
+            Write-Verbose 'Key/token expired.  Attempting refresh.'
+
             if ( $this.AuthType -eq 'Key' ) {
                 try {
                     $params = @{
@@ -151,7 +153,7 @@ class VenafiSession {
 
         $initHash.GetEnumerator() | ForEach-Object {
             if ( $_.Value ) {
-                $this.$($_.Key)=$_.Value
+                $this.$($_.Key) = $_.Value
             }
         }
 
