@@ -236,10 +236,7 @@ function Get-VenafiIdentity {
 
                 'All' {
                     # no built-in api for this, get group objects and then get details
-                    $identities = Find-TppObject -Path '\VED\Identity' -Recursive -Class 'User', 'Group' -VenafiSession $VenafiSession
-                    foreach ($identity in $identities ) {
-                        Get-VenafiIdentity -ID ('local:{{{0}}}' -f $identity.guid) -VenafiSession $VenafiSession
-                    }
+                    Find-TppObject -Path '\VED\Identity' -Class 'User', 'Group' -VenafiSession $VenafiSession | Get-VenafiIdentity -VenafiSession $VenafiSession
                 }
             }
 
