@@ -402,7 +402,7 @@ function Find-VenafiCertificate {
             $VenafiSession.Validate($PSCmdlet.ParameterSetName)
         }
 
-        if ( $PSCmdlet.ParameterSetName -eq 'VaaS' ) {
+        if ( $VenafiSession.Platform -eq 'VaaS' ) {
             if ( $PSBoundParameters.Keys -contains 'Skip' -or $PSBoundParameters.Keys -contains 'IncludeTotalCount' ) {
                 Write-Warning '-Skip and -IncludeTotalCount not implemented yet'
             }
