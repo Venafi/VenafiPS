@@ -219,7 +219,7 @@ https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagede
 #>
 function Find-VenafiCertificate {
 
-    [CmdletBinding(DefaultParameterSetName = 'VaaS', SupportsPaging)]
+    [CmdletBinding(DefaultParameterSetName = 'NoParams', SupportsPaging)]
 
     param (
 
@@ -392,9 +392,16 @@ function Find-VenafiCertificate {
     )
 
     begin {
-        $VenafiSession.Validate($PSCmdlet.ParameterSetName)
+        # this function can be run without params so we won't know tpp or vaas
+        if ( $PSCmdlet.ParameterSetName -eq 'NoParams' ) {
+            # validate based on the session platform
+            $VenafiSession.Validate()
+        } else {
+            # validate based on the paramset
+            $VenafiSession.Validate($PSCmdlet.ParameterSetName)
+        }
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $PSCmdlet.ParameterSetName -eq 'VaaS' ) {
             if ( $PSBoundParameters.Keys -contains 'Skip' -or $PSBoundParameters.Keys -contains 'IncludeTotalCount' ) {
                 Write-Warning '-Skip and -IncludeTotalCount not implemented yet'
             }
