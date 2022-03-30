@@ -213,7 +213,12 @@ function Invoke-VenafiRestMethod {
     }
     else {
         if ( $response.Content ) {
-            $response.Content | ConvertFrom-Json
+            try {
+                $response.Content | ConvertFrom-Json
+            }
+            catch {
+                throw ('Invalid JSON response {0}' -f $response.Content)
+            }
         }
     }
 }
