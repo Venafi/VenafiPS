@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Find certificates based on various attributes
+Find certificates in TPP or VaaS based on various attributes
 
 .DESCRIPTION
 Find certificates based on various attributes.
@@ -393,6 +393,7 @@ function Find-VenafiCertificate {
 
     begin {
         # this function can be run without params so we won't know tpp or vaas
+        # have a different default param set for this
         if ( $PSCmdlet.ParameterSetName -eq 'NoParams' ) {
             # validate based on the session platform
             $VenafiSession.Validate()
