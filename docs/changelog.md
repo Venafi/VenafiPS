@@ -1,3 +1,9 @@
+## 4.2.1
+- Update `Find-TppCertificate` to `Find-VenafiCertificate` and add VaaS certificate search functionality
+- Add `-Policy` to `New-VenafiTeam` so a team can be associated with one or more policies
+- Fix `PolicyPath` property of `TppObject` not returning the proper value due to special characters
+
+
 ## 4.2.0
 - Add `New-VaasSearchQuery` (private function) as the framework for VaaS searching including filtering, ordering, and paging.  This will be used by certificate search, log search, and probably more in the future.
 - Add `Read-VenafiLog` utilizing the new search framework for VaaS.  Merge existing `Read-TppLog` into 1 function to support both VaaS and TPP.
@@ -326,6 +332,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

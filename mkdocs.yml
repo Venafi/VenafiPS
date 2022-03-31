@@ -15,7 +15,6 @@ pages:
     - ConvertTo-TppGuid: functions/ConvertTo-TppGuid.md
     - ConvertTo-TppPath: functions/ConvertTo-TppPath.md
     - Export-VenafiCertificate: functions/Export-VenafiCertificate.md
-    - Find-TppCertificate: functions/Find-TppCertificate.md
     - Find-TppClient: functions/Find-TppClient.md
     - Find-TppCodeSignEnvironment: functions/Find-TppCodeSignEnvironment.md
     - Find-TppCodeSignProject: functions/Find-TppCodeSignProject.md
@@ -23,6 +22,7 @@ pages:
     - Find-TppIdentity: functions/Find-TppIdentity.md
     - Find-TppObject: functions/Find-TppObject.md
     - Find-TppVaultId: functions/Find-TppVaultId.md
+    - Find-VenafiCertificate: functions/Find-VenafiCertificate.md
     - Get-TppAttribute: functions/Get-TppAttribute.md
     - Get-TppClassAttribute: functions/Get-TppClassAttribute.md
     - Get-TppCodeSignConfig: functions/Get-TppCodeSignConfig.md

@@ -1,30 +1,20 @@
-# Find-TppCertificate
+# Find-VenafiCertificate
 
 ## SYNOPSIS
-Find certificates based on various attributes
+Find certificates in TPP or VaaS based on various attributes
 
 ## SYNTAX
 
-### NoPath (Default)
+### NoParams (Default)
 ```
-Find-TppCertificate [-Limit <Int32>] [-Offset <Int32>] [-Country <String>] [-CommonName <String>]
- [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>] [-KeySizeGreaterThan <Int32>]
- [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>] [-OrganizationUnit <String[]>]
- [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>] [-SanUpn <String>]
- [-SanUri <String>] [-SerialNumber <String>] [-SignatureAlgorithm <String>] [-Thumbprint <String>]
- [-IssueDate <DateTime>] [-ExpireDate <DateTime>] [-ExpireAfter <DateTime>] [-ExpireBefore <DateTime>]
- [-Enabled] [-InError <Boolean>] [-NetworkValidationEnabled <Boolean>] [-CreatedDate <DateTime>]
- [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
- [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
- [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [-IncludeTotalCount]
- [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+Find-VenafiCertificate [-CountOnly] [-VenafiSession <VenafiSession>] [-IncludeTotalCount] [-Skip <UInt64>]
+ [-First <UInt64>] [<CommonParameters>]
 ```
 
-### ByPath
+### TPP
 ```
-Find-TppCertificate -Path <String> [-Recursive] [-Limit <Int32>] [-Offset <Int32>] [-Country <String>]
- [-CommonName <String>] [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>]
+Find-VenafiCertificate [-Path <String>] [-Guid <Guid>] [-Recursive] [-Limit <Int32>] [-Offset <Int32>]
+ [-Country <String>] [-CommonName <String>] [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>]
  [-KeySizeGreaterThan <Int32>] [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>]
  [-OrganizationUnit <String[]>] [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>]
  [-SanUpn <String>] [-SanUri <String>] [-SerialNumber <String>] [-SignatureAlgorithm <String>]
@@ -37,20 +27,10 @@ Find-TppCertificate -Path <String> [-Recursive] [-Limit <Int32>] [-Offset <Int32
  [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
-### ByGuid
+### VaaS
 ```
-Find-TppCertificate -Guid <Guid> [-Recursive] [-Limit <Int32>] [-Offset <Int32>] [-Country <String>]
- [-CommonName <String>] [-Issuer <String>] [-KeyAlgorithm <String[]>] [-KeySize <Int32[]>]
- [-KeySizeGreaterThan <Int32>] [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>]
- [-OrganizationUnit <String[]>] [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>]
- [-SanUpn <String>] [-SanUri <String>] [-SerialNumber <String>] [-SignatureAlgorithm <String>]
- [-Thumbprint <String>] [-IssueDate <DateTime>] [-ExpireDate <DateTime>] [-ExpireAfter <DateTime>]
- [-ExpireBefore <DateTime>] [-Enabled] [-InError <Boolean>] [-NetworkValidationEnabled <Boolean>]
- [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
- [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
- [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [-IncludeTotalCount]
- [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+Find-VenafiCertificate [-Filter <ArrayList>] [-Order <PSObject[]>] [-CountOnly]
+ [-VenafiSession <VenafiSession>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -62,96 +42,109 @@ If -First or -IncludeTotalCount not provided, the default return is 1000 records
 
 ### EXAMPLE 1
 ```
-Find-TppCertificate -ExpireBefore "2018-01-01"
-Find certificates expiring before a certain date
+Find-VenafiCertificate -ExpireBefore [datetime]'2018-01-01'
 ```
+
+Find certificates expiring before a certain date
 
 ### EXAMPLE 2
 ```
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5
-Find 5 certificates expiring before a certain date
+Find-VenafiCertificate -ExpireBefore "2018-01-01" -First 5
 ```
+
+Find 5 certificates expiring before a certain date
 
 ### EXAMPLE 3
 ```
-Find-TppCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
-Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
+Find-VenafiCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 ```
+
+Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
 
 ### EXAMPLE 4
 ```
-Find-TppCertificate -Path '\VED\Policy\My Policy'
-Find certificates in a specific path
+Find-VenafiCertificate -Path '\VED\Policy\My Policy'
 ```
+
+Find certificates in a specific path
 
 ### EXAMPLE 5
 ```
-Find-TppCertificate -Issuer 'CN=Example Root CA, O=Venafi,Inc., L=Salt Lake City, S=Utah, C=US'
-Find certificates by issuer
+Find-VenafiCertificate -Issuer 'CN=Example Root CA, O=Venafi,Inc., L=Salt Lake City, S=Utah, C=US'
 ```
+
+Find certificates by issuer
 
 ### EXAMPLE 6
 ```
-Find-TppCertificate -Path '\VED\Policy\My Policy' -Recursive
-Find certificates in a specific path and all subfolders
+Find-VenafiCertificate -Path '\VED\Policy\My Policy' -Recursive
 ```
+
+Find certificates in a specific path and all subfolders
 
 ### EXAMPLE 7
 ```
-Find-TppCertificate | Get-VenafiCertificate
-Get detailed certificate info
+Find-VenafiCertificate | Get-VenafiCertificate
 ```
+
+Get detailed certificate info
 
 ### EXAMPLE 8
 ```
-Find-TppCertificate -ExpireBefore "2019-09-01" -IncludeTotalCount | Invoke-VenafiCertificateAction -Renew
-Renew all certificates expiring before a certain date
+Find-VenafiCertificate -ExpireBefore "2019-09-01" -IncludeTotalCount | Invoke-VenafiCertificateAction -Renew
 ```
+
+Renew all certificates expiring before a certain date
 
 ### EXAMPLE 9
 ```
-Find-TppCertificate -First 5000 -IncludeTotalCount
-Find all certificates, paging 5000 at a time
+Find-VenafiCertificate -First 5000 -IncludeTotalCount
 ```
+
+Find all certificates, paging 5000 at a time
 
 ## PARAMETERS
 
 ### -Path
-Starting path to search from
+Starting path to search from. 
+If not provided, the default is \ved\policy. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: ByPath
+Parameter Sets: TPP
 Aliases: DN
 
-Required: True
+Required: False
 Position: Named
-Default value: None
+Default value: \ved\policy
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
 ### -Guid
-Guid which represents a starting path
+Guid which represents a starting path. 
+TPP only.
 
 ```yaml
 Type: Guid
-Parameter Sets: ByGuid
+Parameter Sets: TPP
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -Recursive
-Search recursively starting from the search path.
+Search recursively starting from the search path. 
+TPP only.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: ByPath, ByGuid
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -166,7 +159,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: Int32
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -177,11 +170,11 @@ Accept wildcard characters: False
 ```
 
 ### -Offset
-The number of results to skip.
+{{ Fill Offset Description }}
 
 ```yaml
 Type: Int32
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -192,11 +185,12 @@ Accept wildcard characters: False
 ```
 
 ### -Country
-Find certificates by Country attribute of Subject DN.
+Find certificates by Country attribute of Subject DN. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: C
 
 Required: False
@@ -207,11 +201,12 @@ Accept wildcard characters: False
 ```
 
 ### -CommonName
-Find certificates by Common name attribute of Subject DN.
+Find certificates by Common name attribute of Subject DN. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: CN
 
 Required: False
@@ -223,11 +218,12 @@ Accept wildcard characters: False
 
 ### -Issuer
 Find certificates by issuer.
-Use the CN, O, L, S, and C values from the certificate request.
+Use the CN, O, L, S, and C values from the certificate request. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -238,11 +234,12 @@ Accept wildcard characters: False
 ```
 
 ### -KeyAlgorithm
-Find certificates by algorithm for the public key.
+Find certificates by algorithm for the public key. 
+TPP only.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -253,11 +250,12 @@ Accept wildcard characters: False
 ```
 
 ### -KeySize
-Find certificates by public key size.
+Find certificates by public key size. 
+TPP only.
 
 ```yaml
 Type: Int32[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -268,11 +266,12 @@ Accept wildcard characters: False
 ```
 
 ### -KeySizeGreaterThan
-Find certificates with a key size greater than the specified value.
+Find certificates with a key size greater than the specified value. 
+TPP only.
 
 ```yaml
 Type: Int32
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -283,11 +282,12 @@ Accept wildcard characters: False
 ```
 
 ### -KeySizeLessThan
-Find certificates with a key size less than the specified value.
+Find certificates with a key size less than the specified value. 
+TPP only.
 
 ```yaml
 Type: Int32
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -298,11 +298,12 @@ Accept wildcard characters: False
 ```
 
 ### -Locale
-Find certificates by Locality/City attribute of Subject Distinguished Name (DN).
+Find certificates by Locality/City attribute of Subject Distinguished Name (DN). 
+TPP only.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: L
 
 Required: False
@@ -313,11 +314,12 @@ Accept wildcard characters: False
 ```
 
 ### -Organization
-Find certificates by Organization attribute of Subject DN.
+Find certificates by Organization attribute of Subject DN. 
+TPP only.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: O
 
 Required: False
@@ -328,11 +330,12 @@ Accept wildcard characters: False
 ```
 
 ### -OrganizationUnit
-Find certificates by Organization Unit (OU).
+Find certificates by Organization Unit (OU). 
+TPP only.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: OU
 
 Required: False
@@ -343,11 +346,12 @@ Accept wildcard characters: False
 ```
 
 ### -State
-Find certificates by State/Province attribute of Subject DN.
+Find certificates by State/Province attribute of Subject DN. 
+TPP only.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: S
 
 Required: False
@@ -358,11 +362,12 @@ Accept wildcard characters: False
 ```
 
 ### -SanDns
-Find certificates by Subject Alternate Name (SAN) Distinguished Name Server (DNS).
+Find certificates by Subject Alternate Name (SAN) Distinguished Name Server (DNS). 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -373,11 +378,12 @@ Accept wildcard characters: False
 ```
 
 ### -SanEmail
-Find certificates by SAN Email RFC822.
+Find certificates by SAN Email RFC822. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -388,11 +394,12 @@ Accept wildcard characters: False
 ```
 
 ### -SanIP
-Find certificates by SAN IP Address.
+Find certificates by SAN IP Address. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -403,11 +410,12 @@ Accept wildcard characters: False
 ```
 
 ### -SanUpn
-Find certificates by SAN User Principal Name (UPN) or OtherName.
+Find certificates by SAN User Principal Name (UPN) or OtherName. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -418,11 +426,12 @@ Accept wildcard characters: False
 ```
 
 ### -SanUri
-Find certificates by SAN Uniform Resource Identifier (URI).
+Find certificates by SAN Uniform Resource Identifier (URI). 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -433,11 +442,12 @@ Accept wildcard characters: False
 ```
 
 ### -SerialNumber
-Find certificates by Serial number.
+Find certificates by Serial number. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -449,11 +459,12 @@ Accept wildcard characters: False
 
 ### -SignatureAlgorithm
 Find certificates by the algorithm used to sign the certificate (e.g.
-SHA1RSA).
+SHA1RSA). 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -464,11 +475,12 @@ Accept wildcard characters: False
 ```
 
 ### -Thumbprint
-Find certificates by one or more SHA-1 thumbprints.
+Find certificates by one or more SHA-1 thumbprints. 
+TPP only.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -479,11 +491,12 @@ Accept wildcard characters: False
 ```
 
 ### -IssueDate
-Find certificates by the date of issue.
+Find certificates by the date of issue. 
+TPP only.
 
 ```yaml
 Type: DateTime
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: ValidFrom
 
 Required: False
@@ -494,11 +507,12 @@ Accept wildcard characters: False
 ```
 
 ### -ExpireDate
-Find certificates by expiration date.
+Find certificates by expiration date. 
+TPP only.
 
 ```yaml
 Type: DateTime
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: ValidTo
 
 Required: False
@@ -509,11 +523,12 @@ Accept wildcard characters: False
 ```
 
 ### -ExpireAfter
-Find certificates that expire after a certain date.
+Find certificates that expire after a certain date. 
+TPP only.
 
 ```yaml
 Type: DateTime
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: ValidToGreater
 
 Required: False
@@ -524,11 +539,12 @@ Accept wildcard characters: False
 ```
 
 ### -ExpireBefore
-Find certificates that expire before a certain date.
+Find certificates that expire before a certain date. 
+TPP only.
 
 ```yaml
 Type: DateTime
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: ValidToLess
 
 Required: False
@@ -539,11 +555,12 @@ Accept wildcard characters: False
 ```
 
 ### -Enabled
-Include only certificates that are enabled or disabled
+Include only certificates that are enabled or disabled. 
+TPP only.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -554,11 +571,12 @@ Accept wildcard characters: False
 ```
 
 ### -InError
-Only include certificates in an error state
+Only include certificates in an error state. 
+TPP only.
 
 ```yaml
 Type: Boolean
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -569,11 +587,12 @@ Accept wildcard characters: False
 ```
 
 ### -NetworkValidationEnabled
-Only include certificates with network validation enabled or disabled
+Only include certificates with network validation enabled or disabled. 
+TPP only.
 
 ```yaml
 Type: Boolean
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -584,11 +603,12 @@ Accept wildcard characters: False
 ```
 
 ### -CreatedDate
-Find certificates that were created at an exact date and time
+Find certificates that were created at an exact date and time. 
+TPP only.
 
 ```yaml
 Type: DateTime
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: CreatedOn
 
 Required: False
@@ -599,11 +619,12 @@ Accept wildcard characters: False
 ```
 
 ### -CreatedAfter
-Find certificate created after this date and time
+Find certificate created after this date and time. 
+TPP only.
 
 ```yaml
 Type: DateTime
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: CreatedOnGreater
 
 Required: False
@@ -614,11 +635,12 @@ Accept wildcard characters: False
 ```
 
 ### -CreatedBefore
-Find certificate created before this date and time
+Find certificate created before this date and time. 
+TPP only.
 
 ```yaml
 Type: DateTime
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: CreatedOnLess
 
 Required: False
@@ -630,11 +652,12 @@ Accept wildcard characters: False
 
 ### -CertificateType
 Find certificate by category of usage.
-Use CodeSigning, Device, Server, and/or User.
+Use CodeSigning, Device, Server, and/or User. 
+TPP only.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -645,11 +668,12 @@ Accept wildcard characters: False
 ```
 
 ### -ManagementType
-Find certificates with a Management type of Unassigned, Monitoring, Enrollment, or Provisioning
+Find certificates with a Management type of Unassigned, Monitoring, Enrollment, or Provisioning. 
+TPP only.
 
 ```yaml
 Type: TppManagementType[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 Accepted values: Unassigned, Monitoring, Enrollment, Provisioning
 
@@ -661,11 +685,12 @@ Accept wildcard characters: False
 ```
 
 ### -PendingWorkflow
-Only include certificates that have a pending workflow resolution (have an outstanding workflow ticket)
+Only include certificates that have a pending workflow resolution (have an outstanding workflow ticket). 
+TPP only.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -676,11 +701,12 @@ Accept wildcard characters: False
 ```
 
 ### -Stage
-Find certificates by one or more stages in the certificate lifecycle
+Find certificates by one or more stages in the certificate lifecycle. 
+TPP only.
 
 ```yaml
 Type: TppCertificateStage[]
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 Accepted values: CheckStore, CreateConfigureStore, CreateKey, CreateCSR, PostCSR, ApproveRequest, RetrieveCertificate, InstallCertificate, CheckConfiguration, ConfigureApplication, RestartApplication, EndProcessing, Revocation, UpdateTrustStore, EndTrustStoreProcessing
 
@@ -692,11 +718,12 @@ Accept wildcard characters: False
 ```
 
 ### -StageGreaterThan
-Find certificates with a stage greater than the specified stage (does not include specified stage)
+Find certificates with a stage greater than the specified stage (does not include specified stage). 
+TPP only.
 
 ```yaml
 Type: TppCertificateStage
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: StageGreater
 Accepted values: CheckStore, CreateConfigureStore, CreateKey, CreateCSR, PostCSR, ApproveRequest, RetrieveCertificate, InstallCertificate, CheckConfiguration, ConfigureApplication, RestartApplication, EndProcessing, Revocation, UpdateTrustStore, EndTrustStoreProcessing
 
@@ -708,11 +735,12 @@ Accept wildcard characters: False
 ```
 
 ### -StageLessThan
-Find certificates with a stage less than the specified stage (does not include specified stage)
+Find certificates with a stage less than the specified stage (does not include specified stage). 
+TPP only.
 
 ```yaml
 Type: TppCertificateStage
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases: StageLess
 Accepted values: CheckStore, CreateConfigureStore, CreateKey, CreateCSR, PostCSR, ApproveRequest, RetrieveCertificate, InstallCertificate, CheckConfiguration, ConfigureApplication, RestartApplication, EndProcessing, Revocation, UpdateTrustStore, EndTrustStoreProcessing
 
@@ -724,11 +752,12 @@ Accept wildcard characters: False
 ```
 
 ### -ValidationEnabled
-Only include certificates with validation enabled or disabled
+Only include certificates with validation enabled or disabled. 
+TPP only.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -739,11 +768,51 @@ Accept wildcard characters: False
 ```
 
 ### -ValidationState
-Find certificates with a validation state of Blank, Success, or Failure
+Find certificates with a validation state of Blank, Success, or Failure. 
+TPP only.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: TPP
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Filter
+VaaS. 
+Array or multidimensional array of fields and values to filter on.
+Each array should be of the format @(field, comparison operator, value).
+To combine filters use the format @('operator', @(field, comparison operator, value), @(field2, comparison operator2, value2)).
+Nested filters are supported.
+Field names and values are case sensitive.
+For a complete list of comparison operators, see https://docs.venafi.cloud/api/about-api-search-operators/.
+
+```yaml
+Type: ArrayList
+Parameter Sets: VaaS
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Order
+VaaS. 
+Array of fields to order on.
+For each item in the array, you can provide a field name by itself; this will default to ascending.
+You can also provide a hashtable with the field name as the key and either asc or desc as the value.
+
+```yaml
+Type: PSObject[]
+Parameter Sets: VaaS
 Aliases:
 
 Required: False
@@ -818,9 +887,8 @@ Accept wildcard characters: False
 ```
 
 ### -First
-Limit how many items are returned. 
-Default is 0 for no limit.
-It is definitely recommended to filter on another property when searching with no limit.
+Gets only the specified number of objects.
+Enter the number of objects to get.
 
 ```yaml
 Type: UInt64
@@ -839,21 +907,24 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Path, Guid
+### Path
 ## OUTPUTS
 
-### TppObject, Int when CountOnly provided
+### TPP: TppObject, Int when CountOnly provided
+### VaaS: PSCustomObject, Int when CountOnly provided
 ## NOTES
 
 ## RELATED LINKS
 
-[http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Find-VenafiCertificate/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-VenafiCertificate/)
 
-[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCertificate.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCertificate.ps1)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VenafiCertificate.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VenafiCertificate.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates.php)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php)
 
 [https://msdn.microsoft.com/en-us/library/system.web.httputility(v=vs.110).aspx](https://msdn.microsoft.com/en-us/library/system.web.httputility(v=vs.110).aspx)
+
+[https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificates_search_getByExpressionAsCsv](https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificates_search_getByExpressionAsCsv)
 
