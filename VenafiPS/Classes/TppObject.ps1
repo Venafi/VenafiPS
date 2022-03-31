@@ -1,8 +1,10 @@
 class TppObject {
 
+    [string] $Name
     [string] $Path
     [string] $TypeName
     [guid] $Guid
+    [string] $ParentPath
 
     hidden _init (
         [string] $Path,
@@ -12,13 +14,8 @@ class TppObject {
         $this.Path = $Path.Replace('\\', '\')
         $this.TypeName = $TypeName
         $this.Guid = $Guid
-        $this | Add-Member -MemberType ScriptProperty -Name Name -Value {
-            Split-Path -Path $this.Path -Leaf
-        }
-        $this | Add-Member -MemberType ScriptProperty -Name ParentPath -Value {
-            # split-path -parent doesn't work on this path so use this workaround
-            $this.Path -replace ('\\+{0}' -f $this.Name), ''
-        }
+        $this.Name = Split-Path -Path $this.Path -Leaf
+        $this.ParentPath = $this.Path.Replace(('\{0}' -f $this.Name), '')
         $this | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Path } -Force
     }
 

@@ -46,6 +46,7 @@ $aliases = @{
     'Get-TppCertificateDetail' = 'Get-VenafiCertificate'
     'Read-TppLog'              = 'Read-VenafiLog'
     'Get-TppIdentity'          = 'Get-VenafiIdentity'
+    'Find-TppCertificate'      = 'Find-VenafiCertificate'
 }
 $aliases.GetEnumerator() | ForEach-Object {
     Set-Alias -Name $_.Key -Value $_.Value

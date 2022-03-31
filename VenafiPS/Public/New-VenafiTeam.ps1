@@ -21,6 +21,9 @@ For TPP, this is the identity ID property from Find-TppIdentity or Get-VenafiIde
 .PARAMETER Role
 Team role, either 'System Admin', 'PKI Admin', 'Resource Owner' or 'Guest'.  VaaS only.
 
+.PARAMETER Policy
+1 or more policy folder paths this team manages.  TPP only.
+
 .PARAMETER Product
 1 or more product names, 'TLS', 'SSH', and/or 'Code Signing'.  TPP only.
 
@@ -55,6 +58,11 @@ Create a new VaaS team returning the new team
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS'
 
 Create a new TPP team
+
+.EXAMPLE
+New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -Policy '\ved\policy\myfolder'
+
+Create a new TPP team and assign it to a policy
 
 .EXAMPLE
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -Description 'One amazing team'
@@ -100,6 +108,17 @@ function New-VenafiTeam {
         [Parameter(Mandatory, ParameterSetName = 'VaaS')]
         [ValidateSet('System Admin', 'PKI Admin', 'Resource Owner', 'Guest')]
         [string] $Role,
+
+        [Parameter(ParameterSetName = 'TPP')]
+        [ValidateScript( {
+                if ( $_ | Test-TppDnPath ) {
+                    $true
+                }
+                else {
+                    throw "'$_' is not a valid policy path"
+                }
+            })]
+        [string[]] $Policy,
 
         [Parameter(Mandatory, ParameterSetName = 'TPP')]
         [ValidateSet('TLS', 'SSH', 'Code Signing')]
@@ -168,6 +187,10 @@ function New-VenafiTeam {
             'Members'  = @($members)
             'Owners'   = @($owners)
             'Products' = @($Product)
+        }
+
+        if ( $Policy ) {
+            $params.Body.Add('Assets', @($Policy))
         }
 
         if ( $Description ) {

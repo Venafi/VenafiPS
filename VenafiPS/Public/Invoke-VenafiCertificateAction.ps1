@@ -86,7 +86,7 @@ function Invoke-VenafiCertificateAction {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [Alias('Path')]
+        [Alias('Path', 'id')]
         [string] $CertificateId,
 
         [Parameter(Mandatory, ParameterSetName = 'Retire')]
@@ -221,6 +221,8 @@ function Invoke-VenafiCertificateAction {
         if ( $AdditionalParameters ) {
             $params.Body += $AdditionalParameters
         }
+
+        Write-Verbose ($params | ConvertTo-Json)
 
         try {
             if ( $performInvoke ) {
