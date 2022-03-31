@@ -76,7 +76,7 @@ ScriptsToProcess = 'Classes\TppObject.ps1', 'Classes\TppPermission.ps1',
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'ConvertTo-TppGuid', 'ConvertTo-TppPath', 'Export-VenafiCertificate',
-               'Find-TppCertificate', 'Find-TppClient',
+               'Find-VenafiCertificate', 'Find-TppClient',
                'Find-TppCodeSignEnvironment', 'Find-TppCodeSignProject',
                'Find-TppCodeSignTemplate', 'Find-TppIdentity', 'Find-TppObject',
                'Find-TppVaultId', 'Get-TppAttribute', 'Get-TppClassAttribute',
