@@ -13,8 +13,8 @@ New-VenafiTeam -Name <String> -Owner <String[]> -Member <String[]> -Role <String
 
 ### TPP
 ```
-New-VenafiTeam -Name <String> -Owner <String[]> -Member <String[]> -Product <String[]> [-Description <String>]
- [-PassThru] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+New-VenafiTeam -Name <String> -Owner <String[]> -Member <String[]> [-Policy <String[]>] -Product <String[]>
+ [-Description <String>] [-PassThru] [-VenafiSession <VenafiSession>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -56,12 +56,19 @@ Create a new TPP team
 
 ### EXAMPLE 4
 ```
+New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -Policy '\ved\policy\myfolder'
+```
+
+Create a new TPP team and assign it to a policy
+
+### EXAMPLE 5
+```
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -Description 'One amazing team'
 ```
 
 Create a new TPP team with optional description
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -PassThru
 ```
@@ -139,6 +146,22 @@ Parameter Sets: VaaS
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Policy
+1 or more policy folder paths this team manages. 
+TPP only.
+
+```yaml
+Type: String[]
+Parameter Sets: TPP
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

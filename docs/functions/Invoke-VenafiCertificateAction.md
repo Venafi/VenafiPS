@@ -69,7 +69,7 @@ For TPP, use the full path.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: Path
+Aliases: Path, id
 
 Required: True
 Position: Named
