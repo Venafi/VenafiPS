@@ -94,10 +94,10 @@ function New-TppObject {
         [switch] $PassThru,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate('TPP')
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
     if ( $PushCertificate.IsPresent -and (-not $Attribute.Certificate) ) {
         Write-Warning 'A ''Certificate'' key containing the certificate path must be provided for Attribute when using PushCertificate, eg. -Attribute @{''Certificate''=''\Ved\Policy\mycert.com''}.  Certificate provisioning will not take place.'

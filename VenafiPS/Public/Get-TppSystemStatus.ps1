@@ -32,12 +32,12 @@ function Get-TppSystemStatus {
     [CmdletBinding()]
     param (
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     Write-Warning "Possible bug with Venafi TPP API causing this to fail"
 
-    $VenafiSession.Validate('TPP')
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
     $params = @{
         VenafiSession = $VenafiSession

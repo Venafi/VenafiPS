@@ -131,7 +131,7 @@ function New-VenafiTeam {
         [switch] $PassThru,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     $VenafiSession.Validate($PSCmdlet.ParameterSetName)

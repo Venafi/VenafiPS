@@ -388,7 +388,7 @@ function Find-VenafiCertificate {
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
@@ -396,7 +396,7 @@ function Find-VenafiCertificate {
         # have a different default param set for this
         if ( $PSCmdlet.ParameterSetName -eq 'NoParams' ) {
             # validate based on the session platform
-            $VenafiSession.Validate()
+            Test-VenafiSession -VenafiSession $VenafiSession
         } else {
             # validate based on the paramset
             $VenafiSession.Validate($PSCmdlet.ParameterSetName)

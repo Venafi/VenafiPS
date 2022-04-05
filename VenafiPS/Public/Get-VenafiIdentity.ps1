@@ -145,11 +145,11 @@ function Get-VenafiIdentity {
         [Switch] $IncludeMembers,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        Test-VenafiSession -VenafiSession $VenafiSession
 
         Write-Verbose ('{0} : {1} : Parameterset {2}' -f $PsCmdlet.MyInvocation.MyCommand, $VenafiSession.Platform, $PsCmdlet.ParameterSetName)
 

@@ -35,11 +35,11 @@ function Get-VaasOrgUnit {
         [guid] $OrgUnitId,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('VaaS')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         $params = @{
             VenafiSession = $VenafiSession

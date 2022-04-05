@@ -192,12 +192,12 @@ function Read-VenafiLog {
         [psobject[]] $Order,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $VenafiSession.Validate()
+        Test-VenafiSession -VenafiSession $VenafiSession
 
         if ( $PSBoundParameters.Keys -contains 'Skip' -or $PSBoundParameters.Keys -contains 'IncludeTotalCount' ) {
             Write-Warning '-Skip and -IncludeTotalCount not implemented yet'

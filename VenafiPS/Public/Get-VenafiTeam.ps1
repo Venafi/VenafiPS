@@ -65,11 +65,12 @@ function Get-VenafiTeam {
         [switch] $All,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [Alias('Key', 'AccessToken')]
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        Test-VenafiSession -VenafiSession $VenafiSession
 
         $params = @{
             VenafiSession = $VenafiSession

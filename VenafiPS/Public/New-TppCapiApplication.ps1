@@ -193,12 +193,12 @@ function New-TppCapiApplication {
         [switch] $PassThru,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $VenafiSession.Validate('TPP')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         if ( $PushCertificate.IsPresent -and (-not $PSBoundParameters.ContainsKey('CertificatePath')) ) {
             throw 'A CertificatePath must be provided when using PushCertificate'

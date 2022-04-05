@@ -111,11 +111,11 @@ function Invoke-VenafiCertificateAction {
         [hashtable] $AdditionalParameters,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        Test-VenafiSession -VenafiSession $VenafiSession
     }
 
     process {

@@ -59,6 +59,8 @@ New-VenafiSession -VaasKey $apikeyCred
 
 Your API key can be found in your user profile->preferences.  View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.
 
+Helpful with devops scenarios including pipelines, you can now provide either a VaaS key or TPP token for `-VenafiSession` for all function calls with no need to execute `New-VenafiSession`.
+
 ### Examples
 One of the easiest ways to get started is to use `Find-TppObject`:
 

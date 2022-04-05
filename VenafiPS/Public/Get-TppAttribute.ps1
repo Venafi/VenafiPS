@@ -138,12 +138,12 @@ function Get-TppAttribute {
         [switch] $AsValue,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $VenafiSession.Validate('TPP')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         if ( $Guid ) {
             Write-Warning '-Guid will be deprecated in a future release.  Please use -Path instead.'

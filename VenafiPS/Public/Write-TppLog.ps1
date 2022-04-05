@@ -124,14 +124,14 @@ function Write-TppLog {
         [int] $Value2,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     if ( $PSCmdlet.ParameterSetName -eq 'DefaultGroup' ) {
         throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.  -EventGroup will be deprecated in a future release.'
     }
 
-    $VenafiSession.Validate('TPP')
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
     # the event id is the group id coupled with the event id
     $fullEventId = "$CustomEventGroup$EventId"

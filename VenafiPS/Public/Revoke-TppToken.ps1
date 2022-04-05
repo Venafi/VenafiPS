@@ -76,7 +76,7 @@ function Revoke-TppToken {
         [switch] $Force,
 
         [Parameter(ParameterSetName = 'Session')]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {

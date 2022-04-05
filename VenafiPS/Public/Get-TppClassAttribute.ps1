@@ -18,7 +18,7 @@ function Get-TppClassAttribute {
         [string] $ClassName,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {

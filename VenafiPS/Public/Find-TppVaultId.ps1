@@ -42,11 +42,11 @@ function Find-TppVaultId {
         [hashtable] $Attribute,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('TPP')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $params = @{
             VenafiSession = $VenafiSession

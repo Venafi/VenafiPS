@@ -50,11 +50,11 @@ function Add-VenafiTeamMember {
         [string[]] $Member,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        Test-VenafiSession -VenafiSession $VenafiSession
 
         $params = @{
             VenafiSession = $VenafiSession

@@ -73,7 +73,7 @@ function Set-TppWorkflowTicketStatus {
         [DateTime] $ScheduledStop,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
@@ -96,7 +96,7 @@ function Set-TppWorkflowTicketStatus {
             }
         }
 
-        $VenafiSession.Validate('TPP')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
     }
 
     process {

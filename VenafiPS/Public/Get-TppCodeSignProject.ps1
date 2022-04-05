@@ -65,11 +65,11 @@ function Get-TppCodeSignProject {
         [String] $Path,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('TPP', 'token')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -AuthType 'token'
 
         $params = @{
             VenafiSession = $VenafiSession
