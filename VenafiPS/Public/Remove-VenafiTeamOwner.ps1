@@ -60,7 +60,7 @@ function Remove-VenafiTeamOwner {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -69,7 +69,7 @@ function Remove-VenafiTeamOwner {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             # get team details and ensure at least 1 owner will remain
             $thisTeam = Get-VenafiTeam -ID $ID -VenafiSession $VenafiSession

@@ -197,13 +197,13 @@ function Read-VenafiLog {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         if ( $PSBoundParameters.Keys -contains 'Skip' -or $PSBoundParameters.Keys -contains 'IncludeTotalCount' ) {
             Write-Warning '-Skip and -IncludeTotalCount not implemented yet'
         }
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             $queryParams = @{
                 Filter            = $Filter
                 Order             = $Order
@@ -274,7 +274,7 @@ function Read-VenafiLog {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty activityLogEntries
         }
         else {

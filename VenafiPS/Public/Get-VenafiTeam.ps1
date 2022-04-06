@@ -70,7 +70,7 @@ function Get-VenafiTeam {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -80,7 +80,7 @@ function Get-VenafiTeam {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             if ( $Id ) {
                 $params.UriLeaf = "teams/$ID"

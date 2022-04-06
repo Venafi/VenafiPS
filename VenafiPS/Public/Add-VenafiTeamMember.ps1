@@ -54,7 +54,7 @@ function Add-VenafiTeamMember {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -63,7 +63,7 @@ function Add-VenafiTeamMember {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             $params.Method = 'Post'
             $params.UriLeaf = "teams/$ID/members"

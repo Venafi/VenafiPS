@@ -12,7 +12,10 @@ function Test-VenafiSession {
         [string] $Platform,
 
         [Parameter(Mandatory, ParameterSetName = 'AuthType')]
-        [string] $AuthType
+        [string] $AuthType,
+
+        [Parameter()]
+        [switch] $PassThru
 
     )
 
@@ -33,6 +36,7 @@ function Test-VenafiSession {
                     $VenafiSession.Validate()
                 }
 
+                $platformOut = $VenafiSession.Platform
                 break
             }
 
@@ -46,6 +50,8 @@ function Test-VenafiSession {
                     if ( $Platform -and $Platform -ne 'VaaS' ) {
                         throw "This function or parameter set is only accessible for $Platform"
                     }
+
+                    $platformOut = 'VaaS'
                 }
                 else {
 
@@ -58,12 +64,18 @@ function Test-VenafiSession {
                     if ( -not $env:TppServer ) {
                         throw 'TPP token provided for VenafiSession, but TppServer environment variable was not found'
                     }
+
+                    $platformOut = 'TPP'
                 }
             }
 
             Default {
                 throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a VaaS key or TPP token."
             }
+        }
+
+        if ( $PassThru ) {
+            $platformOut
         }
     }
 }

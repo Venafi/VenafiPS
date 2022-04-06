@@ -82,7 +82,7 @@ function Get-VenafiCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -120,7 +120,7 @@ function Get-VenafiCertificate {
 
     process {
 
-        switch ($VenafiSession.Platform) {
+        switch ($platform) {
             'VaaS' {
                 $params.UriRoot = 'outagedetection/v1'
                 $params.UriLeaf = "certificates"

@@ -396,13 +396,15 @@ function Find-VenafiCertificate {
         # have a different default param set for this
         if ( $PSCmdlet.ParameterSetName -eq 'NoParams' ) {
             # validate based on the session platform
-            Test-VenafiSession -VenafiSession $VenafiSession
-        } else {
+            $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
+        }
+        else {
             # validate based on the paramset
-            $VenafiSession.Validate($PSCmdlet.ParameterSetName)
+            $platform = Test-VenafiSession -VenafiSession $VenafiSession -Platform $PSCmdlet.ParameterSetName -PassThru
+            # $VenafiSession.Validate($PSCmdlet.ParameterSetName)
         }
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             if ( $PSBoundParameters.Keys -contains 'Skip' -or $PSBoundParameters.Keys -contains 'IncludeTotalCount' ) {
                 Write-Warning '-Skip and -IncludeTotalCount not implemented yet'
             }
@@ -579,7 +581,7 @@ function Find-VenafiCertificate {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             $response = Invoke-VenafiRestMethod @params
 
             if ( $CountOnly ) {

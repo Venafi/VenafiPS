@@ -115,7 +115,7 @@ function Invoke-VenafiCertificateAction {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
     }
 
     process {
@@ -131,7 +131,7 @@ function Invoke-VenafiCertificateAction {
             Method        = 'Post'
         }
 
-        switch ($VenafiSession.Platform) {
+        switch ($platform) {
             'VaaS' {
 
                 $params.UriRoot = 'outagedetection/v1'

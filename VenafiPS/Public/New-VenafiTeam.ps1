@@ -134,13 +134,13 @@ function New-VenafiTeam {
         [psobject] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate($PSCmdlet.ParameterSetName)
+    $platform = Test-VenafiSession -VenafiSession $VenafiSession -Platform $PSCmdlet.ParameterSetName -PassThru
 
     $params = @{
         VenafiSession = $VenafiSession
     }
 
-    if ( $VenafiSession.Platform -eq 'VaaS' ) {
+    if ( $platform -eq 'VaaS' ) {
 
         $params.Method = 'Post'
         $params.UriLeaf = "teams"

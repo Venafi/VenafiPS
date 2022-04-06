@@ -149,9 +149,9 @@ function Get-VenafiIdentity {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
-        Write-Verbose ('{0} : {1} : Parameterset {2}' -f $PsCmdlet.MyInvocation.MyCommand, $VenafiSession.Platform, $PsCmdlet.ParameterSetName)
+        Write-Verbose ('{0} : {1} : Parameterset {2}' -f $PsCmdlet.MyInvocation.MyCommand, $platform, $PsCmdlet.ParameterSetName)
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -162,7 +162,7 @@ function Get-VenafiIdentity {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             if ( $IncludeAssociated -or $IncludeMembers ) {
                 Write-Warning '-IncludeAssociated and -IncludeMembers are only applicable to TPP'

@@ -42,7 +42,7 @@ function Remove-VenafiTeam {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -52,7 +52,7 @@ function Remove-VenafiTeam {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             $params.UriLeaf = "teams/$ID"
         }
