@@ -39,6 +39,7 @@ If unsure of the class name, add the value through the TPP UI and go to Support-
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .INPUTS
 Path

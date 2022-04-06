@@ -27,6 +27,7 @@ Lock the value on the policy.  Only applicable to setting policies.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .INPUTS
 Path

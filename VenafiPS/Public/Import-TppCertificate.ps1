@@ -46,6 +46,7 @@ Return a TppObject representing the newly imported object.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .EXAMPLE
 Import-TppCertificate -PolicyPath \ved\policy\mycerts -CertificatePath c:\www.VenafiPS.com.cer

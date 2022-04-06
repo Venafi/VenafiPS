@@ -26,6 +26,7 @@ Return a TppObject representing the newly created object.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .EXAMPLE
 New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}

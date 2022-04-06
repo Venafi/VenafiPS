@@ -35,6 +35,7 @@ See the api documentation for appropriate items, many are in the links in this h
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .INPUTS
 CertificateId

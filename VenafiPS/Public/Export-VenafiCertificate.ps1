@@ -45,6 +45,7 @@ You must adhere to the following rules:
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .INPUTS
 CertificateId/Path from TppObject

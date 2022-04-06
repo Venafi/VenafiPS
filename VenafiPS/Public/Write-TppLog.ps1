@@ -43,6 +43,7 @@ Integer data to write to log.  See link for event ID messages for more info.
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .INPUTS
 none

@@ -13,6 +13,7 @@ New project status, must have the appropriate perms.  Status can be Disabled, En
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .INPUTS
 Path

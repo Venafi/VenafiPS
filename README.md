@@ -35,31 +35,30 @@ VenafiPS is published to the PowerShell Gallery.  The most recent version is lis
 
 As the module supports both TPP and Venafi as a Service, you will note different names for the functions.  Functions with `-Tpp` are for TPP only, `-Vaas` are for Venafi as a Service only, and `-Venafi` are for both.
 
-Start a new PowerShell prompt (even if you have one from the Install Module step) and create a new VenafiPS session with
+Start a new PowerShell prompt (even if you have one from the install-module step) and create a new VenafiPS session with
 
 ```powershell
 $cred = Get-Credential
+
+# obtain new oauth token
 New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'}
 
-# to store access token for later use
+# obtain new oauth token and store access token for later use
 New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'} -VaultAccessTokenName TppAccessToken
 
-# to store refresh token for later use
+# obtain new oauth token and store refresh token for later use
 New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'} -VaultRefreshTokenName TppRefreshToken
+
+# create a session for VaaS
+New-VenafiSession -VaasKey $cred
 ```
 
-This will create a session which will be used by default in other functions.
-You can also use integrated authentication, simply exclude `-Credential $cred`.
+The above will create a session which will be used by default in other functions.
+View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.
 
-Beginning with v3.0, you can connect to Venafi as a Service; simply provide a credential with your api key as the password:
+For VaaS, your API key can be found in your user profile->preferences.
 
-```
-New-VenafiSession -VaasKey $apikeyCred
-```
-
-Your API key can be found in your user profile->preferences.  View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.
-
-Helpful with devops scenarios including pipelines, you can now provide either a VaaS key or TPP token for `-VenafiSession` for all function calls with no need to execute `New-VenafiSession`.
+Helpful with devops scenarios including pipelines, you can provide either a VaaS key or TPP token for `-VenafiSession` for all function calls with no need to execute `New-VenafiSession` first.  If using TPP, an environment variable named `TppServer` must be set first.
 
 ### Examples
 One of the easiest ways to get started is to use `Find-TppObject`:

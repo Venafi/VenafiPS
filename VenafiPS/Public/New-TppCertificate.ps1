@@ -68,6 +68,7 @@ If devices and/or applications were created, a 'Device' property will be availab
 
 .PARAMETER VenafiSession
 Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+A TPP token or VaaS key can also provided.
 
 .INPUTS
 None
