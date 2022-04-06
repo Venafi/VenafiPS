@@ -122,7 +122,7 @@ function Export-VenafiCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -131,10 +131,10 @@ function Export-VenafiCertificate {
             }
         }
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
-            if ( $Format -notin 'PEM', 'DER') {
-                throw 'Venafi as a Service only supports PEM and DER formats'
+            if ( $Format -notin 'PEM', 'DER', 'JKS') {
+                throw "Venafi as a Service does not support the format $Format"
             }
         }
         else {
@@ -186,7 +186,7 @@ function Export-VenafiCertificate {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             $params.UriRoot = 'outagedetection/v1'
             $params.UriLeaf = "certificates/$CertificateId/contents"
             $params.Method = 'Get'
