@@ -26,6 +26,10 @@ Test-VenafiSession -VenafiSession $VenafiSession
 Test a session
 
 .EXAMPLE
+Test-VenafiSession -VenafiSession $VenafiSession -PassThru
+Test a session and return the platform type found
+
+.EXAMPLE
 Test-VenafiSession -VenafiSession $key
 Test a VaaS key
 
