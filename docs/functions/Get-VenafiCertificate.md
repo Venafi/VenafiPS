@@ -7,18 +7,18 @@ Get certificate information
 
 ### All (Default)
 ```
-Get-VenafiCertificate [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VenafiCertificate [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### OldVersions
 ```
 Get-VenafiCertificate -CertificateId <String> [-IncludePreviousVersions] [-ExcludeExpired] [-ExcludeRevoked]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### Id
 ```
-Get-VenafiCertificate -CertificateId <String> [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VenafiCertificate -CertificateId <String> [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -130,11 +130,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

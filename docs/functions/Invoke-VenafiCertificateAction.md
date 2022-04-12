@@ -8,37 +8,37 @@ Perform an action against a certificate on TPP or VaaS
 ### Retire
 ```
 Invoke-VenafiCertificateAction -CertificateId <String> [-Retire] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Reset
 ```
 Invoke-VenafiCertificateAction -CertificateId <String> [-Reset] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Renew
 ```
 Invoke-VenafiCertificateAction -CertificateId <String> [-Renew] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Push
 ```
 Invoke-VenafiCertificateAction -CertificateId <String> [-Push] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Validate
 ```
 Invoke-VenafiCertificateAction -CertificateId <String> [-Validate] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Revoke
 ```
 Invoke-VenafiCertificateAction -CertificateId <String> [-Revoke] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -189,11 +189,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

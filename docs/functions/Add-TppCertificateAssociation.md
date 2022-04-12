@@ -8,13 +8,13 @@ Add certificate association
 ### AddByObject
 ```
 Add-TppCertificateAssociation -InputObject <TppObject> [-ApplicationPath <String[]>] [-PushCertificate]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### AddByPath
 ```
 Add-TppCertificateAssociation -CertificatePath <String> [-ApplicationPath <String[]>] [-PushCertificate]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -100,11 +100,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

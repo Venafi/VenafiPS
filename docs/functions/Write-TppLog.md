@@ -9,7 +9,7 @@ Write entries to the TPP log
 ```
 Write-TppLog -EventGroup <String> -EventId <String> -Component <String> [-Severity <TppEventSeverity>]
  [-SourceIp <IPAddress>] [-ComponentID <Int32>] [-ComponentSubsystem <String>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
+ [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -17,7 +17,7 @@ Write-TppLog -EventGroup <String> -EventId <String> -Component <String> [-Severi
 ```
 Write-TppLog -CustomEventGroup <String> -EventId <String> -Component <String> [-Severity <TppEventSeverity>]
  [-SourceIp <IPAddress>] [-ComponentID <Int32>] [-ComponentSubsystem <String>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
+ [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -223,11 +223,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

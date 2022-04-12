@@ -10,7 +10,7 @@ Enrolls or provisions a new certificate
 New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <String>]
  [-CertificateType <String>] [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
  [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- [-Device <Hashtable[]>] [-PassThru] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Device <Hashtable[]>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByNameWithDevice
@@ -18,7 +18,7 @@ New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <S
 New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <String>]
  [-CertificateType <String>] [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
  [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- -Device <Hashtable[]> [-Application <Hashtable[]>] [-PassThru] [-VenafiSession <VenafiSession>] [-WhatIf]
+ -Device <Hashtable[]> [-Application <Hashtable[]>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -27,7 +27,7 @@ New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <S
 New-TppCertificate -Path <String> -CommonName <String> [-Csr <String>] [-CertificateType <String>]
  [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
  [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- -Device <Hashtable[]> [-Application <Hashtable[]>] [-PassThru] [-VenafiSession <VenafiSession>] [-WhatIf]
+ -Device <Hashtable[]> [-Application <Hashtable[]>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -36,7 +36,7 @@ New-TppCertificate -Path <String> -CommonName <String> [-Csr <String>] [-Certifi
 New-TppCertificate -Path <String> -CommonName <String> [-Csr <String>] [-CertificateType <String>]
  [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
  [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- [-Device <Hashtable[]>] [-PassThru] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Device <Hashtable[]>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -343,11 +343,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

@@ -8,19 +8,19 @@ Get permissions for TPP objects
 ### ByObject (Default)
 ```
 Get-TppPermission -InputObject <TppObject> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
 Get-TppPermission -Path <String[]> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
 Get-TppPermission -Guid <Guid[]> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -148,11 +148,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

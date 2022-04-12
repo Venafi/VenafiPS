@@ -7,7 +7,7 @@ Find certificates in TPP or VaaS based on various attributes
 
 ### NoParams (Default)
 ```
-Find-VenafiCertificate [-CountOnly] [-VenafiSession <VenafiSession>] [-IncludeTotalCount] [-Skip <UInt64>]
+Find-VenafiCertificate [-CountOnly] [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>]
  [-First <UInt64>] [<CommonParameters>]
 ```
 
@@ -23,14 +23,14 @@ Find-VenafiCertificate [-Path <String>] [-Guid <Guid>] [-Recursive] [-Limit <Int
  [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
  [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
  [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <VenafiSession>] [-IncludeTotalCount]
- [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+ [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>]
+ [-First <UInt64>] [<CommonParameters>]
 ```
 
 ### VaaS
 ```
-Find-VenafiCertificate [-Filter <ArrayList>] [-Order <PSObject[]>] [-CountOnly]
- [-VenafiSession <VenafiSession>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+Find-VenafiCertificate [-Filter <ArrayList>] [-Order <PSObject[]>] [-CountOnly] [-VenafiSession <PSObject>]
+ [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -838,11 +838,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

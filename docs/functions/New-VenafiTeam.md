@@ -8,13 +8,13 @@ Create a new team
 ### VaaS
 ```
 New-VenafiTeam -Name <String> -Owner <String[]> -Member <String[]> -Role <String> [-PassThru]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### TPP
 ```
 New-VenafiTeam -Name <String> -Owner <String[]> -Member <String[]> [-Policy <String[]>] -Product <String[]>
- [-Description <String>] [-PassThru] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-Description <String>] [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -216,11 +216,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

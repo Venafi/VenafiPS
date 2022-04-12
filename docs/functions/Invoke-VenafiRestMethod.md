@@ -7,8 +7,8 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 
 ### Session (Default)
 ```
-Invoke-VenafiRestMethod [-VenafiSession <VenafiSession>] [-Method <String>] [-UriRoot <String>]
- -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
+Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot <String>] -UriLeaf <String>
+ [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
 ```
 
 ### URL
@@ -43,9 +43,9 @@ For typical calls to New-VenafiSession, the object will be stored as a session o
 Otherwise, if -PassThru was used, provide the resulting object.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: Session
-Aliases:
+Aliases: Key, AccessToken
 
 Required: False
 Position: Named

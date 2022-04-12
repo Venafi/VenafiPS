@@ -6,7 +6,7 @@ List all attributes for a specified class
 ## SYNTAX
 
 ```
-Get-TppClassAttribute [-ClassName] <String> [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
+Get-TppClassAttribute [-ClassName] <String> [[-VenafiSession] <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -41,7 +41,7 @@ Accept wildcard characters: False
 {{ Fill VenafiSession Description }}
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

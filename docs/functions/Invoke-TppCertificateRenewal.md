@@ -6,7 +6,7 @@ Renew a certificate
 ## SYNTAX
 
 ```
-Invoke-TppCertificateRenewal [-Path] <String> [[-Csr] <String>] [[-VenafiSession] <VenafiSession>] [-WhatIf]
+Invoke-TppCertificateRenewal [-Path] <String> [[-Csr] <String>] [[-VenafiSession] <PSObject>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -69,7 +69,7 @@ Session object created from New-VenafiSession method.
 The value defaults to the script session object $VenafiSession.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 
