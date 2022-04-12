@@ -4,5 +4,5 @@ site_author: Venafi
 edit_uri: edit/main/docs/
 theme: material
 copyright: "Copyright (c) Venafi"
-pages:
+nav:
   - Home: index.md
