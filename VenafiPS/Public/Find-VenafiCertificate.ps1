@@ -404,7 +404,6 @@ function Find-VenafiCertificate {
         else {
             # validate based on the paramset
             $platform = Test-VenafiSession -VenafiSession $VenafiSession -Platform $PSCmdlet.ParameterSetName -PassThru
-            # $VenafiSession.Validate($PSCmdlet.ParameterSetName)
         }
 
         if ( $platform -eq 'VaaS' ) {

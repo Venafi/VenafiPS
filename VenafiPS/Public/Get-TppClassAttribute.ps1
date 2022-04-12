@@ -22,6 +22,8 @@ function Get-TppClassAttribute {
     )
 
     begin {
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+
         $allAttributes = [System.Collections.Generic.List[object]]::new()
     }
 

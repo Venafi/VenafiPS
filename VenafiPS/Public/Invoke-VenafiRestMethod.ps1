@@ -83,6 +83,10 @@ function Invoke-VenafiRestMethod {
 
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
 
+        if ( -not $VenafiSession ) {
+            throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
+        }
+
         switch ($VenafiSession.GetType().Name) {
             'VenafiSession' {
                 $Server = $VenafiSession.Server

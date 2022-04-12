@@ -77,7 +77,6 @@ function New-TppPolicy {
     )
 
     begin {
-        # Test-VenafiSession -VenafiSession $VenafiSession
 
         $params = @{
             Path       = ''
