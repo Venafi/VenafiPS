@@ -8,6 +8,16 @@ repo_url: https://github.com/Venafi/VenafiPS
 repo_name: VenafiPS
 edit_uri: edit/main/docs
 docs_dir: docs
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
 nav:
   - Home: index.md
   - Changelog: changelog.md
@@ -84,7 +94,3 @@ nav:
     - Test-TppObject: functions/Test-TppObject.md
     - Test-TppToken: functions/Test-TppToken.md
     - Write-TppLog: functions/Write-TppLog.md
-
-markdown_extensions:
-- toc:
-      permalink: true
