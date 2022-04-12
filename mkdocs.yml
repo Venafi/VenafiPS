@@ -1,9 +1,11 @@
 site_name: VenafiPS
 theme:
   name: material
-  logo: images/venafi_logo.png
+  logo: images/v.svg
   features:
     - navigation.expand
+  palette:
+    primary: indigo
 repo_url: https://github.com/Venafi/VenafiPS
 repo_name: VenafiPS
 edit_uri: edit/main/docs
