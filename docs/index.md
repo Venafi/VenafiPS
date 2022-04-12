@@ -3,7 +3,8 @@
 Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform core functionality as well as code signing.  Support for Venafi as a Service has also recently been added.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to submit an issue.
 
 !!! note
-As of version 4.0, the license has changed and is now Apache 2.0
+
+    As of version 4.0, the license has changed and is now Apache 2.0
 
 ## Documentation
 
