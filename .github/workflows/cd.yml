@@ -56,7 +56,7 @@ jobs:
           $changeLogText = (Get-Content @parameters) -join "`n"
           if ($changeLogText) {
               $changeLogText | Set-Content "${{ github.workspace }}/docs/changelog.md"
-              $YMLText = "$YMLtext  - Change Log: changelog.md`n"
+              $YMLText = "$YMLtext  - Changelog: changelog.md`n"
           }
 
           $YMLText = "$YMLtext  - Functions:`n"
