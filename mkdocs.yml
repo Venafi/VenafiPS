@@ -8,7 +8,7 @@ theme:
     primary: indigo
 repo_url: https://github.com/Venafi/VenafiPS
 repo_name: VenafiPS
-edit_uri: edit/main/docs
+edit_uri: ""
 docs_dir: docs
 markdown_extensions:
   - toc:
