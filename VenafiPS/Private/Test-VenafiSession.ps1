@@ -49,16 +49,17 @@ function Test-VenafiSession {
 
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
+        [AllowNull()]
         [Alias('Key', 'AccessToken')]
         [psobject] $VenafiSession,
 
         [Parameter(Mandatory, ParameterSetName = 'Platform')]
         [Parameter(Mandatory, ParameterSetName = 'AuthType')]
-        [Alias('VaaS', 'TPP')]
+        [ValidateSet('VaaS', 'TPP')]
         [string] $Platform,
 
         [Parameter(Mandatory, ParameterSetName = 'AuthType')]
-        [Alias('Key', 'Token')]
+        [ValidateSet('Key', 'Token')]
         [string] $AuthType,
 
         [Parameter()]
@@ -66,6 +67,10 @@ function Test-VenafiSession {
     )
 
     process {
+
+        if ( -not $VenafiSession ) {
+            throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
+        }
 
         switch ($VenafiSession.GetType().Name) {
             'VenafiSession' {
