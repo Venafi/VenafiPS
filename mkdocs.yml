@@ -2,7 +2,7 @@ site_name: VenafiPS
 repo_url: https://github.com/Venafi/VenafiPS
 site_author: Venafi
 edit_uri: edit/main/docs/
-theme: readthedocs
+theme: material
 copyright: "Copyright (c) Venafi"
 pages:
   - Home: index.md
