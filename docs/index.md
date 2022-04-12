@@ -100,6 +100,7 @@ Compare-Object -ReferenceObject $all -DifferenceObject $all2 -Property Path
 ## Token/Key Secret Storage
 
 To securely store and retrieve secrets, VenafiPS has added support for the [PowerShell SecretManagement module](https://github.com/PowerShell/SecretManagement).  This can be used to store your access tokens, refresh tokens, or vaas key.  To use this feature, a vault will need to be created.  You can use [SecretStore](https://github.com/PowerShell/SecretStore) provided by the PowerShell team or any other vault type.  All of this functionality has been added to `New-VenafiSession`.  To prepare your environment, execute the following:
+
 - `Install-Module Microsoft.PowerShell.SecretManagement`
 - `Install-Module Microsoft.PowerShell.SecretStore` or whichever vault you would like to use
 - `Register-SecretVault -Name VenafiPS -ModuleName Microsoft.PowerShell.SecretStore`.  If you are using a different vault type, replace the value for `-ModuleName`.
