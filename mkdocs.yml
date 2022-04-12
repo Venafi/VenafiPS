@@ -1,7 +1,6 @@
 site_name: VenafiPS
 theme:
   name: material
-copyright: "Copyright (c) Venafi"
 nav:
-    - Home: index.md
-    - Change Log: changelog.md
+    - Home: 'index.md'
+    - Changelog: 'changelog.md'
