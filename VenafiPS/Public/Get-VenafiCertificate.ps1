@@ -21,7 +21,10 @@ Omits revoked versions of the previous (historical) versions of a certificate (o
 Can only be used with the IncludePreviousVersions parameter.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 CertificateId/Path from TppObject
@@ -77,12 +80,12 @@ function Get-VenafiCertificate {
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $VenafiSession.Validate()
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -120,7 +123,7 @@ function Get-VenafiCertificate {
 
     process {
 
-        switch ($VenafiSession.Platform) {
+        switch ($platform) {
             'VaaS' {
                 $params.UriRoot = 'outagedetection/v1'
                 $params.UriLeaf = "certificates"

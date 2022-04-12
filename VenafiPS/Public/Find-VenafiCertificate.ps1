@@ -144,7 +144,10 @@ You can also provide a hashtable with the field name as the key and either asc o
 Return the count of certificates found from the query as opposed to the certificates themselves
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 Path
@@ -388,7 +391,7 @@ function Find-VenafiCertificate {
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
@@ -396,13 +399,14 @@ function Find-VenafiCertificate {
         # have a different default param set for this
         if ( $PSCmdlet.ParameterSetName -eq 'NoParams' ) {
             # validate based on the session platform
-            $VenafiSession.Validate()
-        } else {
+            $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
+        }
+        else {
             # validate based on the paramset
-            $VenafiSession.Validate($PSCmdlet.ParameterSetName)
+            $platform = Test-VenafiSession -VenafiSession $VenafiSession -Platform $PSCmdlet.ParameterSetName -PassThru
         }
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             if ( $PSBoundParameters.Keys -contains 'Skip' -or $PSBoundParameters.Keys -contains 'IncludeTotalCount' ) {
                 Write-Warning '-Skip and -IncludeTotalCount not implemented yet'
             }
@@ -579,7 +583,7 @@ function Find-VenafiCertificate {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             $response = Invoke-VenafiRestMethod @params
 
             if ( $CountOnly ) {

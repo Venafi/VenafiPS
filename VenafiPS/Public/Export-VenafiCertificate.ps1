@@ -44,7 +44,10 @@ You must adhere to the following rules:
     - Special characters
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 CertificateId/Path from TppObject
@@ -118,11 +121,11 @@ function Export-VenafiCertificate {
         [Security.SecureString] $KeystorePassword,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -131,10 +134,10 @@ function Export-VenafiCertificate {
             }
         }
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
-            if ( $Format -notin 'PEM', 'DER') {
-                throw 'Venafi as a Service only supports PEM and DER formats'
+            if ( $Format -notin 'PEM', 'DER', 'JKS') {
+                throw "Venafi as a Service does not support the format $Format"
             }
         }
         else {
@@ -186,7 +189,7 @@ function Export-VenafiCertificate {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             $params.UriRoot = 'outagedetection/v1'
             $params.UriLeaf = "certificates/$CertificateId/contents"
             $params.Method = 'Get'

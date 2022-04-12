@@ -38,11 +38,14 @@ Api call with optional payload
 
 #>
 function Invoke-VenafiRestMethod {
+
     [CmdletBinding(DefaultParameterSetName = 'Session')]
+
     param (
         [Parameter(ParameterSetName = 'Session')]
         [ValidateNotNullOrEmpty()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession,
+        [Alias('Key', 'AccessToken')]
+        [psobject] $VenafiSession = $script:VenafiSession,
 
         [Parameter(Mandatory, ParameterSetName = 'URL')]
         [ValidateNotNullOrEmpty()]
@@ -77,30 +80,80 @@ function Invoke-VenafiRestMethod {
         [switch] $FullResponse
     )
 
-    if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
-        $Server = $VenafiSession.Server
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
-            $hdr = @{
-                "tppl-api-key" = $VenafiSession.Key.GetNetworkCredential().password
+    if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
+
+        if ( -not $VenafiSession ) {
+            throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
+        }
+
+        switch ($VenafiSession.GetType().Name) {
+            'VenafiSession' {
+                $Server = $VenafiSession.Server
+                if ( $VenafiSession.Platform -eq 'VaaS' ) {
+                    $platform = 'VaaS'
+                    $auth = $VenafiSession.Key.GetNetworkCredential().password
+                }
+                else {
+                    # TPP
+                    if ( $VenafiSession.AuthType -eq 'Token' ) {
+                        $platform = 'TppToken'
+                        $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
+                    }
+                    else {
+                        $platform = 'TppKey'
+                        $auth = $VenafiSession.Key.ApiKey
+                    }
+                }
+                break
             }
-            if ( -not $PSBoundParameters.ContainsKey('UriRoot') ) {
-                $UriRoot = 'v1'
+
+            'String' {
+                $auth = $VenafiSession
+                $objectGuid = [System.Guid]::empty
+                if ( [System.Guid]::TryParse($VenafiSession, [System.Management.Automation.PSReference]$objectGuid) ) {
+                    $Server = $script:CloudUrl
+                    $platform = 'VaaS'
+                }
+                else {
+                    # TPP access token
+                    # get server from environment variable
+                    if ( -not $env:TppServer ) {
+                        throw 'TppServer environment variable was not found'
+                    }
+                    $Server = $env:TppServer
+                    $platform = 'TppToken'
+                }
+            }
+
+            Default {
+                throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a VaaS key or TPP token."
             }
         }
-        else {
-            # TPP
-            if ( $VenafiSession.AuthType -eq 'Token' ) {
+
+        switch ($platform) {
+            'VaaS' {
                 $hdr = @{
-                    'Authorization' = 'Bearer {0}' -f $VenafiSession.Token.AccessToken.GetNetworkCredential().password
+                    "tppl-api-key" = $auth
+                }
+                if ( -not $PSBoundParameters.ContainsKey('UriRoot') ) {
+                    $UriRoot = 'v1'
                 }
             }
-            else {
-                # key based tpp
+
+            'TppToken' {
                 $hdr = @{
-                    "X-Venafi-Api-Key" = $VenafiSession.Key.ApiKey
+                    'Authorization' = 'Bearer {0}' -f $auth
                 }
             }
+
+            'TppKey' {
+                $hdr = @{
+                    "X-Venafi-Api-Key" = $auth
+                }
+            }
+
+            Default {}
         }
     }
 

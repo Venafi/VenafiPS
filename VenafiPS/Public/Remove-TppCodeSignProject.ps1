@@ -9,7 +9,10 @@ Delete a code sign project.  You must be a code sign admin or owner of the proje
 Path of the project to delete
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 Path
@@ -51,11 +54,11 @@ function Remove-TppCodeSignProject {
         [String] $Path,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('TPP', 'token')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -AuthType 'token'
 
         $params = @{
             VenafiSession = $VenafiSession

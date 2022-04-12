@@ -38,7 +38,10 @@ Required when getting policy attributes.  Provide the class name to retrieve the
 If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 Path
@@ -138,12 +141,12 @@ function Get-TppAttribute {
         [switch] $AsValue,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $VenafiSession.Validate('TPP')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         if ( $Guid ) {
             Write-Warning '-Guid will be deprecated in a future release.  Please use -Path instead.'

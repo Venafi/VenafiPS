@@ -9,7 +9,10 @@ Get info for either a specific org unit or all org units.  Venafi as a Service o
 Id to get info for a specific OrgUnit
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 OrgUnitId
@@ -35,11 +38,11 @@ function Get-VaasOrgUnit {
         [guid] $OrgUnitId,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('VaaS')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         $params = @{
             VenafiSession = $VenafiSession

@@ -22,7 +22,8 @@ See New-VenafiSession -VaultMetaData
 Token object obtained from New-TppToken
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+VenafiSession object to validate.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
 
 .PARAMETER GrantDetail
 Provides detailed info about the token object from the TPP server response as an output.  Supported on TPP 20.4 and later.

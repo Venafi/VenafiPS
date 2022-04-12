@@ -12,7 +12,10 @@ Path of the project to update
 New project status, must have the appropriate perms.  Status can be Disabled, Enabled, Draft, or Pending.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 Path
@@ -53,11 +56,11 @@ function Set-TppCodeSignProjectStatus {
         [TppCodeSignProjectStatus] $Status,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('TPP', 'token')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -AuthType 'token'
 
         $params = @{
             VenafiSession = $VenafiSession

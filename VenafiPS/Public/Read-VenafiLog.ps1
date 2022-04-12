@@ -46,7 +46,10 @@ For each item in the array, you can provide a field name by itself; this will de
 You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 Path (for TPP)
@@ -192,18 +195,18 @@ function Read-VenafiLog {
         [psobject[]] $Order,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
 
-        $VenafiSession.Validate()
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         if ( $PSBoundParameters.Keys -contains 'Skip' -or $PSBoundParameters.Keys -contains 'IncludeTotalCount' ) {
             Write-Warning '-Skip and -IncludeTotalCount not implemented yet'
         }
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             $queryParams = @{
                 Filter            = $Filter
                 Order             = $Order
@@ -274,7 +277,7 @@ function Read-VenafiLog {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
             Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty activityLogEntries
         }
         else {
