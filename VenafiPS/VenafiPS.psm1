@@ -29,7 +29,7 @@ foreach ( $folder in $folders) {
 $script:CloudUrl = 'https://api.venafi.cloud'
 $script:ModuleVersion = '((NEW_VERSION))'
 
-$Script:VenafiSession = New-Object 'VenafiSession'
+$Script:VenafiSession = $null
 Export-ModuleMember -Variable VenafiSession
 
 $aliases = @{

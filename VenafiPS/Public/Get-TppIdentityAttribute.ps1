@@ -12,8 +12,10 @@ The id that represents the user or group.  Use Find-TppIdentity to get the id.
 Retrieve identity attribute values for the users and groups.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
 A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 ID

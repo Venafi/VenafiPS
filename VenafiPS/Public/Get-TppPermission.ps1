@@ -29,8 +29,10 @@ Attributes include Group Membership, Name, Internet Email Address, Given Name, S
 This parameter will be deprecated in a future release.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
 A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 InputObject, Path, Guid, IdentityId
