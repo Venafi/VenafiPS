@@ -9,8 +9,8 @@ docs_dir: docs
 nav:
   - "Introduction": "index.md"
   - "Changelog": "changelog.md"
-  - Functions:
-    - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
+  - 'Functions':
+    - "Add-TppCertificateAssociation": "functions/Add-TppCertificateAssociation.md"
     - Add-VenafiTeamMember: functions/Add-VenafiTeamMember.md
     - Add-VenafiTeamOwner: functions/Add-VenafiTeamOwner.md
     - Convert-TppObject: functions/Convert-TppObject.md
