@@ -2,5 +2,5 @@ site_name: VenafiPS
 theme:
   name: material
 nav:
-    - Home: 'index.md'
-    - Changelog: 'changelog.md'
+  - "Home": "index.md"
+  - "Changelog": "changelog.md"
