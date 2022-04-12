@@ -6,10 +6,6 @@ Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi 
 
     As of version 4.0, the license has changed and is now Apache 2.0
 
-## Documentation
-
-Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.readthedocs.io) or by using built-in PowerShell help.  Every effort has been made to document each parameter and provide good examples.
-
 ## Supported Platforms
 
 | OS             | PowerShell Version Tested | Status  |
@@ -113,7 +109,3 @@ To securely store and retrieve secrets, VenafiPS has added support for the [Powe
   - To create a new session going forward, `New-VenafiSession -VaultRefreshTokenName tpp-token`.  This will retrieve the refresh token and associated metadata from the vault, retrieve a new access token based on that refresh token and create a new session.
 
 Note, extension vaults are registered to the current logged in user context, and will be available only to that user (unless also registered to other users).
-
-## Contributing
-
-Please feel free to log an issue for any new features you would like, bugs you come across, or just simply a question.  I am happy to have people contribute to the codebase as well.
