@@ -7,21 +7,21 @@ Get certificate data
 
 ### Vaas (Default)
 ```
-Export-VenafiCertificate -CertificateId <String> -Format <String> [-VenafiSession <VenafiSession>]
+Export-VenafiCertificate -CertificateId <String> -Format <String> [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
 ### Tpp
 ```
 Export-VenafiCertificate -CertificateId <String> -Format <String> [-OutPath <String>] [-IncludeChain]
- [-FriendlyName <String>] [-IncludePrivateKey] [-PrivateKeyPassword <SecureString>]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-FriendlyName <String>] [-IncludePrivateKey] [-PrivateKeyPassword <SecureString>] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
 ```
 
 ### TppJks
 ```
 Export-VenafiCertificate -CertificateId <String> -Format <String> [-IncludeChain] -FriendlyName <String>
- [-PrivateKeyPassword <SecureString>] -KeystorePassword <SecureString> [-VenafiSession <VenafiSession>]
+ [-PrivateKeyPassword <SecureString>] -KeystorePassword <SecureString> [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
@@ -224,11 +224,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

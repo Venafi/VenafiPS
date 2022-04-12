@@ -9,13 +9,13 @@ Read entries from the VaaS or TPP log
 ```
 Read-VenafiLog [-Path <String>] [-EventId <String>] [-Severity <TppEventSeverity>] [-StartTime <DateTime>]
  [-EndTime <DateTime>] [-Text1 <String>] [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>]
- [-VenafiSession <VenafiSession>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ### VaaS
 ```
-Read-VenafiLog [-Filter <ArrayList>] [-Order <PSObject[]>] [-VenafiSession <VenafiSession>]
- [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+Read-VenafiLog [-Filter <ArrayList>] [-Order <PSObject[]>] [-VenafiSession <PSObject>] [-IncludeTotalCount]
+ [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -274,11 +274,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

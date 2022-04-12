@@ -6,7 +6,7 @@ Get CodeSign Protect project settings
 ## SYNTAX
 
 ```
-Get-TppCodeSignConfig [[-VenafiSession] <VenafiSession>] [<CommonParameters>]
+Get-TppCodeSignConfig [[-VenafiSession] <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,11 +24,13 @@ Get settings
 ## PARAMETERS
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

@@ -7,36 +7,36 @@ Get object attributes as well as policies (policy attributes)
 
 ### ByPath (Default)
 ```
-Get-TppAttribute -Path <String> [-Attribute <String[]>] [-AsValue] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Path <String> [-Attribute <String[]>] [-AsValue] [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
 ### PolicyPath
 ```
 Get-TppAttribute -Path <String> -Attribute <String[]> [-Policy] -ClassName <String> [-AsValue]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### AllEffectivePath
 ```
-Get-TppAttribute -Path <String> [-All] [-AsValue] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-TppAttribute -Path <String> [-All] [-AsValue] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### EffectiveByPath
 ```
-Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppAttribute -Guid <Guid> [-Attribute <String[]>] [-AsValue] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Guid <Guid> [-Attribute <String[]>] [-AsValue] [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
 ### EffectiveByGuid
 ```
-Get-TppAttribute -Guid <Guid> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <VenafiSession>]
+Get-TppAttribute -Guid <Guid> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
@@ -224,11 +224,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

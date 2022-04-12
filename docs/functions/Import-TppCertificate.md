@@ -9,28 +9,28 @@ Import a certificate
 ```
 Import-TppCertificate -PolicyPath <String> -CertificatePath <String> [-Name <String>]
  [-EnrollmentAttribute <Hashtable>] [-Password <SecureString>] [-Reconcile] [-PassThru]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByFileWithPrivateKey
 ```
 Import-TppCertificate -PolicyPath <String> -CertificatePath <String> [-Name <String>]
  [-EnrollmentAttribute <Hashtable>] -PrivateKey <String> -Password <SecureString> [-Reconcile] [-PassThru]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByDataWithPrivateKey
 ```
 Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <String>]
  [-EnrollmentAttribute <Hashtable>] -PrivateKey <String> -Password <SecureString> [-Reconcile] [-PassThru]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByData
 ```
 Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <String>]
  [-EnrollmentAttribute <Hashtable>] [-Password <SecureString>] [-Reconcile] [-PassThru]
- [-VenafiSession <VenafiSession>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -210,11 +210,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

@@ -9,7 +9,7 @@ Create a new CAPI application
 ```
 New-TppCapiApplication -Path <String> [-ApplicationName <String[]>] [-CertificatePath <String>]
  [-CredentialPath <String>] [-FriendlyName <String>] [-Description <String>] [-WinRmPort <Int32>] [-Disable]
- [-PushCertificate] [-SkipExistenceCheck] [-PassThru] [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm]
+ [-PushCertificate] [-SkipExistenceCheck] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
@@ -18,8 +18,8 @@ New-TppCapiApplication -Path <String> [-ApplicationName <String[]>] [-Certificat
 New-TppCapiApplication -Path <String> [-ApplicationName <String[]>] [-CertificatePath <String>]
  [-CredentialPath <String>] [-FriendlyName <String>] [-Description <String>] [-WinRmPort <Int32>] [-Disable]
  -WebSiteName <String> [-BindingIp <IPAddress>] [-BindingPort <Int32>] [-BindingHostName <String>]
- [-CreateBinding <Boolean>] [-PushCertificate] [-SkipExistenceCheck] [-PassThru]
- [-VenafiSession <VenafiSession>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-CreateBinding <Boolean>] [-PushCertificate] [-SkipExistenceCheck] [-PassThru] [-VenafiSession <PSObject>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -302,11 +302,13 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

@@ -7,12 +7,12 @@ Get Team info
 
 ### ID
 ```
-Get-VenafiTeam -ID <String> [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VenafiTeam -ID <String> [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VenafiTeam [-All] [-VenafiSession <VenafiSession>] [<CommonParameters>]
+Get-VenafiTeam [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -85,13 +85,15 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-Session object created from New-VenafiSession method. 
-The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: (All)
-Aliases:
+Aliases: Key, AccessToken
 
 Required: False
 Position: Named
