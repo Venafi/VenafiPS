@@ -2,7 +2,8 @@ site_name: VenafiPS
 repo_url: https://github.com/Venafi/VenafiPS
 site_author: Venafi
 edit_uri: edit/main/docs/
-theme: material
+theme:
+  name: material
 copyright: "Copyright (c) Venafi"
 nav:
   - Home: index.md
