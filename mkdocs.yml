@@ -1,12 +1,31 @@
 site_name: VenafiPS
+theme:
+  name: material
+  logo: images/v.svg
+  features:
+    - navigation.expand
+  palette:
+    primary: indigo
 repo_url: https://github.com/Venafi/VenafiPS
-site_author: Venafi
-edit_uri: edit/main/docs/
-theme: readthedocs
-copyright: "Copyright (c) Venafi"
-pages:
+repo_name: VenafiPS
+edit_uri: ""
+docs_dir: docs
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - admonition
+  - pymdownx.details
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
+nav:
   - Home: index.md
-  - Change Log: changelog.md
+  - Changelog: changelog.md
   - Functions:
     - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
     - Add-VenafiTeamMember: functions/Add-VenafiTeamMember.md
@@ -80,4 +99,3 @@ pages:
     - Test-TppObject: functions/Test-TppObject.md
     - Test-TppToken: functions/Test-TppToken.md
     - Write-TppLog: functions/Write-TppLog.md
-
