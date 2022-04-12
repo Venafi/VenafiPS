@@ -1,6 +1,10 @@
 site_name: VenafiPS
 theme:
   name: material
+repo_url: https://github.com/Venafi/VenafiPS
+repo_name: VenafiPS
+edit_uri: edit/main/docs
+docs_dir: '.'
 nav:
   - "Home": "index.md"
   - "Changelog": "changelog.md"
