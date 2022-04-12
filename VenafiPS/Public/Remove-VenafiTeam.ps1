@@ -9,7 +9,10 @@ Remove a team from either VaaS or TPP
 Team ID.  For VaaS, this is the team guid.  For TPP, this is the local ID.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 ID
@@ -38,11 +41,11 @@ function Remove-VenafiTeam {
         [string] $ID,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -52,7 +55,7 @@ function Remove-VenafiTeam {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             $params.UriLeaf = "teams/$ID"
         }

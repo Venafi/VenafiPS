@@ -12,7 +12,10 @@ The id that represents the user or group.
 Only return boolean instead of ID and Exists list.  Helpful when validating just 1 identity.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 Identity
@@ -60,11 +63,11 @@ function Test-TppIdentity {
         [Switch] $ExistOnly,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('TPP')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $params = @{
             VenafiSession = $VenafiSession

@@ -31,7 +31,10 @@ Team role, either 'System Admin', 'PKI Admin', 'Resource Owner' or 'Guest'.  Vaa
 Team description or purpose.  TPP only.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .EXAMPLE
 New-VenafiTeam -Name 'My New Team' -Member 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4') -Role 'System Admin'
@@ -131,16 +134,16 @@ function New-VenafiTeam {
         [switch] $PassThru,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
-    $VenafiSession.Validate($PSCmdlet.ParameterSetName)
+    $platform = Test-VenafiSession -VenafiSession $VenafiSession -Platform $PSCmdlet.ParameterSetName -PassThru
 
     $params = @{
         VenafiSession = $VenafiSession
     }
 
-    if ( $VenafiSession.Platform -eq 'VaaS' ) {
+    if ( $platform -eq 'VaaS' ) {
 
         $params.Method = 'Post'
         $params.UriLeaf = "teams"

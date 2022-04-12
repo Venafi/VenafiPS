@@ -18,10 +18,12 @@ function Get-TppClassAttribute {
         [string] $ClassName,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+
         $allAttributes = [System.Collections.Generic.List[object]]::new()
     }
 

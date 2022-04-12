@@ -16,7 +16,10 @@ For VaaS, this is the unique guid obtained from Get-VenafiIdentity.
 For TPP, this is the identity ID property from Find-TppIdentity or Get-VenafiIdentity.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 ID
@@ -56,11 +59,11 @@ function Remove-VenafiTeamOwner {
         [string[]] $Owner,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -69,7 +72,7 @@ function Remove-VenafiTeamOwner {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             # get team details and ensure at least 1 owner will remain
             $thisTeam = Get-VenafiTeam -ID $ID -VenafiSession $VenafiSession

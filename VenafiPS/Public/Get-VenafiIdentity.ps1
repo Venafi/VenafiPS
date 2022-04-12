@@ -24,7 +24,10 @@ Returns the identity of the authenticated/current user
 Return a complete list of users.  VaaS only.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 ID
@@ -145,13 +148,13 @@ function Get-VenafiIdentity {
         [Switch] $IncludeMembers,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
-        Write-Verbose ('{0} : {1} : Parameterset {2}' -f $PsCmdlet.MyInvocation.MyCommand, $VenafiSession.Platform, $PsCmdlet.ParameterSetName)
+        Write-Verbose ('{0} : {1} : Parameterset {2}' -f $PsCmdlet.MyInvocation.MyCommand, $platform, $PsCmdlet.ParameterSetName)
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -162,7 +165,7 @@ function Get-VenafiIdentity {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             if ( $IncludeAssociated -or $IncludeMembers ) {
                 Write-Warning '-IncludeAssociated and -IncludeMembers are only applicable to TPP'

@@ -6,7 +6,10 @@ Get CodeSign Protect project settings
 Get CodeSign Protect project settings.  Must have token with scope codesign:manage.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 None
@@ -42,11 +45,11 @@ function Get-TppCodeSignConfig {
 
     param (
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('TPP', 'token')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -AuthType 'token'
 
         $params = @{
             VenafiSession = $VenafiSession

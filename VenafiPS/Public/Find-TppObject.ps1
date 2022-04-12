@@ -28,7 +28,10 @@ A list of attribute names to limit the search against.  Only valid when searchin
 Searches the subordinates of the object specified in Path.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 Path
@@ -133,11 +136,11 @@ function Find-TppObject {
         [switch] $Recursive,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('TPP')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
     }
 
     process {

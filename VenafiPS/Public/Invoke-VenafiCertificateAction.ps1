@@ -34,7 +34,10 @@ Additional items specific to the action being taken, if needed.
 See the api documentation for appropriate items, many are in the links in this help.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 CertificateId
@@ -111,11 +114,11 @@ function Invoke-VenafiCertificateAction {
         [hashtable] $AdditionalParameters,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
     }
 
     process {
@@ -131,7 +134,7 @@ function Invoke-VenafiCertificateAction {
             Method        = 'Post'
         }
 
-        switch ($VenafiSession.Platform) {
+        switch ($platform) {
             'VaaS' {
 
                 $params.UriRoot = 'outagedetection/v1'

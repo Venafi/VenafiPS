@@ -15,7 +15,10 @@ For TPP, this is the local prefixed universal ID.  You can find the group ID wit
 Provide this switch to get all teams
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 ID
@@ -65,11 +68,12 @@ function Get-VenafiTeam {
         [switch] $All,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [Alias('Key', 'AccessToken')]
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate()
+        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -79,7 +83,7 @@ function Get-VenafiTeam {
 
     process {
 
-        if ( $VenafiSession.Platform -eq 'VaaS' ) {
+        if ( $platform -eq 'VaaS' ) {
 
             if ( $Id ) {
                 $params.UriLeaf = "teams/$ID"

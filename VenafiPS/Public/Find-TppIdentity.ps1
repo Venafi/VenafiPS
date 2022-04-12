@@ -25,7 +25,10 @@ Include distribution group identity type in search
 Returns the identity of the authenticated user and all associated identities.  Will be deprecated in a future release, use Get-TppIdentity -Me instead.
 
 .PARAMETER VenafiSession
-Session object created from New-VenafiSession method.  The value defaults to the script session object $VenafiSession.
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token or VaaS key can also provided.
+If providing a TPP token, an environment variable named TppServer must also be set.
 
 .INPUTS
 Name
@@ -78,11 +81,11 @@ function Find-TppIdentity {
         [Switch] $Me,
 
         [Parameter()]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
-        $VenafiSession.Validate('TPP')
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $identityType = 0
         # determine settings to use
