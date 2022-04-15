@@ -79,6 +79,8 @@ Get certificates in JKS format, TPP
 function Export-VenafiCertificate {
 
     [CmdletBinding(DefaultParameterSetName = 'Vaas')]
+    [Alias('Get-TppCertificate')]
+
     param (
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

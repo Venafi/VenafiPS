@@ -109,7 +109,7 @@ CmdletsToExport = @()
 VariablesToExport = 'VenafiSession'
 
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-AliasesToExport = 'fto', 'itcr'
+AliasesToExport = 'fto', 'itcr', 'Find-TppCertificate', 'Get-TppIdentity', 'Read-TppLog', 'Invoke-TppRestMethod', 'Get-TppCertificate', 'Get-TppCertificateDetail'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
