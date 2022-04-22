@@ -40,6 +40,7 @@ Api call with optional payload
 function Invoke-VenafiRestMethod {
 
     [CmdletBinding(DefaultParameterSetName = 'Session')]
+    [Alias('Invoke-TppRestMethod')]
 
     param (
         [Parameter(ParameterSetName = 'Session')]

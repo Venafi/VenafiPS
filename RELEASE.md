@@ -1,4 +1,1 @@
-- Add authentication options, VaaS key or TPP token, in addition to VenafiSession to be provided directly to any function that supports that platform.  This better enables devops scenarios so 1 call can be made for a function as opposed to executing New-VenafiSession first.  Note, if using this with TPP, an environment variable named TppServer with the url of the server must be set.
-- Add `Test-VenafiSession` private function to add support for the new authentication methods as VenafiSession.Validate isn't used.  `Invoke-VenafiRestMethod` has been updated to accept these new authentication methods as well.
-- Add option to export from VaaS in JKS format
-- Migrate docs site to Material theme
+- Fix certain aliases not being exported

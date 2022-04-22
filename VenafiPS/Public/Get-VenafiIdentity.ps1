@@ -126,6 +126,7 @@ function Get-VenafiIdentity {
 
     [CmdletBinding(DefaultParameterSetName = 'Id')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = "Parameter is used")]
+    [Alias('Get-TppIdentity')]
 
     param (
         [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipelineByPropertyName)]
