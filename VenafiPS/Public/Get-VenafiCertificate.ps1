@@ -62,6 +62,8 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certifi
 function Get-VenafiCertificate {
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
+    [Alias('Get-TppCertificateDetail')]
+
     param (
 
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

@@ -223,6 +223,7 @@ https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagede
 function Find-VenafiCertificate {
 
     [CmdletBinding(DefaultParameterSetName = 'NoParams', SupportsPaging)]
+    [Alias('Find-TppCertificate')]
 
     param (
 

@@ -147,6 +147,7 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Log.php
 function Read-VenafiLog {
 
     [CmdletBinding(DefaultParameterSetName = 'TPP', SupportsPaging)]
+    [Alias('Read-TppLog')]
 
     param (
 
