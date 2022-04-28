@@ -92,23 +92,22 @@ function Move-TppObject {
 
     process {
 
-        if ( $PSCmdlet.ShouldProcess($SourcePath, "Move to $TargetPath") ) {
-
-            $params = @{
-                VenafiSession = $VenafiSession
-                Method        = 'Post'
-                UriLeaf       = 'config/RenameObject'
-                Body          = @{
-                    ObjectDN    = $SourcePath
-                    NewObjectDN = $TargetPath
-                }
+        $params = @{
+            VenafiSession = $VenafiSession
+            Method        = 'Post'
+            UriLeaf       = 'config/RenameObject'
+            Body          = @{
+                ObjectDN    = $SourcePath
+                NewObjectDN = $TargetPath
             }
+        }
 
-            # if target is a policy, append the object name from source
-            if ( $targetIsPolicy ) {
-                $params.Body.NewObjectDN = Join-Path -Path $TargetPath -ChildPath (Split-Path -Path $SourcePath -Leaf)
-            }
+        # if target is a policy, append the object name from source
+        if ( $targetIsPolicy ) {
+            $params.Body.NewObjectDN = Join-Path -Path $TargetPath -ChildPath (Split-Path -Path $SourcePath -Leaf)
+        }
 
+        if ( $PSCmdlet.ShouldProcess($SourcePath, ('Move to {0}' -f $params.Body.NewObjectDN)) ) {
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -ne [TppConfigResult]::Success ) {
