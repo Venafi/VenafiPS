@@ -10,7 +10,7 @@ A rename can be done at the same time as the move by providing a full target pat
 Full path to an existing object in TPP
 
 .PARAMETER TargetPath
-New path.  This can either be an existing policy and the existing object name will be kept or a full path including the object name.
+New path.  This can either be an existing policy and the existing object name will be kept or a full path including a new object name.
 
 .PARAMETER VenafiSession
 Authentication for the function.
@@ -26,7 +26,7 @@ n/a
 
 .EXAMPLE
 Move-TppObject -SourceDN '\VED\Policy\My Folder\mycert.company.com' -TargetDN '\VED\Policy\New Folder\mycert.company.com'
-Moves mycert.company.com to a new Policy folder
+Move object to a new Policy folder
 
 .EXAMPLE
 Find-VenafiCertificate -Path '\ved\policy\certs' | Move-TppObject -TargetDN '\VED\Policy\New Folder'
