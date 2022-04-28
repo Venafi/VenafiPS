@@ -1,15 +1,15 @@
 
 <#
 .SYNOPSIS
-Find historical certificates in TPP
+Search TPP history for items with specific attributes
 
 .DESCRIPTION
-Certificates in the secret store matching the key/value provided will be found and their details returned with their associated 'current' certificate.
-As this function may return details on many certificates, optional parallel processing has been implemented.
+Items in the secret store matching the key/value provided will be found and their details returned with their associated 'current' item.
+As this function may return details on many items, optional parallel processing has been implemented.
 Be sure to use PowerShell Core, v7 or greater, to take advantage.
 
 .PARAMETER Path
-Starting path to associated current certificates to limit the search
+Starting path to associated current items to limit the search
 
 .PARAMETER Attribute
 Name and value to search.
@@ -34,16 +34,16 @@ PSCustomObject with the following properties:
     History
 
 .EXAMPLE
-Get-TppHistoricalCertificate -Attribute @{'ValidTo' = (Get-Date)}
-Find historical certificates that are still active
+Search-TppHistory -Attribute @{'ValidTo' = (Get-Date)}
+Find historical items that are still active
 
 .EXAMPLE
-Get-TppHistoricalCertificate -Attribute @{'ValidTo' = (Get-Date)} -Path '\ved\policy\certs'
-Find historical certificates that are still active and the current certificate starts with a specific path
+Search-TppHistory -Attribute @{'ValidTo' = (Get-Date)} -Path '\ved\policy\certs'
+Find historical items that are still active and the current item starts with a specific path
 
 #>
 
-function Find-TppHistoricalCertificate {
+function Search-TppHistory {
 
     [CmdletBinding()]
 
@@ -93,12 +93,13 @@ function Find-TppHistoricalCertificate {
     # limit current certs to the path provided
     $certs = $owners.owners.where{ $_ -like "$Path*" } | Select-Object -Unique
 
-    Write-Warning ('Getting details on {0} current certificates' -f $certs.Count)
+    Write-Warning ('Getting details on {0} current items' -f $certs.Count)
 
     $sbGeneric = {
 
         $thisDetailedCert = Get-VenafiCertificate -Path $_ -IncludePreviousVersions -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
-        if ( -not $thisDetailedCert -or $thisDetailedCert.TypeName -notlike '*certificate*' ) { return }
+        if ( -not $thisDetailedCert ) { return }
+        # if ( -not $thisDetailedCert -or $thisDetailedCert.TypeName -notlike '*certificate*' ) { return }
 
         $history = $thisDetailedCert.PreviousVersions | Where-Object { $_.VaultId -in $activeVaultId } | Select-Object -ExpandProperty CertificateDetails
         if ( $history ) {
