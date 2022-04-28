@@ -77,6 +77,7 @@ function Search-TppHistory {
 
     Write-Warning ('Found {0} matching vault items' -f $activeVaultId.Count)
 
+    # we have vault ids, now get path to current item
     $owners = if ($PSVersionTable.PSVersion.Major -lt 6) {
         $activeVaultId | ForEach-Object {
             Invoke-VenafiRestMethod -UriLeaf "secretstore/ownerlookup" -Body @{'Namespace' = 'config'; 'VaultID' = $_ } -Method Post -VenafiSession $VenafiSession
@@ -95,11 +96,11 @@ function Search-TppHistory {
 
     Write-Warning ('Getting details on {0} current items' -f $certs.Count)
 
+    # scriptblock which will be used for PS v5 and core
     $sbGeneric = {
 
         $thisDetailedCert = Get-VenafiCertificate -Path $_ -IncludePreviousVersions -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
         if ( -not $thisDetailedCert ) { return }
-        # if ( -not $thisDetailedCert -or $thisDetailedCert.TypeName -notlike '*certificate*' ) { return }
 
         $history = $thisDetailedCert.PreviousVersions | Where-Object { $_.VaultId -in $activeVaultId } | Select-Object -ExpandProperty CertificateDetails
         if ( $history ) {
@@ -111,7 +112,7 @@ function Search-TppHistory {
         }
     }
 
-    # needed for ps7
+    # needed for parallel in ps7
     $sbGenericString = $sbGeneric.ToString()
 
     if ($PSVersionTable.PSVersion.Major -lt 6) {
