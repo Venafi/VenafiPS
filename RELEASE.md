@@ -1,1 +1,3 @@
-- Fix certain aliases not being exported
+- Add `Search-TppHistory` to find historical items by attribute value and their associated current item
+- Fix `Move-TppObject` not appending object name when moving multiple objects to a new folder and passed via pipeline
+- Update `Find-TppObject` to allow passing of empty string for `-Pattern` to find objects which don't have a value set
