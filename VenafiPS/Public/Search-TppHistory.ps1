@@ -9,7 +9,8 @@ As this function may return details on many items, optional parallel processing 
 Be sure to use PowerShell Core, v7 or greater, to take advantage.
 
 .PARAMETER Path
-Starting path to associated current items to limit the search
+Starting path to associated current items to limit the search.
+The default is \VED\Policy.
 
 .PARAMETER Attribute
 Name and value to search.
