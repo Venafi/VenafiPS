@@ -42,6 +42,9 @@ function Get-VaasOrgUnit {
     )
 
     begin {
+
+        Write-Warning 'Get-VaasOrgUnit will be deprecated in a future release'
+
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         $params = @{
