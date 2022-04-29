@@ -100,7 +100,7 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'Set-TppWorkflowTicketStatus', 'Test-ModuleHash', 'Test-TppIdentity',
                'Test-TppObject', 'Test-TppToken', 'Write-TppLog', 'Get-VenafiTeam',
                'Remove-VenafiTeam', 'Add-VenafiTeamMember', 'Add-VenafiTeamOwner',
-               'Remove-VenafiTeamMember', 'Remove-VenafiTeamOwner', 'New-VenafiTeam'
+               'Remove-VenafiTeamMember', 'Remove-VenafiTeamOwner', 'New-VenafiTeam', 'Search-TppHistory'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

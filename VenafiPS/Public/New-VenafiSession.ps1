@@ -91,6 +91,10 @@ New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'cert
 Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 
 .EXAMPLE
+New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -ClientId MyApp -Scope @{'certificate'='manage'}
+Create token-based session
+
+.EXAMPLE
 New-VenafiSession -Server venafitpp.mycompany.com -Certificate $myCert -ClientId MyApp -Scope @{'certificate'='manage'}
 Create token-based session using a client certificate
 

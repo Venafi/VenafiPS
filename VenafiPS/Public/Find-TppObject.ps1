@@ -116,7 +116,8 @@ function Find-TppObject {
         [Parameter(Mandatory, ParameterSetName = 'FindByPattern')]
         [Parameter(ParameterSetName = 'FindByClass')]
         [Parameter(Mandatory, ParameterSetName = 'FindByAttribute')]
-        [ValidateNotNullOrEmpty()]
+        [ValidateNotNull()]
+        [AllowEmptyString()]
         [String] $Pattern,
 
         [Parameter(Mandatory, ParameterSetName = 'FindByClass')]

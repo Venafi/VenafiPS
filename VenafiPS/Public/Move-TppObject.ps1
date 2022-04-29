@@ -3,13 +3,14 @@
 Move an object of any type
 
 .DESCRIPTION
-Move an object of any type
+Move an object of any type from one policy to another.
+A rename can be done at the same time as the move by providing a full target path including the new object name.
 
 .PARAMETER SourcePath
-Full path to an object in TPP
+Full path to an existing object in TPP
 
 .PARAMETER TargetPath
-New path
+New path.  This can either be an existing policy and the existing object name will be kept or a full path including a new object name.
 
 .PARAMETER VenafiSession
 Authentication for the function.
@@ -25,7 +26,11 @@ n/a
 
 .EXAMPLE
 Move-TppObject -SourceDN '\VED\Policy\My Folder\mycert.company.com' -TargetDN '\VED\Policy\New Folder\mycert.company.com'
-Moves mycert.company.com to a new Policy folder
+Move object to a new Policy folder
+
+.EXAMPLE
+Find-VenafiCertificate -Path '\ved\policy\certs' | Move-TppObject -TargetDN '\VED\Policy\New Folder'
+Move all objects found in 1 folder to another
 
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Move-TppObject/
@@ -77,22 +82,32 @@ function Move-TppObject {
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+
+        # determine if target is a policy or other object
+        # if policy, we'll need to append the object name when moving
+        # if not policy, the item won't exist so handle the error
+        $targetObject = Get-TppObject -Path $TargetPath -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
+        $targetIsPolicy = ($targetObject.TypeName -eq 'Policy')
     }
 
     process {
 
-        if ( $PSCmdlet.ShouldProcess($SourcePath, "Move to $TargetPath") ) {
-
-            $params = @{
-                VenafiSession = $VenafiSession
-                Method        = 'Post'
-                UriLeaf       = 'config/RenameObject'
-                Body          = @{
-                    ObjectDN    = $SourcePath
-                    NewObjectDN = $TargetPath
-                }
+        $params = @{
+            VenafiSession = $VenafiSession
+            Method        = 'Post'
+            UriLeaf       = 'config/RenameObject'
+            Body          = @{
+                ObjectDN    = $SourcePath
+                NewObjectDN = $TargetPath
             }
+        }
 
+        # if target is a policy, append the object name from source
+        if ( $targetIsPolicy ) {
+            $params.Body.NewObjectDN = Join-Path -Path $TargetPath -ChildPath (Split-Path -Path $SourcePath -Leaf)
+        }
+
+        if ( $PSCmdlet.ShouldProcess($SourcePath, ('Move to {0}' -f $params.Body.NewObjectDN)) ) {
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -ne [TppConfigResult]::Success ) {
