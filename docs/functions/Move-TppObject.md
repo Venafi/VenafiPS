@@ -11,20 +11,27 @@ Move-TppObject [-SourcePath] <String> [-TargetPath] <String> [[-VenafiSession] <
 ```
 
 ## DESCRIPTION
-Move an object of any type
+Move an object of any type from one policy to another.
+A rename can be done at the same time as the move by providing a full target path including the new object name.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
 Move-TppObject -SourceDN '\VED\Policy\My Folder\mycert.company.com' -TargetDN '\VED\Policy\New Folder\mycert.company.com'
-Moves mycert.company.com to a new Policy folder
+Move object to a new Policy folder
+```
+
+### EXAMPLE 2
+```
+Find-VenafiCertificate -Path '\ved\policy\certs' | Move-TppObject -TargetDN '\VED\Policy\New Folder'
+Move all objects found in 1 folder to another
 ```
 
 ## PARAMETERS
 
 ### -SourcePath
-Full path to an object in TPP
+Full path to an existing object in TPP
 
 ```yaml
 Type: String
@@ -39,7 +46,8 @@ Accept wildcard characters: False
 ```
 
 ### -TargetPath
-New path
+New path. 
+This can either be an existing policy and the existing object name will be kept or a full path including a new object name.
 
 ```yaml
 Type: String

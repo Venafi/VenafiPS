@@ -89,6 +89,7 @@ nav:
     - Rename-TppObject: functions/Rename-TppObject.md
     - Revoke-TppCertificate: functions/Revoke-TppCertificate.md
     - Revoke-TppToken: functions/Revoke-TppToken.md
+    - Search-TppHistory: functions/Search-TppHistory.md
     - Set-TppAttribute: functions/Set-TppAttribute.md
     - Set-TppCodeSignProjectStatus: functions/Set-TppCodeSignProjectStatus.md
     - Set-TppCredential: functions/Set-TppCredential.md
