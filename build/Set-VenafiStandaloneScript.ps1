@@ -20,6 +20,7 @@
 #>
 
 [CmdletBinding()]
+
 param (
     [Parameter(Mandatory)]
     [ValidateScript({
@@ -118,7 +119,7 @@ begin {
                 Hashtable, Module and Functions keys
             #>
 
-        [CmdLetBinding()]
+        [CmdletBinding()]
         [OutputType([System.Management.Automation.FunctionInfo[]])]
 
         param (
@@ -147,7 +148,7 @@ begin {
                 $params.RequiredVersion = $Version
             }
 
-            $thisModule = Import-Module @params | Where-Object {$_.Name -eq $ModuleName}
+            $thisModule = Import-Module @params | Where-Object { $_.Name -eq $ModuleName }
 
             if ( $thisModule ) {
                 # must precreate the scriptblock to ensure $ModuleName is expanded
@@ -181,39 +182,29 @@ process {
     $scriptCommands = Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw) -AstType $astTypes
 
     $functionsToAdd = $enumsToAdd = @()
-    foreach ($cmd in $scriptCommands ) {
 
-        # get module function calls and add to list of functions to be added
+    for ($i = 0; $i -lt $scriptCommands.Count; $i++) {
 
-        $moduleFunction = $module.Functions | Where-Object { $_.Name -eq ($cmd.CommandElements.Value | Select-Object -First 1) }
+        $thisCommand = $scriptCommands[$i]
 
-        if ( $moduleFunction -and $cmd.CommandElements.Value -notin $functionsToAdd.Name ) {
-            Write-Verbose ('Adding direct function {0}' -f $moduleFunction.Name)
-            $functionsToAdd += $moduleFunction
+        switch ($thisCommand.Type) {
+            'CommandAst' {
+                $moduleFunction = $module.Functions | Where-Object { $_.Name -eq ($thisCommand.CommandElements.Value | Select-Object -First 1) }
+                if ( $moduleFunction -and $moduleFunction.Name -notin $functionsToAdd.Name ) {
+                    Write-Verbose ('Adding function {0}' -f $moduleFunction.Name)
+                    $functionsToAdd += $moduleFunction
 
-            # get module function calls from within the functions we've already added
-            # these could be public or private functions
-            $functionItems = Get-PsOneAst -Code $moduleFunction.Definition -AstType $astTypes
-            foreach ($thisFunctionItem in $functionItems) {
-                switch ($thisFunctionItem.Type) {
-                    'CommandAst' {
-                        $moduleFunctionInner = $module.Functions | Where-Object { $_.Name -eq ($thisFunctionItem.CommandElements.Value | Select-Object -First 1) }
-                        if ( $moduleFunctionInner -and $thisFunctionItem.CommandElements.Value -notin $functionsToAdd.Name ) {
-                            Write-Verbose ('Adding nested function {0} used in {1}' -f $moduleFunctionInner.Name, $moduleFunction.Name)
-                            $functionsToAdd += $moduleFunctionInner
-                        }
-                    }
+                    # add new function to loop to be checked
+                    $scriptCommands += Get-PsOneAst -Code $moduleFunction.Definition -AstType $astTypes
+                }
+            }
 
-                    'TypeExpressionAst' {
-                        $enumName = $thisFunctionItem.TypeName.ToString()
-                        $thisEnum = $enumFiles | Where-Object { $_.Name -eq "$enumName.ps1" }
-                        if ( $thisEnum -and $thisEnum.Name -notin $enumsToAdd.Name ) {
-                            Write-Verbose ('Found type {0}' -f $enumName)
-                            $enumsToAdd += $thisEnum
-                        }
-                    }
-
-                    Default {}
+            'TypeExpressionAst' {
+                $enumName = $thisCommand.TypeName.ToString()
+                $thisEnum = $enumFiles | Where-Object { $_.Name -eq "$enumName.ps1" }
+                if ( $thisEnum -and $thisEnum.Name -notin $enumsToAdd.Name ) {
+                    Write-Verbose ('Adding type {0}' -f $enumName)
+                    $enumsToAdd += $thisEnum
                 }
             }
         }
