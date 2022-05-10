@@ -7,13 +7,14 @@ function New-TppCertificate {
     Enrolls or provisions a new certificate
 
     .PARAMETER Path
-    The folder DN path for the new certificate. If the value is missing, use the system default
+    The folder DN path for the new certificate.
 
     .PARAMETER Name
-    Name of the certifcate.  If not provided, the name will be the same as the subject.
+    Name of the certifcate object.
+    If CommonName isn't provided, this value will be used.
 
     .PARAMETER CommonName
-    Subject Common Name.  If Name isn't provided, CommonName will be used.
+    Subject Common Name.  If CommonName isn't provided, Name will be used.
 
     .PARAMETER Csr
     The PKCS#10 Certificate Signing Request (CSR).
@@ -23,8 +24,9 @@ function New-TppCertificate {
     Type of certificate to be created.
     No value provided will default to X.509 Server Certificate.
 
-    .PARAMETER CertificateAuthorityDN
-    The Distinguished Name (DN) of the Trust Protection Platform Certificate Authority Template object for enrolling the certificate. If the value is missing, use the default CADN
+    .PARAMETER CertificateAuthorityPath
+    The path of the Certificate Authority Template object for enrolling the certificate.
+    If the value is missing, it is expected a policy has been applied to Path.
 
     .PARAMETER CertificateAuthorityAttribute
     Name/value pairs providing any CA attributes to store with the Certificate object.
@@ -81,23 +83,27 @@ function New-TppCertificate {
     If devices and/or applications were created, a 'Device' property will be available as well.
 
     .EXAMPLE
-    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template'
-    Create certificate by name
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com'
+    Create certificate by name.  A CA template policy must be defined.
 
     .EXAMPLE
-    New-TppCertificate -Path '\ved\policy\folder' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template'
+    Create certificate by name with specific CA template
+
+    .EXAMPLE
+    New-TppCertificate -Path '\ved\policy\folder' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
     Create certificate using a CSR
 
     .EXAMPLE
-    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -CustomField @{''=''}
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -CustomField @{''=''}
     Create certificate and update custom fields
 
     .EXAMPLE
-    New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -PassThru
+    New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -PassThru
     Create certificate using common name.  Return the created object.
 
     .EXAMPLE
-    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
     Create certificate including subject alternate names
 
     .EXAMPLE
@@ -135,10 +141,7 @@ function New-TppCertificate {
         [Parameter(Mandatory, ParameterSetName = 'ByNameWithDevice', ValueFromPipeline)]
         [String] $Name,
 
-        [Parameter(ParameterSetName = 'ByName')]
-        [Parameter(ParameterSetName = 'ByNameWithDevice')]
-        [Parameter(Mandatory, ParameterSetName = 'BySubject')]
-        [Parameter(Mandatory, ParameterSetName = 'BySubjectWithDevice')]
+        [Parameter()]
         [Alias('Subject')]
         [String] $CommonName,
 
@@ -178,12 +181,9 @@ function New-TppCertificate {
 
         [Parameter(ParameterSetName = 'ByName')]
         [Parameter(Mandatory, ParameterSetName = 'ByNameWithDevice')]
-        [Parameter(ParameterSetName = 'BySubject')]
-        [Parameter(Mandatory, ParameterSetName = 'BySubjectWithDevice')]
         [hashtable[]] $Device,
 
         [Parameter(ParameterSetName = 'ByNameWithDevice')]
-        [Parameter(ParameterSetName = 'BySubjectWithDevice')]
         [hashtable[]] $Application,
 
         [Parameter()]
@@ -280,7 +280,7 @@ function New-TppCertificate {
         }
 
         if ( $Csr ) {
-            $params.Body.Add('PKCS10', ($Csr -replace "`n|`r", ""))
+            $params.Body.Add('PKCS10', ($Csr -replace "`n|`r"))
         }
 
         if ( $PSBoundParameters.ContainsKey('CertificateAuthorityPath') ) {
@@ -348,8 +348,11 @@ function New-TppCertificate {
     process {
 
         $params.Body.ObjectName = $Name
+        if ( -not $PSBoundParameters.ContainsKey('CommonName')) {
+            $params.Body.Subject = $Name
+        }
 
-        if ( $PSCmdlet.ShouldProcess($Path, 'Create new certificate') ) {
+        if ( $PSCmdlet.ShouldProcess("$Path\$Name", 'Create new certificate') ) {
 
             try {
                 $response = Invoke-VenafiRestMethod @params
