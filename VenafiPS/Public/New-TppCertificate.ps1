@@ -4,7 +4,10 @@ function New-TppCertificate {
     Enrolls or provisions a new certificate
 
     .DESCRIPTION
-    Enrolls or provisions a new certificate
+    Enrolls or provisions a new certificate.
+    Prior to TPP 22.1, this function is asynchronous and will always return success.
+    Beginning with 22.1, you can control this behavior.
+    See https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-Certificates-API-settings.php.
 
     .PARAMETER Path
     The folder DN path for the new certificate.
@@ -21,8 +24,7 @@ function New-TppCertificate {
     If this value is provided, any Subject DN fields and the KeyBitSize in the request are ignored.
 
     .PARAMETER CertificateType
-    Type of certificate to be created.
-    No value provided will default to X.509 Server Certificate.
+    Type of certificate to be created.  The default is X.509 Server Certificate.
 
     .PARAMETER CertificateAuthorityPath
     The path of the Certificate Authority Template object for enrolling the certificate.
@@ -64,6 +66,10 @@ function New-TppCertificate {
     In addition to the application parameters, a key/value must be provided for the associated device.
     The key needs to be 'DeviceName' and the value is the ObjectName from the device.
     See the example.
+
+    .PARAMETER WorkToDoTimeout
+    Introduced in 22.1, this controls the wait time, in seconds, for a CA to issue/renew a certificate.
+    Providing this will override the global setting.
 
     .PARAMETER PassThru
     Return a TppObject representing the newly created certificate.
@@ -187,6 +193,9 @@ function New-TppCertificate {
         [hashtable[]] $Application,
 
         [Parameter()]
+        [int] $WorkToDoTimeout,
+
+        [Parameter()]
         [switch] $PassThru,
 
         [Parameter()]
@@ -293,6 +302,14 @@ function New-TppCertificate {
 
         if ( $PSBoundParameters.ContainsKey('ManagementType') ) {
             $params.Body.Add('ManagementType', [enum]::GetName([TppManagementType], $ManagementType))
+        }
+
+        if ( $PSBoundParameters.ContainsKey('WorkToDoTimeout') ) {
+            if ( $VenafiSession.Version -and $VenafiSession.Version -lt [Version]::new('22', '1')) {
+                Write-Warning '-WorkToDoTimeout is available beginning with TPP v22.1'
+            } else {
+                $params.Body.Add('WorkToDoTimeout', $WorkToDoTimeout)
+            }
         }
 
         if ( $PSBoundParameters.ContainsKey('SubjectAltName') ) {
