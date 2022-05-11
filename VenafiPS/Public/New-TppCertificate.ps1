@@ -145,9 +145,11 @@ function New-TppCertificate {
 
         [Parameter(Mandatory, ParameterSetName = 'ByName', ValueFromPipeline)]
         [Parameter(Mandatory, ParameterSetName = 'ByNameWithDevice', ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [String] $Name,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [Alias('Subject')]
         [String] $CommonName,
 
