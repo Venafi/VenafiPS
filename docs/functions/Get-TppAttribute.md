@@ -7,37 +7,31 @@ Get object attributes as well as policies (policy attributes)
 
 ### ByPath (Default)
 ```
-Get-TppAttribute -Path <String> [-Attribute <String[]>] [-AsValue] [-VenafiSession <PSObject>]
+Get-TppAttribute -Path <String> [-Attribute <String[]>] [-AsValue] [-New] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
+```
+
+### AllPolicyPath
+```
+Get-TppAttribute -Path <String> [-All] [-Policy] -PolicyClass <String> [-New] [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
 ### PolicyPath
 ```
-Get-TppAttribute -Path <String> -Attribute <String[]> [-Policy] -ClassName <String> [-AsValue]
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Policy] -PolicyClass <String> [-AsValue] [-New]
  [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### AllEffectivePath
 ```
-Get-TppAttribute -Path <String> [-All] [-AsValue] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-TppAttribute -Path <String> [-All] [-New] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### EffectiveByPath
 ```
-Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <PSObject>]
- [<CommonParameters>]
-```
-
-### ByGuid
-```
-Get-TppAttribute -Guid <Guid> [-Attribute <String[]>] [-AsValue] [-VenafiSession <PSObject>]
- [<CommonParameters>]
-```
-
-### EffectiveByGuid
-```
-Get-TppAttribute -Guid <Guid> -Attribute <String[]> [-Effective] [-AsValue] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Effective] [-AsValue] [-New]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -52,33 +46,94 @@ For more info on policies and how they are different than attributes, see https:
 
 ### EXAMPLE 1
 ```
-Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com'
-Retrieve all values for an object, excluding values assigned by policy
+Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -New
 ```
+
+Name                                   : test.gdb.com
+Path                                   : \ved\policy\certificates\test.gdb.com
+TypeName                               : X509 Server Certificate
+Guid                                   : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+Certificate Vault Id                   : @{Value=442493; CustomFieldName=; PolicyPath=}
+Consumers                              : @{Value=System.Object\[\]; CustomFieldName=; PolicyPath=}
+Created By                             : @{Value=WebAdmin; CustomFieldName=; PolicyPath=}
+
+Retrieve all values for an object, excluding values assigned by policy
 
 ### EXAMPLE 2
 ```
-Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'driver name'
-Retrieve the value for a specific attribute
+Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'Driver Name' -New
 ```
+
+Name        : test.gdb.com
+Path        : \ved\policy\certificates\test.gdb.com
+TypeName    : X509 Server Certificate
+Guid        : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+Driver Name : @{Value=appx509certificate; CustomFieldName=; PolicyPath=}
+
+Retrieve the value for a specific attribute
 
 ### EXAMPLE 3
 ```
-Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -AttributeName 'Contact' -Effective
-Retrieve the effective value for a specific attribute
+Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -AttributeName 'State' -Effective -New
 ```
+
+Name     : test.gdb.com
+Path     : \ved\policy\certificates\test.gdb.com
+TypeName : X509 Server Certificate
+Guid     : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+State    : @{Value=UT; CustomFieldName=; PolicyPath=\VED\Policy\Certificates}
+
+Retrieve the effective (policy applied) value for a specific attribute.
+This not only returns the value, but also the path where the policy is applied.
 
 ### EXAMPLE 4
 ```
-Get-TppAttribute -Path '\VED\Policy\My Folder\myapp.company.com' -All
-Retrieve all effective values for an object
+Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -All -New
 ```
+
+Name                 : test.gdb.com
+Path                 : \ved\policy\certificates\test.gdb.com
+TypeName             : X509 Server Certificate
+Guid                 : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+Certificate Vault Id : @{Value=442493; CustomFieldName=; PolicyPath=}
+City                 : @{Value=Salt Lake City; CustomFieldName=; PolicyPath=\VED\Policy\Certificates}
+Consumers            : @{Value=System.Object\[\]; CustomFieldName=; PolicyPath=}
+Created By           : @{Value=WebAdmin; CustomFieldName=; PolicyPath=}
+State                : @{Value=UT; CustomFieldName=; PolicyPath=\VED\Policy\Certificates}
+
+Retrieve all effective values for an object
 
 ### EXAMPLE 5
 ```
-Get-TppAttribute -Path '\VED\Policy\My Folder' -Policy -Class 'X509 Certificate' -AttributeName 'Contact'
-Retrieve the policy attribute value for the specified policy folder
+Get-TppAttribute -Path '\VED\Policy\certificates' -PolicyClass 'X509 Certificate' -AttributeName 'State' -New
 ```
+
+Name            : certificates
+Path            : \ved\policy\certificates
+TypeName        : Policy
+Guid            : a91fc152-a9fb-4b49-a7ca-7014b14d73eb
+PolicyClassName : x509 certificate
+State           : UT
+
+Retrieve specific policy attribute values for the specified policy folder and class
+
+### EXAMPLE 6
+```
+Get-TppAttribute -Path '\VED\Policy\certificates' -PolicyClass 'X509 Certificate' -All -New
+```
+
+Name            : certificates
+Path            : \ved\policy\certificates
+TypeName        : Policy
+Guid            : a91fc152-a9fb-4b49-a7ca-7014b14d73eb
+PolicyClassName : x509 certificate
+City            : Salt Lake City
+Country         : US
+Management Type : Enrollment
+Organization    : Venafi, Inc.
+State           : UT
+
+Retrieve all policy attribute values for the specified policy folder and class
 
 ## PARAMETERS
 
@@ -88,7 +143,7 @@ Just providing DN will return all attributes.
 
 ```yaml
 Type: String
-Parameter Sets: ByPath, PolicyPath, AllEffectivePath, EffectiveByPath
+Parameter Sets: (All)
 Aliases: DN
 
 Required: True
@@ -98,29 +153,12 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -Guid
-To be deprecated; use -Path instead.
-Object Guid. 
-Just providing Guid will return all attributes.
-
-```yaml
-Type: Guid
-Parameter Sets: ByGuid, EffectiveByGuid
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByValue)
-Accept wildcard characters: False
-```
-
 ### -Attribute
 Only retrieve the value/values for this attribute
 
 ```yaml
 Type: String[]
-Parameter Sets: ByPath, ByGuid
+Parameter Sets: ByPath
 Aliases:
 
 Required: False
@@ -132,7 +170,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String[]
-Parameter Sets: PolicyPath, EffectiveByPath, EffectiveByGuid
+Parameter Sets: PolicyPath, EffectiveByPath
 Aliases:
 
 Required: True
@@ -148,7 +186,7 @@ This is not applicable to policies, only objects.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: EffectiveByPath, EffectiveByGuid
+Parameter Sets: EffectiveByPath
 Aliases: EffectivePolicy
 
 Required: True
@@ -166,7 +204,7 @@ Note, expect this to take longer than usual given the number of api calls.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: AllEffectivePath
+Parameter Sets: AllPolicyPath, AllEffectivePath
 Aliases:
 
 Required: True
@@ -177,29 +215,30 @@ Accept wildcard characters: False
 ```
 
 ### -Policy
-Get policies (aka policy attributes) instead of object attributes
+Deprecated. 
+To retrieve policy attributes, just provide -PolicyClass.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: PolicyPath
+Parameter Sets: AllPolicyPath, PolicyPath
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ClassName
-Required when getting policy attributes. 
+### -PolicyClass
+Get policies (aka policy attributes) instead of object attributes.
 Provide the class name to retrieve the value for.
 If unsure of the class name, add the value through the TPP UI and go to Support-\>Policy Attributes to find it.
 
 ```yaml
 Type: String
-Parameter Sets: PolicyPath
-Aliases:
+Parameter Sets: AllPolicyPath, PolicyPath
+Aliases: ClassName
 
 Required: True
 Position: Named
@@ -209,7 +248,23 @@ Accept wildcard characters: False
 ```
 
 ### -AsValue
-{{ Fill AsValue Description }}
+Deprecated. 
+No longer required with -New format.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: ByPath, PolicyPath, EffectiveByPath
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -New
+New output format which returns 1 object with multiple properties instead of an object per property
 
 ```yaml
 Type: SwitchParameter
@@ -249,12 +304,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Path
 ## OUTPUTS
 
-### PSCustomObject with properties:
-### - Name
-### - Value
-### - PolicyPath (only applicable with -All)
-### - IsCustomField (not applicable to policies)
-### - CustomName (not applicable to policies)
+### PSCustomObject
 ## NOTES
 
 ## RELATED LINKS

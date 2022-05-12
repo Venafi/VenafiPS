@@ -6,7 +6,7 @@ Remove registered client agents
 ## SYNTAX
 
 ```
-Remove-TppClient [-ClientId] <String[]> [-RemoveAssociatedDevices] [[-VenafiSession] <PSObject>] [-WhatIf]
+Remove-TppClient [-ClientID] <String[]> [-RemoveAssociatedDevice] [[-VenafiSession] <PSObject>] [-WhatIf]
  [-Confirm] [<CommonParameters>]
 ```
 
@@ -18,13 +18,19 @@ Provide an array of client IDs to remove a large list at once.
 
 ### EXAMPLE 1
 ```
-Remove-TppClient -ClientId 1234
-Remove a client
+Remove-TppClient -ClientId 1234, 5678
+Remove clients
+```
+
+### EXAMPLE 2
+```
+Remove-TppClient -ClientId 1234, 5678 -RemoveAssociatedDevice
+Remove clients and associated devices
 ```
 
 ## PARAMETERS
 
-### -ClientId
+### -ClientID
 Unique id for one or more clients
 
 ```yaml
@@ -39,13 +45,15 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -RemoveAssociatedDevices
-{{ Fill RemoveAssociatedDevices Description }}
+### -RemoveAssociatedDevice
+For a registered Agent, delete the associated Device objects, and only certificates that belong to the associated device.
+Delete any related Discovery information.
+Preserve unrelated device, certificate, and Discovery information in other locations of the Policy tree and Secret Store.
 
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
-Aliases:
+Aliases: RemoveAssociatedDevices
 
 Required: False
 Position: Named
