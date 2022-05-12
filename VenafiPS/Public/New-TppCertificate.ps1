@@ -1,119 +1,131 @@
-<#
-.SYNOPSIS
-Enrolls or provisions a new certificate
-
-.DESCRIPTION
-Enrolls or provisions a new certificate
-
-.PARAMETER Path
-The folder DN path for the new certificate. If the value is missing, use the system default
-
-.PARAMETER Name
-Name of the certifcate.  If not provided, the name will be the same as the subject.
-
-.PARAMETER CommonName
-Subject Common Name.  If Name isn't provided, CommonName will be used.
-
-.PARAMETER Csr
-The PKCS#10 Certificate Signing Request (CSR).
-If this value is provided, any Subject DN fields and the KeyBitSize in the request are ignored.
-
-.PARAMETER CertificateType
-Type of certificate to be created.
-No value provided will default to X.509 Server Certificate.
-
-.PARAMETER CertificateAuthorityDN
-The Distinguished Name (DN) of the Trust Protection Platform Certificate Authority Template object for enrolling the certificate. If the value is missing, use the default CADN
-
-.PARAMETER CertificateAuthorityAttribute
-Name/value pairs providing any CA attributes to store with the Certificate object.
-During enrollment, these values will be submitted to the CA.
-
-.PARAMETER ManagementType
-The level of management that Trust Protection Platform applies to the certificate:
-- Enrollment: Default. Issue a new certificate, renewed certificate, or key generation request to a CA for enrollment. Do not automatically provision the certificate.
-- Provisioning:  Issue a new certificate, renewed certificate, or key generation request to a CA for enrollment. Automatically install or provision the certificate.
-- Monitoring:  Allow Trust Protection Platform to monitor the certificate for expiration and renewal.
-- Unassigned: Certificates are neither enrolled or monitored by Trust Protection Platform.
-
-.PARAMETER SubjectAltName
-A list of Subject Alternate Names.
-The value must be 1 or more hashtables with the SAN type and value.
-Acceptable SAN types are OtherName, Email, DNS, URI, and IPAddress.
-You can provide more than 1 of the same SAN type with multiple hashtables.
-
-.PARAMETER CustomField
-Hashtable of custom field(s) to be updated when creating the certificate.
-This is required when the custom fields are mandatory.
-The key is the name, not guid, of the custom field.
-
-.PARAMETER NoWorkToDo
-Turn off lifecycle processing for this certificate update
-
-.PARAMETER Device
-An array of hashtables for devices to be created.
-Available parameters can be found at https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php.
-If provisioning applications as well, those should be provided with the Application parameter.
-
-.PARAMETER Application
-An array of hashtables for applications to be created.
-Available parameters can be found at https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request-ApplicationsParameter.php.
-In addition to the application parameters, a key/value must be provided for the associated device.
-The key needs to be 'DeviceName' and the value is the ObjectName from the device.
-See the example.
-
-.PARAMETER PassThru
-Return a TppObject representing the newly created certificate.
-If devices and/or applications were created, a 'Device' property will be available as well.
-
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TppServer must also be set.
-
-.INPUTS
-None
-
-.OUTPUTS
-TppObject, if PassThru is provided
-If devices and/or applications were created, a 'Device' property will be available as well.
-
-.EXAMPLE
-New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template'
-Create certificate by name
-
-.EXAMPLE
-New-TppCertificate -Path '\ved\policy\folder' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
-Create certificate using a CSR
-
-.EXAMPLE
-New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -CustomField @{''=''}
-Create certificate and update custom fields
-
-.EXAMPLE
-New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -PassThru
-Create certificate using common name.  Return the created object.
-
-.EXAMPLE
-New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
-Create certificate including subject alternate names
-
-.EXAMPLE
-New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -Device @{'PolicyDN'=$DevicePath; 'ObjectName'='MyDevice'; 'Host'='1.2.3.4'} -Application @{'DeviceName'='MyDevice'; 'ObjectName'='BasicApp'; 'DriverName'='appbasic'}
-Create a new certificate with associated device and app objects
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/
-
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCertificate.ps1
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php
-
-#>
 function New-TppCertificate {
+    <#
+    .SYNOPSIS
+    Enrolls or provisions a new certificate
+
+    .DESCRIPTION
+    Enrolls or provisions a new certificate.
+    Prior to TPP 22.1, this function is asynchronous and will always return success.
+    Beginning with 22.1, you can control this behavior.
+    See https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-Certificates-API-settings.php.
+
+    .PARAMETER Path
+    The folder DN path for the new certificate.
+
+    .PARAMETER Name
+    Name of the certifcate object.
+    If CommonName isn't provided, this value will be used.
+
+    .PARAMETER CommonName
+    Subject Common Name.  If CommonName isn't provided, Name will be used.
+
+    .PARAMETER Csr
+    The PKCS#10 Certificate Signing Request (CSR).
+    If this value is provided, any Subject DN fields and the KeyBitSize in the request are ignored.
+
+    .PARAMETER CertificateType
+    Type of certificate to be created.  The default is X.509 Server Certificate.
+
+    .PARAMETER CertificateAuthorityPath
+    The path of the Certificate Authority Template object for enrolling the certificate.
+    If the value is missing, it is expected a policy has been applied to Path.
+
+    .PARAMETER CertificateAuthorityAttribute
+    Name/value pairs providing any CA attributes to store with the Certificate object.
+    During enrollment, these values will be submitted to the CA.
+
+    .PARAMETER ManagementType
+    The level of management that Trust Protection Platform applies to the certificate:
+    - Enrollment: Default. Issue a new certificate, renewed certificate, or key generation request to a CA for enrollment. Do not automatically provision the certificate.
+    - Provisioning:  Issue a new certificate, renewed certificate, or key generation request to a CA for enrollment. Automatically install or provision the certificate.
+    - Monitoring:  Allow Trust Protection Platform to monitor the certificate for expiration and renewal.
+    - Unassigned: Certificates are neither enrolled or monitored by Trust Protection Platform.
+
+    .PARAMETER SubjectAltName
+    A list of Subject Alternate Names.
+    The value must be 1 or more hashtables with the SAN type and value.
+    Acceptable SAN types are OtherName, Email, DNS, URI, and IPAddress.
+    You can provide more than 1 of the same SAN type with multiple hashtables.
+
+    .PARAMETER CustomField
+    Hashtable of custom field(s) to be updated when creating the certificate.
+    This is required when the custom fields are mandatory.
+    The key is the name, not guid, of the custom field.
+
+    .PARAMETER NoWorkToDo
+    Turn off lifecycle processing for this certificate update
+
+    .PARAMETER Device
+    An array of hashtables for devices to be created.
+    Available parameters can be found at https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php.
+    If provisioning applications as well, those should be provided with the Application parameter.
+
+    .PARAMETER Application
+    An array of hashtables for applications to be created.
+    Available parameters can be found at https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request-ApplicationsParameter.php.
+    In addition to the application parameters, a key/value must be provided for the associated device.
+    The key needs to be 'DeviceName' and the value is the ObjectName from the device.
+    See the example.
+
+    .PARAMETER WorkToDoTimeout
+    Introduced in 22.1, this controls the wait time, in seconds, for a CA to issue/renew a certificate.
+    Providing this will override the global setting.
+
+    .PARAMETER PassThru
+    Return a TppObject representing the newly created certificate.
+    If devices and/or applications were created, a 'Device' property will be available as well.
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TppServer must also be set.
+
+    .INPUTS
+    None
+
+    .OUTPUTS
+    TppObject, if PassThru is provided
+    If devices and/or applications were created, a 'Device' property will be available as well.
+
+    .EXAMPLE
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com'
+    Create certificate by name.  A CA template policy must be defined.
+
+    .EXAMPLE
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template'
+    Create certificate by name with specific CA template
+
+    .EXAMPLE
+    New-TppCertificate -Path '\ved\policy\folder' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
+    Create certificate using a CSR
+
+    .EXAMPLE
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -CustomField @{''=''}
+    Create certificate and update custom fields
+
+    .EXAMPLE
+    New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -PassThru
+    Create certificate using common name.  Return the created object.
+
+    .EXAMPLE
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
+    Create certificate including subject alternate names
+
+    .EXAMPLE
+    New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -Device @{'PolicyDN'=$DevicePath; 'ObjectName'='MyDevice'; 'Host'='1.2.3.4'} -Application @{'DeviceName'='MyDevice'; 'ObjectName'='BasicApp'; 'DriverName'='appbasic'}
+    Create a new certificate with associated device and app objects
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCertificate/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCertificate.ps1
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-request.php
+
+    #>
 
     [CmdletBinding(DefaultParameterSetName = 'ByName', SupportsShouldProcess)]
 
@@ -124,8 +136,7 @@ function New-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                }
-                else {
+                } else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -134,12 +145,11 @@ function New-TppCertificate {
 
         [Parameter(Mandatory, ParameterSetName = 'ByName', ValueFromPipeline)]
         [Parameter(Mandatory, ParameterSetName = 'ByNameWithDevice', ValueFromPipeline)]
+        [ValidateNotNullOrEmpty()]
         [String] $Name,
 
-        [Parameter(ParameterSetName = 'ByName')]
-        [Parameter(ParameterSetName = 'ByNameWithDevice')]
-        [Parameter(Mandatory, ParameterSetName = 'BySubject')]
-        [Parameter(Mandatory, ParameterSetName = 'BySubjectWithDevice')]
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [Alias('Subject')]
         [String] $CommonName,
 
@@ -154,8 +164,7 @@ function New-TppCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                }
-                else {
+                } else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -180,13 +189,13 @@ function New-TppCertificate {
 
         [Parameter(ParameterSetName = 'ByName')]
         [Parameter(Mandatory, ParameterSetName = 'ByNameWithDevice')]
-        [Parameter(ParameterSetName = 'BySubject')]
-        [Parameter(Mandatory, ParameterSetName = 'BySubjectWithDevice')]
         [hashtable[]] $Device,
 
         [Parameter(ParameterSetName = 'ByNameWithDevice')]
-        [Parameter(ParameterSetName = 'BySubjectWithDevice')]
         [hashtable[]] $Application,
+
+        [Parameter()]
+        [int] $WorkToDoTimeout,
 
         [Parameter()]
         [switch] $PassThru,
@@ -215,8 +224,7 @@ function New-TppCertificate {
                         'Email' {
                             try {
                                 $null = [mailaddress]$thisValue
-                            }
-                            catch {
+                            } catch {
                                 ('''{0}'' is not a valid email' -f $thisValue)
                             }
                         }
@@ -232,8 +240,7 @@ function New-TppCertificate {
                         'IPAddress' {
                             try {
                                 $null = [ipaddress]$thisValue
-                            }
-                            catch {
+                            } catch {
                                 ('''{0}'' is not a valid IP Address' -f $thisValue)
                             }
                         }
@@ -284,7 +291,7 @@ function New-TppCertificate {
         }
 
         if ( $Csr ) {
-            $params.Body.Add('PKCS10', $Csr -replace "`n|`r", "")
+            $params.Body.Add('PKCS10', ($Csr -replace "`n|`r"))
         }
 
         if ( $PSBoundParameters.ContainsKey('CertificateAuthorityPath') ) {
@@ -297,6 +304,14 @@ function New-TppCertificate {
 
         if ( $PSBoundParameters.ContainsKey('ManagementType') ) {
             $params.Body.Add('ManagementType', [enum]::GetName([TppManagementType], $ManagementType))
+        }
+
+        if ( $PSBoundParameters.ContainsKey('WorkToDoTimeout') ) {
+            if ( $VenafiSession.Version -and $VenafiSession.Version -lt [Version]::new('22', '1')) {
+                Write-Warning '-WorkToDoTimeout is available beginning with TPP v22.1'
+            } else {
+                $params.Body.Add('WorkToDoTimeout', $WorkToDoTimeout)
+            }
         }
 
         if ( $PSBoundParameters.ContainsKey('SubjectAltName') ) {
@@ -352,8 +367,11 @@ function New-TppCertificate {
     process {
 
         $params.Body.ObjectName = $Name
+        if ( -not $PSBoundParameters.ContainsKey('CommonName')) {
+            $params.Body.Subject = $Name
+        }
 
-        if ( $PSCmdlet.ShouldProcess($Path, 'Create new certificate') ) {
+        if ( $PSCmdlet.ShouldProcess("$Path\$Name", 'Create new certificate') ) {
 
             try {
                 $response = Invoke-VenafiRestMethod @params
@@ -362,15 +380,14 @@ function New-TppCertificate {
                 if ( $PassThru ) {
                     $newCert = Get-TppObject -Path $response.CertificateDN -VenafiSession $VenafiSession
                     if ( $Device ) {
-                        $newCert | Add-Member @{ 'Device' = @{'Path' = $response.Devices.DN} }
+                        $newCert | Add-Member @{ 'Device' = @{'Path' = $response.Devices.DN } }
                         if ( $Application ) {
                             $newCert.Device.Application = $response.Devices.Applications.DN
                         }
                     }
                     $newCert
                 }
-            }
-            catch {
+            } catch {
                 Write-Error $_
                 continue
             }

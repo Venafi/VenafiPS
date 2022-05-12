@@ -17,6 +17,7 @@ assignees: ''
 Operating System:
 VenafiPS version:
 PowerShell version:
+TPP version (if applicable):
 ```
 
 # Steps to reproduce
