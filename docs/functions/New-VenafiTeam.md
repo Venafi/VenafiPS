@@ -7,8 +7,9 @@ Create a new team
 
 ### VaaS
 ```
-New-VenafiTeam -Name <String> -Owner <String[]> -Member <String[]> -Role <String> [-PassThru]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+New-VenafiTeam -Name <String> -Owner <String[]> -Member <String[]> -Role <String>
+ [-UserMatchingRule <System.Collections.Generic.List`1[System.Array]>] [-PassThru] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
 ```
 
 ### TPP
@@ -31,6 +32,13 @@ Create a new VaaS team
 
 ### EXAMPLE 2
 ```
+New-VenafiTeam -Name 'My New Team' -Member 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4') -Role 'System Admin' -UserMatchingRule @('MyClaim', 'CONTAINS', 'Group')
+```
+
+Create a new VaaS team with user matching rule
+
+### EXAMPLE 3
+```
 New-VenafiTeam -Name 'My New Team' -Member 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4') -Role 'System Admin' -PassThru
 ```
 
@@ -47,28 +55,28 @@ modificationDate  : 3/21/2022 6:38:40 PM
 
 Create a new VaaS team returning the new team
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS'
 ```
 
 Create a new TPP team
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -Policy '\ved\policy\myfolder'
 ```
 
 Create a new TPP team and assign it to a policy
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -Description 'One amazing team'
 ```
 
 Create a new TPP team with optional description
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 New-VenafiTeam -Name 'My New Team' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Owner 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}' -Product 'TLS' -PassThru
 ```
@@ -146,6 +154,24 @@ Parameter Sets: VaaS
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -UserMatchingRule
+If SSO is enabled, build your team membership rules to organize your users into teams automatically.
+If more than 1 rule is configured, they must all be met for a user to meet the criteria.
+Each rule should be of the format @('claim name', 'operator', 'value')
+where operator can be equals, not_equals, contains, not_contains, starts_with, or ends_with.
+
+```yaml
+Type: System.Collections.Generic.List`1[System.Array]
+Parameter Sets: VaaS
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -247,4 +273,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [https://api.venafi.cloud/webjars/swagger-ui/index.html#/Teams/create_1](https://api.venafi.cloud/webjars/swagger-ui/index.html#/Teams/create_1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Teams.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Teams.php)
+
+[https://docs.venafi.cloud/vcs-platform/creating-new-teams/](https://docs.venafi.cloud/vcs-platform/creating-new-teams/)
 

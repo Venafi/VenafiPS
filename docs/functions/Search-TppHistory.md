@@ -20,14 +20,22 @@ Be sure to use PowerShell Core, v7 or greater, to take advantage.
 ### EXAMPLE 1
 ```
 Search-TppHistory -Attribute @{'ValidTo' = (Get-Date)}
-Find historical items that are still active
 ```
+
+Name     : test.gdb.com
+TypeName : X509 Server Certificate
+Path     : \VED\Policy\Certificates\test.gdb.com
+History  : {@{AIACAIssuerURL=System.Object\[\]; AIAKeyIdentifier=F2E970BA11A64D616E78592911D7CC; C=US;
+           CDPURI=0::False; EnhancedKeyUsage=Server Authentication(1.3.6.1.5.5.7.3.1).........}}
+
+Find historical items that are still active
 
 ### EXAMPLE 2
 ```
 Search-TppHistory -Attribute @{'ValidTo' = (Get-Date)} -Path '\ved\policy\certs'
-Find historical items that are still active and the current item starts with a specific path
 ```
+
+Find historical items that are still active and the current item starts with a specific path
 
 ## PARAMETERS
 
@@ -91,11 +99,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### None
 ## OUTPUTS
 
-### PSCustomObject with the following properties:
-###     Name
-###     TypeName
-###     Path
-###     History
+### PSCustomObject
 ## NOTES
 
 ## RELATED LINKS

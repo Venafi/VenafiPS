@@ -10,7 +10,8 @@ Enrolls or provisions a new certificate
 New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <String>]
  [-CertificateType <String>] [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
  [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- [-Device <Hashtable[]>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-Device <Hashtable[]>] [-WorkToDoTimeout <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### ByNameWithDevice
@@ -18,63 +19,55 @@ New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <S
 New-TppCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <String>]
  [-CertificateType <String>] [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
  [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- -Device <Hashtable[]> [-Application <Hashtable[]>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
-```
-
-### BySubjectWithDevice
-```
-New-TppCertificate -Path <String> -CommonName <String> [-Csr <String>] [-CertificateType <String>]
- [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
- [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- -Device <Hashtable[]> [-Application <Hashtable[]>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
-```
-
-### BySubject
-```
-New-TppCertificate -Path <String> -CommonName <String> [-Csr <String>] [-CertificateType <String>]
- [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
- [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- [-Device <Hashtable[]>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ -Device <Hashtable[]> [-Application <Hashtable[]>] [-WorkToDoTimeout <Int32>] [-PassThru]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Enrolls or provisions a new certificate
+Enrolls or provisions a new certificate.
+Prior to TPP 22.1, this function is asynchronous and will always return success.
+Beginning with 22.1, you can control this behavior.
+See https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-Certificates-API-settings.php.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template'
-Create certificate by name
+New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com'
+Create certificate by name.  A CA template policy must be defined.
 ```
 
 ### EXAMPLE 2
 ```
-New-TppCertificate -Path '\ved\policy\folder' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
-Create certificate using a CSR
+New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template'
+Create certificate by name with specific CA template
 ```
 
 ### EXAMPLE 3
 ```
-New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -CustomField @{''=''}
-Create certificate and update custom fields
+New-TppCertificate -Path '\ved\policy\folder' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -Csr '-----BEGIN CERTIFICATE REQUEST-----\nMIIDJDCCAgwCAQAw...-----END CERTIFICATE REQUEST-----'
+Create certificate using a CSR
 ```
 
 ### EXAMPLE 4
 ```
-New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -PassThru
-Create certificate using common name.  Return the created object.
+New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -CustomField @{''=''}
+Create certificate and update custom fields
 ```
 
 ### EXAMPLE 5
 ```
-New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityDN '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
-Create certificate including subject alternate names
+New-TppCertificate -Path '\ved\policy\folder' -CommonName 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -PassThru
+Create certificate using common name.  Return the created object.
 ```
 
 ### EXAMPLE 6
+```
+New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -CertificateAuthorityPath '\ved\policy\CA Templates\my template' -SubjectAltName @{'Email'='me@x.com'},@{'IPAddress'='1.2.3.4'}
+Create certificate including subject alternate names
+```
+
+### EXAMPLE 7
 ```
 New-TppCertificate -Path '\ved\policy\folder' -Name 'mycert.com' -Device @{'PolicyDN'=$DevicePath; 'ObjectName'='MyDevice'; 'Host'='1.2.3.4'} -Application @{'DeviceName'='MyDevice'; 'ObjectName'='BasicApp'; 'DriverName'='appbasic'}
 Create a new certificate with associated device and app objects
@@ -84,7 +77,6 @@ Create a new certificate with associated device and app objects
 
 ### -Path
 The folder DN path for the new certificate.
-If the value is missing, use the system default
 
 ```yaml
 Type: String
@@ -99,12 +91,12 @@ Accept wildcard characters: False
 ```
 
 ### -Name
-Name of the certifcate. 
-If not provided, the name will be the same as the subject.
+Name of the certifcate object.
+If CommonName isn't provided, this value will be used.
 
 ```yaml
 Type: String
-Parameter Sets: ByName, ByNameWithDevice
+Parameter Sets: (All)
 Aliases:
 
 Required: True
@@ -116,26 +108,14 @@ Accept wildcard characters: False
 
 ### -CommonName
 Subject Common Name. 
-If Name isn't provided, CommonName will be used.
+If CommonName isn't provided, Name will be used.
 
 ```yaml
 Type: String
-Parameter Sets: ByName, ByNameWithDevice
+Parameter Sets: (All)
 Aliases: Subject
 
 Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: String
-Parameter Sets: BySubjectWithDevice, BySubject
-Aliases: Subject
-
-Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -159,8 +139,8 @@ Accept wildcard characters: False
 ```
 
 ### -CertificateType
-Type of certificate to be created.
-No value provided will default to X.509 Server Certificate.
+Type of certificate to be created. 
+The default is X.509 Server Certificate.
 
 ```yaml
 Type: String
@@ -175,7 +155,8 @@ Accept wildcard characters: False
 ```
 
 ### -CertificateAuthorityPath
-{{ Fill CertificateAuthorityPath Description }}
+The path of the Certificate Authority Template object for enrolling the certificate.
+If the value is missing, it is expected a policy has been applied to Path.
 
 ```yaml
 Type: String
@@ -285,7 +266,7 @@ If provisioning applications as well, those should be provided with the Applicat
 
 ```yaml
 Type: Hashtable[]
-Parameter Sets: ByName, BySubject
+Parameter Sets: ByName
 Aliases:
 
 Required: False
@@ -297,7 +278,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: Hashtable[]
-Parameter Sets: ByNameWithDevice, BySubjectWithDevice
+Parameter Sets: ByNameWithDevice
 Aliases:
 
 Required: True
@@ -316,12 +297,28 @@ See the example.
 
 ```yaml
 Type: Hashtable[]
-Parameter Sets: ByNameWithDevice, BySubjectWithDevice
+Parameter Sets: ByNameWithDevice
 Aliases:
 
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WorkToDoTimeout
+Introduced in 22.1, this controls the wait time, in seconds, for a CA to issue/renew a certificate.
+Providing this will override the global setting.
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
