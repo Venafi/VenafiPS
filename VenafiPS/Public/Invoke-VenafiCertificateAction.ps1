@@ -225,8 +225,6 @@ function Invoke-VenafiCertificateAction {
             $params.Body += $AdditionalParameters
         }
 
-        Write-Verbose ($params | ConvertTo-Json)
-
         try {
             if ( $performInvoke ) {
                 Invoke-VenafiRestMethod @params -FullResponse | Out-Null
