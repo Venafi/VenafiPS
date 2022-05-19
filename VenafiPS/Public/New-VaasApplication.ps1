@@ -4,7 +4,7 @@ function New-VaasApplication {
     Create a new application
 
     .DESCRIPTION
-    Create a new application
+    Create a new application with optional details
 
     .PARAMETER Name
     Application name
@@ -17,7 +17,7 @@ function New-VaasApplication {
     Application description
 
     .PARAMETER CertificateIssuingTemplate
-    List of issuing templates.
+    Hashtable of issuing templates.
     For each key/value pair, the key should be the issuing template id and the value should be the alias.
     Null can be provided for the alias which will use the template name as the alias.
 
