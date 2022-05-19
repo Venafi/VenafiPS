@@ -4,19 +4,41 @@
     Get issuing templates
 
     .DESCRIPTION
-    Get list of issuing template details
+    Get info for either a specific template or all templates.
+    Venafi as a Service only, not for TPP.
+
+    .PARAMETER ID
+    Id to get info for a specific template
+
+    .PARAMETER All
+    Get all templates
 
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A VaaS key can also provided.
 
+    .INPUTS
+    ID
+
     .OUTPUTS
     PSCustomObject
 
     .EXAMPLE
-    Get-VaasIssuingTemplate
-    Get details on all issuing templates
+    Get-VaasIssuingTemplate -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+
+    Get info for a specific template
+
+    .EXAMPLE
+    Get-VaasIssuingTemplate -All
+
+    Get info for all templates
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasIssuingTemplate/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasIssuingTemplate.ps1
 
     #>
 

@@ -15,8 +15,7 @@ function Get-VaasApplication {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
-    If providing a TPP token, an environment variable named TppServer must also be set.
+    A VaaS key can also provided.
 
     .INPUTS
     ID
@@ -26,15 +25,29 @@ function Get-VaasApplication {
 
     .EXAMPLE
     Get-VaasApplication -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+
     Get info for a specific application
 
     .EXAMPLE
     Get-VaasApplication -All
+
     Get info for all applications
 
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasApplication/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasApplication.ps1
+
+    .LINK
+    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getAll
+
+    .LINK
+    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getById
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ID')]
+
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
