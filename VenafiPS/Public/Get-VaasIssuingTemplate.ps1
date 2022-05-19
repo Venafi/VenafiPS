@@ -20,9 +20,15 @@
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
 
     param (
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Alias('certificateIssuingTemplateId')]
+        [guid] $ID,
+
+        [Parameter(ParameterSetName = 'All', Mandatory)]
+        [switch] $All,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
@@ -41,11 +47,20 @@
 
     process {
 
+        if ( $PSBoundParameters.ContainsKey('ID') ) {
+            $params.UriLeaf += "/$ID"
+        }
+
         $response = Invoke-VenafiRestMethod @params
 
-        if ( $response.certificateissuingtemplates ) {
-            $response.certificateissuingtemplates |
-            Select-Object -Property @{'n' = 'certificateIssuingTemplateId'; 'e' = { $_.id } }, * -ExcludeProperty id
+        if ( $response.PSObject.Properties.Name -contains 'certificateissuingtemplates' ) {
+            $templates = $response | Select-Object -ExpandProperty certificateissuingtemplates
+        } else {
+            $templates = $response
+        }
+
+        if ( $templates ) {
+            $templates | Select-Object -Property @{'n' = 'certificateIssuingTemplateId'; 'e' = { $_.id } }, * -ExcludeProperty id
         }
 
     }
