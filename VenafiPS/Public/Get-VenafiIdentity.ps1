@@ -21,7 +21,7 @@ Include all individual members if the ID is a group.  TPP only.
 Returns the identity of the authenticated/current user
 
 .PARAMETER All
-Return a complete list of users.  VaaS only.
+Return a complete list of local users.
 
 .PARAMETER VenafiSession
 Authentication for the function.
