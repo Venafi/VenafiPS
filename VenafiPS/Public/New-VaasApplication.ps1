@@ -28,7 +28,8 @@ function New-VaasApplication {
     IP ranges to assign to the application
 
     .PARAMETER Port
-    Ports to assign to the application
+    Ports to assign to the application.
+    Required if either Fqdn or IPRange are specified.
 
     .PARAMETER PassThru
     Return newly created application object
@@ -67,7 +68,7 @@ function New-VaasApplication {
 
     #>
 
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(DefaultParameterSetName = 'NoTarget', SupportsShouldProcess)]
 
     param (
         [Parameter(Mandatory)]
@@ -85,15 +86,18 @@ function New-VaasApplication {
         [ValidateNotNullOrEmpty()]
         [hashtable] $CertificateIssuingTemplate,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Fqdn', Mandatory)]
+        [Parameter(ParameterSetName = 'IPRange')]
         [ValidateNotNullOrEmpty()]
         [string[]] $Fqdn,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'IPRange', Mandatory)]
+        [Parameter(ParameterSetName = 'Fqdn')]
         [ValidateNotNullOrEmpty()]
         [string[]] $IPRange,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Fqdn', Mandatory)]
+        [Parameter(ParameterSetName = 'IPRange', Mandatory)]
         [ValidateNotNullOrEmpty()]
         [string[]] $Port,
 
