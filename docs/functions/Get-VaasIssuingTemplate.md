@@ -1,49 +1,49 @@
-# Get-VaasApplication
+# Get-VaasIssuingTemplate
 
 ## SYNOPSIS
-Get application info
+Get issuing templates
 
 ## SYNTAX
 
 ### ID (Default)
 ```
-Get-VaasApplication -ID <Guid> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VaasIssuingTemplate -ID <Guid> [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VaasApplication [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VaasIssuingTemplate [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get info for either a specific application or all applications. 
+Get info for either a specific template or all templates.
 Venafi as a Service only, not for TPP.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VaasApplication -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get-VaasIssuingTemplate -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
-Get info for a specific application
+Get info for a specific template
 
 ### EXAMPLE 2
 ```
-Get-VaasApplication -All
+Get-VaasIssuingTemplate -All
 ```
 
-Get info for all applications
+Get info for all templates
 
 ## PARAMETERS
 
 ### -ID
-Id to get info for a specific application
+Id to get info for a specific template
 
 ```yaml
 Type: Guid
 Parameter Sets: ID
-Aliases: applicationId
+Aliases: certificateIssuingTemplateId
 
 Required: True
 Position: Named
@@ -53,7 +53,7 @@ Accept wildcard characters: False
 ```
 
 ### -All
-Get all applications
+Get all templates
 
 ```yaml
 Type: SwitchParameter
@@ -97,11 +97,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasApplication/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasApplication/)
+[http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasIssuingTemplate/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasIssuingTemplate/)
 
-[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasApplication.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasApplication.ps1)
-
-[https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getAll](https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getAll)
-
-[https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getById](https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getById)
+[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasIssuingTemplate.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasIssuingTemplate.ps1)
 

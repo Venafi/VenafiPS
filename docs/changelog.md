@@ -1,3 +1,10 @@
+## 4.4.0
+- Add `New-VaasApplication` to create a new application on VaaS
+- Add `Get-VaasIssuingTemplate` to retrieve 1 or all certificate issuing templates on VaaS
+- Add `-All` parameter to `Get-VaasApplication` to retrieve all applications
+- Deprecate `Get-VaasOrgUnit` as it's being deprecated by VaaS
+
+
 ## 4.3.0
 - Add new output format for `Get-TppAttribute` using the parameter `-New`.  Attributes will now be provided as object properties as opposed to individual objects for each property, which made it difficult to retrieve the value itself.  This new format is available for all ways of using the function including attribute, effective attribute, and policy retrieval.  This new format will become the default in the future.
 - Add `Get-TppAttribute -PolicyClass -All` to retrieve all policy attributes at once
@@ -358,6 +365,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

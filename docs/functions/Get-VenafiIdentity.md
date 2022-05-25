@@ -114,8 +114,7 @@ Accept wildcard characters: False
 ```
 
 ### -All
-Return a complete list of users. 
-VaaS only.
+Return a complete list of local users.
 
 ```yaml
 Type: SwitchParameter
