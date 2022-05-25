@@ -1,8 +1,4 @@
-- Add new output format for `Get-TppAttribute` using the parameter `-New`.  Attributes will now be provided as object properties as opposed to individual objects for each property, which made it difficult to retrieve the value itself.  This new format is available for all ways of using the function including attribute, effective attribute, and policy retrieval.  This new format will become the default in the future.
-- Add `Get-TppAttribute -PolicyClass -All` to retrieve all policy attributes at once
-- Add `New-TppCertificate -WorkToDoTimeout` to override the global setting for a CA to issue/renew certificate
-- Add support for api limitation of 5k clients at a time when calling `Remove-TppClient`
-- Add support for VaaS user matching rules with `New-VenafiTeam`
-- Add setting common name, if not provided, as the object name in `New-TppCertificate`, [#110](https://github.com/Venafi/VenafiPS/issues/110)
-- Fix syntax error when using `New-TppCertificate -Csr`, [#111](https://github.com/Venafi/VenafiPS/issues/111)
-- `-Guid` has been deprecated from `Get-TppAttribute`
+- Add `New-VaasApplication` to create a new application on VaaS
+- Add `Get-VaasIssuingTemplate` to retrieve 1 or all certificate issuing templates on VaaS
+- Add `-All` parameter to `Get-VaasApplication` to retrieve all applications
+- Deprecate `Get-VaasOrgUnit` as it's being deprecated by VaaS
