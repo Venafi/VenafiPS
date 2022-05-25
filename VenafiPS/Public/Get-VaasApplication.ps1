@@ -1,41 +1,61 @@
-<#
-.SYNOPSIS
-Get application info
-
-.DESCRIPTION
-Get info for either a specific application or all applications.  Venafi as a Service only, not for TPP.
-
-.PARAMETER ApplicationId
-Id to get info for a specific application
-
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TppServer must also be set.
-
-.INPUTS
-ApplicationId
-
-.OUTPUTS
-PSCustomObject
-
-.EXAMPLE
-Get-VaasApplication
-Get info for all applications
-
-.EXAMPLE
-Get-VaasApplication -ApplicationId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-Get info for a specific application
-
-#>
 function Get-VaasApplication {
+    <#
+    .SYNOPSIS
+    Get application info
 
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    .DESCRIPTION
+    Get info for either a specific application or all applications.  Venafi as a Service only, not for TPP.
+
+    .PARAMETER ID
+    Id to get info for a specific application
+
+    .PARAMETER All
+    Get all applications
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A VaaS key can also provided.
+
+    .INPUTS
+    ID
+
+    .OUTPUTS
+    PSCustomObject
+
+    .EXAMPLE
+    Get-VaasApplication -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+
+    Get info for a specific application
+
+    .EXAMPLE
+    Get-VaasApplication -All
+
+    Get info for all applications
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasApplication/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasApplication.ps1
+
+    .LINK
+    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getAll
+
+    .LINK
+    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getById
+    #>
+
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
+
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [guid] $ApplicationId,
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Alias('applicationId')]
+        [guid] $ID,
+
+        [Parameter(ParameterSetName = 'All', Mandatory)]
+        [switch] $All,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
@@ -54,8 +74,8 @@ function Get-VaasApplication {
 
     process {
 
-        if ( $ApplicationId ) {
-            $params.UriLeaf += "/$ApplicationId"
+        if ( $PSBoundParameters.ContainsKey('ID') ) {
+            $params.UriLeaf += "/$ID"
         }
 
         $response = Invoke-VenafiRestMethod @params

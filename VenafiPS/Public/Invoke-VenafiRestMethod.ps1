@@ -94,14 +94,12 @@ function Invoke-VenafiRestMethod {
                 if ( $VenafiSession.Platform -eq 'VaaS' ) {
                     $platform = 'VaaS'
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
-                }
-                else {
+                } else {
                     # TPP
                     if ( $VenafiSession.AuthType -eq 'Token' ) {
                         $platform = 'TppToken'
                         $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                    }
-                    else {
+                    } else {
                         $platform = 'TppKey'
                         $auth = $VenafiSession.Key.ApiKey
                     }
@@ -115,8 +113,7 @@ function Invoke-VenafiRestMethod {
                 if ( [System.Guid]::TryParse($VenafiSession, [System.Management.Automation.PSReference]$objectGuid) ) {
                     $Server = $script:CloudUrl
                     $platform = 'VaaS'
-                }
-                else {
+                } else {
                     # TPP access token
                     # get server from environment variable
                     if ( -not $env:TppServer ) {
@@ -217,8 +214,7 @@ function Invoke-VenafiRestMethod {
     try {
         $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
         $verboseOutput.Message | Write-VerboseWithSecret
-    }
-    catch {
+    } catch {
 
         # if trying with a slash below doesn't work, we want to provide the original error
         $originalError = $_
@@ -226,51 +222,25 @@ function Invoke-VenafiRestMethod {
 
         Write-Verbose ('Response status code {0}' -f $originalStatusCode)
 
-        switch ($originalStatusCode) {
-
-            '409' {
-                # item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
-                $response = $originalError.Exception.Response
-            }
-
-            { $_ -in '307', '401' } {
-                # try with trailing slash as some GETs return a 307/401 without it
-                if ( -not $uri.EndsWith('/') ) {
-
-                    Write-Verbose "'$Method' call failed, trying again with a trailing slash"
-
-                    $params.Uri += '/'
-
-                    try {
-                        $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
-                        $verboseOutput.Message | Write-VerboseWithSecret
-                        Write-Warning ('This ''{0}'' call requires a trailing slash, please create an issue at https://github.com/Venafi/VenafiPS/issues and mention api endpoint {1}' -f $Method, ('{0}/{1}' -f $UriRoot, $UriLeaf))
-                    }
-                    catch {
-                        # this didn't work, provide details from pre slash call
-                        throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )
-                    }
-                }
-            }
-
-            Default {
-                throw ('"{0} : {1}' -f $originalStatusCode, $originalError | Out-String )
-            }
+        if ( $originalStatusCode -eq '409' ) {
+            # item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
+            # treat this as non error
+            $response = $_.Exception.Response
+        } else {
+            throw $_
         }
-    }
-    finally {
+
+    } finally {
         $ProgressPreference = $oldProgressPreference
     }
 
-    if ( $FullResponse.IsPresent ) {
+    if ( $FullResponse ) {
         $response
-    }
-    else {
+    } else {
         if ( $response.Content ) {
             try {
                 $response.Content | ConvertFrom-Json
-            }
-            catch {
+            } catch {
                 throw ('Invalid JSON response {0}' -f $response.Content)
             }
         }
