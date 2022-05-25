@@ -60,6 +60,9 @@ function Set-TppCodeSignProjectStatus {
     )
 
     begin {
+
+        Write-Warning 'Set-TppCodeSignProjectStatus will be deprecated in a future release.  Please use Set-TppCodeSignProject instead to set the project status.'
+
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -AuthType 'token'
 
         $params = @{
