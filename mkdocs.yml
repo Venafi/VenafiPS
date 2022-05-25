@@ -56,7 +56,7 @@ nav:
     - Get-TppVersion: functions/Get-TppVersion.md
     - Get-TppWorkflowTicket: functions/Get-TppWorkflowTicket.md
     - Get-VaasApplication: functions/Get-VaasApplication.md
-    - Get-VaasOrgUnit: functions/Get-VaasOrgUnit.md
+    - Get-VaasIssuingTemplate: functions/Get-VaasIssuingTemplate.md
     - Get-VenafiCertificate: functions/Get-VenafiCertificate.md
     - Get-VenafiIdentity: functions/Get-VenafiIdentity.md
     - Get-VenafiTeam: functions/Get-VenafiTeam.md
@@ -74,6 +74,7 @@ nav:
     - New-TppObject: functions/New-TppObject.md
     - New-TppPolicy: functions/New-TppPolicy.md
     - New-TppToken: functions/New-TppToken.md
+    - New-VaasApplication: functions/New-VaasApplication.md
     - New-VenafiSession: functions/New-VenafiSession.md
     - New-VenafiTeam: functions/New-VenafiTeam.md
     - Read-VenafiLog: functions/Read-VenafiLog.md
