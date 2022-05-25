@@ -87,17 +87,18 @@ function New-VaasApplication {
         [hashtable] $CertificateIssuingTemplate,
 
         [Parameter(ParameterSetName = 'Fqdn', Mandatory)]
-        [Parameter(ParameterSetName = 'IPRange')]
+        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
         [ValidateNotNullOrEmpty()]
         [string[]] $Fqdn,
 
         [Parameter(ParameterSetName = 'IPRange', Mandatory)]
-        [Parameter(ParameterSetName = 'Fqdn')]
+        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
         [ValidateNotNullOrEmpty()]
         [string[]] $IPRange,
 
         [Parameter(ParameterSetName = 'Fqdn', Mandatory)]
         [Parameter(ParameterSetName = 'IPRange', Mandatory)]
+        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
         [ValidateNotNullOrEmpty()]
         [string[]] $Port,
 
@@ -148,6 +149,9 @@ function New-VaasApplication {
     }
 
     process {
+
+        Write-Verbose $PSCmdlet.ParameterSetName
+
         if ( -not $ownerHash ) {
             return
         }
