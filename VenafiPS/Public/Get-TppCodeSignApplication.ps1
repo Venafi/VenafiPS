@@ -1,4 +1,4 @@
-function Find-TppCodeSignApplication {
+function Get-TppCodeSignApplication {
     <#
     .SYNOPSIS
     Search for code sign applications
@@ -16,20 +16,24 @@ function Find-TppCodeSignApplication {
     If providing a TPP token, an environment variable named TppServer must also be set.
 
     .INPUTS
-    Name
+    None
 
     .OUTPUTS
-    PSCustomObject
+    TppObject
 
     .EXAMPLE
-    Find-TppCodeSignApplication -Name Powershell
-    Find all code signing applications that match the name Powershell
+    Get-TppCodeSignApplication -Name Powershell
+    Get all code signing applications that match the name Powershell
+
+    .EXAMPLE
+    Get-TppCodeSignApplication -All
+    Get all code signing applications
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCodeSignApplication/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCodeSignApplication/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppCodeSignApplication.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppCodeSignApplication.ps1
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-EnumerateApplications.php
@@ -40,6 +44,9 @@ function Find-TppCodeSignApplication {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
         [String] $Name,
+
+        [Parameter(Mandatory, ParameterSetName = 'All')]
+        [switch] $All,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
