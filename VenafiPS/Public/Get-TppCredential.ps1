@@ -13,7 +13,7 @@ The full path to the credential object
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
 A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TppServer must also be set.
+If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
 .INPUTS
 Path
