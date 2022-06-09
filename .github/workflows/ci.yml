@@ -93,7 +93,7 @@ jobs:
 
     - name: Build image
       run: >
-        docker login
+        docker build
         --pull
         -t venafi/venafips-module:latest
         -t venafi/venafips-module:4.0
