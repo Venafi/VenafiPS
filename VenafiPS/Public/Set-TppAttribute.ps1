@@ -1,78 +1,90 @@
-<#
-.SYNOPSIS
-Sets a value on an objects attribute or policies (policy attributes)
-
-.DESCRIPTION
-Set the value on an objects attribute.  The attribute can either be built-in or custom.
-You can also set policies (policy attributes).
-
-.PARAMETER Path
-Path to the object to modify
-
-.PARAMETER Attribute
-Hashtable with names and values to be set.  If setting a custom field, you can use either the name or guid as the key.
-
-.PARAMETER BypassValidation
-Bypass data validation.  Only appicable to custom fields.
-
-.PARAMETER Policy
-Set policies (aka policy attributes) instead of object attributes
-
-.PARAMETER ClassName
-Required when setting policy attributes.  Provide the class name to set the value for.
-If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
-
-.PARAMETER Lock
-Lock the value on the policy.  Only applicable to setting policies.
-
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
-
-.INPUTS
-Path
-
-.OUTPUTS
-None
-
-.EXAMPLE
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Consumers'='\VED\Policy\myappobject.company.com'}
-Set a value on an object
-
-.EXAMPLE
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'}
-Set value on custom field
-
-.EXAMPLE
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'} -BypassValidation
-Set value on custom field bypassing field validation
-
-.EXAMPLE
-Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
-Set a policy attribute
-
-.EXAMPLE
-Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
-Set a policy attribute and lock the value
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/
-
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-writepolicy.php
-#>
 function Set-TppAttribute {
+    <#
+    .SYNOPSIS
+    Sets a value on an objects attribute or policies (policy attributes)
+
+    .DESCRIPTION
+    Set the value on an objects attribute.  The attribute can either be built-in or custom.
+    You can also set policies (policy attributes).
+
+    .PARAMETER Path
+    Path to the object to modify
+
+    .PARAMETER Attribute
+    Hashtable with names and values to be set.
+    If setting a custom field, you can use either the name or guid as the key.
+    To clear a value overwriting policy, set the value to $null.
+
+    .PARAMETER BypassValidation
+    Bypass data validation.  Only appicable to custom fields.
+
+    .PARAMETER Policy
+    Set policies (aka policy attributes) instead of object attributes
+
+    .PARAMETER ClassName
+    Required when setting policy attributes.  Provide the class name to set the value for.
+    If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
+
+    .PARAMETER Lock
+    Lock the value on the policy.  Only applicable to setting policies.
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+
+    .INPUTS
+    Path
+
+    .OUTPUTS
+    None
+
+    .EXAMPLE
+    Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Consumers'='\VED\Policy\myappobject.company.com'}
+
+    Set a value on an object
+
+    .EXAMPLE
+    Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Management Type'=$null}
+
+    Clear the value on an object, reverting to policy if applicable
+
+    .EXAMPLE
+    Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'}
+
+    Set value on custom field
+
+    .EXAMPLE
+    Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'} -BypassValidation
+
+    Set value on custom field bypassing field validation
+
+    .EXAMPLE
+    Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
+
+    Set a policy attribute
+
+    .EXAMPLE
+    Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
+
+    Set a policy attribute and lock the value
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-writepolicy.php
+    #>
 
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Object')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Being flagged incorrectly')]
@@ -83,8 +95,7 @@ function Set-TppAttribute {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                }
-                else {
+                } else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -157,8 +168,7 @@ function Set-TppAttribute {
                             # date/time
                             try {
                                 [datetime] $thisValue
-                            }
-                            catch {
+                            } catch {
                                 $customFieldError = 'value is not a valid date'
                             }
                         }
@@ -170,18 +180,16 @@ function Set-TppAttribute {
 
                     if ( $customFieldError -and -not $BypassValidation.IsPresent ) {
                         Write-Error ('The value ''{0}'' for field ''{1}'' encountered an error, {2}' -f $thisValue, $thisKey, $customFieldError)
-                    }
-                    else {
+                    } else {
                         $customFields += @{
                             ItemGuid = $customField.Guid
-                            List     = @($thisValue)
+                            List     = if ($null -eq $thisValue) { , @() } else { , @($thisValue) }
                         }
                     }
-                }
-                else {
+                } else {
                     $baseFields += @{
                         Name  = $thisKey
-                        Value = @($thisValue)
+                        Value = if ($null -eq $thisValue) { , @() } else { , @($thisValue) }
                     }
                 }
             }
