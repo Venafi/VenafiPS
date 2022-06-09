@@ -98,11 +98,8 @@ jobs:
       with:
         context: ./
         file: ./Dockerfile
-        builder: ${{ steps.buildx.outputs.name }}
         push: true
         tags: venafi/venafips-module:latest
-        cache-from: type=registry,ref=venafi/venafips-module:buildcache
-        cache-to: type=registry,ref=venafi/venafips-module:buildcache,mode=max
 
     # - name: Build image
     #   run: >
