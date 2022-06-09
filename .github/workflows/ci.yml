@@ -94,7 +94,6 @@ jobs:
         password: ${{ secrets.DOCKER_PASSWORD }}
 
     - name: Build image
-      uses: actions/checkout@v3
       run: >
         docker build
         --pull
@@ -103,5 +102,4 @@ jobs:
         .
 
     - name: Publish image and tags
-      uses: actions/checkout@v3
       run: docker push --all-tags venafi/venafips-module
