@@ -1,3 +1,11 @@
+## 4.5.0
+- Add docker image with each new build and [publish to dockerhub](https://hub.docker.com/repository/docker/venafi/venafips-module).  Add the below environment variables recognition for use with docker image, but could be used outside of it as well.  This is great for ci/cd scenarios and more.
+  - TPP_SERVER - TPP server url
+  - TPP_TOKEN - TPP oauth token
+  - VAAS_KEY - VaaS key
+- Fix `Set-TppAttribute` not clearing a value.  You can now pass $null to clear an object's attribute value, [#119](https://github.com/Venafi/VenafiPS/issues/119)
+
+
 ## 4.4.0
 - Add `New-VaasApplication` to create a new application on VaaS
 - Add `Get-VaasIssuingTemplate` to retrieve 1 or all certificate issuing templates on VaaS
@@ -365,6 +373,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

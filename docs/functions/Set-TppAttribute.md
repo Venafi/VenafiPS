@@ -27,32 +27,44 @@ You can also set policies (policy attributes).
 ### EXAMPLE 1
 ```
 Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Consumers'='\VED\Policy\myappobject.company.com'}
-Set a value on an object
 ```
+
+Set a value on an object
 
 ### EXAMPLE 2
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'}
-Set value on custom field
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Management Type'=$null}
 ```
+
+Clear the value on an object, reverting to policy if applicable
 
 ### EXAMPLE 3
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'} -BypassValidation
-Set value on custom field bypassing field validation
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'}
 ```
+
+Set value on custom field
 
 ### EXAMPLE 4
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
-Set a policy attribute
+Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'} -BypassValidation
 ```
+
+Set value on custom field bypassing field validation
 
 ### EXAMPLE 5
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
-Set a policy attribute and lock the value
+Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
 ```
+
+Set a policy attribute
+
+### EXAMPLE 6
+```
+Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
+```
+
+Set a policy attribute and lock the value
 
 ## PARAMETERS
 
@@ -72,8 +84,9 @@ Accept wildcard characters: False
 ```
 
 ### -Attribute
-Hashtable with names and values to be set. 
+Hashtable with names and values to be set.
 If setting a custom field, you can use either the name or guid as the key.
+To clear a value overwriting policy, set the value to $null.
 
 ```yaml
 Type: Hashtable
@@ -155,7 +168,7 @@ Accept wildcard characters: False
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
 A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TppServer must also be set.
+If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
 ```yaml
 Type: PSObject
