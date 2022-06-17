@@ -1,4 +1,5 @@
-- Add `New-VaasApplication` to create a new application on VaaS
-- Add `Get-VaasIssuingTemplate` to retrieve 1 or all certificate issuing templates on VaaS
-- Add `-All` parameter to `Get-VaasApplication` to retrieve all applications
-- Deprecate `Get-VaasOrgUnit` as it's being deprecated by VaaS
+- Add docker image with each new build and [publish to dockerhub](https://hub.docker.com/repository/docker/venafi/venafips-module).  Add the below environment variables recognition for use with docker image, but could be used outside of it as well.  This is great for ci/cd scenarios and more.
+  - TPP_SERVER - TPP server url
+  - TPP_TOKEN - TPP oauth token
+  - VAAS_KEY - VaaS key
+- Fix `Set-TppAttribute` not clearing a value.  You can now pass $null to clear an object's attribute value, [#119](https://github.com/Venafi/VenafiPS/issues/119)
