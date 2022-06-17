@@ -1,50 +1,50 @@
-<#
-.SYNOPSIS
-Ability to execute REST API calls which don't exist in a dedicated function yet
-
-.DESCRIPTION
-Ability to execute REST API calls which don't exist in a dedicated function yet
-
-.PARAMETER VenafiSession
-VenafiSession object from New-VenafiSession.
-For typical calls to New-VenafiSession, the object will be stored as a session object named $VenafiSession.
-Otherwise, if -PassThru was used, provide the resulting object.
-
-.PARAMETER Method
-API method, either get, post, patch, put or delete.
-
-.PARAMETER UriLeaf
-Path to the api endpoint excluding the base url and site, eg. certificates/import
-
-.PARAMETER Header
-Optional additional headers.  The authorization header will be included automatically.
-
-.PARAMETER Body
-Optional body to pass to the endpoint
-
-.INPUTS
-None
-
-.OUTPUTS
-PSCustomObject
-
-.EXAMPLE
-Invoke-VenafiRestMethod -Method Delete -UriLeaf 'Discovery/{1345311e-83c5-4945-9b4b-1da0a17c45c6}'
-Api call
-
-.EXAMPLE
-Invoke-VenafiRestMethod -Method Post -UriLeaf 'Certificates/Revoke' -Body @{'CertificateDN'='\ved\policy\mycert.com'}
-Api call with optional payload
-
-#>
 function Invoke-VenafiRestMethod {
+    <#
+    .SYNOPSIS
+    Ability to execute REST API calls which don't exist in a dedicated function yet
+
+    .DESCRIPTION
+    Ability to execute REST API calls which don't exist in a dedicated function yet
+
+    .PARAMETER VenafiSession
+    VenafiSession object from New-VenafiSession.
+    For typical calls to New-VenafiSession, the object will be stored as a session object named $VenafiSession.
+    Otherwise, if -PassThru was used, provide the resulting object.
+
+    .PARAMETER Method
+    API method, either get, post, patch, put or delete.
+
+    .PARAMETER UriLeaf
+    Path to the api endpoint excluding the base url and site, eg. certificates/import
+
+    .PARAMETER Header
+    Optional additional headers.  The authorization header will be included automatically.
+
+    .PARAMETER Body
+    Optional body to pass to the endpoint
+
+    .INPUTS
+    None
+
+    .OUTPUTS
+    PSCustomObject
+
+    .EXAMPLE
+    Invoke-VenafiRestMethod -Method Delete -UriLeaf 'Discovery/{1345311e-83c5-4945-9b4b-1da0a17c45c6}'
+    Api call
+
+    .EXAMPLE
+    Invoke-VenafiRestMethod -Method Post -UriLeaf 'Certificates/Revoke' -Body @{'CertificateDN'='\ved\policy\mycert.com'}
+    Api call with optional payload
+
+    #>
 
     [CmdletBinding(DefaultParameterSetName = 'Session')]
     [Alias('Invoke-TppRestMethod')]
 
     param (
         [Parameter(ParameterSetName = 'Session')]
-        [ValidateNotNullOrEmpty()]
+        [AllowNull()]
         [Alias('Key', 'AccessToken')]
         [psobject] $VenafiSession = $script:VenafiSession,
 
@@ -85,7 +85,13 @@ function Invoke-VenafiRestMethod {
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
 
         if ( -not $VenafiSession ) {
-            throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
+            if ( $env:TPP_TOKEN ) {
+                $VenafiSession = $env:TPP_TOKEN
+            } elseif ( $env:VAAS_KEY ) {
+                $VenafiSession = $env:VAAS_KEY
+            } else {
+                throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
+            }
         }
 
         switch ($VenafiSession.GetType().Name) {
@@ -116,10 +122,13 @@ function Invoke-VenafiRestMethod {
                 } else {
                     # TPP access token
                     # get server from environment variable
-                    if ( -not $env:TppServer ) {
-                        throw 'TppServer environment variable was not found'
+                    if ( -not $env:TPP_SERVER ) {
+                        throw 'TPP_SERVER environment variable was not found'
                     }
-                    $Server = $env:TppServer
+                    $Server = $env:TPP_SERVER
+                    if ( $Server -notlike 'https://*') {
+                        $Server = 'https://{0}' -f $Server
+                    }
                     $platform = 'TppToken'
                 }
             }
