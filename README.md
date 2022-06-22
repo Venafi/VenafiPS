@@ -31,6 +31,14 @@ Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.r
 
 VenafiPS is published to the PowerShell Gallery.  The most recent version is listed in the badge 'powershell gallery' above and can be viewed by clicking on it.  To install the module, you need to have PowerShell installed first.  On Windows, PowerShell will already be installed.  For [Linux](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) or [macOS](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7), you will need to install PowerShell Core; follow those links for guidance.  Once PowerShell is installed, start a PowerShell prompt and execute `Install-Module -Name VenafiPS` which will install from the gallery.
 
+A [docker image](https://hub.docker.com/repository/docker/venafi/venafips-module) is also available with Microsoft's PowerShell base image and the VenafiPS module preinstalled. The following environment variables should be used:
+
+- TPP_SERVER - TPP server url
+- TPP_TOKEN - TPP oauth token
+- VAAS_KEY - VaaS key
+
+When using the docker image, creating a new session is not required.
+
 ## Usage
 
 As the module supports both TPP and Venafi as a Service, you will note different names for the functions.  Functions with `-Tpp` are for TPP only, `-Vaas` are for Venafi as a Service only, and `-Venafi` are for both.
