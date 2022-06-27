@@ -46,7 +46,7 @@ function Import-TppCertificate {
 
     .PARAMETER ThrottleLimit
     Number of threads when using parallel processing.  The default is 100.
-    Applicable to PS v7 only.
+    Applicable to PS v6+ only.
 
     .PARAMETER PassThru
     Return a TppObject representing the newly imported object.
@@ -103,7 +103,7 @@ function Import-TppCertificate {
         [Parameter(Mandatory, ParameterSetName = 'ByData')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
         [ValidateNotNullOrEmpty()]
-        [String] $CertificateData,
+        [String[]] $CertificateData,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -181,25 +181,23 @@ function Import-TppCertificate {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        # get cert data if path or data provided
-        $allCertData = if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
-
-            # get cert data from file
-            foreach ($thisCertPath in $CertificatePath) {
-                if ($PSVersionTable.PSVersion.Major -lt 6) {
-                    $cert = Get-Content $thisCertPath -Encoding Byte
-                } else {
-                    $cert = Get-Content $CertificatePath -AsByteStream
-                }
-                [System.Convert]::ToBase64String($cert)
-            }
+        $certInfo = if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
+            $CertificatePath
         } else {
             $CertificateData
         }
 
         if ($PSVersionTable.PSVersion.Major -lt 6) {
 
-            foreach ($thisCertData in $allCertData) {
+            foreach ($thisCertInfo in $certInfo) {
+
+                $thisCertData = if ( Test-Path -Path $thisCertInfo -IsValid ) {
+                    $cert = Get-Content $thisCertInfo -Encoding Byte
+                    [System.Convert]::ToBase64String($cert)
+                } else {
+                    $thisCertInfo
+                }
+
                 $params.Body.CertificateData = $thisCertData
 
                 try {
@@ -215,12 +213,26 @@ function Import-TppCertificate {
                 }
             }
         } else {
-            $allCertData | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
+            $certInfo | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
+
+                $thisCertInfo = $_
+
                 Import-Module VenafiPS
                 # create session without call to server
                 New-VenafiSession -Server ($using:VenafiSession).Server -AccessToken ($using:VenafiSession).Token.AccessToken
+
+                # figure out if we're working with a cert path or data directly
+                $thisCertData = if ( Test-Path -Path $thisCertInfo -IsValid ) {
+                    $cert = Get-Content $thisCertInfo -AsByteStream
+                    [System.Convert]::ToBase64String($cert)
+                } else {
+                    $thisCertInfo
+                }
+
                 $params = $using:params
-                $params.Body.CertificateData = $_
+                # session was set in params for ps v6, but as we recreated in this thread it needs to be set again
+                $params.VenafiSession = $VenafiSession
+                $params.Body.CertificateData = $thisCertData
 
                 try {
                     $response = Invoke-VenafiRestMethod @params
