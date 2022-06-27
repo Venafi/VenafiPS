@@ -67,7 +67,7 @@ function Import-TppCertificate {
 
     .EXAMPLE
     Import-TppCertificate -PolicyPath mycerts -CertificatePath (gci c:\certs).FullName
-    Import multiple certificates in parallel on PS v7.  \ved\policy will be appended to the policy path.
+    Import multiple certificates in parallel on PS v6+.  \ved\policy will be appended to the policy path.
 
     .INPUTS
     CertificatePath
