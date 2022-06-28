@@ -4,7 +4,8 @@ function Import-VaasCertificate {
     Import one or more certificates
 
     .DESCRIPTION
-    Import one or more certificates
+    Import one or more certificates.
+    The blocklist will be overridden.
 
     .PARAMETER CertificatePath
     Path to a certificate file.  Provide either this or CertificateData.
@@ -93,7 +94,9 @@ function Import-VaasCertificate {
             Method        = 'Post'
             UriRoot       = 'outagedetection/v1'
             UriLeaf       = 'certificates'
-            Body          = @{}
+            Body          = @{
+                'overrideBlocklist' = 'true'
+            }
         }
 
         $allCerts = [System.Collections.Generic.List[object]]::new()
