@@ -70,7 +70,7 @@ function Import-TppCertificate {
     Import multiple certificates in parallel on PS v6+.  \ved\policy will be appended to the policy path.
 
     .INPUTS
-    CertificatePath
+    CertificatePath, CertificateData
 
     .OUTPUTS
     TppObject, if PassThru provided
@@ -100,8 +100,8 @@ function Import-TppCertificate {
         [Alias('FullName')]
         [String[]] $CertificatePath,
 
-        [Parameter(Mandatory, ParameterSetName = 'ByData')]
-        [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [Parameter(Mandatory, ParameterSetName = 'ByData', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [String[]] $CertificateData,
 
@@ -191,7 +191,7 @@ function Import-TppCertificate {
 
             foreach ($thisCertInfo in $certInfo) {
 
-                $thisCertData = if ( Test-Path -Path $thisCertInfo -IsValid ) {
+                $thisCertData = if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
                     $cert = Get-Content $thisCertInfo -Encoding Byte
                     [System.Convert]::ToBase64String($cert)
                 } else {
@@ -213,6 +213,7 @@ function Import-TppCertificate {
                 }
             }
         } else {
+
             $certInfo | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
 
                 $thisCertInfo = $_
@@ -222,7 +223,7 @@ function Import-TppCertificate {
                 New-VenafiSession -Server ($using:VenafiSession).Server -AccessToken ($using:VenafiSession).Token.AccessToken
 
                 # figure out if we're working with a cert path or data directly
-                $thisCertData = if ( Test-Path -Path $thisCertInfo -IsValid ) {
+                $thisCertData = if ( Test-Path -Path $thisCertInfo ) {
                     $cert = Get-Content $thisCertInfo -AsByteStream
                     [System.Convert]::ToBase64String($cert)
                 } else {
