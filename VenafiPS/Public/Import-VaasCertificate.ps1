@@ -25,15 +25,24 @@ function Import-VaasCertificate {
 
     .EXAMPLE
     Import-VaasCertificate -CertificatePath c:\www.VenafiPS.com.cer
+
     Import a certificate
 
     .EXAMPLE
     Import-VaasCertificate -CertificatePath c:\www.VenafiPS.com.cer -Application 'a2f83b26-c712-4f46-be41-2e1fb901f20c'
+
     Import a certificate and assign an application
 
     .EXAMPLE
     Import-VaasCertificate -CertificatePath (gci c:\certs).FullName
+
     Import multiple certificates
+
+    .EXAMPLE
+    Export-VenafiCertificate -CertificateId '\ved\policy\my.cert.com' -Format Base64 | Import-VaasCertificate -VenafiSession $vaas_key
+
+    Export from TPP and import into VaaS.
+    As $VenafiSession can only point to one platform at a time, in this case TPP, the session needs to be overridden for the import.
 
     .INPUTS
     CertificatePath, CertificateData
