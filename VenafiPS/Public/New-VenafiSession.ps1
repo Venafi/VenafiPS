@@ -73,10 +73,6 @@ function New-VenafiSession {
     To clear the metadata, reauthenticate with this function with a credential and without providing -VaultMetadata.
     To use this parameter, the SecretManagement vault must support it.
 
-    .PARAMETER NoCF
-    Bypass pulling in custom field definitions which assists in guid to name translation.
-    Useful when a large amount of data is contained in the definition, eg. long list of allowed values.
-
     .PARAMETER PassThru
     Optionally, send the session object to the pipeline instead of script scope.
 
