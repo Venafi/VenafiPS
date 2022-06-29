@@ -45,6 +45,12 @@ function Import-VaasCertificate {
     Export from TPP and import into VaaS.
     As $VenafiSession can only point to one platform at a time, in this case TPP, the session needs to be overridden for the import.
 
+    .EXAMPLE
+    Find-TppCertificate -Path '\ved\policy\certs' -Recursive | Export-VenafiCertificate -Format Base64 | Import-VaasCertificate -VenafiSession $vaas_key
+
+    Bulk export from TPP and import into VaaS.
+    As $VenafiSession can only point to one platform at a time, in this case TPP, the session needs to be overridden for the import.
+
     .INPUTS
     CertificatePath, CertificateData
 
