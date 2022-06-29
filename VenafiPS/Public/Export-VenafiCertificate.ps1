@@ -1,85 +1,87 @@
-<#
-.SYNOPSIS
-Get certificate data
-
-.DESCRIPTION
-Get certificate data from either Venafi as a Service or TPP.
-
-.PARAMETER CertificateId
-Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
-
-.PARAMETER Format
-Certificate format.  For Venafi as a Service, you can provide either PEM or DER.  For TPP, Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
-
-.PARAMETER OutPath
-Folder path to save the certificate to.  The name of the file will be determined automatically.  TPP Only...for now.
-
-.PARAMETER IncludeChain
-Include the certificate chain with the exported certificate.  Not supported with DER format.  TPP Only.
-
-.PARAMETER FriendlyName
-Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when Format is JKS.  TPP Only.
-
-.PARAMETER IncludePrivateKey
-DEPRECATED. Provide a value for -PrivateKeyPassword.
-
-.PARAMETER PrivateKeyPassword
-Password required to include the private key.  Not supported with DER or PKCS #7 formats.  TPP Only.
-You must adhere to the following rules:
-- Password is at least 12 characters.
-- Comprised of at least three of the following:
-    - Uppercase alphabetic letters
-    - Lowercase alphabetic letters
-    - Numeric characters
-    - Special characters
-
-.PARAMETER KeystorePassword
-Password required to retrieve the certificate in JKS format.  TPP Only.
-You must adhere to the following rules:
-- Password is at least 12 characters.
-- Comprised of at least three of the following:
-    - Uppercase alphabetic letters
-    - Lowercase alphabetic letters
-    - Numeric characters
-    - Special characters
-
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
-
-.INPUTS
-CertificateId/Path from TppObject
-
-.OUTPUTS
-Vaas, System.String.  TPP, PSCustomObject.
-
-.EXAMPLE
-$certId | Export-VenafiCertificate -Format PEM
-Get certificate data from Venafi as a Service
-
-.EXAMPLE
-$cert | Export-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
-Get certificate data and save to a file, TPP
-
-.EXAMPLE
-$cert | Export-VenafiCertificate -Format 'PKCS #7' -IncludeChain
-Get one or more certificates with the certificate chain included, TPP
-
-.EXAMPLE
-$cert | Export-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
-Get one or more certificates with private key included, TPP
-
-.EXAMPLE
-$cert | Export-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
-Get certificates in JKS format, TPP
-
-#>
 function Export-VenafiCertificate {
+    <#
+    .SYNOPSIS
+    Get certificate data
+
+    .DESCRIPTION
+    Get certificate data from either Venafi as a Service or TPP.
+
+    .PARAMETER CertificateId
+    Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
+
+    .PARAMETER Format
+    Certificate format.
+    For Venafi as a Service, you can provide either PEM, DER, or JKS.
+    For TPP, Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
+
+    .PARAMETER OutPath
+    Folder path to save the certificate to.  The name of the file will be determined automatically.  TPP Only...for now.
+
+    .PARAMETER IncludeChain
+    Include the certificate chain with the exported certificate.  Not supported with DER format.  TPP Only.
+
+    .PARAMETER FriendlyName
+    Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when Format is JKS.  TPP Only.
+
+    .PARAMETER IncludePrivateKey
+    DEPRECATED. Provide a value for -PrivateKeyPassword.
+
+    .PARAMETER PrivateKeyPassword
+    Password required to include the private key.  Not supported with DER or PKCS #7 formats.  TPP Only.
+    You must adhere to the following rules:
+    - Password is at least 12 characters.
+    - Comprised of at least three of the following:
+        - Uppercase alphabetic letters
+        - Lowercase alphabetic letters
+        - Numeric characters
+        - Special characters
+
+    .PARAMETER KeystorePassword
+    Password required to retrieve the certificate in JKS format.  TPP Only.
+    You must adhere to the following rules:
+    - Password is at least 12 characters.
+    - Comprised of at least three of the following:
+        - Uppercase alphabetic letters
+        - Lowercase alphabetic letters
+        - Numeric characters
+        - Special characters
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+
+    .INPUTS
+    CertificateId / Path from TppObject
+
+    .OUTPUTS
+    Vaas, System.String.  TPP, PSCustomObject.
+
+    .EXAMPLE
+    $certId | Export-VenafiCertificate -Format PEM
+    Get certificate data from Venafi as a Service
+
+    .EXAMPLE
+    $cert | Export-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
+    Get certificate data and save to a file, TPP
+
+    .EXAMPLE
+    $cert | Export-VenafiCertificate -Format 'PKCS #7' -IncludeChain
+    Get one or more certificates with the certificate chain included, TPP
+
+    .EXAMPLE
+    $cert | Export-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
+    Get one or more certificates with private key included, TPP
+
+    .EXAMPLE
+    $cert | Export-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
+    Get certificates in JKS format, TPP
+
+    #>
 
     [CmdletBinding(DefaultParameterSetName = 'Vaas')]
-    [Alias('Get-TppCertificate')]
+    [Alias('Get-TppCertificate', 'Export-TppCertificate', 'Export-VaasCertificate')]
 
     param (
 
@@ -96,8 +98,7 @@ function Export-VenafiCertificate {
         [ValidateScript( {
                 if (Test-Path $_ -PathType Container) {
                     $true
-                }
-                else {
+                } else {
                     Throw "Output path '$_' does not exist"
                 }
             })]
@@ -141,8 +142,7 @@ function Export-VenafiCertificate {
             if ( $Format -notin 'PEM', 'DER', 'JKS') {
                 throw "Venafi as a Service does not support the format $Format"
             }
-        }
-        else {
+        } else {
 
             if ($PrivateKeyPassword) {
 
@@ -197,9 +197,11 @@ function Export-VenafiCertificate {
             $params.Method = 'Get'
             $params.FullResponse = $true
             $response = Invoke-VenafiRestMethod @params
-            $response.Content
-        }
-        else {
+            [pscustomobject] @{
+                'CertificateData' = $response.Content -replace "`r|`n|-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----"
+            }
+
+        } else {
             $params.Method = 'Post'
             $params.UriLeaf = 'certificates/retrieve'
 
@@ -216,8 +218,7 @@ function Export-VenafiCertificate {
                     [IO.File]::WriteAllBytes($outFile, $bytes)
                     Write-Verbose ('Saved {0} with format {1}' -f $outFile, $response.Format)
                 }
-            }
-            else {
+            } else {
                 $response
             }
         }
