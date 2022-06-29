@@ -272,9 +272,6 @@ function New-VenafiSession {
         [string] $VaultVaasKeyName,
 
         [Parameter()]
-        [switch] $NoCF,
-
-        [Parameter()]
         [switch] $PassThru
     )
 
@@ -511,7 +508,7 @@ function New-VenafiSession {
 
     # will fail if user is on an older version.  this isn't required so bypass on failure
     # only applicable to tpp
-    if ( $PSCmdlet.ParameterSetName -notin 'Vaas', 'VaultVaasKey' -and -not $NoCF ) {
+    if ( $PSCmdlet.ParameterSetName -notin 'Vaas', 'VaultVaasKey' ) {
         $newSession.Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue)
         $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-TppCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
         # make sure we remove duplicates
@@ -523,5 +520,4 @@ function New-VenafiSession {
     } else {
         $Script:VenafiSession = $newSession
     }
-    # }
 }
