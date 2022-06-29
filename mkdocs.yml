@@ -61,6 +61,7 @@ nav:
     - Get-VenafiIdentity: functions/Get-VenafiIdentity.md
     - Get-VenafiTeam: functions/Get-VenafiTeam.md
     - Import-TppCertificate: functions/Import-TppCertificate.md
+    - Import-VaasCertificate: functions/Import-VaasCertificate.md
     - Invoke-TppCertificatePush: functions/Invoke-TppCertificatePush.md
     - Invoke-TppCertificateRenewal: functions/Invoke-TppCertificateRenewal.md
     - Invoke-VenafiCertificateAction: functions/Invoke-VenafiCertificateAction.md
