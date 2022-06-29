@@ -191,6 +191,7 @@ function Get-TppAttribute {
 
         [Parameter(Mandatory, ParameterSetName = 'PolicyPath')]
         [Parameter(Mandatory, ParameterSetName = 'AllPolicyPath')]
+        [ValidateNotNullOrEmpty()]
         [Alias('ClassName')]
         [string] $PolicyClass,
 
@@ -210,6 +211,7 @@ function Get-TppAttribute {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
+        if ( -not $New ) { Write-Warning 'The output format of this function will change in a future release.  Please use the new format with -New.' }
         if ( $AsValue ) { Write-Warning '-AsValue wil be deprecated in a future release.  Please use the new format with -New.' }
         if ( $Policy ) { Write-Warning '-Policy is no longer required; just provide -PolicyClass to find policy attributes.' }
 
@@ -217,16 +219,11 @@ function Get-TppAttribute {
             Write-Verbose "Getting attributes for class $PolicyClass"
             $Attribute = Get-TppClassAttribute -ClassName $PolicyClass -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name
         }
-    }
-
-    process {
 
         $params = @{
             VenafiSession = $VenafiSession
             Method        = 'Post'
-            Body          = @{
-                ObjectDN = $Path
-            }
+            Body          = @{}
         }
 
         if ( $PolicyClass ) {
@@ -246,9 +243,13 @@ function Get-TppAttribute {
                 }
             }
         }
-        # $baseParams.UriLeaf = $uriLeaf
 
-        # $baseParams.Body['ObjectDN'] = $Path
+        $isEffective = ($params.UriLeaf -eq 'config/ReadEffectivePolicy')
+    }
+
+    process {
+
+        $params.Body.ObjectDN = $Path
         $thisObject = Get-TppObject -Path $Path -VenafiSession $VenafiSession
 
         if ( $PolicyClass -and $thisObject.TypeName -ne 'Policy' ) {
@@ -256,6 +257,7 @@ function Get-TppAttribute {
             continue
         }
 
+        # get all attributes if item is an object other than a policy
         if ( $All -and -not $PolicyClass ) {
             $Attribute = Get-TppClassAttribute -ClassName $thisObject.TypeName -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name
         }
@@ -266,7 +268,13 @@ function Get-TppAttribute {
             # api which allows passing a list
             $configValues = foreach ($thisAttribute in $Attribute) {
 
-                $params.Body.AttributeName = $thisAttribute
+                $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+
+                if ( $customField ) {
+                    $params.Body.AttributeName = $customField.Guid
+                } else {
+                    $params.Body.AttributeName = $thisAttribute
+                }
 
                 # add the class for a policy call
                 if ( $PolicyClass ) {
@@ -280,6 +288,8 @@ function Get-TppAttribute {
                         Name       = $thisAttribute
                         Value      = $response.Values
                         PolicyPath = $response.PolicyDN
+                        Locked     = $response.Locked
+                        Overridden = $response.Overridden
                     }
                 }
             }
@@ -317,9 +327,10 @@ function Get-TppAttribute {
                     Guid     = $thisObject.Guid
                 }
 
-                if ( $PolicyClass ) {
+                if ( $PSBoundParameters.ContainsKey('PolicyClass') ) {
                     Add-Member -InputObject $return -NotePropertyMembers @{ 'PolicyClassName' = $PolicyClass }
                 }
+
                 # no customfieldname for policy attribs
 
                 foreach ($thisConfigValue in $configValues) {
@@ -349,18 +360,38 @@ function Get-TppAttribute {
                         }
                     }
 
+                    # attribute name will be overridden to use the label if a custom field
+                    $newAttributeName = $thisConfigValue.Name
+
                     if ( $PolicyClass ) {
-                        $newProp = $valueOut
+                        $newProp = [pscustomobject] @{
+                            Value  = $valueOut
+                            Locked = $thisConfigValue.Locked
+                        }
                     } else {
 
-                        $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name }
+                        $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name -or $_.Label -eq $thisConfigValue.Name }
+
+                        # add this attribute as the custom field label instead of guid
+                        if ( $customField ) {
+                            $newAttributeName = $customField.Label
+                        }
+
                         $newProp = [pscustomobject] @{
                             'Value'           = $valueOut
-                            'CustomFieldName' = $customField.Label
-                            'PolicyPath'      = $thisConfigValue.PolicyPath
+                            'CustomFieldGuid' = $customField.Guid
+                        }
+
+                        if ( $isEffective ) {
+                            $newProp | Add-Member @{
+                                'PolicyPath' = $thisConfigValue.PolicyPath
+                                'Locked'     = $thisConfigValue.Locked
+                                'Overridden' = $thisConfigValue.Overridden
+                            }
                         }
                     }
-                    Add-Member -InputObject $return -NotePropertyMembers @{ $thisConfigValue.Name = $newProp } -Force
+
+                    Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
 
                 }
 
