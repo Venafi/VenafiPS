@@ -1,40 +1,41 @@
 # Import-TppCertificate
 
 ## SYNOPSIS
-Import a certificate
+Import one or more certificates
 
 ## SYNTAX
 
 ### ByFile (Default)
 ```
-Import-TppCertificate -PolicyPath <String> -CertificatePath <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] [-Password <SecureString>] [-Reconcile] [-PassThru]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+Import-TppCertificate -PolicyPath <String> -CertificatePath <String[]> [-Name <String>]
+ [-EnrollmentAttribute <Hashtable>] [-Password <SecureString>] [-Reconcile] [-ThrottleLimit <Int32>]
+ [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByFileWithPrivateKey
 ```
-Import-TppCertificate -PolicyPath <String> -CertificatePath <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] -PrivateKey <String> -Password <SecureString> [-Reconcile] [-PassThru]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+Import-TppCertificate -PolicyPath <String> -CertificatePath <String[]> [-Name <String>]
+ [-EnrollmentAttribute <Hashtable>] -PrivateKey <String> -Password <SecureString> [-Reconcile]
+ [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByDataWithPrivateKey
 ```
-Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] -PrivateKey <String> -Password <SecureString> [-Reconcile] [-PassThru]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+Import-TppCertificate -PolicyPath <String> -CertificateData <String[]> [-Name <String>]
+ [-EnrollmentAttribute <Hashtable>] -PrivateKey <String> -Password <SecureString> [-Reconcile]
+ [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByData
 ```
-Import-TppCertificate -PolicyPath <String> -CertificateData <String> [-Name <String>]
- [-EnrollmentAttribute <Hashtable>] [-Password <SecureString>] [-Reconcile] [-PassThru]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+Import-TppCertificate -PolicyPath <String> -CertificateData <String[]> [-Name <String>]
+ [-EnrollmentAttribute <Hashtable>] [-Password <SecureString>] [-Reconcile] [-ThrottleLimit <Int32>]
+ [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Import a certificate with or without private key.
+Import one or more certificates with or without private key.
+PowerShell v5 will execute sequentially and v7 will run in parallel.
 
 ## EXAMPLES
 
@@ -44,10 +45,23 @@ Import-TppCertificate -PolicyPath \ved\policy\mycerts -CertificatePath c:\www.Ve
 Import a certificate
 ```
 
+### EXAMPLE 2
+```
+gci c:\certs | Import-TppCertificate -PolicyPath \ved\policy\mycerts
+Import multiple certificates
+```
+
+### EXAMPLE 3
+```
+Import-TppCertificate -PolicyPath mycerts -CertificatePath (gci c:\certs).FullName
+Import multiple certificates in parallel on PS v6+.  \ved\policy will be appended to the policy path.
+```
+
 ## PARAMETERS
 
 ### -PolicyPath
-Policy path to import the certificate to
+Policy path to import the certificate to.
+\ved\policy is prepended if not provided.
 
 ```yaml
 Type: String
@@ -66,14 +80,14 @@ Path to a certificate file.
 Provide either this or CertificateData.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: ByFile, ByFileWithPrivateKey
-Aliases:
+Aliases: FullName
 
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -82,14 +96,14 @@ Contents of a certificate to import.
 Provide either this or CertificatePath.
 
 ```yaml
-Type: String
+Type: String[]
 Parameter Sets: ByDataWithPrivateKey, ByData
 Aliases:
 
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -194,6 +208,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ThrottleLimit
+Number of threads when using parallel processing. 
+The default is 100.
+Applicable to PS v6+ only.
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: 100
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -PassThru
 Return a TppObject representing the newly imported object.
 
@@ -232,7 +263,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### None
+### CertificatePath, CertificateData
 ## OUTPUTS
 
 ### TppObject, if PassThru provided

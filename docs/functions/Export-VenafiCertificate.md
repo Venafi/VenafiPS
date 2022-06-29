@@ -80,8 +80,8 @@ Accept wildcard characters: False
 ```
 
 ### -Format
-Certificate format. 
-For Venafi as a Service, you can provide either PEM or DER. 
+Certificate format.
+For Venafi as a Service, you can provide either PEM, DER, or JKS.
 For TPP, Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
 
 ```yaml
@@ -246,7 +246,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### CertificateId/Path from TppObject
+### CertificateId / Path from TppObject
 ## OUTPUTS
 
 ### Vaas, System.String.  TPP, PSCustomObject.

@@ -49,6 +49,7 @@ Accept wildcard characters: False
 
 ### -Attribute
 Retrieve identity attribute values for the users and groups.
+Common user attributes include Group Membership, Name, Internet Email Address, Given Name, and Surname.
 
 ```yaml
 Type: String[]
