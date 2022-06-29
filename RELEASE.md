@@ -1,5 +1,12 @@
-- Add docker image with each new build and [publish to dockerhub](https://hub.docker.com/repository/docker/venafi/venafips-module).  Add the below environment variables recognition for use with docker image, but could be used outside of it as well.  This is great for ci/cd scenarios and more.
-  - TPP_SERVER - TPP server url
-  - TPP_TOKEN - TPP oauth token
-  - VAAS_KEY - VaaS key
-- Fix `Set-TppAttribute` not clearing a value.  You can now pass $null to clear an object's attribute value, [#119](https://github.com/Venafi/VenafiPS/issues/119)
+- Add `Import-VaasCertificate`.  Export from TPP right into VaaS (and vice versa).
+- `Import-TppCertificate` updates
+   - Add pipelining with either `-CertificatePath` or `CertificateData`.  You can provide FileInfo objects or just an array of paths.
+   - If using PS v6+, import will now use parallel processing.  Control the number of certificates imported at once with the new parameter `-ThrottleLimit`.  This is definitely the recommended approach for bulk importing.
+   - Add prepending '\ved\policy' to `-PolicyPath` if not provided
+ - `Get-TppAttribute` updates
+   - `-Attribute` can now accept custom field labels/names to retrieve the value, [#74](https://github.com/Venafi/VenafiPS/issues/74)
+   - Return Locked and Overridden values where applicable
+   - Notify user when attribute name provided to `-Attribute` is not valid
+ - Fix SecretManagement module existence check not always being triggered in `New-VenafiSession`, [#123](https://github.com/Venafi/VenafiPS/issues/123)
+ - Add 'certificate' field to `Write-VerboseWithSecret` to hide certificate data being passed to VaaS
+ - Allow any attribute names for `Get-TppIdentityAttribute -Attribute`, [#125](https://github.com/Venafi/VenafiPS/issues/125)
