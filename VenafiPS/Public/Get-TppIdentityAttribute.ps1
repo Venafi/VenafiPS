@@ -10,6 +10,7 @@ The id that represents the user or group.  Use Find-TppIdentity to get the id.
 
 .PARAMETER Attribute
 Retrieve identity attribute values for the users and groups.
+Common user attributes include Group Membership, Name, Internet Email Address, Given Name, and Surname.
 
 .PARAMETER VenafiSession
 Authentication for the function.
@@ -56,7 +57,6 @@ function Get-TppIdentityAttribute {
         [string[]] $ID,
 
         [Parameter()]
-        [ValidateSet('Group Membership', 'Name', 'Internet Email Address', 'Given Name', 'Surname')]
         [string[]] $Attribute,
 
         [Parameter()]

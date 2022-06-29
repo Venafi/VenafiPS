@@ -101,7 +101,7 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'Test-TppObject', 'Test-TppToken', 'Write-TppLog', 'Get-VenafiTeam',
                'Remove-VenafiTeam', 'Add-VenafiTeamMember', 'Add-VenafiTeamOwner',
                'Remove-VenafiTeamMember', 'Remove-VenafiTeamOwner', 'New-VenafiTeam',
-               'Search-TppHistory', 'Get-VaasIssuingTemplate', 'New-VaasApplication'
+               'Search-TppHistory', 'Get-VaasIssuingTemplate', 'New-VaasApplication','Import-VaasCertificate'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
@@ -112,7 +112,7 @@ VariablesToExport = 'VenafiSession'
 # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
 AliasesToExport = 'fto', 'itcr', 'Find-TppCertificate', 'Get-TppIdentity', 'Read-TppLog',
                'Invoke-TppRestMethod', 'Get-TppCertificate',
-               'Get-TppCertificateDetail'
+               'Get-TppCertificateDetail', 'Find-VaasCertificate', 'Export-TppCertificate', 'Export-VaasCertificate'
 
 # DSC resources to export from this module
 # DscResourcesToExport = @()
