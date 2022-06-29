@@ -81,7 +81,7 @@ function Export-VenafiCertificate {
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Vaas')]
-    [Alias('Get-TppCertificate')]
+    [Alias('Get-TppCertificate', 'Export-TppCertificate', 'Export-VaasCertificate')]
 
     param (
 
