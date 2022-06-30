@@ -10,9 +10,7 @@
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
-Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform core functionality as well as code signing.  Support for Venafi as a Service has also recently been added.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to submit an issue.
-
-:warning: **Please note, as of version 4.0, the license has changed and is now Apache 2.0** :warning:
+Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform and Venafi as a Service.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to [submit an issue](https://github.com/Venafi/VenafiPS/issues).
 
 ## Documentation
 
@@ -20,55 +18,44 @@ Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.r
 
 ## Supported Platforms
 
-| OS             | PowerShell Version Tested | Status  |
-| -------------- |--------------------| -----|
-| Windows        | 5.1                | **Working!** |
-| Windows        | Core 6.2.3+         | **Working!** |
-| MacOS          | Core 6.2.3+         | **Working!** |
-| Linux (Ubuntu 18.04) | Core 6.2.3+         | **Working!** |
+VenafiPS works on PowerShell v5.1 as well as cross-platform Core on Windows, Linux, and Mac.
 
 ## Install Module
 
 VenafiPS is published to the PowerShell Gallery.  The most recent version is listed in the badge 'powershell gallery' above and can be viewed by clicking on it.  To install the module, you need to have PowerShell installed first.  On Windows, PowerShell will already be installed.  For [Linux](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) or [macOS](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7), you will need to install PowerShell Core; follow those links for guidance.  Once PowerShell is installed, start a PowerShell prompt and execute `Install-Module -Name VenafiPS` which will install from the gallery.
 
-A [docker image](https://hub.docker.com/repository/docker/venafi/venafips-module) is also available with Microsoft's PowerShell base image and the VenafiPS module preinstalled. The following environment variables should be used:
-
-- TPP_SERVER - TPP server url
-- TPP_TOKEN - TPP oauth token
-- VAAS_KEY - VaaS key
-
-When using the docker image, creating a new session is not required.
-
 ## Usage
 
 As the module supports both TPP and Venafi as a Service, you will note different names for the functions.  Functions with `-Tpp` are for TPP only, `-Vaas` are for Venafi as a Service only, and `-Venafi` are for both.
 
-Start a new PowerShell prompt (even if you have one from the install-module step) and create a new VenafiPS session with
+[Token based authentication](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php) must be setup and configured.
+
+### Interactive Session
+
+For an interactive session, we want to create a Venafi session which will hold the details needed for future operations.  Start a new PowerShell prompt (even if you have one from the install-module step) and create a new VenafiPS session with:
 
 ```powershell
 $cred = Get-Credential
 
-# obtain new oauth token
+# create a session for TPP
 New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'}
 
-# obtain new oauth token and store access token for later use
-New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'} -VaultAccessTokenName TppAccessToken
-
-# obtain new oauth token and store refresh token for later use
-New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'} -VaultRefreshTokenName TppRefreshToken
-
-# create a session for VaaS
+# create a session for VaaS (your API key can be found in your user profile -> preferences)
 New-VenafiSession -VaasKey $cred
 ```
 
-The above will create a session which will be used by default in other functions.
-View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.
+The above will create a session variable named $VenafiSession which will be used by default in other functions.
 
-For VaaS, your API key can be found in your user profile->preferences.
+View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.  To utilize the SecretManagement vault functionality, ensure you [complete the setup below](https://github.com/Venafi/VenafiPS#tokenkey-secret-storage).
 
-Helpful with devops scenarios including pipelines, you can provide either a VaaS key or TPP token for `-VenafiSession` for all function calls with no need to execute `New-VenafiSession` first.  If using TPP, an environment variable named `TppServer` must be set first.
+### Automated Scenarios
+
+For non-interactive usage including ci/cd, the module can be used without creating a session.  For all functions you can substitute a VenafiSession object with either a TPP token or VaaS key, eg. `-VenafiSession $tpp_token`.  You can also provide these as environment variables, TPP_TOKEN or VAAS_KEY.  If providing a TPP token, either as the value for VenafiSession or as an environment variable, a server environment variable, TPP_SERVER, must also be set.
+
+A [docker image](https://hub.docker.com/repository/docker/venafi/venafips-module) is also available with Microsoft's PowerShell base image and the VenafiPS module preinstalled. The same environment variables as stated above should be used.
 
 ### Examples
+
 One of the easiest ways to get started is to use `Find-TppObject`:
 
 ```powershell
@@ -79,7 +66,7 @@ This will return all objects in the Policy folder.  You can also search from the
 
 To find a certificate object, not retrieve an actual certificate, use:
 ```powershell
-$cert = Find-TppCertificate -Limit 1
+$cert = Find-VenafiCertificate -Limit 1
 ```
 
 Check out the parameters for `Find-TppCertificate` as there's an extensive list to search on.
@@ -87,7 +74,7 @@ Check out the parameters for `Find-TppCertificate` as there's an extensive list 
 Now you can take that certificate 'TppObject' and find all log entries associated with it:
 
 ```powershell
-$cert | Read-TppLog
+$cert | Read-VenafiLog
 ```
 
 To perform many of the core certificate actions, we will use `Invoke-VenafiCertificateAction`.  For example, to create a new session and renew a certificate, use the following:
