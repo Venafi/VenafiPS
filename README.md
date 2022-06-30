@@ -10,7 +10,7 @@
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
-Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform and Venafi as a Service.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to [submit an issue](https://github.com/Venafi/VenafiPS/issues).
+Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform and Venafi as a Service.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue](https://github.com/Venafi/VenafiPS/issues).
 
 ## Documentation
 
@@ -28,7 +28,7 @@ VenafiPS is published to the PowerShell Gallery.  The most recent version is lis
 
 As the module supports both TPP and Venafi as a Service, you will note different names for the functions.  Functions with `-Tpp` are for TPP only, `-Vaas` are for Venafi as a Service only, and `-Venafi` are for both.
 
-[Token based authentication](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php) must be setup and configured.
+For TPP, [token based authentication](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php) must be setup and configured.
 
 ### Interactive Session
 
