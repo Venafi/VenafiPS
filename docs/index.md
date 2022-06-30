@@ -1,19 +1,10 @@
 # VenafiPS - Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!
 
-Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform core functionality as well as code signing.  Support for Venafi as a Service has also recently been added.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to submit an issue.
-
-!!! note
-
-    As of version 4.0, the license has changed and is now Apache 2.0
+Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform and Venafi as a Service.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or provide feedback in the Discussions section or feel free to [submit an issue](https://github.com/Venafi/VenafiPS/issues).
 
 ## Supported Platforms
 
-| OS             | PowerShell Version Tested | Status  |
-| -------------- |--------------------| -----|
-| Windows        | 5.1                | **Working!** |
-| Windows        | Core 6.2.3+         | **Working!** |
-| MacOS          | Core 6.2.3+         | **Working!** |
-| Linux (Ubuntu 18.04) | Core 6.2.3+         | **Working!** |
+VenafiPS works on PowerShell v5.1 as well as cross-platform Core on Windows, Linux, and Mac.
 
 ## Install Module
 
@@ -23,32 +14,34 @@ VenafiPS is published to the PowerShell Gallery.  The most recent version is lis
 
 As the module supports both TPP and Venafi as a Service, you will note different names for the functions.  Functions with `-Tpp` are for TPP only, `-Vaas` are for Venafi as a Service only, and `-Venafi` are for both.
 
-Start a new PowerShell prompt (even if you have one from the install-module step) and create a new VenafiPS session with
+For TPP, [token based authentication](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php) must be setup and configured.
+
+### Interactive Session
+
+For an interactive session, we want to create a Venafi session which will hold the details needed for future operations.  Start a new PowerShell prompt (even if you have one from the install-module step) and create a new VenafiPS session with:
 
 ```powershell
 $cred = Get-Credential
 
-# obtain new oauth token
+# create a session for TPP
 New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'}
 
-# obtain new oauth token and store access token for later use
-New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'} -VaultAccessTokenName TppAccessToken
-
-# obtain new oauth token and store refresh token for later use
-New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'} -VaultRefreshTokenName TppRefreshToken
-
-# create a session for VaaS
+# create a session for VaaS (your API key can be found in your user profile -> preferences)
 New-VenafiSession -VaasKey $cred
 ```
 
-The above will create a session which will be used by default in other functions.
-View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.
+The above will create a session variable named $VenafiSession which will be used by default in other functions.
 
-For VaaS, your API key can be found in your user profile->preferences.
+View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.  To utilize the SecretManagement vault functionality, ensure you [complete the setup below](https://github.com/Venafi/VenafiPS#tokenkey-secret-storage).
 
-Helpful with devops scenarios including pipelines, you can provide either a VaaS key or TPP token for `-VenafiSession` for all function calls with no need to execute `New-VenafiSession` first.  If using TPP, an environment variable named `TppServer` must be set first.
+### Automated Scenarios
+
+For non-interactive usage including ci/cd, the module can be used without creating a session.  For all functions you can substitute a VenafiSession object with either a TPP token or VaaS key, eg. `-VenafiSession $tpp_token`.  You can also provide these as environment variables, TPP_TOKEN or VAAS_KEY.  If providing a TPP token, either as the value for VenafiSession or as an environment variable, a server environment variable, TPP_SERVER, must also be set.
+
+A [docker image](https://hub.docker.com/repository/docker/venafi/venafips-module) is also available with Microsoft's PowerShell base image and the VenafiPS module preinstalled. The same environment variables as stated above should be used.
 
 ### Examples
+
 One of the easiest ways to get started is to use `Find-TppObject`:
 
 ```powershell
@@ -59,7 +52,7 @@ This will return all objects in the Policy folder.  You can also search from the
 
 To find a certificate object, not retrieve an actual certificate, use:
 ```powershell
-$cert = Find-TppCertificate -Limit 1
+$cert = Find-VenafiCertificate -Limit 1
 ```
 
 Check out the parameters for `Find-TppCertificate` as there's an extensive list to search on.
@@ -67,7 +60,7 @@ Check out the parameters for `Find-TppCertificate` as there's an extensive list 
 Now you can take that certificate 'TppObject' and find all log entries associated with it:
 
 ```powershell
-$cert | Read-TppLog
+$cert | Read-VenafiLog
 ```
 
 To perform many of the core certificate actions, we will use `Invoke-VenafiCertificateAction`.  For example, to create a new session and renew a certificate, use the following:
@@ -100,7 +93,6 @@ Compare-Object -ReferenceObject $all -DifferenceObject $all2 -Property Path
 ## Token/Key Secret Storage
 
 To securely store and retrieve secrets, VenafiPS has added support for the [PowerShell SecretManagement module](https://github.com/PowerShell/SecretManagement).  This can be used to store your access tokens, refresh tokens, or vaas key.  To use this feature, a vault will need to be created.  You can use [SecretStore](https://github.com/PowerShell/SecretStore) provided by the PowerShell team or any other vault type.  All of this functionality has been added to `New-VenafiSession`.  To prepare your environment, execute the following:
-
 - `Install-Module Microsoft.PowerShell.SecretManagement`
 - `Install-Module Microsoft.PowerShell.SecretStore` or whichever vault you would like to use
 - `Register-SecretVault -Name VenafiPS -ModuleName Microsoft.PowerShell.SecretStore`.  If you are using a different vault type, replace the value for `-ModuleName`.
@@ -110,3 +102,7 @@ To securely store and retrieve secrets, VenafiPS has added support for the [Powe
   - To create a new session going forward, `New-VenafiSession -VaultRefreshTokenName tpp-token`.  This will retrieve the refresh token and associated metadata from the vault, retrieve a new access token based on that refresh token and create a new session.
 
 Note, extension vaults are registered to the current logged in user context, and will be available only to that user (unless also registered to other users).
+
+## Contributing
+
+Please feel free to [log an issue](https://github.com/Venafi/VenafiPS/issues) for any new features you would like, bugs you come across, or just simply a question.  I am happy to have people contribute to the codebase as well.
