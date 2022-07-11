@@ -230,7 +230,7 @@ function Find-VenafiCertificate {
         [Parameter(ParameterSetName = 'TPP', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
-                if ( $_ | Test-TppDnPath -AllowRoot ) {
+                if ( $_ | Test-TppDnPath ) {
                     $true
                 }
                 else {

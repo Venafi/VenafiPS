@@ -103,7 +103,7 @@ function Find-TppObject {
         [Parameter(ParameterSetName = 'FindByPattern', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
-                if ( $_ | Test-TppDnPath -AllowRoot ) {
+                if ( $_ | Test-TppDnPath ) {
                     $true
                 }
                 else {
