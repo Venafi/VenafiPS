@@ -1,108 +1,108 @@
-<#
-.SYNOPSIS
-Create a new CAPI application
-
-.DESCRIPTION
-Create a new CAPI application
-
-.PARAMETER Path
-Full path, including name, to the application to be created.  The application must be created under a device.
-Alternatively, provide the path to the device and provide ApplicationName.
-
-.PARAMETER ApplicationName
-1 or more application names to create.  Path property must be a path to a device.
-
-.PARAMETER CertificatePath
-Path to the certificate to associate to the new application
-
-.PARAMETER CredentialPath
-Path to the associated credential which has rights to access the connected device
-
-.PARAMETER FriendlyName
-The Friendly Name that helps to uniquely identify the certificate after it has been installed in the Windows CAPI store
-
-.PARAMETER Descripion
-Application description
-
-.PARAMETER WinRmPort
-WinRM port to connect to application on
-
-.PARAMETER Disable
-Set processing to disabled.  It is enabled by default.
-
-.PARAMETER WebSiteName
-The unique name of the IIS web site
-
-.PARAMETER BindingIp
-The IP address to bind the certificate to the IIS web site. If not specified, the Internet Information Services (IIS) Manager console shows 'All Unassigned'.
-
-.PARAMETER BindingPort
-The TCP port 1 to 65535 to bind the certificate to the IIS web site
-
-.PARAMETER BindingHostName
-The hostname to bind the certificate to the IIS web site. Specifying this value will make it so the certificate is only accessible to clients using Server Name Indication (SNI)
-
-.PARAMETER CreateBinding
-Specify that Trust Protection Platform should create an IIS web site binding if the one specified doesn’t already exist.
-
-.PARAMETER PushCertificate
-Push the certificate to the application.  CertificatePath must be provided.
-
-.PARAMETER SkipExistenceCheck
-By default, the paths for the new application, certifcate, and credential will be validated for existence.
-Specify this switch to bypass this check.
-
-.PARAMETER PassThru
-Return a TppObject representing the newly created capi app.
-
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
-
-.INPUTS
-Path
-
-.OUTPUTS
-TppObject, if PassThru provided
-
-.EXAMPLE
-New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path
-Create a new application
-
-.EXAMPLE
-New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -WebSiteName 'mysite' -BindingIp '1.2.3.4'
-Create a new application and update IIS
-
-.EXAMPLE
-New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -WebSiteName 'mysite' -BindingIp '1.2.3.4' -PushCertificate
-Create a new application, update IIS, and push the certificate to the new app
-
-.EXAMPLE
-New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -PassThru
-Create a new application and return a TppObject for the newly created app
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/
-
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1
-
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php
-
-#>
 function New-TppCapiApplication {
+    <#
+    .SYNOPSIS
+    Create a new CAPI application
+
+    .DESCRIPTION
+    Create a new CAPI application
+
+    .PARAMETER Path
+    Full path, including name, to the application to be created.  The application must be created under a device.
+    Alternatively, provide the path to the device and provide ApplicationName.
+
+    .PARAMETER ApplicationName
+    1 or more application names to create.  Path property must be a path to a device.
+
+    .PARAMETER CertificatePath
+    Path to the certificate to associate to the new application
+
+    .PARAMETER CredentialPath
+    Path to the associated credential which has rights to access the connected device
+
+    .PARAMETER FriendlyName
+    The Friendly Name that helps to uniquely identify the certificate after it has been installed in the Windows CAPI store
+
+    .PARAMETER Descripion
+    Application description
+
+    .PARAMETER WinRmPort
+    WinRM port to connect to application on
+
+    .PARAMETER Disable
+    Set processing to disabled.  It is enabled by default.
+
+    .PARAMETER WebSiteName
+    The unique name of the IIS web site
+
+    .PARAMETER BindingIp
+    The IP address to bind the certificate to the IIS web site. If not specified, the Internet Information Services (IIS) Manager console shows 'All Unassigned'.
+
+    .PARAMETER BindingPort
+    The TCP port 1 to 65535 to bind the certificate to the IIS web site
+
+    .PARAMETER BindingHostName
+    The hostname to bind the certificate to the IIS web site. Specifying this value will make it so the certificate is only accessible to clients using Server Name Indication (SNI)
+
+    .PARAMETER CreateBinding
+    Specify that Trust Protection Platform should create an IIS web site binding if the one specified doesn’t already exist.
+
+    .PARAMETER PushCertificate
+    Push the certificate to the application.  CertificatePath must be provided.
+
+    .PARAMETER SkipExistenceCheck
+    By default, the paths for the new application, certifcate, and credential will be validated for existence.
+    Specify this switch to bypass this check.
+
+    .PARAMETER PassThru
+    Return a TppObject representing the newly created capi app.
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+
+    .INPUTS
+    Path
+
+    .OUTPUTS
+    TppObject, if PassThru provided
+
+    .EXAMPLE
+    New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path
+    Create a new application
+
+    .EXAMPLE
+    New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -WebSiteName 'mysite' -BindingIp '1.2.3.4'
+    Create a new application and update IIS
+
+    .EXAMPLE
+    New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -WebSiteName 'mysite' -BindingIp '1.2.3.4' -PushCertificate
+    Create a new application, update IIS, and push the certificate to the new app
+
+    .EXAMPLE
+    New-TppCapiApplication -Path '\ved\policy\mydevice\capi' -CertificatePath $cert.Path -CredentialPath $cred.Path -PassThru
+    Create a new application and return a TppObject for the newly created app
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/New-TppCapiApplication/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppCapiApplication.ps1
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppCertificate/
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php
+
+    #>
 
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'NonIis')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingPlainTextForPassword', '')]
@@ -113,8 +113,7 @@ function New-TppCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                }
-                else {
+                } else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -129,8 +128,7 @@ function New-TppCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                }
-                else {
+                } else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -142,8 +140,7 @@ function New-TppCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                }
-                else {
+                } else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -210,7 +207,8 @@ function New-TppCapiApplication {
         if ( -not $PSBoundParameters.ContainsKey('SkipExistenceCheck') ) {
 
             if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
-                $certName = (Split-Path -Path $CertificatePath -Leaf)
+                # issue 129
+                $certName = $CertificatePath.Path.Split('\')[-1]
                 $certPath = $CertificatePath -replace ('\\+{0}' -f $certName), ''
 
                 $certObject = Find-TppCertificate -Path $certPath -VenafiSession $VenafiSession
@@ -290,9 +288,9 @@ function New-TppCapiApplication {
             # ensure the parent path exists and is of type device
             if ( $PSBoundParameters.ContainsKey('ApplicationName') ) {
                 $devicePath = $Path
-            }
-            else {
-                $devicePath = $Path -replace ('\\+{0}' -f (Split-Path $Path -Leaf)), ''
+            } else {
+                $deviceName = $Path.Path.Split('\')[-1]
+                $devicePath = $Path -replace ('\\+{0}' -f $deviceName), ''
             }
 
             $device = Get-TppObject -Path $devicePath -VenafiSession $VenafiSession
@@ -301,8 +299,7 @@ function New-TppCapiApplication {
                 if ( $device.TypeName -ne 'Device' ) {
                     throw ('A device object could not be found at ''{0}''' -f $devicePath)
                 }
-            }
-            else {
+            } else {
                 throw ('No object was found at the parent path ''{0}''' -f $devicePath)
             }
         }
@@ -311,8 +308,7 @@ function New-TppCapiApplication {
             $appPaths = $ApplicationName | ForEach-Object {
                 $Path + "\$_"
             }
-        }
-        else {
+        } else {
             $appPaths = @($Path)
         }
 
