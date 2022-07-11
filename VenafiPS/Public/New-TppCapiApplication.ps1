@@ -208,7 +208,7 @@ function New-TppCapiApplication {
 
             if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
                 # issue 129
-                $certName = $CertificatePath.Path.Split('\')[-1]
+                $certName = $CertificatePath.Split('\')[-1]
                 $certPath = $CertificatePath -replace ('\\+{0}' -f $certName), ''
 
                 $certObject = Find-TppCertificate -Path $certPath -VenafiSession $VenafiSession
@@ -289,7 +289,7 @@ function New-TppCapiApplication {
             if ( $PSBoundParameters.ContainsKey('ApplicationName') ) {
                 $devicePath = $Path
             } else {
-                $deviceName = $Path.Path.Split('\')[-1]
+                $deviceName = $Path.Split('\')[-1]
                 $devicePath = $Path -replace ('\\+{0}' -f $deviceName), ''
             }
 

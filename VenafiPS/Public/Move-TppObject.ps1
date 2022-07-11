@@ -105,7 +105,7 @@ function Move-TppObject {
         # if target is a policy, append the object name from source
         if ( $targetIsPolicy ) {
             # get object name, issue 129
-            $childPath = $SourcePath.Path.Split('\')[-1]
+            $childPath = $SourcePath.Split('\')[-1]
             $params.Body.NewObjectDN = Join-Path -Path $TargetPath -ChildPath $childPath
         }
 

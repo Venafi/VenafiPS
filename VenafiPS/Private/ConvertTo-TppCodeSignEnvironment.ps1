@@ -35,7 +35,7 @@ function ConvertTo-TppCodeSignEnvironment {
         $InputObject | Select-Object  -Property `
         @{
             n = 'Name'
-            e = { ($_.DN).Path.Split('\')[-1] }
+            e = { ($_.DN).Split('\')[-1] }
         },
         @{
             n = 'Path'
