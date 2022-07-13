@@ -131,7 +131,7 @@ function Get-VenafiIdentity {
     param (
         [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [Alias('Guid')]
+        [Alias('Guid', 'FullName')]
         [String] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'Me')]
@@ -179,8 +179,7 @@ function Get-VenafiIdentity {
                         $guid = [guid] $ID
                         $params.UriLeaf = 'users/{0}' -f $guid.ToString()
                         Invoke-VenafiRestMethod @params
-                    }
-                    catch {
+                    } catch {
                         $params.UriLeaf = 'users/username/{0}' -f $ID
                         Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty users
                     }
@@ -197,21 +196,25 @@ function Get-VenafiIdentity {
                     Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty users
                 }
             }
-        }
-        else {
+        } else {
 
             Switch ($PsCmdlet.ParameterSetName)	{
                 'Id' {
 
                     $params.Method = 'Post'
                     $params.UriLeaf = 'Identity/Validate'
-                    $params.Body = @{'ID' = @{'PrefixedUniversal' = $null } }
-                    if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
+                    $params.Body = @{'ID' = @{ } }
+
+                    if ( Test-TppIdentityFormat -ID $ID -Format 'Universal' ) {
+                        $params.Body.ID.PrefixedUniversal = $ID
+                    } elseif ( Test-TppIdentityFormat -ID $ID -Format 'Name' ) {
+                        $params.Body.ID.PrefixedName = $ID
+                    } elseif ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
                         $guid = [guid] $ID
                         $params.Body.ID.PrefixedUniversal = 'local:{{{0}}}' -f $guid.ToString()
-                    }
-                    else {
-                        $params.Body.ID.PrefixedUniversal = $ID
+                    } else {
+                        Write-Error "'$ID' is not a valid identity"
+                        return
                     }
 
                     $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty ID

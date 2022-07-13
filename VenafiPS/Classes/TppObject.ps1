@@ -14,7 +14,8 @@ class TppObject {
         $this.Path = $Path.Replace('\\', '\')
         $this.TypeName = $TypeName
         $this.Guid = $Guid
-        $this.Name = Split-Path -Path $this.Path -Leaf
+        # issue 129
+        $this.Name = $this.Path.Split('\')[-1]
         $this.ParentPath = $this.Path.Replace(('\{0}' -f $this.Name), '')
         $this | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Path } -Force
     }

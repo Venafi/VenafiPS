@@ -104,7 +104,9 @@ function Move-TppObject {
 
         # if target is a policy, append the object name from source
         if ( $targetIsPolicy ) {
-            $params.Body.NewObjectDN = Join-Path -Path $TargetPath -ChildPath (Split-Path -Path $SourcePath -Leaf)
+            # get object name, issue 129
+            $childPath = $SourcePath.Split('\')[-1]
+            $params.Body.NewObjectDN = Join-Path -Path $TargetPath -ChildPath $childPath
         }
 
         if ( $PSCmdlet.ShouldProcess($SourcePath, ('Move to {0}' -f $params.Body.NewObjectDN)) ) {
