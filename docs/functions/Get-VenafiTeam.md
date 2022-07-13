@@ -60,7 +60,7 @@ You can find the group ID with Find-TppIdentity.
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: PrefixedUniversal, Guid
+Aliases: PrefixedUniversal, Guid, PrefixedName
 
 Required: True
 Position: Named
