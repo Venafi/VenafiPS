@@ -62,7 +62,7 @@
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, ValueFromPipeline)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
         [Alias('PrefixedUniversal', 'Guid', 'PrefixedName')]
         [string] $ID,
 
