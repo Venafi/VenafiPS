@@ -89,7 +89,7 @@ For VaaS this can either be the user id (guid) or username which is the email ad
 ```yaml
 Type: String
 Parameter Sets: Id
-Aliases: Guid
+Aliases: Guid, FullName
 
 Required: True
 Position: Named

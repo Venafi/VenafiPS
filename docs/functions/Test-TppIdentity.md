@@ -36,7 +36,7 @@ Retrieve existence for only one identity, returns boolean
 ```yaml
 Type: String[]
 Parameter Sets: (All)
-Aliases: PrefixedUniversal, Contact, IdentityId
+Aliases: PrefixedUniversal, Contact, IdentityId, FullName
 
 Required: True
 Position: 1
