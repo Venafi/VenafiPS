@@ -1,24 +1,24 @@
-<#
-.SYNOPSIS
-Convert code sign project to something powershell friendly
-
-.DESCRIPTION
-Convert code sign project to something powershell friendly
-
-.PARAMETER InputObject
-Code sign project object
-
-.INPUTS
-InputObject
-
-.OUTPUTS
-PSCustomObject
-
-.EXAMPLE
-$envObj | ConvertTo-TppCodeSignProject
-
-#>
 function ConvertTo-TppCodeSignProject {
+    <#
+    .SYNOPSIS
+    Convert code sign project to something powershell friendly
+
+    .DESCRIPTION
+    Convert code sign project to something powershell friendly
+
+    .PARAMETER InputObject
+    Code sign project object
+
+    .INPUTS
+    InputObject
+
+    .OUTPUTS
+    PSCustomObject
+
+    .EXAMPLE
+    $envObj | ConvertTo-TppCodeSignProject
+
+    #>
 
     [CmdletBinding()]
 
@@ -35,7 +35,7 @@ function ConvertTo-TppCodeSignProject {
         $InputObject | Select-Object -Property `
         @{
             n = 'Name'
-            e = { Split-Path $_.DN -Leaf }
+            e = { ($_.DN).Split('\')[-1] }
         },
         @{
             n = 'Path'

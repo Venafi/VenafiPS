@@ -4,18 +4,17 @@ function Test-TppDnPath {
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        [string[]] $Path,
+        [string] $Path,
 
         [Parameter()]
-        [switch] $AllowRoot
+        [bool] $AllowRoot = $true
     )
 
     process {
         if ( $AllowRoot ) {
-            $_ -imatch '^[\\|\\\\]+ved([\\|\\\\]+.+)*$'
-        }
-        else {
-            $_ -imatch '^[\\|\\\\]+ved([\\|\\\\]+.+)+$'
+            $Path -imatch '^[\\|\\\\]+ved([\\|\\\\]+.+)*$'
+        } else {
+            $Path -imatch '^[\\|\\\\]+ved([\\|\\\\]+.+)+$'
         }
     }
 }

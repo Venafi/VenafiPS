@@ -1,24 +1,24 @@
-<#
-.SYNOPSIS
-Convert code sign certificate environment to something powershell friendly
-
-.DESCRIPTION
-Convert code sign certificate environment to something powershell friendly
-
-.PARAMETER InputObject
-Code sign certificate environment object
-
-.INPUTS
-InputObject
-
-.OUTPUTS
-PSCustomObject
-
-.EXAMPLE
-$envObj | ConvertTo-TppCodeSignEnvironment
-
-#>
 function ConvertTo-TppCodeSignEnvironment {
+    <#
+    .SYNOPSIS
+    Convert code sign certificate environment to something powershell friendly
+
+    .DESCRIPTION
+    Convert code sign certificate environment to something powershell friendly
+
+    .PARAMETER InputObject
+    Code sign certificate environment object
+
+    .INPUTS
+    InputObject
+
+    .OUTPUTS
+    PSCustomObject
+
+    .EXAMPLE
+    $envObj | ConvertTo-TppCodeSignEnvironment
+
+    #>
 
     [CmdletBinding()]
 
@@ -35,7 +35,7 @@ function ConvertTo-TppCodeSignEnvironment {
         $InputObject | Select-Object  -Property `
         @{
             n = 'Name'
-            e = { Split-Path $_.DN -Leaf }
+            e = { ($_.DN).Split('\')[-1] }
         },
         @{
             n = 'Path'

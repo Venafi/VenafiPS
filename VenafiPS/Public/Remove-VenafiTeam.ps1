@@ -61,7 +61,7 @@ function Remove-VenafiTeam {
         }
         else {
             # check if just a guid or prefixed universal id
-            if ( Test-TppIdentityFormat -Identity $ID ) {
+            if ( Test-TppIdentityFormat -ID $ID -Format 'Local' ) {
                 $guid = [guid]($ID.Replace('local:', ''))
             }
             else {
