@@ -1,4 +1,1 @@
-- Add validation and error handling in `Get-VenafiTeam` for invalid IDs, [#126](https://github.com/Venafi/VenafiPS/issues/126)
-- Add messaging and error handling in `Get-VenafiTeam` for local groups, [#127](https://github.com/Venafi/VenafiPS/issues/127)
-- Add support for PrefixedName identity format in `Test-TppIdentity` and `Get-VenafiIdentity`, [#128](https://github.com/Venafi/VenafiPS/issues/128)
-- Fix Split-Path failing in TppObject class, and other functions where applicable, when PowerShell reserved characters are used in the object name, [#129](https://github.com/Venafi/VenafiPS/issues/129)
+- Fix `Set-TppAttribute` failing to set a custom field value on a policy, [#131](https://github.com/Venafi/VenafiPS/issues/131)
