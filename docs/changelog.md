@@ -1,3 +1,7 @@
+## 4.6.2
+- Fix `Set-TppAttribute` failing to set a custom field value on a policy, [#131](https://github.com/Venafi/VenafiPS/issues/131)
+
+
 ## 4.6.1
 - Add validation and error handling in `Get-VenafiTeam` for invalid IDs, [#126](https://github.com/Venafi/VenafiPS/issues/126)
 - Add messaging and error handling in `Get-VenafiTeam` for local groups, [#127](https://github.com/Venafi/VenafiPS/issues/127)
@@ -395,6 +399,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

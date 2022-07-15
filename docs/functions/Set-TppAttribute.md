@@ -5,7 +5,7 @@ Sets a value on an objects attribute or policies (policy attributes)
 
 ## SYNTAX
 
-### Object (Default)
+### NotPolicy (Default)
 ```
 Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-VenafiSession <PSObject>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
@@ -13,8 +13,8 @@ Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-Ven
 
 ### Policy
 ```
-Set-TppAttribute -Path <String> -Attribute <Hashtable> [-Policy] -ClassName <String> [-Lock]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-Policy] -PolicyClass <String>
+ [-Lock] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -29,7 +29,7 @@ You can also set policies (policy attributes).
 Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Consumers'='\VED\Policy\myappobject.company.com'}
 ```
 
-Set a value on an object
+Set the value on an object
 
 ### EXAMPLE 2
 ```
@@ -43,25 +43,25 @@ Clear the value on an object, reverting to policy if applicable
 Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'}
 ```
 
-Set value on custom field
+Set the value on a custom field
 
 ### EXAMPLE 4
 ```
 Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'} -BypassValidation
 ```
 
-Set value on custom field bypassing field validation
+Set the value on a custom field bypassing field validation
 
 ### EXAMPLE 5
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
+Set-TppAttribute -Path '\VED\Policy\My Folder' -PolicyClass 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
 ```
 
 Set a policy attribute
 
 ### EXAMPLE 6
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder' -Policy -ClassName 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
+Set-TppAttribute -Path '\VED\Policy\My Folder' -PolicyClass 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
 ```
 
 Set a policy attribute and lock the value
@@ -102,11 +102,11 @@ Accept wildcard characters: False
 
 ### -BypassValidation
 Bypass data validation. 
-Only appicable to custom fields.
+Only applicable to custom fields.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Object
+Parameter Sets: (All)
 Aliases:
 
 Required: False
@@ -124,22 +124,20 @@ Type: SwitchParameter
 Parameter Sets: Policy
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ClassName
-Required when setting policy attributes. 
-Provide the class name to set the value for.
-If unsure of the class name, add the value through the TPP UI and go to Support-\>Policy Attributes to find it.
+### -PolicyClass
+{{ Fill PolicyClass Description }}
 
 ```yaml
 Type: String
 Parameter Sets: Policy
-Aliases:
+Aliases: ClassName
 
 Required: True
 Position: Named
@@ -231,6 +229,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php)
+
+[https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-SetPolicy.php](https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-SetPolicy.php)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php)
 
