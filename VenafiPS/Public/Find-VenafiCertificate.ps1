@@ -407,6 +407,10 @@ function Find-VenafiCertificate {
 
         if ( $platform -eq 'VaaS' ) {
 
+            if ( $PSBoundParameters.ContainsKey('Skip') ) {
+                Write-Warning '-Skip is not currently supported by VaaS'
+            }
+
             $toRetrieveCount = if ($PSBoundParameters.ContainsKey('First') ) {
                 $PSCmdlet.PagingParameters.First
             } else {
