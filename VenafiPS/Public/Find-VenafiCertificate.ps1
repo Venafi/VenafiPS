@@ -213,6 +213,16 @@ function Find-VenafiCertificate {
 
     Find all certificates, paging 500 at a time
 
+    .EXAMPLE
+    Find-VenafiCertificate -Filter @('fingerprint', 'EQ', '075C43428E70BCF941039F54B8ED78DE4FACA87F')
+
+    Find VaaS certificates matching a single value
+
+    .EXAMPLE
+    Find-VenafiCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('validityEnd','LTE',(get-date).AddDays(30)))
+
+    Find VaaS certificates matching multiple values.  In this case, find all certificates expiring in the next 30 days.
+
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Find-VenafiCertificate/
 
