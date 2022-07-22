@@ -24,6 +24,11 @@ function Get-VaasApplication {
     PSCustomObject
 
     .EXAMPLE
+    Get-VaasApplication -ID 'MyApp'
+
+    Get info for a specific application by name
+
+    .EXAMPLE
     Get-VaasApplication -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
     Get info for a specific application
