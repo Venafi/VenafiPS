@@ -155,7 +155,12 @@ function Find-VenafiCertificate {
 
     .OUTPUTS
     TPP: TppObject, Int when CountOnly provided
-    VaaS: PSCustomObject, Int when CountOnly provided
+    VaaS: PSCustomObject
+
+    .EXAMPLE
+    Find-VenafiCertificate
+
+    Find first 1000 certificates
 
     .EXAMPLE
     Find-VenafiCertificate -ExpireBefore [datetime]'2018-01-01'
@@ -171,6 +176,7 @@ function Find-VenafiCertificate {
     Find-VenafiCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 
     Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
+    Skip is only supported on TPP.
 
     .EXAMPLE
     Find-VenafiCertificate -Path '\VED\Policy\My Policy'
@@ -198,9 +204,14 @@ function Find-VenafiCertificate {
     Renew all certificates expiring before a certain date
 
     .EXAMPLE
-    Find-VenafiCertificate -First 5000 -IncludeTotalCount
+    Find-VenafiCertificate -IncludeTotalCount
 
-    Find all certificates, paging 5000 at a time
+    Find all certificates, paging 1000 at a time
+
+    .EXAMPLE
+    Find-VenafiCertificate -First 500 -IncludeTotalCount
+
+    Find all certificates, paging 500 at a time
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Find-VenafiCertificate/
