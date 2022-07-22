@@ -7,7 +7,7 @@ function Get-VaasApplication {
     Get info for either a specific application or all applications.  Venafi as a Service only, not for TPP.
 
     .PARAMETER ID
-    Id to get info for a specific application
+    Name or Guid to get info for a specific application
 
     .PARAMETER All
     Get all applications
@@ -52,7 +52,7 @@ function Get-VaasApplication {
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('applicationId')]
-        [guid] $ID,
+        [string] $ID,
 
         [Parameter(ParameterSetName = 'All', Mandatory)]
         [switch] $All,
@@ -75,7 +75,13 @@ function Get-VaasApplication {
     process {
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
-            $params.UriLeaf += "/$ID"
+            if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
+                $guid = [guid] $ID
+                $params.UriLeaf += "/{0}" -f $guid.ToString()
+            } else {
+                # search by name
+                $params.UriLeaf += "/name/$ID"
+            }
         }
 
         $response = Invoke-VenafiRestMethod @params

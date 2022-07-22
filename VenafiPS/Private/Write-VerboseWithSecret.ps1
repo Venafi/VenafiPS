@@ -55,19 +55,14 @@ function Write-VerboseWithSecret {
         $processMe = $InputObject
         if ($InputObject.GetType().FullName -ne 'System.String') {
             # if hashtable or other object, convert to json first
-            $processMe = $InputObject | ConvertTo-Json -Depth 5
+            $processMe = $InputObject | ConvertTo-Json -Depth 5 -Compress
         }
 
         foreach ($prop in $PropertyName) {
-            # look for secret name and replace value if found
 
-            # look for values in multiline json string, eg. "Body": "{\r\n  \"Password\": \"MyPass\"\r\n}"
-            # look for values in standard key:value pair, eg. "Authorization": "Bearer adflkjandsfsmmmsdfkhsdf=="
-            # PS v5 has 2 spaces between "key":  "value"
-            # PS v7 has 1 space between "key": "value"
-            if ( $processMe -match "(?s).*\\{0,1}""$prop\\{0,1}"": {1,2}\\{0,1}""(.*?)\\{0,1}"".*" ) {
-                $secret = $processMe -replace "(?s).*\\{0,1}""$prop\\{0,1}"": {1,2}\\{0,1}""(.*?)\\{0,1}"".*", '$1'
-                $processMe = ($processMe.replace($secret, '***hidden***'))
+            # look for values in json string, eg. "Body": "{"Password":"MyPass"}"
+            if ( $processMe -match "\""$prop\"":\""(.*?)\""" ) {
+                $processMe = $processMe.replace($matches[1], '***hidden***')
             }
         }
 
