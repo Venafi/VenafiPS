@@ -612,15 +612,19 @@ function Find-VenafiCertificate {
         if ( $platform -eq 'VaaS' ) {
 
             do {
-                Write-Verbose "Max left to retrieve: $toRetrieveCount"
 
                 $response = Invoke-VenafiRestMethod @params
-                $response.certificates
-                $toRetrieveCount -= $response.'count'
+                $response.certificates | Select-Object @{
+                    'n' = 'certificateId'
+                    'e' = {
+                        $_.Id
+                    }
+                }, * -ExcludeProperty Id
 
                 $body.paging.pageNumber += 1
 
                 if ( -not $PSCmdlet.PagingParameters.IncludeTotalCount ) {
+                    $toRetrieveCount -= $response.'count'
 
                     if ( $toRetrieveCount -le 0 ) {
                         break

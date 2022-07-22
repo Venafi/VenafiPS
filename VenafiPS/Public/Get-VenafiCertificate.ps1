@@ -66,8 +66,8 @@ function Get-VenafiCertificate {
 
     param (
 
-        [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'OldVersions', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'OldVersions', Mandatory, ValueFromPipelineByPropertyName)]
         [Alias('Path')]
         [string] $CertificateId,
 
@@ -138,18 +138,16 @@ function Get-VenafiCertificate {
 
                 if ( $response.PSObject.Properties.Name -contains 'certificates' ) {
                     $certs = $response | Select-Object -ExpandProperty certificates
-                }
-                else {
+                } else {
                     $certs = $response
                 }
 
-                $certs | Select-Object *,
-                @{
+                $certs | Select-Object @{
                     'n' = 'certificateId'
                     'e' = {
-                        $_.id
+                        $_.Id
                     }
-                } -ExcludeProperty id
+                }, * -ExcludeProperty Id
             }
 
             Default {
@@ -191,14 +189,12 @@ function Get-VenafiCertificate {
                         $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
                         $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
                         $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
-                    }
-                    catch {
+                    } catch {
 
                     }
                     $response | Select-Object @selectProps
 
-                }
-                else {
+                } else {
                     Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession
                 }
             }
