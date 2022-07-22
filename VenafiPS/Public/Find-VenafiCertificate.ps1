@@ -590,13 +590,12 @@ function Find-VenafiCertificate {
 
         if ( $platform -eq 'VaaS' ) {
 
-            Write-Verbose "Left to retrieve: $toRetrieveCount"
             do {
+                Write-Verbose "Max left to retrieve: $toRetrieveCount"
 
                 $response = Invoke-VenafiRestMethod @params
                 $response.certificates
                 $toRetrieveCount -= $response.'count'
-                Write-Verbose "Left to retrieve: $toRetrieveCount"
 
                 $body.paging.pageNumber += 1
 
