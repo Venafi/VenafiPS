@@ -7,7 +7,7 @@ Get application info
 
 ### ID (Default)
 ```
-Get-VaasApplication -ID <Guid> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VaasApplication -ID <String> [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### All
@@ -23,12 +23,19 @@ Venafi as a Service only, not for TPP.
 
 ### EXAMPLE 1
 ```
+Get-VaasApplication -ID 'MyApp'
+```
+
+Get info for a specific application by name
+
+### EXAMPLE 2
+```
 Get-VaasApplication -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
 Get info for a specific application
 
-### EXAMPLE 2
+### EXAMPLE 3
 ```
 Get-VaasApplication -All
 ```
@@ -38,10 +45,10 @@ Get info for all applications
 ## PARAMETERS
 
 ### -ID
-Id to get info for a specific application
+Name or Guid to get info for a specific application
 
 ```yaml
-Type: Guid
+Type: String
 Parameter Sets: ID
 Aliases: applicationId
 

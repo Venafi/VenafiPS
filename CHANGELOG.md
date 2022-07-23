@@ -1,3 +1,8 @@
+## 4.6.3
+- Add paging support to `Find-VenafiCertificate` for VaaS
+- Update `Get-VaasApplication -ID` and `Get-VenafiTeam -ID` for VaaS to accept a name in addition to guid
+
+
 ## 4.6.2
 - Fix `Set-TppAttribute` failing to set a custom field value on a policy, [#131](https://github.com/Venafi/VenafiPS/issues/131)
 
@@ -399,6 +404,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

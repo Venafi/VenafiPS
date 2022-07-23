@@ -7,8 +7,8 @@ Find certificates in TPP or VaaS based on various attributes
 
 ### NoParams (Default)
 ```
-Find-VenafiCertificate [-CountOnly] [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>]
- [-First <UInt64>] [<CommonParameters>]
+Find-VenafiCertificate [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>]
+ [<CommonParameters>]
 ```
 
 ### TPP
@@ -29,7 +29,7 @@ Find-VenafiCertificate [-Path <String>] [-Guid <Guid>] [-Recursive] [-Limit <Int
 
 ### VaaS
 ```
-Find-VenafiCertificate [-Filter <ArrayList>] [-Order <PSObject[]>] [-CountOnly] [-VenafiSession <PSObject>]
+Find-VenafiCertificate [-Filter <ArrayList>] [-Order <PSObject[]>] [-VenafiSession <PSObject>]
  [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
@@ -42,66 +42,96 @@ If -First or -IncludeTotalCount not provided, the default return is 1000 records
 
 ### EXAMPLE 1
 ```
+Find-VenafiCertificate
+```
+
+Find first 1000 certificates
+
+### EXAMPLE 2
+```
 Find-VenafiCertificate -ExpireBefore [datetime]'2018-01-01'
 ```
 
 Find certificates expiring before a certain date
 
-### EXAMPLE 2
+### EXAMPLE 3
 ```
 Find-VenafiCertificate -ExpireBefore "2018-01-01" -First 5
 ```
 
 Find 5 certificates expiring before a certain date
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Find-VenafiCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 ```
 
 Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
+Skip is only supported on TPP.
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 Find-VenafiCertificate -Path '\VED\Policy\My Policy'
 ```
 
 Find certificates in a specific path
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 Find-VenafiCertificate -Issuer 'CN=Example Root CA, O=Venafi,Inc., L=Salt Lake City, S=Utah, C=US'
 ```
 
 Find certificates by issuer
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 Find-VenafiCertificate -Path '\VED\Policy\My Policy' -Recursive
 ```
 
 Find certificates in a specific path and all subfolders
 
-### EXAMPLE 7
+### EXAMPLE 8
 ```
 Find-VenafiCertificate | Get-VenafiCertificate
 ```
 
 Get detailed certificate info
 
-### EXAMPLE 8
+### EXAMPLE 9
 ```
 Find-VenafiCertificate -ExpireBefore "2019-09-01" -IncludeTotalCount | Invoke-VenafiCertificateAction -Renew
 ```
 
 Renew all certificates expiring before a certain date
 
-### EXAMPLE 9
+### EXAMPLE 10
 ```
-Find-VenafiCertificate -First 5000 -IncludeTotalCount
+Find-VenafiCertificate -IncludeTotalCount
 ```
 
-Find all certificates, paging 5000 at a time
+Find all certificates, paging 1000 at a time
+
+### EXAMPLE 11
+```
+Find-VenafiCertificate -First 500 -IncludeTotalCount
+```
+
+Find all certificates, paging 500 at a time
+
+### EXAMPLE 12
+```
+Find-VenafiCertificate -Filter @('fingerprint', 'EQ', '075C43428E70BCF941039F54B8ED78DE4FACA87F')
+```
+
+Find VaaS certificates matching a single value
+
+### EXAMPLE 13
+```
+Find-VenafiCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('validityEnd','LTE',(get-date).AddDays(30)))
+```
+
+Find VaaS certificates matching multiple values. 
+In this case, find all certificates expiring in the next 30 days.
 
 ## PARAMETERS
 
@@ -827,7 +857,7 @@ Return the count of certificates found from the query as opposed to the certific
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: TPP
 Aliases:
 
 Required: False
@@ -913,7 +943,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ### TPP: TppObject, Int when CountOnly provided
-### VaaS: PSCustomObject, Int when CountOnly provided
+### VaaS: PSCustomObject
 ## NOTES
 
 ## RELATED LINKS

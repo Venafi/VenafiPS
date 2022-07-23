@@ -23,26 +23,33 @@ For VaaS, you can retrieve info on all teams as well.
 
 ### EXAMPLE 1
 ```
+Get-VenafiTeam -ID 'MyTeam'
+```
+
+Get info for a VaaS team by name
+
+### EXAMPLE 2
+```
 Get-VenafiTeam -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
-Get info for a VaaS team
+Get info for a VaaS team by id
 
-### EXAMPLE 2
+### EXAMPLE 3
 ```
 Get-VenafiTeam -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}'
 ```
 
 Get info for a TPP team
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Find-TppIdentity -Name MyTeamName | Get-VenafiTeam
 ```
 
 Search for a team and then get details
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 Get-VenafiTeam -All
 ```
@@ -52,8 +59,8 @@ Get info for all teams
 ## PARAMETERS
 
 ### -ID
-Team ID, required for TPP.
-For VaaS, this is the team guid.
+Team ID.
+For VaaS, this is the team name or guid.
 For TPP, this is the local prefixed universal ID. 
 You can find the group ID with Find-TppIdentity.
 
