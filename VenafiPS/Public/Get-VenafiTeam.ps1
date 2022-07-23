@@ -8,8 +8,8 @@
     For VaaS, you can retrieve info on all teams as well.
 
     .PARAMETER ID
-    Team ID, required for TPP.
-    For VaaS, this is the team guid.
+    Team ID.
+    For VaaS, this is the team name or guid.
     For TPP, this is the local prefixed universal ID.  You can find the group ID with Find-TppIdentity.
 
     .PARAMETER All
@@ -28,9 +28,14 @@
     PSCustomObject
 
     .EXAMPLE
+    Get-VenafiTeam -ID 'MyTeam'
+
+    Get info for a VaaS team by name
+
+    .EXAMPLE
     Get-VenafiTeam -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
-    Get info for a VaaS team
+    Get info for a VaaS team by id
 
     .EXAMPLE
     Get-VenafiTeam -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}'
@@ -94,8 +99,9 @@
                     $guid = [guid] $ID
                     $params.UriLeaf = 'teams/{0}' -f $guid.ToString()
                 } else {
-                    Write-Error "'$ID' is not the proper format for a Team.  Format should be a guid."
-                    return
+                    # assume team name
+                    $allTeams = Get-VenafiTeam -All -VenafiSession $VenafiSession
+                    return $allTeams | Where-Object { $_.name -eq $ID }
                 }
             }
 
@@ -135,7 +141,7 @@
 
                     # handle known errors where the local group is not actually a team
                     if ( $_.ErrorDetails.Message -like '*Failed to read the team identity;*' ) {
-                        Write-Error "$ID looks to be a local group and not a Team.  The server responded with $_"
+                        Write-Verbose "$ID looks to be a local group and not a Team.  The server responded with $_"
                     } else {
                         Write-Error "$ID : $_"
                     }

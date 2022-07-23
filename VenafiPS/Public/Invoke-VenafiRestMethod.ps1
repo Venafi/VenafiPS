@@ -195,7 +195,7 @@ function Invoke-VenafiRestMethod {
             }
 
             Default {
-                $restBody = ConvertTo-Json $Body -Depth 20
+                $restBody = ConvertTo-Json $Body -Depth 20 -Compress
                 $params.Body = $restBody
             }
         }
