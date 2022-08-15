@@ -12,7 +12,7 @@
 RootModule = 'VenafiPS.psm1'
 
 # Version number of this module.
-ModuleVersion = '4.6.3'
+ModuleVersion = '4.6.3.1'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -102,7 +102,10 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'Remove-VenafiTeam', 'Add-VenafiTeamMember', 'Add-VenafiTeamOwner',
                'Remove-VenafiTeamMember', 'Remove-VenafiTeamOwner', 'New-VenafiTeam',
                'Search-TppHistory', 'Get-VaasIssuingTemplate', 'New-VaasApplication',
-               'Import-VaasCertificate'
+               'Import-VaasCertificate', 'Find-TppEngine',
+               'Get-TppEnginesAssignedToFolder', 'Get-TppFoldersAssignedToEngine',
+               'Add-TppFoldersAssignedToEngine', 'Add-TppEnginesAssignedToFolder',
+               'Remove-TppFoldersAssignedToEngine', 'Remove-TppEnginesAssignedToFolder'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
