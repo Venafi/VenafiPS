@@ -53,6 +53,7 @@ PSCustomObject with the following properties:
 
 .EXAMPLE
 Invoke-VenafiCertificateAction -CertificateID '\VED\Policy\My folder\app.mycompany.com' -Revoke
+
 Perform an action
 
 .EXAMPLE
@@ -67,6 +68,7 @@ Chain multiple actions together
 
 .EXAMPLE
 Invoke-VenafiCertificateAction -CertificateID '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameters @{'Comments'='Key compromised'}
+
 Perform an action sending additional parameters.
 
 .LINK
@@ -253,7 +255,7 @@ function Invoke-VenafiCertificateAction {
                     'Delete' {
                         $performInvoke = $false
                         if ( $PSCmdlet.ShouldProcess($CertificateID, 'Delete certificate') ) {
-                            Remove-TppCertificate -Path $CertificateID -VenafiSession $VenafiSession
+                            Remove-TppCertificate -Path $CertificateID -VenafiSession $VenafiSession -Confirm:$false
                         } else {
                             $returnObject.Success = $false
                             $returnObject.Error = 'User cancelled'
