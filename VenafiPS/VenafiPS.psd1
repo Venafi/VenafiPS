@@ -104,7 +104,7 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'Search-TppHistory', 'Get-VaasIssuingTemplate', 'New-VaasApplication',
                'Import-VaasCertificate', 'Find-TppEngine',
                'Get-TppEnginesAssignedToFolder', 'Get-TppFoldersAssignedToEngine',
-               'Add-TppFoldersAssignedToEngine', 'Add-TppEnginesAssignedToFolder',
+               'Add-TppFoldersAssignedToEngine', 'Set-TppEnginesAssignedToFolder',
                'Remove-TppFoldersAssignedToEngine', 'Remove-TppEnginesAssignedToFolder'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
