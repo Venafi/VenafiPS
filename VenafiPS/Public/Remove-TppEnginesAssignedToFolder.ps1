@@ -1,6 +1,39 @@
-
-# DELETE https://my.venafi.com/vedsdk/ProcessingEngines/Folder/{folder_guid}[/{engine_guid}]
-
+<#
+.SYNOPSIS
+Remove TPP processing engine assignments from a policy folder
+.DESCRIPTION
+Remove one or more TPP processing engine assignments from a policy folder.
+.PARAMETER FolderPath
+The full DN path to a policy folder.
+.PARAMETER FolderObject
+TPPObject belonging to the 'Policy' class.
+.PARAMETER EnginePath
+The full DN path to one or more TPP processing engines (string array).
+.PARAMETER All
+Remove all assigned TPP processing engines from a policy folder.
+.PARAMETER VenafiSession
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+.INPUTS
+FolderPath or FolderObject, EnginePath[]
+.OUTPUTS
+None
+.EXAMPLE
+Remove-TppEnginesAssignedToFolder -EnginePath '\VED\Policy\Certificates\Web Team' -FolderPath @('\VED\Engines\MYVENAFI01','\VED\Engines\MYVENAFI02')
+Remove policy folder '\VED\Policy\Certificates\Web Team' from the processing engines MYVENAFI01 and MYVENAFI02.
+.EXAMPLE
+$MyFolder | Remove-TppEnginesAssignedToFolder -All -Force
+Remove all processing engine assignments for the policy folder represented by the $MyFolder TPP object and suppress the confirmation prompt.
+.LINK
+http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppEnginesAssignedToFolder/
+.LINK
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppEnginesAssignedToFolder.ps1
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-ProcessingEngines-Folder-fguid-eguid.php
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-DELETE-ProcessingEngines-Folder-fguid.php
+#>
 function Remove-TppEnginesAssignedToFolder
 {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]

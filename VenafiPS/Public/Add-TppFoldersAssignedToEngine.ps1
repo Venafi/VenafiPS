@@ -1,13 +1,32 @@
-
-# Example: Attach an engine to a Policy folder
-#
-# POST https://tpp.venafi.example/vedsdk/ProcessingEngines/engine/{c4152110-1ec9-4f62-99fe-869d66264c34}
-#
-# {
-#    "FolderGuids":[
-#       "{067e26e2-5536-4a6d-915b-fbf28496125c}"
-#    ]
-# }
+<#
+.SYNOPSIS
+Add policy folder assignments from a TPP processing engine
+.DESCRIPTION
+Add one or more policy folder assignments from a TPP processing engine.
+.PARAMETER EnginePath
+The full DN path to a TPP processing engine.
+.PARAMETER EngineObject
+TPPObject belonging to the 'Venafi Platform' class.
+.PARAMETER FolderPath
+The full DN path to one or more policy folders (string array).
+.PARAMETER VenafiSession
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+.INPUTS
+EnginePath or EngineObject, FolderPath[]
+.OUTPUTS
+None
+.EXAMPLE
+Add-TppFoldersAssignedToEngine -EnginePath '\VED\Engines\MYVENAFI01' -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team')
+Add processing engine MYVENAFI01 to the policy folders '\VED\Policy\Certificates\Web Team' and '\VED\Policy\Certificates\Database Team'.
+.LINK
+http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppFoldersAssignedToEngine/
+.LINK
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppFoldersAssignedToEngine.ps1
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-ProcessingEngines-Engine-eguid.php
+#>
 function Add-TppFoldersAssignedToEngine
 {
     [CmdletBinding(SupportsShouldProcess)]

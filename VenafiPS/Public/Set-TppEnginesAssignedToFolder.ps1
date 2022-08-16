@@ -1,15 +1,32 @@
-
-# Example: Assign two Platforms engines to manage a Policy folder
-#
-# PUT https://tpp.venafi.example/vedsdk/ProcessingEngines/Folder/{067e26e2-5536-4a6d-915b-fbf28496125c}
-#
-# {
-#    "EngineGuids":[
-#       "{c4152110-1ec9-4f62-99fe-869d66264c34}",
-#       "{153d0c3d-f9ff-4682-b801-687c7c4db0e9}"
-#    ]
-# }
-
+<#
+.SYNOPSIS
+Set (overwrite) TPP processing engine assignments for a policy folder
+.DESCRIPTION
+Set (overwrite) TPP processing engine assignments for a policy folder.
+.PARAMETER FolderPath
+The full DN path to a policy folder.
+.PARAMETER FolderObject
+TPPObject belonging to the 'Policy' class.
+.PARAMETER EnginePath
+The full DN path to one or more TPP processing engines (string array).
+.PARAMETER VenafiSession
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+.INPUTS
+FolderPath or FolderObject, EnginePath[]
+.OUTPUTS
+None
+.EXAMPLE
+Set-TppEnginesAssignedToFolder -FolderPath '\VED\Policy\Certificates\Web Team' -EnginePath @('\VED\Engines\MYVENAFI01','\VED\Engines\MYVENAFI02')
+Assigns processing engines MYVENAFI01 and MYVENAFI02 to the policy folder '\VED\Policy\Certificates\Web Team'. Existing engine assignments are overwritten.
+.LINK
+http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppEnginesAssignedToFolder/
+.LINK
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppEnginesAssignedToFolder.ps1
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-ProcessingEngines-Folder-fguid.php
+#>
 function Set-TppEnginesAssignedToFolder
 {
     [CmdletBinding(SupportsShouldProcess)]
