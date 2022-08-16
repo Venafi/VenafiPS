@@ -86,7 +86,7 @@ function Remove-TppEnginesAssignedToFolder
                         }
                         try {
                             if ($engine.TypeName -eq 'Venafi Platform') {
-                                $Uri = "$($apiCall)/{$($FolderObject.Guid)}/{$($engine.Guid)}"
+                                $Uri = "$($apiCall)/{$($engine.Guid)}"
                                 Invoke-VenafiRestMethod @params -UriLeaf $Uri | Out-Null
                             }
                             else {
