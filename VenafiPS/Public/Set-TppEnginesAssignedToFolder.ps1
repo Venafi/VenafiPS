@@ -88,7 +88,7 @@ function Set-TppEnginesAssignedToFolder
 
         $params.UriLeaf = "ProcessingEngines/Folder/{$($FolderObject.Guid)}"
 
-        [string[]] $EngineGuids = @()
+        $EngineGuids = [System.Collections.Generic.List[string]]::new()
 
         foreach ($path in $EnginePath) {
             try {
