@@ -27,7 +27,7 @@ https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppEnginesAssig
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-ProcessingEngines-Folder-fguid.php
 #>
-function Set-TppEnginesAssignedToFolder
+function Set-TppEngineFolder
 {
     [CmdletBinding(SupportsShouldProcess)]
 
