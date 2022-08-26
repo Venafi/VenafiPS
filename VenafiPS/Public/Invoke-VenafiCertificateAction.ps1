@@ -4,9 +4,9 @@ Perform an action against a certificate on TPP or VaaS
 
 .DESCRIPTION
 One stop shop for basic certificate actions against either TPP or VaaS.
-When supported by the platform, you can Retire, Reset, Renew, Push, Validate, or Revoke.
+When supported by the platform, you can Retire, Reset, Renew, Push, Validate, Revoke, or Delete.
 
-.PARAMETER CertificateId
+.PARAMETER CertificateID
 Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
 
 .PARAMETER Retire
@@ -29,6 +29,9 @@ Initiates SSL/TLS network validation
 .PARAMETER Revoke
 Sends a revocation request to the certificate CA.  TPP only.
 
+.PARAMETER Delete
+Delete a certificate.
+
 .PARAMETER AdditionalParameters
 Additional items specific to the action being taken, if needed.
 See the api documentation for appropriate items, many are in the links in this help.
@@ -40,20 +43,32 @@ A TPP token or VaaS key can also provided.
 If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
 .INPUTS
-CertificateId
+CertificateID
 
 .OUTPUTS
 PSCustomObject with the following properties:
-    CertificateId - Certificate path (TPP) or Guid (VaaS)
+    CertificateID - Certificate path (TPP) or Guid (VaaS)
     Success - A value of true indicates that the action was successful
     Error - Indicates any errors that occurred. Not returned when Success is true
 
 .EXAMPLE
-Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Revoke
+Invoke-VenafiCertificateAction -CertificateID '\VED\Policy\My folder\app.mycompany.com' -Revoke
+
 Perform an action
 
 .EXAMPLE
-Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameters @{'Comments'='Key compromised'}
+Invoke-VenafiCertificateAction -CertificateID '\VED\Policy\My folder\app.mycompany.com' -Delete -Confirm:$false
+
+Perform an action bypassing the confirmation prompt.  Only applicable to revoke and delete.
+
+.EXAMPLE
+Invoke-VenafiCertificateAction -CertificateID 'b7f1ab29-34a0-49ba-b801-cc9cd855fd24' -Revoke -Confirm:$false | Invoke-VenafiCertificateAction -Delete -Confirm:$false
+
+Chain multiple actions together
+
+.EXAMPLE
+Invoke-VenafiCertificateAction -CertificateID '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameters @{'Comments'='Key compromised'}
+
 Perform an action sending additional parameters.
 
 .LINK
@@ -80,6 +95,8 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certif
 .LINK
 https://api.venafi.cloud/webjars/swagger-ui/index.html?configUrl=%2Fv3%2Fapi-docs%2Fswagger-config&urls.primaryName=outagedetection-service
 
+.LINK
+https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificateretirement_deleteCertificates
 #>
 function Invoke-VenafiCertificateAction {
 
@@ -90,7 +107,7 @@ function Invoke-VenafiCertificateAction {
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [Alias('Path', 'id')]
-        [string] $CertificateId,
+        [string] $CertificateID,
 
         [Parameter(Mandatory, ParameterSetName = 'Retire')]
         [switch] $Retire,
@@ -110,6 +127,9 @@ function Invoke-VenafiCertificateAction {
         [Parameter(Mandatory, ParameterSetName = 'Revoke')]
         [switch] $Revoke,
 
+        [Parameter(Mandatory, ParameterSetName = 'Delete')]
+        [switch] $Delete,
+
         [Parameter()]
         [hashtable] $AdditionalParameters,
 
@@ -119,20 +139,24 @@ function Invoke-VenafiCertificateAction {
 
     begin {
         $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
-    }
-
-    process {
-
-        $returnObject = [PSCustomObject]@{
-            CertificateId = $CertificateId
-            Success       = $true
-            Error         = $null
-        }
 
         $params = @{
             VenafiSession = $VenafiSession
             Method        = 'Post'
         }
+
+    }
+
+    process {
+
+        $returnObject = [PSCustomObject]@{
+            CertificateID = $CertificateID
+            Success       = $true
+            Error         = $null
+        }
+
+        # at times, we don't want to call an api in the process block
+        $performInvoke = $true
 
         switch ($platform) {
             'VaaS' {
@@ -146,33 +170,43 @@ function Invoke-VenafiCertificateAction {
                 switch ($PSCmdLet.ParameterSetName) {
                     'Retire' {
                         $params.UriLeaf = "certificates/retirement"
-                        $params.Body = @{"certificateIds" = @($CertificateId) }
+                        $params.Body = @{"certificateIds" = @($CertificateID) }
                     }
 
                     'Renew' {
                         $params.UriLeaf = "certificaterequests"
-                        $params.Body = @{"existingCertificateId" = $CertificateId }
+                        $params.Body = @{"existingCertificateId" = $CertificateID }
                     }
 
                     'Validate' {
                         $params.UriLeaf = "certificates/validation"
-                        $params.Body = @{"certificateIds" = @($CertificateId) }
+                        $params.Body = @{"certificateIds" = @($CertificateID) }
+                    }
+
+                    'Delete' {
+                        if ( $PSCmdlet.ShouldProcess($CertificateID, 'Delete certificate') ) {
+                            $params.UriLeaf = "certificates/deletion"
+                            $params.Body = @{"certificateIds" = @($CertificateID) }
+                        } else {
+                            $performInvoke = $false
+                            $returnObject.Success = $false
+                            $returnObject.Error = 'User cancelled'
+                        }
                     }
                 }
             }
 
             Default {
 
-                $performInvoke = $true
+                #TPP
 
                 switch ($PSCmdLet.ParameterSetName) {
                     'Retire' {
                         $performInvoke = $false
 
                         try {
-                            Set-TppAttribute -Path $CertificateId -Attribute @{ 'Disabled' = '1' } -VenafiSession $VenafiSession
-                        }
-                        catch {
+                            Set-TppAttribute -Path $CertificateID -Attribute @{ 'Disabled' = '1' } -VenafiSession $VenafiSession
+                        } catch {
                             $returnObject.Success = $false
                             $returnObject.Error = $_
                         }
@@ -181,38 +215,48 @@ function Invoke-VenafiCertificateAction {
                     'Reset' {
                         $params.UriLeaf = 'Certificates/Reset'
                         $params.Body = @{
-                            CertificateDN = $CertificateId
+                            CertificateDN = $CertificateID
                         }
                     }
 
                     'Renew' {
                         $params.UriLeaf = 'Certificates/Renew'
                         $params.Body = @{
-                            CertificateDN = $CertificateId
+                            CertificateDN = $CertificateID
                         }
                     }
 
                     'Push' {
                         $params.UriLeaf = 'Certificates/Push'
                         $params.Body = @{
-                            CertificateDN = $CertificateId
+                            CertificateDN = $CertificateID
                         }
                     }
 
                     'Validate' {
                         $params.UriLeaf = 'Certificates/Validate'
                         $params.Body = @{
-                            CertificateDNs = @($CertificateId)
+                            CertificateDNs = @($CertificateID)
                         }
                     }
 
                     'Revoke' {
                         $params.UriLeaf = 'Certificates/Revoke'
                         $params.Body = @{
-                            CertificateDN = $CertificateId
+                            CertificateDN = $CertificateID
                         }
-                        if ( -not $PSCmdlet.ShouldProcess($CertificateId, 'Revoke certificate') ) {
+                        if ( -not $PSCmdlet.ShouldProcess($CertificateID, 'Revoke certificate') ) {
                             $performInvoke = $false
+                            $returnObject.Success = $false
+                            $returnObject.Error = 'User cancelled'
+                        }
+                    }
+
+                    'Delete' {
+                        $performInvoke = $false
+                        if ( $PSCmdlet.ShouldProcess($CertificateID, 'Delete certificate') ) {
+                            Remove-TppCertificate -Path $CertificateID -VenafiSession $VenafiSession -Confirm:$false
+                        } else {
                             $returnObject.Success = $false
                             $returnObject.Error = 'User cancelled'
                         }
@@ -225,18 +269,16 @@ function Invoke-VenafiCertificateAction {
             $params.Body += $AdditionalParameters
         }
 
-        try {
-            if ( $performInvoke ) {
-                Invoke-VenafiRestMethod @params -FullResponse | Out-Null
+        if ( $performInvoke ) {
+            try {
+                Invoke-VenafiRestMethod @params -FullResponse -Verbose | Out-Null
+            } catch {
+                $returnObject.Success = $false
+                $returnObject.Error = $_
             }
-        }
-        catch {
-            $returnObject.Success = $false
-            $returnObject.Error = $_
         }
 
         # return path so another function can be called
         $returnObject
-
     }
 }
