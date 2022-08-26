@@ -28,7 +28,7 @@ http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppFoldersAssignedToEngin
 .LINK
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppFoldersAssignedToEngine.ps1
 #>
-function Get-TppFoldersAssignedToEngine
+function Get-TppEngineFolder
 {
     [CmdletBinding()]
 
