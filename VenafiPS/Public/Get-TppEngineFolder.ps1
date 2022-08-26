@@ -1,14 +1,16 @@
 <#
 .SYNOPSIS
-Get folders assigned to a TPP processing engine
+Get TPP folder/engine assignments
 .DESCRIPTION
-Retrieves an array of policy folders assigned to a TPP processing engine.
+When the input is a policy folder, retrieves an array of assigned TPP processing engines.
+When the input is a TPP engine, retrieves an array of assigned policy folders.
+If there are no matching assignments, nothing will be returned.
 .PARAMETER Path
-The full DN path to a TPP processing engine.
+The full DN path to a TPP processing engine or policy folder.
 .PARAMETER InputObject
-TPPObject belonging to the 'Venafi Platform' class.
+TPPObject belonging to the 'Venafi Platform' or 'Policy' class.
 .PARAMETER Guid
-Guid of a TPP processing engine.
+Guid of a TPP processing engine or policy folder.
 .PARAMETER VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -18,15 +20,20 @@ Path, Guid, TppObject
 .OUTPUTS
 TppObject[]
 .EXAMPLE
-Get-TppFoldersAssignedToEngine -Path '\VED\Engines\MYVENSERVER'
+Get-TppEngineFolder -Path '\VED\Engines\MYVENSERVER'
 Get an array of policy folders assigned to the TPP processing engine 'MYVENSERVER'.
 .EXAMPLE
-[guid]'866e1d59-d5d2-482a-b9e6-7bb657e0f416' | Get-TppFoldersAssignedToEngine
-Get an array of policy folders assigned to a TPP processing engine GUID.
+Get-TppEngineFolder -Path '\VED\Policy\Certificates\Web Team'
+Get an array of TPP processing engines assigned to the policy folder '\VED\Policy\Certificates\Web Team'.
+.EXAMPLE
+[guid]'866e1d59-d5d2-482a-b9e6-7bb657e0f416' | Get-TppEngineFolder
+When the GUID is assigned to a TPP processing engine, returns an array of assigned policy folders.
+When the GUID is assigned to a policy folder, returns an array of assigned TPP processing engines.
+Otherwise nothing will be returned.
 .LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppFoldersAssignedToEngine/
+http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppEngineFolder/
 .LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppFoldersAssignedToEngine.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppEngineFolder.ps1
 #>
 function Get-TppEngineFolder
 {
@@ -42,7 +49,7 @@ function Get-TppEngineFolder
         [Alias('DN')]
         [String] $Path,
 
-        [Parameter(ParameterSetName='ByObject', ValueFromPipeline)]
+        [Parameter(ParameterSetName = 'ByObject', ValueFromPipeline)]
         [TppObject] $InputObject,
 
         [Parameter(Mandatory, ParameterSetName = 'ByGuid', ValueFromPipeline)]
@@ -59,7 +66,6 @@ function Get-TppEngineFolder
     }
 
     process {
-
         if ($PsCmdlet.ParameterSetName -ne 'ByObject') {
             $params = @{
                 VenafiSession = $VenafiSession
@@ -70,6 +76,7 @@ function Get-TppEngineFolder
             else {
                 $params.Guid = $Guid
             }
+            # If our input isn't TppObject we don't have the TypeName needed to determine behavior
             $InputObject = Get-TppObject @params
         }
 
@@ -78,8 +85,17 @@ function Get-TppEngineFolder
             $response = ((Invoke-VenafiRestMethod -VenafiSession $VenafiSession -Method Get -UriLeaf $apiLeaf).Folders)
             foreach ($item in $response) {
                 $folder = Get-TppObject -Guid ($item.FolderGuid) -VenafiSession $VenafiSession
-                # Add return valid policy objects. i.e. omit the engine link to itself.
+                # Return valid policy objects. i.e. omit the engine link to itself.
                 if ($folder.TypeName -eq 'Policy') { $folder }
+            }
+        }
+        elseif ($InputObject.TypeName -eq 'Policy') {
+            $apiLeaf = "ProcessingEngines/Folder/{$($InputObject.Guid)}"
+            $response = ((Invoke-VenafiRestMethod -VenafiSession $VenafiSession -Method Get -UriLeaf $apiLeaf).Engines)
+            foreach ($item in $response) {
+                $engine = Get-TppObject -Guid ($item.EngineGuid) -VenafiSession $VenafiSession
+                # This call should only return engines, but filter for consistency anyway.
+                if ($engine.TypeName -eq 'Venafi Platform') { $engine }
             }
         }
     }
