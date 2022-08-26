@@ -34,6 +34,10 @@ Otherwise nothing will be returned.
 http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppEngineFolder/
 .LINK
 https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppEngineFolder.ps1
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-ProcessingEngines-Engine-eguid.php
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-ProcessingEngines-Folder-fguid.php
 #>
 function Get-TppEngineFolder
 {
