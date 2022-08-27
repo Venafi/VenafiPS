@@ -32,7 +32,7 @@ Remove policy folder '\VED\Policy\Certificates\Web Team' from the processing eng
 Remove-TppEngineFolder -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team')
 Remove all processing engine assignments for the policy folders '\VED\Policy\Certificates\Web Team' and '\VED\Policy\Certificates\Database Team'.
 .EXAMPLE
-Remove-TppEngineFolder -EnginePath @('\VED\Engines\MYVENAFI01','\VED\Engines\MYVENAFI02') -Force
+Remove-TppEngineFolder -EnginePath @('\VED\Engines\MYVENAFI01','\VED\Engines\MYVENAFI02') -Confirm:$false
 Removed all policy folder assignments from the processing engines MYVENAFI01 and MYVENAFI02. Suppress the confirmation prompt.
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppEngineFolder/
@@ -69,9 +69,6 @@ function Remove-TppEngineFolder
         [String[]] $EnginePath,
 
         [Parameter()]
-        [switch] $Force,
-
-        [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
     )
 
@@ -84,6 +81,11 @@ function Remove-TppEngineFolder
         }
 
         $apiCall = "ProcessingEngines/Folder"
+
+        if ($PSBoundParameters['Debug']) {
+            $dPrefSave = $DebugPreference
+            $DebugPreference = 'Continue'
+        }
     }
 
     process {
@@ -139,63 +141,62 @@ function Remove-TppEngineFolder
             $shouldProcessAction = "Remove ALL processing engine assignments"
             if ($FolderList.Count -gt 1) { $shouldProcessTarget = "$($FolderList.Count) folders" }
             else { $shouldProcessTarget = "$($FolderList.Path)" }
-            Write-Host "do all engines stuff - '$($shouldProcessAction)' from '$($shouldProcessTarget)'"
-            if ($Force.IsPresent) { Write-Verbose "Forced Confirmation: '$($shouldProcessAction)' on '$($shouldProcessTarget)'" }
-            if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($shouldProcessTarget, $shouldProcessAction)) {
+            Write-Debug ("ParameterSetName='$($PSCmdlet.ParameterSetName)': '$($shouldProcessAction)' from '$($shouldProcessTarget)'")
+            if ($PSCmdlet.ShouldProcess($shouldProcessTarget, $shouldProcessAction)) {
                 foreach ($folder in $FolderList) {
                     $uriLeaf = "$($apiCall)/{$($folder.Guid)}"
-#                    Write-Host "$($uriLeaf)"
+                    Write-Debug ("Invoke Venafi UriLeaf: $($uriLeaf)")
                     try {
                         Invoke-VenafiRestMethod @params -UriLeaf $uriLeaf | Out-Null
                     }
                     catch {
                         $myError = $_.ToString() | ConvertFrom-Json
-                        Write-Error ("Error removing processing engines from folder policy '$($folder.Path)': $($myError.Error)")
+                        Write-Warning ("Error removing processing engines from folder policy '$($folder.Path)': $($myError.Error)")
                     }
                 }
             }
         }
         else {
-#            Write-Host "do not-allengines stuff"
             if ($PSCmdlet.ParameterSetName -eq 'AllFolders') {
                 $shouldProcessAction = "Remove ALL policy folder assignments"
                 if ($EngineList.Count -gt 1) { $shouldProcessTarget = "$($EngineList.Count) processing engines" }
-                else { $shouldProcessTarget = "$($EngineList.Path)" }
-#                Write-Host "do all folders stuff - '$($shouldProcessAction)' from '$($shouldProcessTarget)'"
+                else { $shouldProcessTarget = "$($EngineList.Name)" }
             }
-            else {  # Matrix
+            else {  # ParameterSetName='Matrix'
                 if ($FolderList.Count -gt 1) { $shouldProcessAction += "Remove $($FolderList.Count) folders" }
-                else { $shouldProcessAction += "Remove $($FolderList.Name)" }
+                else { $shouldProcessAction += "Remove $($FolderList.Path)" }
                 if ($EngineList.Count -gt 1) { $shouldProcessTarget = "$($EngineList.Count) processing engines" }
-                else { $shouldProcessTarget += "$($EngineList.Path)" }
-#                Write-Host "do matrix stuff - '$($shouldProcessAction)' from '$($shouldProcessTarget)'"
+                else { $shouldProcessTarget += "$($EngineList.Name)" }
             }
-            if ($Force.IsPresent) { Write-Verbose "Forced Confirmation: '$($shouldProcessAction)' on '$($shouldProcessTarget)'" }
-            if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($shouldProcessTarget, $shouldProcessAction)) {
+            Write-Debug ("ParameterSetName='$($PSCmdlet.ParameterSetName)': '$($shouldProcessAction)' from '$($shouldProcessTarget)'")
+            if ($PSCmdlet.ShouldProcess($shouldProcessTarget, $shouldProcessAction)) {
                 foreach ($engine in $EngineList) {
+                    Write-Debug ("Engine Processing Loop: '$($engine.Path)'")
                     if ($PSCmdlet.ParameterSetName -eq 'AllFolders') {
                         [TppObject[]] $FolderList = @()
                         $FolderList += ($engine | Get-TppEngineFolder -VenafiSession $VenafiSession)
                         Switch ($FolderList.Count) {
-                            0       { $countMessage =    'No folders' }
+                            0       { $countMessage =    'NO folders' }
                             1       { $countMessage =     '1 folder'  }
                             Default { $countMessage = "$($_) folders" }
                         }
-                        Write-Verbose "$($countMessage) removed from engine '$($engine.Path)'"
+                        Write-Verbose "Found $($countMessage) to remove from engine '$($engine.Name)'"
                     }
                     foreach ($folder in $FolderList) {
                         $uriLeaf = "$($apiCall)/{$($folder.Guid)}/{$($engine.Guid)}"
-                        Write-Host "$($uriLeaf)"
+                        Write-Debug ("Invoke Venafi UriLeaf: $($uriLeaf)")
                         try {
                             Invoke-VenafiRestMethod @params -UriLeaf $uriLeaf | Out-Null
                         }
                         catch {
                             $myError = $_.ToString() | ConvertFrom-Json
-                            Write-Error ("Error removing engine '$($engine.Path)' from folder policy '$($folder.Path)': $($myError.Error)")
+                            Write-Warning ("Error removing engine '$($engine.Path)' from folder policy '$($folder.Path)': $($myError.Error)")
                         }
                     }
                 }
             }
         }
     }
+
+    end { if ($dPrefSave) { $DebugPreference = $dPrefSave } }
 }
