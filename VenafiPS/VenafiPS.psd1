@@ -102,10 +102,9 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'Remove-VenafiTeam', 'Add-VenafiTeamMember', 'Add-VenafiTeamOwner',
                'Remove-VenafiTeamMember', 'Remove-VenafiTeamOwner', 'New-VenafiTeam',
                'Search-TppHistory', 'Get-VaasIssuingTemplate', 'New-VaasApplication',
-               'Import-VaasCertificate', 'Find-TppEngine',
-               'Get-TppEnginesAssignedToFolder', 'Get-TppFoldersAssignedToEngine',
-               'Add-TppFoldersAssignedToEngine', 'Set-TppEnginesAssignedToFolder',
-               'Remove-TppFoldersAssignedToEngine', 'Remove-TppEnginesAssignedToFolder'
+               'Import-VaasCertificate', 
+               'Find-TppEngine', 'Get-TppEngineFolder', 'Remove-TppEngineFolder',
+               'Add-TppFoldersAssignedToEngine', 'Set-TppEnginesAssignedToFolder'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
