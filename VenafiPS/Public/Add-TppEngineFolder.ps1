@@ -1,8 +1,8 @@
 <#
 .SYNOPSIS
-Add policy folder assignments from a TPP processing engine
+Add policy folder assignments to a TPP processing engine
 .DESCRIPTION
-Add one or more policy folder assignments from a TPP processing engine.
+Add one or more policy folder assignments to a TPP processing engine.
 .PARAMETER EnginePath
 The full DN path to a TPP processing engine.
 .PARAMETER EngineObject
@@ -18,12 +18,18 @@ EnginePath or EngineObject, FolderPath[]
 .OUTPUTS
 None
 .EXAMPLE
-Add-TppFoldersAssignedToEngine -EnginePath '\VED\Engines\MYVENAFI01' -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team')
+Add-TppEngineFolder -EnginePath '\VED\Engines\MYVENAFI01' -FolderPath '\VED\Policy\Certificates\Web Team'
+Add processing engine MYVENAFI01 to the policy folders '\VED\Policy\Certificates\Web Team'.
+.EXAMPLE
+Add-TppEngineFolder -EnginePath '\VED\Engines\MYVENAFI01' -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team')
 Add processing engine MYVENAFI01 to the policy folders '\VED\Policy\Certificates\Web Team' and '\VED\Policy\Certificates\Database Team'.
+.EXAMPLE
+$EngineObjects | Add-TppEngineFolder -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team') -Confirm:$false
+Add one or more processing engines via the pipeline to multiple policy folders. Suppress the confirmation prompt.
 .LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppFoldersAssignedToEngine/
+http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppEngineFolder/
 .LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppFoldersAssignedToEngine.ps1
+https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppEngineFolder.ps1
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-ProcessingEngines-Engine-eguid.php
 #>
@@ -32,7 +38,11 @@ function Add-TppEngineFolder
     [CmdletBinding(SupportsShouldProcess)]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'AddByObject', ValueFromPipeline)]
+        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'AddByObject')]
+        [ValidateScript( {
+            if ( $_.TypeName -eq 'Venafi Platform') { $true }
+            else { throw "Object '$($_.Path)' is not a processing engine"}
+        })]
         [TppObject] $EngineObject,
 
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'AddByPath')]
@@ -53,8 +63,6 @@ function Add-TppEngineFolder
         [Alias('FolderDN', 'Folder')]
         [String[]] $FolderPath,
 
-        [switch] $Force,
-
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
     )
@@ -69,39 +77,41 @@ function Add-TppEngineFolder
                 FolderGuids = ''
             }
         }
+
+        if ($PSBoundParameters['Debug']) {
+            $dPrefSave = $DebugPreference
+            $DebugPreference = 'Continue'
+        }
     }
 
     process {
         if ( -not ($PSBoundParameters.ContainsKey('EngineObject')) ) {
+            Write-Debug ("Converting $($EnginePath) to TppObject")
             $EngineObject = Get-TppObject -Path $EnginePath -VenafiSession $VenafiSession
+            if ($EngineObject.TypeName -ne 'Venafi Platform') {
+                throw ("DN/Path '$($EngineObject.Path)' is not a processing engine")
+            }
+        }
+        else {
+            Write-Debug ("Processing Engine Object $($EngineObject.Path)")
         }
 
-        if ($EngineObject.TypeName -ne 'Venafi Platform') {
-            Write-Error ("DN/Path '$($EngineObject.Path)' is not a processing engine")
-            Return
-        }
-
-        if ( -not ($EngineObject.Path | Test-TppObject -ExistOnly -VenafiSession $VenafiSession) ) {
-            Write-Error ("Engine path '$($EngineObject.Path)' does not exist")
-            Return
-        }
-
+        $FolderGuids = [System.Collections.Generic.List[string]]::new()
         $params.UriLeaf = "ProcessingEngines/Engine/{$($EngineObject.Guid)}"
-
-        [string[]] $FolderGuids = @()
 
         foreach ($path in $FolderPath) {
             try {
                 $folder = Get-TppObject -Path $path -VenafiSession $VenafiSession
             }
             catch {
-                Write-Error ("TPP object '$($path)' does not exist")
+                Write-Warning ("TPP object '$($path)' does not exist")
                 Continue
             }
             if ($folder.TypeName -ne 'Policy') {
-                Write-Error ("TPP object '$($folder.Path)' is not a policy folder")
+                Write-Warning ("TPP object '$($folder.Path)' is not a policy folder")
                 Continue
             }
+            $lastFolder = $folder.Path
             $FolderGuids += "{$($folder.guid)}"
         }
 
@@ -111,10 +121,11 @@ function Add-TppEngineFolder
             $shouldProcessAction = "Add $($FolderGuids.Count) policy folders"
         }
         else {
-            $shouldProcessAction = "Add policy folder $($folder.Name)"
+            $shouldProcessAction = "Add $($lastFolder)"
         }
 
-        if ($Force.IsPresent -or $PSCmdlet.ShouldProcess($EngineObject.Path, $shouldProcessAction)) {
+        if ($PSCmdlet.ShouldProcess($EngineObject.Name, $shouldProcessAction)) {
+            Write-Debug ("Invoke Venafi UriLeaf: $($params.UriLeaf)")
             $response = Invoke-VenafiRestMethod @params
 
             if ($response.AddedCount -ne $FolderGuids.Count) {
@@ -122,8 +133,13 @@ function Add-TppEngineFolder
                 if ($response.Errors) {
                     $errorMessage += ": $($response.Errors)"
                 }
-                Write-Error ($errorMessage)
+                Write-Warning ($errorMessage)
+            }
+            else {
+                Write-Debug ("Added $($response.AddedCount) folder(s) to $($EngineObject.Name)")
             }
         }
     }
+
+    end { if ($dPrefSave) { $DebugPreference = $dPrefSave } }
 }
