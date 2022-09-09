@@ -452,9 +452,9 @@ function Get-TppAttribute {
                                 'Overridden' = $thisConfigValue.Overridden
                             }
                         }
-                        if ($CustomField) {
-                            Add-Member -InputObject $newProp -NotePropertyMembers @{ 'CustomFieldGuid' = $CustomFieldGuid }
-                        }
+                    }
+                    if ($CustomField) {
+                        Add-Member -InputObject $newProp -NotePropertyMembers @{ 'CustomFieldGuid' = $CustomFieldGuid }
                     }
                     if ( $thisConfigValue.PolicyPath ) {
                         Add-Member -InputObject $newProp -NotePropertyMembers @{ 'PolicyPath' = $thisConfigValue.PolicyPath }
