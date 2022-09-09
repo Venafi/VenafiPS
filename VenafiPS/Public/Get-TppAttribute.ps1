@@ -405,9 +405,7 @@ function Get-TppAttribute {
                     if ( $customField ) {
                         $newAttributeName = $customField.Label
                         $CustomFieldGuid = $customField.Guid
-                    }
-
-                    if ( -not $thisConfigValue.Value ) {
+                    } elseif ( -not $thisConfigValue.Value ) {
                         Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $null } -Force
                         continue
                     }
@@ -460,7 +458,11 @@ function Get-TppAttribute {
                         Add-Member -InputObject $newProp -NotePropertyMembers @{ 'PolicyPath' = $thisConfigValue.PolicyPath }
                     }
     
-                    Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
+                    if ($newProp.Value) {
+                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
+                        } else {
+                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $CustomFieldGuid } -Force
+                        }
 
                 }
 
