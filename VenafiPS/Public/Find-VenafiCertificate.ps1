@@ -223,6 +223,12 @@ function Find-VenafiCertificate {
 
     Find VaaS certificates matching multiple values.  In this case, find all certificates expiring in the next 30 days.
 
+    .EXAMPLE
+    Find-VenafiCertificate -IncludeOwner
+
+    When finding VaaS certificates, include user/team owner information.
+    This will make additional api calls and will increase the response time.
+
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Find-VenafiCertificate/
 
@@ -407,6 +413,9 @@ function Find-VenafiCertificate {
         [parameter(ParameterSetName = 'VaaS')]
         [psobject[]] $Order,
 
+        [Parameter(ParameterSetName = 'VaaS')]
+        [Switch] $IncludeOwner,
+
         [Parameter(ParameterSetName = 'TPP')]
         [Switch] $CountOnly,
 
@@ -452,11 +461,14 @@ function Find-VenafiCertificate {
                 VenafiSession = $VenafiSession
                 Method        = 'Post'
                 UriRoot       = 'outagedetection/v1'
-                UriLeaf       = 'certificatesearch'
+                UriLeaf       = 'certificatesearch?ownershipTree=true'
                 Body          = $body
                 # ensure we get json back otherwise we might get csv
                 Header        = @{'Accept' = 'application/json' }
             }
+
+            $appOwners = [System.Collections.Generic.List[object]]::new()
+
         } else {
 
             $params = @{
@@ -619,7 +631,73 @@ function Find-VenafiCertificate {
                     'e' = {
                         $_.Id
                     }
-                }, * -ExcludeProperty Id
+                },
+                @{
+                    'n' = 'application'
+                    'e' = {
+                        $_.applicationIds | Get-VaasApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                    }
+                },
+                @{
+                    'n' = 'owner'
+                    'e' = {
+                        if ( $IncludeOwner ) {
+
+                            # this scriptblock requires ?ownershipTree=true be part of the url
+                            foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
+                                $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                                if ( -not $thisOwnerDetail ) {
+                                    $thisOwnerDetail = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession | Select-Object firstName, lastName, emailAddress,
+                                    @{
+                                        'n' = 'status'
+                                        'e' = { $_.userStatus }
+                                    },
+                                    @{
+                                        'n' = 'role'
+                                        'e' = { $_.systemRoles }
+                                    },
+                                    @{
+                                        'n' = 'type'
+                                        'e' = { 'USER' }
+                                    },
+                                    @{
+                                        'n' = 'userId'
+                                        'e' = { $_.id }
+                                    }
+
+                                    $appOwners.Add($thisOwnerDetail)
+
+                                }
+                                $thisOwnerDetail
+                            }
+
+                            foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
+                                $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                                if ( -not $thisOwnerDetail ) {
+                                    $thisOwnerDetail = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession | Select-Object name, role, members,
+                                    @{
+                                        'n' = 'type'
+                                        'e' = { 'TEAM' }
+                                    },
+                                    @{
+                                        'n' = 'teamId'
+                                        'e' = { $_.id }
+                                    }
+
+                                    $appOwners.Add($thisOwnerDetail)
+                                }
+                                $thisOwnerDetail
+                            }
+                        } else {
+                            $_.ownership.owningContainers | Select-Object owningUsers, owningTeams
+                        }
+                    }
+                },
+                @{
+                    'n' = 'instance'
+                    'e' = { $_.instances }
+                },
+                * -ExcludeProperty Id, applicationIds, instances, totalInstanceCount, ownership
 
                 $body.paging.pageNumber += 1
 
