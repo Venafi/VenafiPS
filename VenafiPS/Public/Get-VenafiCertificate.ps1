@@ -61,7 +61,7 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certifi
 #>
 function Get-VenafiCertificate {
 
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [CmdletBinding(DefaultParameterSetName = 'Id')]
     [Alias('Get-TppCertificateDetail')]
 
     param (
@@ -79,6 +79,9 @@ function Get-VenafiCertificate {
 
         [Parameter(ParameterSetName = 'OldVersions')]
         [switch] $ExcludeRevoked,
+
+        [Parameter(Mandatory, ParameterSetName = 'All')]
+        [Switch] $All,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -121,6 +124,8 @@ function Get-VenafiCertificate {
             ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name', 'CreatedOn'
         }
 
+        $appOwners = [System.Collections.Generic.List[object]]::new()
+
     }
 
     process {
@@ -133,6 +138,8 @@ function Get-VenafiCertificate {
                 if ( $PSCmdlet.ParameterSetName -eq 'Id' ) {
                     $params.UriLeaf += "/$CertificateId"
                 }
+
+                $params.UriLeaf += "?ownershipTree=true"
 
                 $response = Invoke-VenafiRestMethod @params
 
@@ -147,7 +154,69 @@ function Get-VenafiCertificate {
                     'e' = {
                         $_.Id
                     }
-                }, * -ExcludeProperty Id
+                },
+                @{
+                    'n' = 'application'
+                    'e' = {
+                        $_.applicationIds | Get-VaasApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                    }
+                },
+                @{
+                    'n' = 'owner'
+                    'e' = {
+
+                        # this scriptblock requires ?ownershipTree=true be part of the url
+                        foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
+                            $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                            if ( -not $thisOwnerDetail ) {
+                                $thisOwnerDetail = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession | Select-Object firstName, lastName, emailAddress,
+                                @{
+                                    'n' = 'status'
+                                    'e' = { $_.userStatus }
+                                },
+                                @{
+                                    'n' = 'role'
+                                    'e' = { $_.systemRoles }
+                                },
+                                @{
+                                    'n' = 'type'
+                                    'e' = { 'USER' }
+                                },
+                                @{
+                                    'n' = 'userId'
+                                    'e' = { $_.id }
+                                }
+
+                                $appOwners.Add($thisOwnerDetail)
+
+                            }
+                            $thisOwnerDetail
+                        }
+
+                        foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
+                            $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                            if ( -not $thisOwnerDetail ) {
+                                $thisOwnerDetail = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession | Select-Object name, role, members,
+                                @{
+                                    'n' = 'type'
+                                    'e' = { 'TEAM' }
+                                },
+                                @{
+                                    'n' = 'teamId'
+                                    'e' = { $_.id }
+                                }
+
+                                $appOwners.Add($thisOwnerDetail)
+                            }
+                            $thisOwnerDetail
+                        }
+                    }
+                },
+                @{
+                    'n' = 'instance'
+                    'e' = { $_.instances }
+                },
+                * -ExcludeProperty Id, applicationIds, instances, totalInstanceCount, ownership
             }
 
             Default {
