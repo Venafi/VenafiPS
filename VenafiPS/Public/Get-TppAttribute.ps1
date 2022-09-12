@@ -460,9 +460,10 @@ function Get-TppAttribute {
     
                     if ($newProp.Value) {
                         Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
-                        } else {
-                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $CustomFieldGuid } -Force
-                        }
+                    } else {
+                        $newProp.PSObject.Properties.Remove('Value')
+                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
+                    }
 
                 }
 
