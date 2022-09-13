@@ -141,6 +141,10 @@ function Find-VenafiCertificate {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
+    .PARAMETER IncludeVaasOwner
+    Retrieve detailed user/team owner info, only for VaaS.
+    This will cause additional api calls to be made and take longer.
+
     .PARAMETER CountOnly
     Return the count of certificates found from the query as opposed to the certificates themselves
 
@@ -224,7 +228,7 @@ function Find-VenafiCertificate {
     Find VaaS certificates matching multiple values.  In this case, find all certificates expiring in the next 30 days.
 
     .EXAMPLE
-    Find-VenafiCertificate -IncludeOwner
+    Find-VenafiCertificate -IncludeVaasOwner
 
     When finding VaaS certificates, include user/team owner information.
     This will make additional api calls and will increase the response time.
@@ -414,7 +418,7 @@ function Find-VenafiCertificate {
         [psobject[]] $Order,
 
         [Parameter(ParameterSetName = 'VaaS')]
-        [Switch] $IncludeOwner,
+        [Switch] $IncludeVaasOwner,
 
         [Parameter(ParameterSetName = 'TPP')]
         [Switch] $CountOnly,
@@ -641,7 +645,7 @@ function Find-VenafiCertificate {
                 @{
                     'n' = 'owner'
                     'e' = {
-                        if ( $IncludeOwner ) {
+                        if ( $IncludeVaasOwner ) {
 
                             # this scriptblock requires ?ownershipTree=true be part of the url
                             foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {

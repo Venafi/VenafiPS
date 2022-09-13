@@ -161,7 +161,7 @@
                 $params.UriRoot = 'outagedetection/v1'
                 $params.UriLeaf = "certificates"
 
-                if ( $PSCmdlet.ParameterSetName -eq 'Id' ) {
+                if ( $PSBoundParameters.ContainsKey('CertificateId') ) {
                     $params.UriLeaf += "/$CertificateId"
                 }
 
@@ -190,51 +190,55 @@
                 @{
                     'n' = 'owner'
                     'e' = {
+                        if ( $IncludeVaasOwner ) {
 
-                        # this scriptblock requires ?ownershipTree=true be part of the url
-                        foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
-                            $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
-                            if ( -not $thisOwnerDetail ) {
-                                $thisOwnerDetail = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession | Select-Object firstName, lastName, emailAddress,
-                                @{
-                                    'n' = 'status'
-                                    'e' = { $_.userStatus }
-                                },
-                                @{
-                                    'n' = 'role'
-                                    'e' = { $_.systemRoles }
-                                },
-                                @{
-                                    'n' = 'type'
-                                    'e' = { 'USER' }
-                                },
-                                @{
-                                    'n' = 'userId'
-                                    'e' = { $_.id }
+                            # this scriptblock requires ?ownershipTree=true be part of the url
+                            foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
+                                $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                                if ( -not $thisOwnerDetail ) {
+                                    $thisOwnerDetail = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession | Select-Object firstName, lastName, emailAddress,
+                                    @{
+                                        'n' = 'status'
+                                        'e' = { $_.userStatus }
+                                    },
+                                    @{
+                                        'n' = 'role'
+                                        'e' = { $_.systemRoles }
+                                    },
+                                    @{
+                                        'n' = 'type'
+                                        'e' = { 'USER' }
+                                    },
+                                    @{
+                                        'n' = 'userId'
+                                        'e' = { $_.id }
+                                    }
+
+                                    $appOwners.Add($thisOwnerDetail)
+
                                 }
-
-                                $appOwners.Add($thisOwnerDetail)
-
+                                $thisOwnerDetail
                             }
-                            $thisOwnerDetail
-                        }
 
-                        foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
-                            $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
-                            if ( -not $thisOwnerDetail ) {
-                                $thisOwnerDetail = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession | Select-Object name, role, members,
-                                @{
-                                    'n' = 'type'
-                                    'e' = { 'TEAM' }
-                                },
-                                @{
-                                    'n' = 'teamId'
-                                    'e' = { $_.id }
+                            foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
+                                $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                                if ( -not $thisOwnerDetail ) {
+                                    $thisOwnerDetail = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession | Select-Object name, role, members,
+                                    @{
+                                        'n' = 'type'
+                                        'e' = { 'TEAM' }
+                                    },
+                                    @{
+                                        'n' = 'teamId'
+                                        'e' = { $_.id }
+                                    }
+
+                                    $appOwners.Add($thisOwnerDetail)
                                 }
-
-                                $appOwners.Add($thisOwnerDetail)
+                                $thisOwnerDetail
                             }
-                            $thisOwnerDetail
+                        } else {
+                            $_.ownership.owningContainers | Select-Object owningUsers, owningTeams
                         }
                     }
                 },
