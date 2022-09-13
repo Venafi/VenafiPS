@@ -14,12 +14,14 @@ function Get-TppAttribute {
     Path to the object to retrieve configuration attributes.  Just providing DN will return all attributes.
 
     .PARAMETER Attribute
-    Only retrieve the value/values for this attribute
+    Only retrieve the value/values for this attribute.
+    Custom fields can use either its Guid or its Label and it will be automatically handled.
+    All custom fields will have the Guid for that field added to the output.
 
     .PARAMETER Effective
     Get the objects attribute value, once policies have been applied.
-    This is not applicable to policies, only objects.
-    The output will contain the path where the policy was applied from.
+    When used on a Policy, it will only return attributes that apply to the Policy Folder object (i.e. not attributes for the X509 Certificate class).
+    The output will contain the path where the policy was applied from if available.
 
     .PARAMETER All
     Get all object attribute values.
@@ -30,6 +32,7 @@ function Get-TppAttribute {
     Get policies (aka policy attributes) instead of object attributes.
     Provide the class name to retrieve the value for.
     If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
+    The output will contain the path where the policy was applied from if available.
 
     .PARAMETER New
     New output format which returns 1 object with multiple properties instead of an object per property
@@ -63,9 +66,9 @@ function Get-TppAttribute {
     ServiceNow CI                 : @{Value=9cc047ed1bad81100774ebd1b24bcbd0;
                                     CustomFieldGuid={a26df613-595b-46ef-b5df-79f6eace72d9}}
     Certificate Vault Id          : @{Value=442493; CustomFieldGuid=}
-    Consumers                     : @{Value=System.Object[]; CustomFieldGuid=}
-    Created By                    : @{Value=WebAdmin; CustomFieldGuid=}
-    CSR Vault Id                  : @{Value=442492; CustomFieldGuid=}
+    Consumers                     : @{Value=System.Object[]}
+    Created By                    : @{Value=WebAdmin}
+    CSR Vault Id                  : @{Value=442492}
 
     Retrieve values directly set on an object, excluding values assigned by policy
 
@@ -76,7 +79,7 @@ function Get-TppAttribute {
     Path        : \VED\Policy\Certificates\test.gdb.com
     TypeName    : X509 Server Certificate
     Guid        : b7a7221b-e038-41d9-9d49-d7f45c1ca128
-    Driver Name : @{Value=appx509certificate; CustomFieldGuid=}
+    Driver Name : @{Value=appx509certificate}
 
     Retrieve the value for a specific attribute
 
@@ -99,9 +102,8 @@ function Get-TppAttribute {
     Path         : \VED\Policy\Certificates\test.gdb.com
     TypeName     : X509 Server Certificate
     Guid         : b7a7221b-e038-41d9-9d49-d7f45c1ca128
-    Organization : @{Value=Venafi, Inc.; CustomFieldGuid=; Overridden=False; Locked=True;
-                PolicyPath=\VED\Policy\Certificates}
-    State        : @{Value=UT; CustomFieldGuid=; Overridden=False; Locked=False; PolicyPath=\VED\Policy\Certificates}
+    Organization : @{Value=Venafi, Inc.; Overridden=False; Locked=True; PolicyPath=\VED\Policy\Certificates}
+    State        : @{Value=UT; Overridden=False; Locked=False; PolicyPath=\VED\Policy\Certificates}
 
     Retrieve the effective (policy applied) value for a specific attribute(s).
     This not only returns the value, but also the path where the policy is applied and if locked or overridden.
@@ -114,10 +116,10 @@ function Get-TppAttribute {
     TypeName                                           : X509 Server Certificate
     ServiceNow Assignment Group                        : @{Value=Venafi Management;
                                                         CustomFieldGuid={7f214dec-9878-495f-a96c-57291f0d42da};
-                                                        Overridden=False; Locked=False; PolicyPath=}
+                                                        Overridden=False; Locked=False}
     ServiceNow CI                                      : @{Value=9cc047ed1bad81100774ebd1b24bcbd0;
                                                         CustomFieldGuid={a26df613-595b-46ef-b5df-79f6eace72d9};
-                                                        Overridden=False; Locked=False; PolicyPath=}
+                                                        Overridden=False; Locked=False}
     ACME Account DN                                    :
     Adaptable CA:Binary Data Vault ID                  :
     Adaptable CA:Early Password Vault ID               :
@@ -134,11 +136,11 @@ function Get-TppAttribute {
     Path                 : \ved\policy\certificates\test.gdb.com
     TypeName             : X509 Server Certificate
     Guid                 : b7a7221b-e038-41d9-9d49-d7f45c1ca128
-    Certificate Vault Id : @{Value=442493; CustomFieldName=; PolicyPath=}
-    City                 : @{Value=Salt Lake City; CustomFieldName=; PolicyPath=\VED\Policy\Certificates}
-    Consumers            : @{Value=System.Object[]; CustomFieldName=; PolicyPath=}
-    Created By           : @{Value=WebAdmin; CustomFieldName=; PolicyPath=}
-    State                : @{Value=UT; CustomFieldName=; PolicyPath=\VED\Policy\Certificates}
+    Certificate Vault Id : @{Value=442493}
+    City                 : @{Value=Salt Lake City; PolicyPath=\VED\Policy\Certificates}
+    Consumers            : @{Value=System.Object[]}
+    Created By           : @{Value=WebAdmin}
+    State                : @{Value=UT; PolicyPath=\VED\Policy\Certificates}
 
     Retrieve values for all attributes applicable to this object
 
@@ -268,7 +270,7 @@ function Get-TppAttribute {
         $isEffective = $false
         switch ( $PSCmdlet.ParameterSetName ) {
             { $_ -in 'Policy', 'AllPolicy' } {
-                $params.uriLeaf = 'config/ReadPolicy'
+                $params.uriLeaf = 'config/FindPolicy'
                 break
             }
 
@@ -402,9 +404,8 @@ function Get-TppAttribute {
                     # add this attribute as the custom field label instead of guid
                     if ( $customField ) {
                         $newAttributeName = $customField.Label
-                    }
-
-                    if ( -not $thisConfigValue.Value ) {
+                        $CustomFieldGuid = $customField.Guid
+                    } elseif ( -not $thisConfigValue.Value ) {
                         Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $null } -Force
                         continue
                     }
@@ -441,19 +442,28 @@ function Get-TppAttribute {
 
                         $newProp = [pscustomobject] @{
                             'Value'           = $valueOut
-                            'CustomFieldGuid' = $customField.Guid
                         }
 
                         if ( $isEffective ) {
                             $newProp | Add-Member @{
-                                'PolicyPath' = $thisConfigValue.PolicyPath
                                 'Locked'     = $thisConfigValue.Locked
                                 'Overridden' = $thisConfigValue.Overridden
                             }
                         }
                     }
-
-                    Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
+                    if ($CustomField) {
+                        Add-Member -InputObject $newProp -NotePropertyMembers @{ 'CustomFieldGuid' = $CustomFieldGuid }
+                    }
+                    if ( $thisConfigValue.PolicyPath ) {
+                        Add-Member -InputObject $newProp -NotePropertyMembers @{ 'PolicyPath' = $thisConfigValue.PolicyPath }
+                    }
+    
+                    if ($newProp.Value) {
+                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
+                    } else {
+                        $newProp.PSObject.Properties.Remove('Value')
+                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
+                    }
 
                 }
 
