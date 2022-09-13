@@ -111,7 +111,7 @@ function New-VaasConnector {
 
     begin {
 
-        # Invoke-VenafiRestMethod -UriRoot 'v1' -UriLeaf 'connectors' -method post -Body @{'name'='SN test';'properties'=@{'connectorKind'='WEBHOOK';'target'=@{'type'='generic';'connection'=@{'url'='https://ven03244.service-now.com/api/venaf/webhook'}};'filter'=@{'activityTypes'=@('Authentication')}}}
+        # Invoke-VenafiRestMethod -UriRoot 'v1' -UriLeaf 'connectors' -method post -Body @{'name'='SN test';'properties'=@{'connectorKind'='WEBHOOK';'target'=@{'type'='generic';'connection'=@{'url'='https://myurl.com'}};'filter'=@{'activityTypes'=@('Authentication')}}}
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
