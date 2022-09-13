@@ -1,65 +1,78 @@
-﻿<#
-.SYNOPSIS
-Get certificate information
+﻿function Get-VenafiCertificate {
+    <#
+    .SYNOPSIS
+    Get certificate information
 
-.DESCRIPTION
-Get certificate information, either all available to the api key provided or by id or zone.
+    .DESCRIPTION
+    Get certificate information, either all available to the api key provided or by id or zone.
 
-.PARAMETER CertificateId
-Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
+    .PARAMETER CertificateId
+    Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path or guid.
 
-.PARAMETER IncludePreviousVersions
-Returns details about previous (historical) versions of a certificate (only from TPP).
-This option will add a property named PreviousVersions to the returned object.
+    .PARAMETER IncludeTppPreviousVersions
+    Returns details about previous (historical) versions of a certificate (only from TPP).
+    This option will add a property named PreviousVersions to the returned object.
 
-.PARAMETER ExcludeExpired
-Omits expired versions of the previous (historical) versions of a certificate (only from TPP).
-Can only be used with the IncludePreviousVersions parameter.
+    .PARAMETER ExcludeExpired
+    Omits expired versions of the previous (historical) versions of a certificate (only from TPP).
+    Can only be used with the IncludePreviousVersions parameter.
 
-.PARAMETER ExcludeRevoked
-Omits revoked versions of the previous (historical) versions of a certificate (only from TPP).
-Can only be used with the IncludePreviousVersions parameter.
+    .PARAMETER ExcludeRevoked
+    Omits revoked versions of the previous (historical) versions of a certificate (only from TPP).
+    Can only be used with the IncludePreviousVersions parameter.
 
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    .PARAMETER IncludeVaasOwner
+    Retrieve detailed user/team owner info, only for VaaS.
+    This will cause additional api calls to be made and take longer.
 
-.INPUTS
-CertificateId/Path from TppObject
+    .PARAMETER All
+    Retrieve all certificates
 
-.OUTPUTS
-PSCustomObject
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
-.EXAMPLE
-Get-VenafiCertificate
-Get certificate info for all certs
+    .INPUTS
+    CertificateId
 
-.EXAMPLE
-Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-Get certificate info for a specific cert on Venafi as a Serivce
+    .OUTPUTS
+    PSCustomObject
 
-.EXAMPLE
-Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
-Get certificate info for a specific cert on TPP
+    .EXAMPLE
+    Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
-.EXAMPLE
-Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions
-Get certificate info for a specific cert on TPP, including historical versions of the certificate.
+    Get certificate info for a specific cert on Venafi as a Serivce
 
-.EXAMPLE
-Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions -ExcludeRevoked -ExcludeExpired
-Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
+    .EXAMPLE
+    Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
 
-.EXAMPLE
-Find-TppCertificate | Get-VenafiCertificate
-Get certificate info for all certs in TPP
+    Get certificate info for a specific cert on TPP
 
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php
-#>
-function Get-VenafiCertificate {
+    .EXAMPLE
+    Get-VenafiCertificate -All
+
+    Get certificate info for all certs in either TPP or VaaS
+
+    .EXAMPLE
+    Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions
+
+    Get certificate info for a specific cert on TPP, including historical versions of the certificate.
+
+    .EXAMPLE
+    Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions -ExcludeRevoked -ExcludeExpired
+
+    Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
+
+    .EXAMPLE
+    Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -IncludeVaasOwner
+
+    In addition to certificate info, get user and team owner info as well
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php
+    #>
 
     [CmdletBinding(DefaultParameterSetName = 'Id')]
     [Alias('Get-TppCertificateDetail')]
@@ -67,21 +80,29 @@ function Get-VenafiCertificate {
     param (
 
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'OldVersions', Mandatory, ValueFromPipelineByPropertyName)]
-        [Alias('Path')]
+        [Parameter(ParameterSetName = 'VaasId', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'TppOldVersions', Mandatory, ValueFromPipelineByPropertyName)]
+        [Alias('Guid', 'Path')]
         [string] $CertificateId,
 
-        [Parameter(Mandatory, ParameterSetName = 'OldVersions')]
-        [switch] $IncludePreviousVersions,
+        [Parameter(Mandatory, ParameterSetName = 'TppAll')]
+        [Parameter(Mandatory, ParameterSetName = 'VaasAll')]
+        [Switch] $All,
 
-        [Parameter(ParameterSetName = 'OldVersions')]
+        [Parameter(Mandatory, ParameterSetName = 'TppOldVersions')]
+        [Parameter(ParameterSetName = 'TppAll')]
+        [Alias('IncludePreviousVersions')]
+        [switch] $IncludeTppPreviousVersions,
+
+        [Parameter(ParameterSetName = 'TppOldVersions')]
         [switch] $ExcludeExpired,
 
-        [Parameter(ParameterSetName = 'OldVersions')]
+        [Parameter(ParameterSetName = 'TppOldVersions')]
         [switch] $ExcludeRevoked,
 
-        [Parameter(Mandatory, ParameterSetName = 'All')]
-        [Switch] $All,
+        [Parameter(ParameterSetName = 'VaasId')]
+        [Parameter(ParameterSetName = 'VaasAll')]
+        [Switch] $IncludeVaasOwner,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -91,6 +112,11 @@ function Get-VenafiCertificate {
     begin {
 
         $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
+
+        # paramset 'Id' is applicable to either platform
+        if ( $PsCmdlet.ParameterSetName -ne 'Id' -and $PsCmdlet.ParameterSetName -notmatch "^$platform" ) {
+            throw "The parameters selected are not applicable to $platform"
+        }
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -221,14 +247,20 @@ function Get-VenafiCertificate {
 
             Default {
 
-                if ( $PSCmdlet.ParameterSetName -in 'Id', 'OldVersions' ) {
-                    $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                if ( $PSCmdlet.ParameterSetName -in 'Id', 'TppOldVersions' ) {
+
+                    if ( [guid]::TryParse($CertificateId, $([ref][guid]::Empty)) ) {
+                        $thisGuid = ([guid] $CertificateId).ToString()
+                    } else {
+                        # a path was provided
+                        $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                    }
 
                     $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
 
                     $response = Invoke-VenafiRestMethod @params
 
-                    if ( $IncludePreviousVersions ) {
+                    if ( $IncludeTppPreviousVersions ) {
                         $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}/PreviousVersions")
                         $params.Body = @{}
 
@@ -264,7 +296,7 @@ function Get-VenafiCertificate {
                     $response | Select-Object @selectProps
 
                 } else {
-                    Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession
+                    Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession | Get-VenafiCertificate -IncludeTppPreviousVersions:$IncludeTppPreviousVersions -VenafiSession $VenafiSession
                 }
             }
         }
