@@ -68,39 +68,21 @@ function New-VaasConnector {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'NoTarget', SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess)]
 
     param (
         [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
         [string] $Name,
 
         [Parameter(Mandatory)]
-        [guid[]] $Owner,
+        [string] $Url,
+
+        [Parameter(Mandatory)]
+        [String[]] $ActivityType,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [String] $Description,
-
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [hashtable] $CertificateIssuingTemplate,
-
-        [Parameter(ParameterSetName = 'Fqdn', Mandatory)]
-        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
-        [ValidateNotNullOrEmpty()]
-        [string[]] $Fqdn,
-
-        [Parameter(ParameterSetName = 'IPRange', Mandatory)]
-        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
-        [ValidateNotNullOrEmpty()]
-        [string[]] $IPRange,
-
-        [Parameter(ParameterSetName = 'Fqdn', Mandatory)]
-        [Parameter(ParameterSetName = 'IPRange', Mandatory)]
-        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
-        [ValidateNotNullOrEmpty()]
-        [string[]] $Port,
+        [string] $Secret,
 
         [Parameter()]
         [switch] $PassThru,
@@ -110,87 +92,39 @@ function New-VaasConnector {
     )
 
     begin {
-
-        # Invoke-VenafiRestMethod -UriRoot 'v1' -UriLeaf 'connectors' -method post -Body @{'name'='SN test';'properties'=@{'connectorKind'='WEBHOOK';'target'=@{'type'='generic';'connection'=@{'url'='https://myurl.com'}};'filter'=@{'activityTypes'=@('Authentication')}}}
-
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
-
-        # determine if user or team and build the payload
-        $ownerHash = foreach ($thisOwner in $Owner) {
-            $team = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
-            if ( $team ) {
-                @{ 'ownerId' = $thisOwner; 'ownerType' = 'TEAM' }
-            } else {
-                $user = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
-                if ( $user ) {
-                    @{ 'ownerId' = $thisOwner; 'ownerType' = 'USER' }
-                } else {
-                    Write-Error "Owner $thisOwner not found for application $Name"
-                    Continue
-                }
-            }
-        }
-
-        $templateHash = @{}
-
-        if ( $PSBoundParameters.ContainsKey('CertificateIssuingTemplate') ) {
-            $CertificateIssuingTemplate.GetEnumerator() | ForEach-Object {
-                if ( $_.Value ) {
-                    $templateHash.Add($_.Value, $_.Key)
-                } else {
-                    $thisTemplate = Get-VaasIssuingTemplate -ID $_.Key -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
-                    if ( $thisTemplate ) {
-                        $templateHash.Add($thisTemplate.Name, $_.Key)
-                    } else {
-                        Write-Error ('Template ID {0} not found' -f $_.Key)
-                        Continue
-                    }
-                }
-            }
-        }
     }
 
     process {
 
-        Write-Verbose $PSCmdlet.ParameterSetName
-
-        if ( -not $ownerHash ) {
-            return
-        }
-
         $params = @{
             VenafiSession = $VenafiSession
             Method        = 'Post'
-            UriRoot       = 'outagedetection/v1'
-            UriLeaf       = 'applications'
+            UriRoot       = 'v1'
+            UriLeaf       = 'connectors'
             Body          = @{
-                name             = $Name
-                ownerIdsAndTypes = [array] $ownerHash
+                name       = $Name
+                properties = @{
+                    'connectorKind' = 'WEBHOOK'
+                    'target'        = @{
+                        'type'       = 'generic'
+                        'connection' = @{
+                            'url' = $Url
+                        }
+                    }
+                    'filter'        = @{
+                        'activityTypes' = @($ActivityType)
+                    }
+                }
             }
             FullResponse  = $true
         }
 
-        if ( $PSBoundParameters.ContainsKey('Description') ) {
-            $params.Body.description = $Description
+        if ( $PSBoundParameters.ContainsKey('Secret') ) {
+            $params.Body.properties.target.secret = $Secret
         }
 
-        if ( $templateHash.Count -gt 0 ) {
-            $params.Body.certificateIssuingTemplateAliasIdMap = $templateHash
-        }
-
-        if ( $PSBoundParameters.ContainsKey('Fqdn') ) {
-            $params.Body.fullyQualifiedDomainNames = $Fqdn
-        }
-
-        if ( $PSBoundParameters.ContainsKey('IPRange') ) {
-            $params.Body.ipRanges = $IPRange
-        }
-
-        if ( $PSBoundParameters.ContainsKey('Port') ) {
-            $params.Body.ports = $Port
-        }
-
-        if ( $PSCmdlet.ShouldProcess($Name, 'Create application') ) {
+        if ( $PSCmdlet.ShouldProcess($Name, 'Create connector') ) {
 
             try {
                 $response = Invoke-VenafiRestMethod @params
@@ -198,13 +132,12 @@ function New-VaasConnector {
 
                     '201' {
                         if ( $PassThru ) {
-                            $response.Content | ConvertFrom-Json |
-                            Select-Object -ExpandProperty applications | Select-Object -Property @{'n' = 'applicationId'; 'e' = { $_.id } }, * -ExcludeProperty id
+                            $response.Content | ConvertFrom-Json | Select-Object -Property @{'n' = 'connectorId'; 'e' = { $_.id } }, * -ExcludeProperty id
                         }
                     }
 
                     '409' {
-                        throw "$Name already exists"
+                        throw "Connector '$Name' already exists"
                     }
 
                     default {
