@@ -101,7 +101,7 @@ function New-VaasConnector {
                         }
                     }
                     'filter'        = @{
-                        'activityTypes' = @($ActivityType)
+                        'activityTypes' = @($EventType)
                     }
                 }
             }
