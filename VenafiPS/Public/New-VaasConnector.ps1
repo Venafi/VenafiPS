@@ -10,17 +10,18 @@ function New-VaasConnector {
     Connector name
 
     .PARAMETER Url
-    Endpoint to be called with the activity type is triggered
+    Endpoint to be called when the event type is triggered
 
     .PARAMETER EventType
     One or more event types to trigger on.
     You can retrieve a list of possible values from the Event Log and filtering on Event Type.
 
-    .PARAMETER Secret
-    Name of the secret to use for connecting to the Url
+    .PARAMETER Token
+    Token/secret to pass to Url for authentication.
+    Set the token as the password on a pscredential.
 
     .PARAMETER PassThru
-    Return newly created application object
+    Return newly created connector object
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -39,6 +40,11 @@ function New-VaasConnector {
     New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication', 'Certificates', 'Applications'
 
     Create a new connector with multiple event types
+
+    .EXAMPLE
+    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Token $myTokenCred
+
+    Create a new connector with optional token
 
     .EXAMPLE
     New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -PassThru
@@ -70,7 +76,7 @@ function New-VaasConnector {
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [string] $Secret,
+        [pscredential] $Token,
 
         [Parameter()]
         [switch] $PassThru,
@@ -108,8 +114,8 @@ function New-VaasConnector {
             FullResponse  = $true
         }
 
-        if ( $PSBoundParameters.ContainsKey('Secret') ) {
-            $params.Body.properties.target.secret = $Secret
+        if ( $PSBoundParameters.ContainsKey('Token') ) {
+            $params.Body.properties.target.connection.secret = $Token.GetNetworkCredential().Password
         }
 
         if ( $PSCmdlet.ShouldProcess($Name, 'Create connector') ) {
