@@ -1,42 +1,38 @@
 function Remove-VaasConnector {
     <#
     .SYNOPSIS
-    Delete a code sign project
+    Remove a VaaS connector
 
     .DESCRIPTION
-    Delete a code sign project.  You must be a code sign admin or owner of the project.
+    Remove a VaaS connector
 
-    .PARAMETER Path
-    Path of the project to delete
+    .PARAMETER ID
+    Guid of the connector
 
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A VaaS key can also provided.
 
     .INPUTS
-    Path
+    ID
 
     .OUTPUTS
     None
 
     .EXAMPLE
-    Remove-TppCodeSignProject -Path '\ved\code signing\projects\my_project'
-    Delete a project
+    Remove-VaasConnector -ID $my_guid
 
-    .EXAMPLE
-    $projectObj | Remove-TppCodeSignProject
-    Remove 1 or more projects.  Get projects with Find-TppCodeSignProject
+    Remove a connector
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppCodeSignProject/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Remove-VaasConnector/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-TppCodeSignProject.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Remove-VaasConnector.ps1
 
     .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/CodeSignSDK/r-SDKc-POST-Codesign-DeleteProject.php
+    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=connectors-service#/Connectors/connectors_delete
 
     #>
 

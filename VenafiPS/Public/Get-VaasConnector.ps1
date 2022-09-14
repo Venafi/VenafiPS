@@ -1,16 +1,16 @@
 function Get-VaasConnector {
     <#
     .SYNOPSIS
-    Get application info
+    Get VaaS connectors
 
     .DESCRIPTION
-    Get info for either a specific application or all applications.  Venafi as a Service only, not for TPP.
+    Get 1 or all VaaS connectors
 
     .PARAMETER ID
-    Name or Guid to get info for a specific application
+    Guid for the specific connector to retrieve
 
     .PARAMETER All
-    Get all applications
+    Get all connectors
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -24,31 +24,26 @@ function Get-VaasConnector {
     PSCustomObject
 
     .EXAMPLE
-    Get-VaasApplication -ID 'MyApp'
+    Get-VaasConnector -ID $my_guid
 
-    Get info for a specific application by name
-
-    .EXAMPLE
-    Get-VaasApplication -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-
-    Get info for a specific application
+    Get info for a specific connector
 
     .EXAMPLE
-    Get-VaasApplication -All
+    Get-VaasConnector -All
 
-    Get info for all applications
-
-    .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasApplication/
+    Get info for all connectors
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasApplication.ps1
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VaasConnector/
 
     .LINK
-    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getAll
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VaasConnector.ps1
 
     .LINK
-    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_getById
+    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=connectors-service#/Connectors/connectors_getAll
+
+    .LINK
+    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=connectors-service#/Connectors/connectors_getById
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ID')]
@@ -57,7 +52,7 @@ function Get-VaasConnector {
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('connectorId')]
-        [string] $ID,
+        [guid] $ID,
 
         [Parameter(ParameterSetName = 'All', Mandatory)]
         [switch] $All,
@@ -80,10 +75,10 @@ function Get-VaasConnector {
     process {
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
-            if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
-                $guid = [guid] $ID
-                $params.UriLeaf += "/{0}" -f $guid.ToString()
-            }
+            $params.UriLeaf += "/{0}" -f $ID
+            # if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
+            #     $guid = [guid] $ID
+            # }
         }
 
         $response = Invoke-VenafiRestMethod @params
