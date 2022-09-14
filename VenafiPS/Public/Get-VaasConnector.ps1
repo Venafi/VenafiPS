@@ -76,9 +76,6 @@ function Get-VaasConnector {
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
             $params.UriLeaf += "/{0}" -f $ID
-            # if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
-            #     $guid = [guid] $ID
-            # }
         }
 
         $response = Invoke-VenafiRestMethod @params
