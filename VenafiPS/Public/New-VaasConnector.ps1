@@ -1,35 +1,23 @@
 function New-VaasConnector {
     <#
     .SYNOPSIS
-    Create a new application
+    Create a new connector
 
     .DESCRIPTION
-    Create a new application with optional details
+    Create a new connector
 
     .PARAMETER Name
-    Application name
+    Connector name
 
-    .PARAMETER Owner
-    List of user and/or team IDs to be owners.
-    Use Get-VenafiIdentity or Get-VenafiTeam to retrieve the ID.
+    .PARAMETER Url
+    Endpoint to be called with the activity type is triggered
 
-    .PARAMETER Description
-    Application description
+    .PARAMETER EventType
+    One or more event types to trigger on.
+    You can retrieve a list of possible values from the Event Log and filtering on Event Type.
 
-    .PARAMETER CertificateIssuingTemplate
-    Hashtable of issuing templates.
-    For each key/value pair, the key should be the issuing template id and the value should be the alias.
-    Null can be provided for the alias which will use the template name as the alias.
-
-    .PARAMETER Fqdn
-    Fully qualified domain names to assign to the application
-
-    .PARAMETER IPRange
-    IP ranges to assign to the application
-
-    .PARAMETER Port
-    Ports to assign to the application.
-    Required if either Fqdn or IPRange are specified.
+    .PARAMETER Secret
+    Name of the secret to use for connecting to the Url
 
     .PARAMETER PassThru
     Return newly created application object
@@ -43,28 +31,28 @@ function New-VaasConnector {
     PSCustomObject, if PassThru provided
 
     .EXAMPLE
-    New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d'
+    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication'
 
-    Create a new application
-
-    .EXAMPLE
-    New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d' -CertificateIssuingTemplate @{'9c9618e8-6b4c-4a1c-8c11-902c9b2676d3'=$null} -Description 'this app is awesome' -Fqdn 'me.com' -IPRange '1.2.3.4/24' -Port '443','9443'
-
-    Create a new application with optional details
+    Create a new connector
 
     .EXAMPLE
-    New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d' -PassThru
+    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication', 'Certificates', 'Applications'
 
-    Create a new application and return the newly created application object
+    Create a new connector with multiple event types
+
+    .EXAMPLE
+    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -PassThru
+
+    Create a new connector returning the newly created object
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/New-VaasApplication/
+    http://VenafiPS.readthedocs.io/en/latest/functions/New-VaasConnector/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VaasApplication.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VaasConnector.ps1
 
     .LINK
-    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_create
+    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=connectors-service#/Connectors/connectors_create
 
     #>
 
@@ -78,7 +66,7 @@ function New-VaasConnector {
         [string] $Url,
 
         [Parameter(Mandatory)]
-        [String[]] $ActivityType,
+        [String[]] $EventType,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
