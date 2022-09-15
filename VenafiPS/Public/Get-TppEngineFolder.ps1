@@ -104,7 +104,7 @@ function Get-TppEngineFolder {
 
                 # policy folder
 
-                $response = Invoke-VenafiRestMethod -UriLeaf "ProcessingEngines/Folder/thisObjectGuid" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Engines
+                $response = Invoke-VenafiRestMethod -UriLeaf "ProcessingEngines/Folder/$thisObjectGuid" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Engines
 
                 $response | Select-Object EngineName,
                 @{ 'n' = 'EnginePath'; 'e' = { $_.EngineDN } },
