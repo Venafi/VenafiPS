@@ -38,20 +38,12 @@ function Add-TppEngineFolder
     [CmdletBinding(SupportsShouldProcess)]
 
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'AddByObject')]
-        [ValidateScript( {
-            if ( $_.TypeName -eq 'Venafi Platform') { $true }
-            else { throw "Object '$($_.Path)' is not a processing engine"}
-        })]
-        [TppObject] $EngineObject,
-
-        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'AddByPath')]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateScript( {
             if ( $_ | Test-TppDnPath ) { $true }
             else { throw "'$_' is not a valid DN path" }
         })]
-        [Alias('DN', 'EngineDN', 'Engine', 'Path')]
+        [Alias('EnginePath', 'Engine', 'Path')]
         [String] $EnginePath,
 
         [Parameter(Mandatory)]
