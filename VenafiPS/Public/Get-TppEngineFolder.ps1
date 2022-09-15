@@ -1,65 +1,69 @@
-<#
-.SYNOPSIS
-Get TPP folder/engine assignments
-.DESCRIPTION
-When the input is a policy folder, retrieves an array of assigned TPP processing engines.
-When the input is a TPP engine, retrieves an array of assigned policy folders.
-If there are no matching assignments, nothing will be returned.
-.PARAMETER Path
-The full DN path to a TPP processing engine or policy folder.
-.PARAMETER InputObject
-TPPObject belonging to the 'Venafi Platform' or 'Policy' class.
-.PARAMETER Guid
-Guid of a TPP processing engine or policy folder.
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
-.INPUTS
-Path, Guid, TppObject
-.OUTPUTS
-TppObject[]
-.EXAMPLE
-Get-TppEngineFolder -Path '\VED\Engines\MYVENSERVER'
-Get an array of policy folders assigned to the TPP processing engine 'MYVENSERVER'.
-.EXAMPLE
-Get-TppEngineFolder -Path '\VED\Policy\Certificates\Web Team'
-Get an array of TPP processing engines assigned to the policy folder '\VED\Policy\Certificates\Web Team'.
-.EXAMPLE
-[guid]'866e1d59-d5d2-482a-b9e6-7bb657e0f416' | Get-TppEngineFolder
-When the GUID is assigned to a TPP processing engine, returns an array of assigned policy folders.
-When the GUID is assigned to a policy folder, returns an array of assigned TPP processing engines.
-Otherwise nothing will be returned.
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppEngineFolder/
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppEngineFolder.ps1
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-ProcessingEngines-Engine-eguid.php
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-ProcessingEngines-Folder-fguid.php
-#>
-function Get-TppEngineFolder
-{
-    [CmdletBinding()]
+function Get-TppEngineFolder {
+    <#
+    .SYNOPSIS
+    Get TPP folder/engine assignments
+
+    .DESCRIPTION
+    When the input is a policy folder, retrieves an array of assigned TPP processing engines.
+    When the input is a TPP engine, retrieves an array of assigned policy folders.
+    If there are no matching assignments, nothing will be returned.
+
+    .PARAMETER ID
+    The full DN path or Guid to a TPP processing engine or policy folder.
+
+    .PARAMETER All
+    Get all engine/folder assignments
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+
+    .INPUTS
+    ID
+
+    .OUTPUTS
+    PSCustomObject
+
+    .EXAMPLE
+    Get-TppEngineFolder -Path '\VED\Engines\MYVENSERVER'
+
+    Get an array of policy folders assigned to the TPP processing engine 'MYVENSERVER'.
+
+    .EXAMPLE
+    Get-TppEngineFolder -Path '\VED\Policy\Certificates\Web Team'
+
+    Get an array of TPP processing engines assigned to the policy folder '\VED\Policy\Certificates\Web Team'.
+
+    .EXAMPLE
+    [guid]'866e1d59-d5d2-482a-b9e6-7bb657e0f416' | Get-TppEngineFolder
+
+    When the GUID is assigned to a TPP processing engine, returns an array of assigned policy folders.
+    When the GUID is assigned to a policy folder, returns an array of assigned TPP processing engines.
+    Otherwise nothing will be returned.
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppEngineFolder/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppEngineFolder.ps1
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-ProcessingEngines-Engine-eguid.php
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-ProcessingEngines-Folder-fguid.php
+    #>
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-            if ( $_ | Test-TppDnPath ) { $true }
-            else { throw "'$_' is not a valid DN path" }
-        })]
-        [Alias('DN')]
-        [String] $Path,
+        [Alias('EngineGuid', 'Guid', 'EnginePath', 'Path')]
+        [String] $ID,
 
-        [Parameter(ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
-
-        [Parameter(Mandatory, ParameterSetName = 'ByGuid', ValueFromPipeline)]
-        [ValidateNotNullOrEmpty()]
-        [Alias('ObjectGuid')]
-        [guid] $Guid,
+        [Parameter(ParameterSetName = 'All', Mandatory)]
+        [switch] $All,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
@@ -70,36 +74,47 @@ function Get-TppEngineFolder
     }
 
     process {
-        if ($PsCmdlet.ParameterSetName -ne 'ByObject') {
-            $params = @{
-                VenafiSession = $VenafiSession
-            }
-            if ($PsCmdlet.ParameterSetName -eq 'ByPath') {
-                $params.Path = $Path
-            }
-            else {
-                $params.Guid = $Guid
-            }
-            # If our input isn't TppObject we don't have the TypeName needed to determine behavior
-            $InputObject = Get-TppObject @params
-        }
 
-        if ($InputObject.TypeName -eq 'Venafi Platform') {
-            $apiLeaf = "ProcessingEngines/Engine/{$($InputObject.Guid)}"
-            $response = ((Invoke-VenafiRestMethod -VenafiSession $VenafiSession -Method Get -UriLeaf $apiLeaf).Folders)
-            foreach ($item in $response) {
-                $folder = Get-TppObject -Guid ($item.FolderGuid) -VenafiSession $VenafiSession
-                # Return valid policy objects. i.e. omit the engine link to itself.
-                if ($folder.TypeName -eq 'Policy') { $folder }
+        if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
+            Invoke-VenafiRestMethod -UriLeaf 'ProcessingEngines/' | Select-Object -ExpandProperty Engines | Get-TppEngineFolder
+        } else {
+
+            if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
+                $thisObject = Get-TppObject -Guid $ID -VenafiSession $VenafiSession
+            } else {
+                $thisObject = Get-TppObject -Path $ID -VenafiSession $VenafiSession
             }
-        }
-        elseif ($InputObject.TypeName -eq 'Policy') {
-            $apiLeaf = "ProcessingEngines/Folder/{$($InputObject.Guid)}"
-            $response = ((Invoke-VenafiRestMethod -VenafiSession $VenafiSession -Method Get -UriLeaf $apiLeaf).Engines)
-            foreach ($item in $response) {
-                $engine = Get-TppObject -Guid ($item.EngineGuid) -VenafiSession $VenafiSession
-                # This call should only return engines, but filter for consistency anyway.
-                if ($engine.TypeName -eq 'Venafi Platform') { $engine }
+
+            $thisObjectGuid = '{{{0}}}' -f $thisObject.Guid
+
+            if ( $thisObject.TypeName -eq 'Venafi Platform' ) {
+
+                # engine
+
+                $response = Invoke-VenafiRestMethod -UriLeaf "ProcessingEngines/Engine/$thisObjectGuid" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Folders
+
+                $response | Where-Object { $_.FolderGuid -ne $thisObjectGuid } | Select-Object FolderName,
+                @{ 'n' = 'FolderPath'; 'e' = { $_.FolderDN } },
+                @{ 'n' = 'FolderGuid'; 'e' = { $_.FolderGuid.Trim('{}') } },
+                @{ 'n' = 'EngineName'; 'e' = { $thisObject.Name } },
+                @{ 'n' = 'EnginePath'; 'e' = { $thisObject.Path } },
+                @{ 'n' = 'EngineGuid'; 'e' = { $thisObject.Guid } }
+
+            } elseif ( $thisObject.TypeName -eq 'Policy' ) {
+
+                # policy folder
+
+                $response = Invoke-VenafiRestMethod -UriLeaf "ProcessingEngines/Folder/thisObjectGuid" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Engines
+
+                $response | Select-Object EngineName,
+                @{ 'n' = 'EnginePath'; 'e' = { $_.EngineDN } },
+                @{ 'n' = 'EngineGuid'; 'e' = { $_.EngineGuid.Trim('{}') } },
+                @{ 'n' = 'FolderName'; 'e' = { $thisObject.Name } },
+                @{ 'n' = 'FolderPath'; 'e' = { $thisObject.Path } },
+                @{ 'n' = 'FolderGuid'; 'e' = { $thisObject.Guid } }
+
+            } else {
+                throw ('Unsupported object type, {0}' -f $thisObject.TypeName)
             }
         }
     }
