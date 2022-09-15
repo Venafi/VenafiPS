@@ -43,7 +43,7 @@ function Add-TppEngineFolder
             if ( $_ | Test-TppDnPath ) { $true }
             else { throw "'$_' is not a valid DN path" }
         })]
-        [Alias('EnginePath', 'Engine', 'Path')]
+        [Alias('EngineDN', 'Engine', 'Path')]
         [String] $EnginePath,
 
         [Parameter(Mandatory)]
