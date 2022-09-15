@@ -69,23 +69,14 @@ function Add-TppEngineFolder
                 FolderGuids = ''
             }
         }
-
-        if ($PSBoundParameters['Debug']) {
-            $dPrefSave = $DebugPreference
-            $DebugPreference = 'Continue'
-        }
     }
 
     process {
         if ( -not ($PSBoundParameters.ContainsKey('EngineObject')) ) {
-            Write-Debug ("Converting $($EnginePath) to TppObject")
             $EngineObject = Get-TppObject -Path $EnginePath -VenafiSession $VenafiSession
             if ($EngineObject.TypeName -ne 'Venafi Platform') {
                 throw ("DN/Path '$($EngineObject.Path)' is not a processing engine")
             }
-        }
-        else {
-            Write-Debug ("Processing Engine Object $($EngineObject.Path)")
         }
 
         $FolderGuids = [System.Collections.Generic.List[string]]::new()
@@ -117,7 +108,6 @@ function Add-TppEngineFolder
         }
 
         if ($PSCmdlet.ShouldProcess($EngineObject.Name, $shouldProcessAction)) {
-            Write-Debug ("Invoke Venafi UriLeaf: $($params.UriLeaf)")
             $response = Invoke-VenafiRestMethod @params
 
             if ($response.AddedCount -ne $FolderGuids.Count) {
@@ -128,10 +118,8 @@ function Add-TppEngineFolder
                 Write-Warning ($errorMessage)
             }
             else {
-                Write-Debug ("Added $($response.AddedCount) folder(s) to $($EngineObject.Name)")
+                Write-Verbose ("Added $($response.AddedCount) folder(s) to $($EngineObject.Name)")
             }
         }
     }
-
-    end { if ($dPrefSave) { $DebugPreference = $dPrefSave } }
 }
