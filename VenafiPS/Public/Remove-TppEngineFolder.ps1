@@ -81,11 +81,6 @@ function Remove-TppEngineFolder
         }
 
         $apiCall = "ProcessingEngines/Folder"
-
-        if ($PSBoundParameters['Debug']) {
-            $dPrefSave = $DebugPreference
-            $DebugPreference = 'Continue'
-        }
     }
 
     process {
@@ -141,11 +136,9 @@ function Remove-TppEngineFolder
             $shouldProcessAction = "Remove ALL processing engine assignments"
             if ($FolderList.Count -gt 1) { $shouldProcessTarget = "$($FolderList.Count) folders" }
             else { $shouldProcessTarget = "$($FolderList.Path)" }
-            Write-Debug ("ParameterSetName='$($PSCmdlet.ParameterSetName)': '$($shouldProcessAction)' from '$($shouldProcessTarget)'")
             if ($PSCmdlet.ShouldProcess($shouldProcessTarget, $shouldProcessAction)) {
                 foreach ($folder in $FolderList) {
                     $uriLeaf = "$($apiCall)/{$($folder.Guid)}"
-                    Write-Debug ("Invoke Venafi UriLeaf: $($uriLeaf)")
                     try {
                         Invoke-VenafiRestMethod @params -UriLeaf $uriLeaf | Out-Null
                     }
@@ -168,10 +161,9 @@ function Remove-TppEngineFolder
                 if ($EngineList.Count -gt 1) { $shouldProcessTarget = "$($EngineList.Count) processing engines" }
                 else { $shouldProcessTarget += "$($EngineList.Name)" }
             }
-            Write-Debug ("ParameterSetName='$($PSCmdlet.ParameterSetName)': '$($shouldProcessAction)' from '$($shouldProcessTarget)'")
             if ($PSCmdlet.ShouldProcess($shouldProcessTarget, $shouldProcessAction)) {
                 foreach ($engine in $EngineList) {
-                    Write-Debug ("Engine Processing Loop: '$($engine.Path)'")
+                    Write-Verbose ("Processing Engine: '$($engine.Path)'")
                     if ($PSCmdlet.ParameterSetName -eq 'AllFolders') {
                         [TppObject[]] $FolderList = @()
                         $FolderList += ($engine | Get-TppEngineFolder -VenafiSession $VenafiSession)
@@ -184,7 +176,6 @@ function Remove-TppEngineFolder
                     }
                     foreach ($folder in $FolderList) {
                         $uriLeaf = "$($apiCall)/{$($folder.Guid)}/{$($engine.Guid)}"
-                        Write-Debug ("Invoke Venafi UriLeaf: $($uriLeaf)")
                         try {
                             Invoke-VenafiRestMethod @params -UriLeaf $uriLeaf | Out-Null
                         }
@@ -197,6 +188,4 @@ function Remove-TppEngineFolder
             }
         }
     }
-
-    end { if ($dPrefSave) { $DebugPreference = $dPrefSave } }
 }
