@@ -28,7 +28,7 @@ function Get-TppAttribute {
     This will perform 3 steps, get the object type, enumerate the attributes for the object type, and get all the values.
     Note, expect this to take longer than usual given the number of api calls.
 
-    .PARAMETER PolicyClass
+    .PARAMETER Class
     Get policies (aka policy attributes) instead of object attributes.
     Provide the class name to retrieve the value for.
     If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
@@ -38,7 +38,7 @@ function Get-TppAttribute {
     New output format which returns 1 object with multiple properties instead of an object per property
 
     .PARAMETER Policy
-    Deprecated.  To retrieve policy attributes, just provide -PolicyClass.
+    Deprecated.  To retrieve policy attributes, just provide -Class.
 
     .PARAMETER AsValue
     Deprecated.  No longer required with -New format.
@@ -145,24 +145,24 @@ function Get-TppAttribute {
     Retrieve values for all attributes applicable to this object
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates' -PolicyClass 'X509 Certificate' -Attribute 'State' -New
+    Get-TppAttribute -Path '\VED\Policy\certificates' -Class 'X509 Certificate' -Attribute 'State' -New
 
     Name            : certificates
     Path            : \VED\Policy\certificates
     TypeName        : Policy
     Guid            : a91fc152-a9fb-4b49-a7ca-7014b14d73eb
-    PolicyClassName : X509 Certificate
+    ClassName : X509 Certificate
     State           : @{Value=UT; Locked=False}
 
     Retrieve specific policy attribute values for the specified policy folder and class
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates' -PolicyClass 'X509 Certificate' -All -New
+    Get-TppAttribute -Path '\VED\Policy\certificates' -Class 'X509 Certificate' -All -New
 
     Name                                               : certificates
     Path                                               : \VED\Policy\certificates
     TypeName                                           : Policy
-    PolicyClassName                                    : X509 Certificate
+    ClassName                                    : X509 Certificate
     ServiceNow Assignment Group                        :
     Certificate Authority                              :
     Certificate Download: PBES2 Algorithm              :
@@ -188,59 +188,27 @@ function Get-TppAttribute {
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readeffectivepolicy.php
 
     #>
-    [CmdletBinding(DefaultParameterSetName = 'ByPath')]
+    [CmdletBinding(DefaultParameterSetName = 'Attribute')]
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'AllByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'Effective', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'AllEffective', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'Policy', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'AllPolicy', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                if ( $_ | Test-TppDnPath ) {
-                    $true
-                } else {
-                    throw "'$_' is not a valid DN path"
-                }
-            })]
+        [Parameter(Mandatory, ParameterSetName = 'Attribute', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'All', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('DN')]
         [String] $Path,
 
-        [Parameter(Mandatory, ParameterSetName = 'Effective')]
-        [Parameter(ParameterSetName = 'ByPath')]
-        [Parameter(Mandatory, ParameterSetName = 'Policy')]
+        [Parameter(Mandatory, ParameterSetName = 'Attribute')]
         [ValidateNotNullOrEmpty()]
         [String[]] $Attribute,
 
-        [Parameter(Mandatory, ParameterSetName = 'Effective')]
-        [Parameter(Mandatory, ParameterSetName = 'AllEffective')]
-        [Alias('EffectivePolicy')]
-        [Switch] $Effective,
-
-        [Parameter(Mandatory, ParameterSetName = 'AllByPath')]
-        [Parameter(Mandatory, ParameterSetName = 'AllEffective')]
-        [Parameter(Mandatory, ParameterSetName = 'AllPolicy')]
+        [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
 
-        [Parameter(ParameterSetName = 'Policy')]
-        [Parameter(ParameterSetName = 'AllPolicy')]
-        [switch] $Policy,
-
-        [Parameter(Mandatory, ParameterSetName = 'Policy')]
-        [Parameter(Mandatory, ParameterSetName = 'AllPolicy')]
         [ValidateNotNullOrEmpty()]
-        [Alias('ClassName')]
-        [string] $PolicyClass,
+        [Alias('ClassName', 'PolicyClass')]
+        [string] $Class,
 
-        [Parameter(ParameterSetName = 'Effective')]
-        [Parameter(ParameterSetName = 'ByPath')]
-        [Parameter(ParameterSetName = 'Policy')]
+        [Parameter(ParameterSetName = 'Attribute')]
         [switch] $AsValue,
-
-        [Parameter()]
-        [switch] $New,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
@@ -252,240 +220,166 @@ function Get-TppAttribute {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
-        if ( -not $New ) { Write-Warning 'The output format of this function will change in a future release.  Please use the new format with -New.' }
-        if ( $AsValue ) { Write-Warning '-AsValue wil be deprecated in a future release.  Please use the new format with -New.' }
-        if ( $Policy ) { Write-Warning '-Policy is no longer required; just provide -PolicyClass to find policy attributes.' }
+        if ( $AsValue -and (@($Attribute).Count -gt 1 ) ) {
+            throw '-AsValue can only be used for 1 attribute'
+        }
 
-        if ( $All -and $PolicyClass ) {
-            Write-Verbose "Getting attributes for class $PolicyClass"
-            $Attribute = Get-TppClassAttribute -ClassName $PolicyClass -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name
+        $newAttribute = $Attribute
+        if ( $All -and $Class ) {
+            Write-Verbose "Getting attributes for class $Class"
+            $newAttribute = Get-TppClassAttribute -ClassName $Class -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name -Unique
         }
 
         $params = @{
             VenafiSession = $VenafiSession
             Method        = 'Post'
             Body          = @{}
+            UriLeaf       = 'config/ReadEffectivePolicy'
         }
 
-        $isEffective = $false
-        switch ( $PSCmdlet.ParameterSetName ) {
-            { $_ -in 'Policy', 'AllPolicy' } {
-                $params.uriLeaf = 'config/FindPolicy'
-                break
-            }
-
-            { $_ -in 'Effective', 'AllEffective' } {
-                $params.uriLeaf = 'config/ReadEffectivePolicy'
-                $isEffective = $true
-                break
-            }
-
-            'AllByPath' {
-                # use config/read instead of config/readall as we will get list of attributes for this class first
-                # and then get all the values for them
-                $params.uriLeaf = 'config/read'
-                break
-            }
-
-            Default {
-                if ( $PSBoundParameters.ContainsKey('Attribute') ) {
-                    $params.uriLeaf = 'config/read'
-                } else {
-                    $params.uriLeaf = 'config/readall'
-                }
-            }
+        if ( $PSBoundParameters.ContainsKey('Class') ) {
+            $params.UriLeaf = 'config/FindPolicy'
+            $params.Body.Class = $Class
         }
     }
 
     process {
 
-        $params.Body.ObjectDN = $Path
-        $thisObject = Get-TppObject -Path $Path -VenafiSession $VenafiSession
+        $newPath = $Path | ConvertTo-TppFullPath
+        $thisObject = Get-TppObject -Path $newPath -VenafiSession $VenafiSession
 
-        if ( $PolicyClass -and $thisObject.TypeName -ne 'Policy' ) {
+        if ( $PSBoundParameters.ContainsKey('Class') -and $thisObject.TypeName -ne 'Policy' ) {
             Write-Error ('You are attempting to retrieve policy attributes, but {0} is not a policy path' -f $Path)
             continue
         }
 
         # get all attributes if item is an object other than a policy
-        if ( $All -and -not $PolicyClass ) {
-            $Attribute = Get-TppClassAttribute -ClassName $thisObject.TypeName -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name
+        if ( $All -and -not $Class ) {
+            $newAttribute = Get-TppClassAttribute -ClassName $thisObject.TypeName -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name -Unique
         }
 
-        if ( $Attribute ) {
+        $params.Body.ObjectDN = $newPath
 
-            # get the attribute values one by one as there is no
-            # api which allows passing a list
-            $configValues = foreach ($thisAttribute in $Attribute) {
-
-                $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
-
-                if ( $customField ) {
-                    $params.Body.AttributeName = $customField.Guid
-                } else {
-                    $params.Body.AttributeName = $thisAttribute
-                }
-
-                # add the class for a policy call
-                if ( $PolicyClass ) {
-                    $params.Body.Class = $PolicyClass
-                }
-
-                $response = Invoke-VenafiRestMethod @params
-
-                if ( $response.Error ) {
-                    if ( $response.Result -eq 601) {
-                        Write-Error "'$thisAttribute' is not a valid attribute for $Path"
-                        continue
-                    } elseif ( $response.Result -eq 102) {
-                        # attribute is valid, but value not set
-                        # we're ok with this one
-                    } else {
-                        Write-Error $response.Error
-                        continue
-                    }
-                }
-
-                [PSCustomObject] @{
-                    Name       = $thisAttribute
-                    Value      = $response.Values
-                    PolicyPath = $response.PolicyDN
-                    Locked     = $response.Locked
-                    Overridden = $response.Overridden
-                }
-            }
-        } else {
-            $response = Invoke-VenafiRestMethod @params
-            if ( $response ) {
-                $configValues = $response.NameValues | Select-Object Name,
-                @{
-                    n = 'Value'
-                    e = {
-                        $_.Values
-                    }
-                }
-            }
+        $return = [pscustomobject] @{
+            Name      = $thisObject.Name
+            Path      = $newPath
+            TypeName  = $thisObject.TypeName
+            Guid      = $thisObject.Guid
+            Attribute = [pscustomobject] @{}
         }
 
-        if ( $configValues ) {
+        if ( $PSBoundParameters.ContainsKey('Class') ) {
+            $return | Add-Member @{ 'ClassName' = $Class }
+        }
 
-            $configValues = @($configValues)
+        $allAttributes = foreach ($thisAttribute in $newAttribute) {
 
-            if ( $AsValue ) {
-                if ( $configValues.Count -eq 1 ) {
-                    return $configValues.Value
-                } else {
-                    Write-Warning '-AsValue can only be used for 1 attribute'
-                }
-            }
+            Write-Verbose "Processing attribute $thisAttribute"
 
-            if ( $New ) {
+            $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
 
-                $return = [pscustomobject] @{
-                    Name     = $thisObject.Name
-                    Path     = $Path
-                    TypeName = $thisObject.TypeName
-                    Guid     = $thisObject.Guid
-                }
-
-                if ( $PSBoundParameters.ContainsKey('PolicyClass') ) {
-                    Add-Member -InputObject $return -NotePropertyMembers @{ 'PolicyClassName' = $PolicyClass }
-                }
-
-                # no customfieldname for policy attribs
-
-                foreach ($thisConfigValue in $configValues) {
-
-                    # attribute name will be overridden to use the label if a custom field
-                    $newAttributeName = $thisConfigValue.Name
-
-                    $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name -or $_.Label -eq $thisConfigValue.Name }
-
-                    # add this attribute as the custom field label instead of guid
-                    if ( $customField ) {
-                        $newAttributeName = $customField.Label
-                        $CustomFieldGuid = $customField.Guid
-                    } elseif ( -not $thisConfigValue.Value ) {
-                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $null } -Force
-                        continue
-                    }
-
-                    $valueOut = $null
-
-                    switch ($thisConfigValue.Value.GetType().Name) {
-                        'Object[]' {
-                            switch ($thisConfigValue.Value.Count) {
-                                0 {
-                                    $valueOut = $null
-                                }
-
-                                1 {
-                                    $valueOut = $thisConfigValue.Value[0]
-                                }
-
-                                Default {
-                                    $valueOut = $thisConfigValue.Value
-                                }
-                            }
-                        }
-                        Default {
-                            $valueOut = $thisConfigValue.Value
-                        }
-                    }
-
-                    if ( $PolicyClass ) {
-                        $newProp = [pscustomobject] @{
-                            Value  = $valueOut
-                            Locked = $thisConfigValue.Locked
-                        }
-                    } else {
-
-                        $newProp = [pscustomobject] @{
-                            'Value'           = $valueOut
-                        }
-
-                        if ( $isEffective ) {
-                            $newProp | Add-Member @{
-                                'Locked'     = $thisConfigValue.Locked
-                                'Overridden' = $thisConfigValue.Overridden
-                            }
-                        }
-                    }
-                    if ($CustomField) {
-                        Add-Member -InputObject $newProp -NotePropertyMembers @{ 'CustomFieldGuid' = $CustomFieldGuid }
-                    }
-                    if ( $thisConfigValue.PolicyPath ) {
-                        Add-Member -InputObject $newProp -NotePropertyMembers @{ 'PolicyPath' = $thisConfigValue.PolicyPath }
-                    }
-    
-                    if ($newProp.Value) {
-                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
-                    } else {
-                        $newProp.PSObject.Properties.Remove('Value')
-                        Add-Member -InputObject $return -NotePropertyMembers @{ $newAttributeName = $newProp } -Force
-                    }
-
-                }
-
-                $return
-
+            if ( $customField ) {
+                $params.Body.AttributeName = $customField.Guid
             } else {
+                $params.Body.AttributeName = $thisAttribute
+            }
 
-                # convert custom field guids to names
-                foreach ($thisConfigValue in $configValues) {
+            $response = Invoke-VenafiRestMethod @params
 
-                    $customField = $VenafiSession.CustomField | Where-Object { $_.Guid -eq $thisConfigValue.Name }
+            if ( $response.Error ) {
+                if ( $response.Result -eq 601) {
+                    Write-Error "'$thisAttribute' is not a valid attribute for $Path"
+                    continue
+                } elseif ( $response.Result -eq 102) {
+                    # attribute is valid, but value not set
+                    # we're ok with this one
+                } else {
+                    Write-Error $response.Error
+                    continue
+                }
+            }
 
-                    $thisConfigValue | Add-Member @{
-                        'IsCustomField' = [bool] $customField
-                        'CustomName'    = $customField.Label
+            $valueOut = $null
+
+            if ( $response.Values ) {
+                # [pscustomobject] @{ $thisAttribute = $null }
+                # $return.Attribute | Add-Member @{ $thisAttribute = $null }
+                # $return | Add-Member @{ $thisAttribute = $null }
+                # continue
+                switch ($response.Values.GetType().Name) {
+                    'Object[]' {
+                        switch ($response.Values.Count) {
+                            1 {
+                                $valueOut = $response.Values[0]
+                            }
+
+                            Default {
+                                $valueOut = $response.Values
+                            }
+                        }
                     }
-
-                    $thisConfigValue
+                    Default {
+                        $valueOut = $response.Values
+                    }
                 }
             }
 
 
+
+            $newProp = [pscustomobject] @{}
+
+            if ( $CustomField ) {
+                $newProp | Add-Member @{
+                    Name              = $customField.Label
+                    'CustomFieldGuid' = $customField.Guid
+                }
+                # @{ $customField.Label = $newProp }
+                # $return.Attribute | Add-Member @{ $customField.Label = $newProp }
+                $return | Add-Member @{ $customField.Label = $valueOut }
+            } else {
+                # @{ $thisAttribute = $newProp }
+                $return | Add-Member @{ $thisAttribute = $valueOut }
+                $newProp | Add-Member @{ Name = $thisAttribute }
+                # $return.Attribute | Add-Member @{ $thisAttribute = $newProp }
+            }
+
+            $newProp | Add-Member @{
+                Value      = $valueOut
+                PolicyPath = $response.PolicyDN
+                Locked     = $response.Locked
+            }
+
+            # overridden not available at policy level
+            if ( -not $PSBoundParameters.ContainsKey('Class') ) {
+                $newProp | Add-Member @{ 'Overridden' = $response.Overridden }
+            }
+
+            $newProp
+
+            # if ( $thisConfigValue.PolicyPath ) {
+            #     Add-Member -InputObject $newProp -NotePropertyMembers @{ 'PolicyPath' = $thisConfigValue.PolicyPath }
+            # }
+
+
+            # [pscustomobject] @{
+            #     Name          = $thisObject.Name
+            #     Path          = $Path
+            #     TypeName      = $thisObject.TypeName
+            #     Guid          = $thisObject.Guid
+            #     PolicyPath    = $response.PolicyDN
+            #     Value         = $valueOut
+            #     AttributeName = $thisAttribute
+            # }
+
+            # $return | Add-Member $response
+            # if ( $PSBoundParameters.ContainsKey('Class') ) {
+            #     Add-Member -InputObject $return -NotePropertyMembers @{ 'ClassName' = $Class }
+            # }
+
         }
+
+        $return.Attribute = @($allAttributes)
+        $return
+
     }
 }
