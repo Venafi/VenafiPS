@@ -302,10 +302,6 @@ function Get-TppAttribute {
             $valueOut = $null
 
             if ( $response.Values ) {
-                # [pscustomobject] @{ $thisAttribute = $null }
-                # $return.Attribute | Add-Member @{ $thisAttribute = $null }
-                # $return | Add-Member @{ $thisAttribute = $null }
-                # continue
                 switch ($response.Values.GetType().Name) {
                     'Object[]' {
                         switch ($response.Values.Count) {
@@ -324,7 +320,9 @@ function Get-TppAttribute {
                 }
             }
 
-
+            if ( $AsValue ) {
+                return $valueOut
+            }
 
             $newProp = [pscustomobject] @{}
 
@@ -333,14 +331,18 @@ function Get-TppAttribute {
                     Name              = $customField.Label
                     'CustomFieldGuid' = $customField.Guid
                 }
-                # @{ $customField.Label = $newProp }
-                # $return.Attribute | Add-Member @{ $customField.Label = $newProp }
-                $return | Add-Member @{ $customField.Label = $valueOut }
+
+                if ( $valueOut ) {
+                    $return | Add-Member @{ $customField.Label = $valueOut }
+                }
+
             } else {
-                # @{ $thisAttribute = $newProp }
-                $return | Add-Member @{ $thisAttribute = $valueOut }
+
+                if ( $valueOut ) {
+                    $return | Add-Member @{ $thisAttribute = $valueOut } -ErrorAction SilentlyContinue
+                }
+
                 $newProp | Add-Member @{ Name = $thisAttribute }
-                # $return.Attribute | Add-Member @{ $thisAttribute = $newProp }
             }
 
             $newProp | Add-Member @{
@@ -355,26 +357,6 @@ function Get-TppAttribute {
             }
 
             $newProp
-
-            # if ( $thisConfigValue.PolicyPath ) {
-            #     Add-Member -InputObject $newProp -NotePropertyMembers @{ 'PolicyPath' = $thisConfigValue.PolicyPath }
-            # }
-
-
-            # [pscustomobject] @{
-            #     Name          = $thisObject.Name
-            #     Path          = $Path
-            #     TypeName      = $thisObject.TypeName
-            #     Guid          = $thisObject.Guid
-            #     PolicyPath    = $response.PolicyDN
-            #     Value         = $valueOut
-            #     AttributeName = $thisAttribute
-            # }
-
-            # $return | Add-Member $response
-            # if ( $PSBoundParameters.ContainsKey('Class') ) {
-            #     Add-Member -InputObject $return -NotePropertyMembers @{ 'ClassName' = $Class }
-            # }
 
         }
 
