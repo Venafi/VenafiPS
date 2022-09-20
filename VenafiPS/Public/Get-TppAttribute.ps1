@@ -1,52 +1,40 @@
 function Get-TppAttribute {
     <#
     .SYNOPSIS
-    Get object attributes as well as policies (policy attributes)
+    Get object attributes as well as policy attributes
 
     .DESCRIPTION
-    Retrieves object attributes as well as policies (aka policy attributes).
+    Retrieves object attributes as well as policy attributes.
     You can either retrieve all attributes or individual ones.
-    By default, the attributes returned are not the effective policy, but that can be requested with the -Effective switch.
     Policy folders can have attributes as well as policies which apply to the resultant objects.
     For more info on policies and how they are different than attributes, see https://docs.venafi.com/Docs/current/TopNav/Content/Policies/c_policies_tpp.php.
 
+    Attribute properties are directly added to the return object for ease of access.
+    To retrieve attribute configuration, see the Attribute property of the return object which has properties
+    Name, PolicyPath, Locked, Value, Overridden (when applicable), and CustomFieldGuid (when applicable).
+
     .PARAMETER Path
-    Path to the object to retrieve configuration attributes.  Just providing DN will return all attributes.
+    Path to the object.  If the root is excluded, \ved\policy will be prepended.
 
     .PARAMETER Attribute
     Only retrieve the value/values for this attribute.
-    Custom fields can use either its Guid or its Label and it will be automatically handled.
-    All custom fields will have the Guid for that field added to the output.
-
-    .PARAMETER Effective
-    Get the objects attribute value, once policies have been applied.
-    When used on a Policy, it will only return attributes that apply to the Policy Folder object (i.e. not attributes for the X509 Certificate class).
-    The output will contain the path where the policy was applied from if available.
+    For custom fields, you provided either the Guid or Label.
 
     .PARAMETER All
-    Get all object attribute values.
+    Get all object attributes or policy attributes.
     This will perform 3 steps, get the object type, enumerate the attributes for the object type, and get all the values.
     Note, expect this to take longer than usual given the number of api calls.
 
     .PARAMETER Class
-    Get policies (aka policy attributes) instead of object attributes.
+    Get policy attributes instead of object attributes.
     Provide the class name to retrieve the value for.
     If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
-    The output will contain the path where the policy was applied from if available.
-
-    .PARAMETER New
-    New output format which returns 1 object with multiple properties instead of an object per property
-
-    .PARAMETER Policy
-    Deprecated.  To retrieve policy attributes, just provide -Class.
-
-    .PARAMETER AsValue
-    Deprecated.  No longer required with -New format.
+    The Attribute property will contain the path where the policy was applied.
 
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
+    A TPP token can be provided directly.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -56,121 +44,100 @@ function Get-TppAttribute {
     PSCustomObject
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -New
+    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'State'
 
-    Name                          : test.gdb.com
-    Path                          : \VED\Policy\Certificates\test.gdb.com
-    TypeName                      : X509 Server Certificate
-    Guid                          : b7a7221b-e038-41d9-9d49-d7f45c1ca128
-    ServiceNow Assignment Group   : @{Value=Venafi Management; CustomFieldGuid={7f214dec-9878-495f-a96c-57291f0d42da}}
-    ServiceNow CI                 : @{Value=9cc047ed1bad81100774ebd1b24bcbd0;
-                                    CustomFieldGuid={a26df613-595b-46ef-b5df-79f6eace72d9}}
-    Certificate Vault Id          : @{Value=442493; CustomFieldGuid=}
-    Consumers                     : @{Value=System.Object[]}
-    Created By                    : @{Value=WebAdmin}
-    CSR Vault Id                  : @{Value=442492}
+    Name      : test.gdb.com
+    Path      : \VED\Policy\Certificates\test.gdb.com
+    TypeName  : X509 Server Certificate
+    Guid      : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+    Attribute : {@{Name=State; PolicyPath=\VED\Policy\Certificates; Locked=False; Value=UT; Overridden=False}}
+    State     : UT
 
-    Retrieve values directly set on an object, excluding values assigned by policy
+    Retrieve a single attribute
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'Driver Name' -New
+    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'State', 'Driver Name'
 
     Name        : test.gdb.com
     Path        : \VED\Policy\Certificates\test.gdb.com
     TypeName    : X509 Server Certificate
     Guid        : b7a7221b-e038-41d9-9d49-d7f45c1ca128
-    Driver Name : @{Value=appx509certificate}
+    Attribute   : {@{Name=State; PolicyPath=\VED\Policy\Certificates; Locked=False; Value=UT; Overridden=False}, @{Name=Driver
+                Name; PolicyPath=; Locked=False; Value=appx509certificate; Overridden=False}}
+    State       : UT
+    Driver Name : appx509certificate
 
-    Retrieve the value for a specific attribute
+    Retrieve multiple attributes
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'ServiceNow Assignment Group' -New
+    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'ServiceNow Assignment Group'
 
     Name                        : test.gdb.com
     Path                        : \VED\Policy\Certificates\test.gdb.com
     TypeName                    : X509 Server Certificate
-    Guid                        : b7a7221b-e038-41d9-9d49-d7f45c1ca199
-    ServiceNow Assignment Group : @{Value=Venafi Management; CustomFieldGuid={7f214dec-9878-495f-a96c-57291f0d42da}}
+    Guid                        : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+    Attribute                   : {@{CustomFieldGuid={7f214dec-9878-495f-a96c-57291f0d42da}; Name=ServiceNow Assignment Group;
+                                PolicyPath=; Locked=False; Value=Venafi Management; Overridden=False}}
+    ServiceNow Assignment Group : Venafi Management
 
-    Retrieve the value for a custom field.
+    Retrieve a custom field attribute.
     You can specify either the guid or custom field label name.
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'Organization','State' -Effective -New
+    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -All
 
-    Name         : test.gdb.com
-    Path         : \VED\Policy\Certificates\test.gdb.com
-    TypeName     : X509 Server Certificate
-    Guid         : b7a7221b-e038-41d9-9d49-d7f45c1ca128
-    Organization : @{Value=Venafi, Inc.; Overridden=False; Locked=True; PolicyPath=\VED\Policy\Certificates}
-    State        : @{Value=UT; Overridden=False; Locked=False; PolicyPath=\VED\Policy\Certificates}
+    Name                                  : test.gdb.com
+    Path                                  : \VED\Policy\Certificates\test.gdb.com
+    TypeName                              : X509 Server Certificate
+    Guid                                  : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+    Attribute                             : {@{CustomFieldGuid={7f214dec-9878-495f-a96c-57291f0d42da}; Name=ServiceNow
+                                            Assignment Group; PolicyPath=; Locked=False; Value=Venafi Management;
+                                            Overridden=False}…}
+    ServiceNow Assignment Group           : Venafi Management
+    City                                  : Salt Lake City
+    Consumers                             : {\VED\Policy\Installations\Agentless\US Zone\mydevice\myapp}
+    Contact                               : local:{b1c77034-c099-4a5c-9911-9e26007817da}
+    Country                               : US
+    Created By                            : WebAdmin
+    Driver Name                           : appx509certificate
+    ...
 
-    Retrieve the effective (policy applied) value for a specific attribute(s).
-    This not only returns the value, but also the path where the policy is applied and if locked or overridden.
-
-    .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Effective -All -New
-
-    Name                                               : test.gdb.com
-    Path                                               : \VED\Policy\certificates\test.gdb.com
-    TypeName                                           : X509 Server Certificate
-    ServiceNow Assignment Group                        : @{Value=Venafi Management;
-                                                        CustomFieldGuid={7f214dec-9878-495f-a96c-57291f0d42da};
-                                                        Overridden=False; Locked=False}
-    ServiceNow CI                                      : @{Value=9cc047ed1bad81100774ebd1b24bcbd0;
-                                                        CustomFieldGuid={a26df613-595b-46ef-b5df-79f6eace72d9};
-                                                        Overridden=False; Locked=False}
-    ACME Account DN                                    :
-    Adaptable CA:Binary Data Vault ID                  :
-    Adaptable CA:Early Password Vault ID               :
-    Adaptable CA:Early Pkcs7 Vault ID                  :
-    Adaptable CA:Early Private Key Vault ID            :
-
-    Retrieve the effective (policy applied) value for all attributes.
-    This not only returns the value, but also the path where the policy is applied and if locked or overridden.
+    Retrieve all attributes applicable to this object
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -All -New
+    Get-TppAttribute -Path 'Certificates' -Class 'X509 Certificate' -Attribute 'State'
 
-    Name                 : test.gdb.com
-    Path                 : \ved\policy\certificates\test.gdb.com
-    TypeName             : X509 Server Certificate
-    Guid                 : b7a7221b-e038-41d9-9d49-d7f45c1ca128
-    Certificate Vault Id : @{Value=442493}
-    City                 : @{Value=Salt Lake City; PolicyPath=\VED\Policy\Certificates}
-    Consumers            : @{Value=System.Object[]}
-    Created By           : @{Value=WebAdmin}
-    State                : @{Value=UT; PolicyPath=\VED\Policy\Certificates}
-
-    Retrieve values for all attributes applicable to this object
-
-    .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates' -Class 'X509 Certificate' -Attribute 'State' -New
-
-    Name            : certificates
-    Path            : \VED\Policy\certificates
-    TypeName        : Policy
-    Guid            : a91fc152-a9fb-4b49-a7ca-7014b14d73eb
+    Name      : Certificates
+    Path      : \VED\Policy\Certificates
+    TypeName  : Policy
+    Guid      : a91fc152-a9fb-4b49-a7ca-7014b14d73eb
+    Attribute : {@{Name=State; PolicyPath=\VED\Policy\Certificates; Locked=False; Value=UT}}
     ClassName : X509 Certificate
-    State           : @{Value=UT; Locked=False}
+    State     : UT
 
-    Retrieve specific policy attribute values for the specified policy folder and class
+    Retrieve a policy attribute value for the specified policy folder and class.
+    \ved\policy will be prepended to the path.
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates' -Class 'X509 Certificate' -All -New
+    Get-TppAttribute -Path '\VED\Policy\certificates' -Class 'X509 Certificate' -All
 
-    Name                                               : certificates
-    Path                                               : \VED\Policy\certificates
-    TypeName                                           : Policy
-    ClassName                                    : X509 Certificate
-    ServiceNow Assignment Group                        :
-    Certificate Authority                              :
-    Certificate Download: PBES2 Algorithm              :
-    Certificate Process Validator                      :
-    Certificate Vault Id                               :
-    City                                               : @{Value=Salt Lake City; Locked=False}
+    Name                                  : Certificates
+    Path                                  : \VED\Policy\Certificates
+    TypeName                              : Policy
+    Guid                                  : a91fc152-a9fb-4b49-a7ca-7014b14d73eb
+    Attribute                             : {@{CustomFieldGuid={7f214dec-9878-495f-a96c-57291f0d42da}; Name=ServiceNow
+                                            Assignment Group; PolicyPath=; Locked=False; Value=}…}
+    ClassName                             : X509 Certificate
+    Approver                              : local:{b1c77034-c099-4a5c-9911-9e26007817da}
+    Key Algorithm                         : RSA
+    Key Bit Strength                      : 2048
+    Managed By                            : Aperture
+    Management Type                       : Enrollment
+    Network Validation Disabled           : 1
+    Notification Disabled                 : 0
+    ...
 
-    Retrieve all policy attribute values for the specified policy folder and class
+    Retrieve all policy attributes for the specified policy folder and class
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/
@@ -179,10 +146,7 @@ function Get-TppAttribute {
     https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1
 
     .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-read.php
-
-    .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readall.php
+    https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findpolicy.php
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-readeffectivepolicy.php
@@ -207,9 +171,6 @@ function Get-TppAttribute {
         [Alias('ClassName', 'PolicyClass')]
         [string] $Class,
 
-        [Parameter(ParameterSetName = 'Attribute')]
-        [switch] $AsValue,
-
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
     )
@@ -219,10 +180,6 @@ function Get-TppAttribute {
         Write-Debug $PSCmdlet.ParameterSetName
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
-
-        if ( $AsValue -and (@($Attribute).Count -gt 1 ) ) {
-            throw '-AsValue can only be used for 1 attribute'
-        }
 
         $newAttribute = $Attribute
         if ( $All -and $Class ) {
@@ -254,7 +211,8 @@ function Get-TppAttribute {
         }
 
         # get all attributes if item is an object other than a policy
-        if ( $All -and -not $Class ) {
+        # Get-TppClassAttribute will return matching names from different classes so ensure the list is unique
+        if ( $All -and -not $PSBoundParameters.ContainsKey('Class') ) {
             $newAttribute = Get-TppClassAttribute -ClassName $thisObject.TypeName -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name -Unique
         }
 
@@ -287,8 +245,8 @@ function Get-TppAttribute {
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Error ) {
-                if ( $response.Result -eq 601) {
-                    Write-Error "'$thisAttribute' is not a valid attribute for $Path"
+                if ( $response.Result -in 601, 112) {
+                    Write-Error "'$thisAttribute' is not a valid attribute for $Path.  Are you looking for a policy attribute?  If so, add -Class."
                     continue
                 } elseif ( $response.Result -eq 102) {
                     # attribute is valid, but value not set
@@ -320,12 +278,10 @@ function Get-TppAttribute {
                 }
             }
 
-            if ( $AsValue ) {
-                return $valueOut
-            }
-
             $newProp = [pscustomobject] @{}
 
+            # only add attributes to the root of the response object if they have a value
+            # always add them to .Attribute ($newProp)
             if ( $CustomField ) {
                 $newProp | Add-Member @{
                     Name              = $customField.Label
