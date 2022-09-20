@@ -7,61 +7,84 @@ Perform an action against a certificate on TPP or VaaS
 
 ### Retire
 ```
-Invoke-VenafiCertificateAction -CertificateId <String> [-Retire] [-AdditionalParameters <Hashtable>]
+Invoke-VenafiCertificateAction -CertificateID <String> [-Retire] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Reset
 ```
-Invoke-VenafiCertificateAction -CertificateId <String> [-Reset] [-AdditionalParameters <Hashtable>]
+Invoke-VenafiCertificateAction -CertificateID <String> [-Reset] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Renew
 ```
-Invoke-VenafiCertificateAction -CertificateId <String> [-Renew] [-AdditionalParameters <Hashtable>]
+Invoke-VenafiCertificateAction -CertificateID <String> [-Renew] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Push
 ```
-Invoke-VenafiCertificateAction -CertificateId <String> [-Push] [-AdditionalParameters <Hashtable>]
+Invoke-VenafiCertificateAction -CertificateID <String> [-Push] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Validate
 ```
-Invoke-VenafiCertificateAction -CertificateId <String> [-Validate] [-AdditionalParameters <Hashtable>]
+Invoke-VenafiCertificateAction -CertificateID <String> [-Validate] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Revoke
 ```
-Invoke-VenafiCertificateAction -CertificateId <String> [-Revoke] [-AdditionalParameters <Hashtable>]
+Invoke-VenafiCertificateAction -CertificateID <String> [-Revoke] [-AdditionalParameters <Hashtable>]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### Delete
+```
+Invoke-VenafiCertificateAction -CertificateID <String> [-Delete] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 One stop shop for basic certificate actions against either TPP or VaaS.
-When supported by the platform, you can Retire, Reset, Renew, Push, Validate, or Revoke.
+When supported by the platform, you can Retire, Reset, Renew, Push, Validate, Revoke, or Delete.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Revoke
-Perform an action
+Invoke-VenafiCertificateAction -CertificateID '\VED\Policy\My folder\app.mycompany.com' -Revoke
 ```
+
+Perform an action
 
 ### EXAMPLE 2
 ```
-Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameters @{'Comments'='Key compromised'}
-Perform an action sending additional parameters.
+Invoke-VenafiCertificateAction -CertificateID '\VED\Policy\My folder\app.mycompany.com' -Delete -Confirm:$false
 ```
+
+Perform an action bypassing the confirmation prompt. 
+Only applicable to revoke and delete.
+
+### EXAMPLE 3
+```
+Invoke-VenafiCertificateAction -CertificateID 'b7f1ab29-34a0-49ba-b801-cc9cd855fd24' -Revoke -Confirm:$false | Invoke-VenafiCertificateAction -Delete -Confirm:$false
+```
+
+Chain multiple actions together
+
+### EXAMPLE 4
+```
+Invoke-VenafiCertificateAction -CertificateID '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameters @{'Comments'='Key compromised'}
+```
+
+Perform an action sending additional parameters.
 
 ## PARAMETERS
 
-### -CertificateId
+### -CertificateID
 Certificate identifier. 
 For Venafi as a Service, this is the unique guid. 
 For TPP, use the full path.
@@ -172,6 +195,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Delete
+Delete a certificate.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Delete
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -AdditionalParameters
 Additional items specific to the action being taken, if needed.
 See the api documentation for appropriate items, many are in the links in this help.
@@ -242,11 +280,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### CertificateId
+### CertificateID
 ## OUTPUTS
 
 ### PSCustomObject with the following properties:
-###     CertificateId - Certificate path (TPP) or Guid (VaaS)
+###     CertificateID - Certificate path (TPP) or Guid (VaaS)
 ###     Success - A value of true indicates that the action was successful
 ###     Error - Indicates any errors that occurred. Not returned when Success is true
 ## NOTES
@@ -268,4 +306,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-revoke.php)
 
 [https://api.venafi.cloud/webjars/swagger-ui/index.html?configUrl=%2Fv3%2Fapi-docs%2Fswagger-config&urls.primaryName=outagedetection-service](https://api.venafi.cloud/webjars/swagger-ui/index.html?configUrl=%2Fv3%2Fapi-docs%2Fswagger-config&urls.primaryName=outagedetection-service)
+
+[https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificateretirement_deleteCertificates](https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificateretirement_deleteCertificates)
 

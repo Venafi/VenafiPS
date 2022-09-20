@@ -29,8 +29,8 @@ Find-VenafiCertificate [-Path <String>] [-Guid <Guid>] [-Recursive] [-Limit <Int
 
 ### VaaS
 ```
-Find-VenafiCertificate [-Filter <ArrayList>] [-Order <PSObject[]>] [-VenafiSession <PSObject>]
- [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+Find-VenafiCertificate [-Filter <ArrayList>] [-Order <PSObject[]>] [-IncludeVaasOwner]
+ [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -132,6 +132,14 @@ Find-VenafiCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('val
 
 Find VaaS certificates matching multiple values. 
 In this case, find all certificates expiring in the next 30 days.
+
+### EXAMPLE 14
+```
+Find-VenafiCertificate -IncludeVaasOwner
+```
+
+When finding VaaS certificates, include user/team owner information.
+This will make additional api calls and will increase the response time.
 
 ## PARAMETERS
 
@@ -848,6 +856,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IncludeVaasOwner
+Retrieve detailed user/team owner info, only for VaaS.
+This will cause additional api calls to be made and take longer.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: VaaS
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
