@@ -1,97 +1,97 @@
-<#
-.SYNOPSIS
-Find objects by path, class, or pattern
-
-.DESCRIPTION
-Find objects by path, class, or pattern.
-
-.PARAMETER Path
-The path to start our search.  The default is \ved\policy.
-
-.PARAMETER Class
-1 or more classes/types to search for
-
-.PARAMETER Pattern
-Filter against object paths.
-If the Attribute parameter is provided, this will filter against an object's attribute values instead of the path.
-
-Follow the below rules:
-- To list DNs that include an asterisk (*) or question mark (?), prepend two backslashes (\\). For example, \\*.MyCompany.net treats the asterisk as a literal character and returns only certificates with DNs that match *.MyCompany.net.
-- To list DNs with a wildcard character, append a question mark (?). For example, "test_?.mycompany.net" counts test_1.MyCompany.net and test_2.MyCompany.net but not test12.MyCompany.net.
-- To list DNs with similar names, prepend an asterisk. For example, *est.MyCompany.net, counts Test.MyCompany.net and West.MyCompany.net.
-You can also use both literals and wildcards in a pattern.
-
-.PARAMETER Attribute
-A list of attribute names to limit the search against.  Only valid when searching by pattern.
-
-.PARAMETER Recursive
-Searches the subordinates of the object specified in Path.
-
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
-
-.INPUTS
-Path
-
-.OUTPUTS
-TppObject
-
-.EXAMPLE
-Find-TppObject
-Get all objects recursively starting from \ved\policy
-
-.EXAMPLE
-Find-TppObject -Path '\VED\Policy\certificates'
-Get all objects in the root of a specific folder
-
-.EXAMPLE
-Find-TppObject -Path '\VED\Policy\My Folder' -Recursive
-Get all objects in a folder and subfolders
-
-.EXAMPLE
-Find-TppObject -Path '\VED\Policy' -Pattern '*test*'
-Get items in a specific folder filtering the path
-
-.EXAMPLE
-Find-TppObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
-Get objects of a specific type
-
-.EXAMPLE
-Find-TppObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-Get all objects of a specific type where the path is of a specific pattern
-
-.EXAMPLE
-Find-TppObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-Get objects for multiple types
-
-.EXAMPLE
-Find-TppObject -Pattern '*f5*'
-Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
-
-.EXAMPLE
-Find-TppObject -Pattern 'awesome*' -Attribute 'Description'
-Find objects where the specific attribute matches the pattern
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/
-
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php
-
-#>
 function Find-TppObject {
+    <#
+    .SYNOPSIS
+    Find objects by path, class, or pattern
+
+    .DESCRIPTION
+    Find objects by path, class, or pattern.
+
+    .PARAMETER Path
+    The path to start our search.  The default is \ved\policy.
+
+    .PARAMETER Class
+    1 or more classes/types to search for
+
+    .PARAMETER Pattern
+    Filter against object paths.
+    If the Attribute parameter is provided, this will filter against an object's attribute values instead of the path.
+
+    Follow the below rules:
+    - To list DNs that include an asterisk (*) or question mark (?), prepend two backslashes (\\). For example, \\*.MyCompany.net treats the asterisk as a literal character and returns only certificates with DNs that match *.MyCompany.net.
+    - To list DNs with a wildcard character, append a question mark (?). For example, "test_?.mycompany.net" counts test_1.MyCompany.net and test_2.MyCompany.net but not test12.MyCompany.net.
+    - To list DNs with similar names, prepend an asterisk. For example, *est.MyCompany.net, counts Test.MyCompany.net and West.MyCompany.net.
+    You can also use both literals and wildcards in a pattern.
+
+    .PARAMETER Attribute
+    A list of attribute names to limit the search against.  Only valid when searching by pattern.
+
+    .PARAMETER Recursive
+    Searches the subordinates of the object specified in Path.
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+
+    .INPUTS
+    Path
+
+    .OUTPUTS
+    TppObject
+
+    .EXAMPLE
+    Find-TppObject
+    Get all objects recursively starting from \ved\policy
+
+    .EXAMPLE
+    Find-TppObject -Path '\VED\Policy\certificates'
+    Get all objects in the root of a specific folder
+
+    .EXAMPLE
+    Find-TppObject -Path '\VED\Policy\My Folder' -Recursive
+    Get all objects in a folder and subfolders
+
+    .EXAMPLE
+    Find-TppObject -Path '\VED\Policy' -Pattern '*test*'
+    Get items in a specific folder filtering the path
+
+    .EXAMPLE
+    Find-TppObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
+    Get objects of a specific type
+
+    .EXAMPLE
+    Find-TppObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
+    Get all objects of a specific type where the path is of a specific pattern
+
+    .EXAMPLE
+    Find-TppObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
+    Get objects for multiple types
+
+    .EXAMPLE
+    Find-TppObject -Pattern '*f5*'
+    Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
+
+    .EXAMPLE
+    Find-TppObject -Pattern 'awesome*' -Attribute 'Description'
+    Find objects where the specific attribute matches the pattern
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php
+
+    #>
 
     [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
     [Alias('fto')]
@@ -102,14 +102,6 @@ function Find-TppObject {
         [Parameter(ParameterSetName = 'FindByClass', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Parameter(ParameterSetName = 'FindByPattern', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                if ( $_ | Test-TppDnPath ) {
-                    $true
-                }
-                else {
-                    throw "'$_' is not a valid DN path"
-                }
-            })]
         [Alias('DN')]
         [String] $Path = '\ved\policy',
 
@@ -150,7 +142,8 @@ function Find-TppObject {
             VenafiSession = $VenafiSession
             Method        = 'Post'
             Body          = @{
-                'ObjectDN' = $Path
+                'ObjectDN' = $Path | ConvertTo-TppFullPath
+
             }
         }
 
@@ -162,14 +155,14 @@ function Find-TppObject {
                 $params.Body['AttributeNames'] = $Attribute
             }
 
-            {$_ -in 'FindByPath', 'FindByPattern', 'FindByClass'} {
+            { $_ -in 'FindByPath', 'FindByPattern', 'FindByClass' } {
                 # if a path wasn't provided, default to recursive enumeration of \ved\policy
                 if ( -not $PSBoundParameters.ContainsKey('Path') ) {
                     $params.Body['Recursive'] = 'true'
                 }
             }
 
-            {$_ -in 'FindByPath', 'FindByPattern'} {
+            { $_ -in 'FindByPath', 'FindByPattern' } {
                 $params.UriLeaf = 'config/enumerate'
             }
 
@@ -200,20 +193,17 @@ function Find-TppObject {
 
                 if ( $response.Result -eq [TppConfigResult]::Success ) {
                     $response.Objects
-                }
-                else {
+                } else {
                     Write-Error ('Retrieval of class {0} failed with error {1}' -f $thisClass, $response.Error)
                     Continue
                 }
             }
-        }
-        else {
+        } else {
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -eq [TppConfigResult]::Success ) {
                 $objects = $response.Objects
-            }
-            else {
+            } else {
                 Write-Error $response.Error
             }
         }

@@ -7,7 +7,9 @@
     Get certificate information, either all available to the api key provided or by id or zone.
 
     .PARAMETER CertificateId
-    Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path or guid.
+    Certificate identifier.
+    For Venafi as a Service, this is the unique guid.
+    For TPP, use the path or guid.  \ved\policy will be automatically applied if a full path isn't provided.
 
     .PARAMETER IncludeTppPreviousVersions
     Returns details about previous (historical) versions of a certificate (only from TPP).
@@ -85,10 +87,6 @@
         [Alias('Guid', 'Path')]
         [string] $CertificateId,
 
-        [Parameter(Mandatory, ParameterSetName = 'TppAll')]
-        [Parameter(Mandatory, ParameterSetName = 'VaasAll')]
-        [Switch] $All,
-
         [Parameter(Mandatory, ParameterSetName = 'TppOldVersions')]
         [Parameter(ParameterSetName = 'TppAll')]
         [Alias('IncludePreviousVersions')]
@@ -103,6 +101,10 @@
         [Parameter(ParameterSetName = 'VaasId')]
         [Parameter(ParameterSetName = 'VaasAll')]
         [Switch] $IncludeVaasOwner,
+
+        [Parameter(Mandatory, ParameterSetName = 'TppAll')]
+        [Parameter(Mandatory, ParameterSetName = 'VaasAll')]
+        [Switch] $All,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -257,7 +259,7 @@
                         $thisGuid = ([guid] $CertificateId).ToString()
                     } else {
                         # a path was provided
-                        $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                        $thisGuid = $CertificateId | ConvertTo-TppFullPath | ConvertTo-TppGuid -VenafiSession $VenafiSession
                     }
 
                     $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
