@@ -250,13 +250,6 @@ function Find-VenafiCertificate {
 
         [Parameter(ParameterSetName = 'TPP', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                if ( $_ | Test-TppDnPath ) {
-                    $true
-                } else {
-                    throw "'$_' is not a valid DN path"
-                }
-            })]
         [Alias('DN')]
         [String] $Path = '\ved\policy',
 
@@ -645,7 +638,7 @@ function Find-VenafiCertificate {
 
 
             if ( $PSBoundParameters.ContainsKey('Path') ) {
-                $thisPath = $Path
+                $thisPath = $Path | ConvertTo-TppFullPath
             } elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
                 # guid provided, get path
                 $thisPath = $Guid | ConvertTo-TppPath -VenafiSession $VenafiSession
