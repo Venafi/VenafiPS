@@ -28,6 +28,7 @@ nav:
   - Changelog: changelog.md
   - Functions:
     - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
+    - Add-TppEngineFolder: functions/Add-TppEngineFolder.md
     - Add-VenafiTeamMember: functions/Add-VenafiTeamMember.md
     - Add-VenafiTeamOwner: functions/Add-VenafiTeamOwner.md
     - Convert-TppObject: functions/Convert-TppObject.md
@@ -38,6 +39,7 @@ nav:
     - Find-TppCodeSignEnvironment: functions/Find-TppCodeSignEnvironment.md
     - Find-TppCodeSignProject: functions/Find-TppCodeSignProject.md
     - Find-TppCodeSignTemplate: functions/Find-TppCodeSignTemplate.md
+    - Find-TppEngine: functions/Find-TppEngine.md
     - Find-TppIdentity: functions/Find-TppIdentity.md
     - Find-TppObject: functions/Find-TppObject.md
     - Find-TppVaultId: functions/Find-TppVaultId.md
@@ -49,6 +51,7 @@ nav:
     - Get-TppCodeSignProject: functions/Get-TppCodeSignProject.md
     - Get-TppCredential: functions/Get-TppCredential.md
     - Get-TppCustomField: functions/Get-TppCustomField.md
+    - Get-TppEngineFolder: functions/Get-TppEngineFolder.md
     - Get-TppIdentityAttribute: functions/Get-TppIdentityAttribute.md
     - Get-TppObject: functions/Get-TppObject.md
     - Get-TppPermission: functions/Get-TppPermission.md
@@ -56,6 +59,7 @@ nav:
     - Get-TppVersion: functions/Get-TppVersion.md
     - Get-TppWorkflowTicket: functions/Get-TppWorkflowTicket.md
     - Get-VaasApplication: functions/Get-VaasApplication.md
+    - Get-VaasConnector: functions/Get-VaasConnector.md
     - Get-VaasIssuingTemplate: functions/Get-VaasIssuingTemplate.md
     - Get-VenafiCertificate: functions/Get-VenafiCertificate.md
     - Get-VenafiIdentity: functions/Get-VenafiIdentity.md
@@ -76,6 +80,7 @@ nav:
     - New-TppPolicy: functions/New-TppPolicy.md
     - New-TppToken: functions/New-TppToken.md
     - New-VaasApplication: functions/New-VaasApplication.md
+    - New-VaasConnector: functions/New-VaasConnector.md
     - New-VenafiSession: functions/New-VenafiSession.md
     - New-VenafiTeam: functions/New-VenafiTeam.md
     - Read-VenafiLog: functions/Read-VenafiLog.md
@@ -84,7 +89,9 @@ nav:
     - Remove-TppClient: functions/Remove-TppClient.md
     - Remove-TppCodeSignEnvironment: functions/Remove-TppCodeSignEnvironment.md
     - Remove-TppCodeSignProject: functions/Remove-TppCodeSignProject.md
+    - Remove-TppEngineFolder: functions/Remove-TppEngineFolder.md
     - Remove-TppPermission: functions/Remove-TppPermission.md
+    - Remove-VaasConnector: functions/Remove-VaasConnector.md
     - Remove-VenafiTeam: functions/Remove-VenafiTeam.md
     - Remove-VenafiTeamMember: functions/Remove-VenafiTeamMember.md
     - Remove-VenafiTeamOwner: functions/Remove-VenafiTeamOwner.md

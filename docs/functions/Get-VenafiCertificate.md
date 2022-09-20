@@ -5,20 +5,31 @@ Get certificate information
 
 ## SYNTAX
 
-### All (Default)
+### Id (Default)
 ```
-Get-VenafiCertificate [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VenafiCertificate -CertificateId <String> [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
-### OldVersions
+### TppOldVersions
 ```
-Get-VenafiCertificate -CertificateId <String> [-IncludePreviousVersions] [-ExcludeExpired] [-ExcludeRevoked]
+Get-VenafiCertificate -CertificateId <String> [-IncludeTppPreviousVersions] [-ExcludeExpired] [-ExcludeRevoked]
  [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
-### Id
+### VaasId
 ```
-Get-VenafiCertificate -CertificateId <String> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VenafiCertificate -CertificateId <String> [-IncludeVaasOwner] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
+```
+
+### TppAll
+```
+Get-VenafiCertificate [-IncludeTppPreviousVersions] [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
+```
+
+### VaasAll
+```
+Get-VenafiCertificate [-IncludeVaasOwner] [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -28,51 +39,58 @@ Get certificate information, either all available to the api key provided or by 
 
 ### EXAMPLE 1
 ```
-Get-VenafiCertificate
-Get certificate info for all certs
+Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
+
+Get certificate info for a specific cert on Venafi as a Serivce
 
 ### EXAMPLE 2
 ```
-Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-Get certificate info for a specific cert on Venafi as a Serivce
+Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
 ```
+
+Get certificate info for a specific cert on TPP
 
 ### EXAMPLE 3
 ```
-Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com'
-Get certificate info for a specific cert on TPP
+Get-VenafiCertificate -All
 ```
+
+Get certificate info for all certs in either TPP or VaaS
 
 ### EXAMPLE 4
 ```
-Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions
-Get certificate info for a specific cert on TPP, including historical versions of the certificate.
+Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions
 ```
+
+Get certificate info for a specific cert on TPP, including historical versions of the certificate.
 
 ### EXAMPLE 5
 ```
-Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions -ExcludeRevoked -ExcludeExpired
-Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
+Get-VenafiCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions -ExcludeRevoked -ExcludeExpired
 ```
+
+Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
 
 ### EXAMPLE 6
 ```
-Find-TppCertificate | Get-VenafiCertificate
-Get certificate info for all certs in TPP
+Get-VenafiCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -IncludeVaasOwner
 ```
+
+In addition to certificate info, get user and team owner info as well
 
 ## PARAMETERS
 
 ### -CertificateId
-Certificate identifier. 
-For Venafi as a Service, this is the unique guid. 
-For TPP, use the full path.
+Certificate identifier.
+For Venafi as a Service, this is the unique guid.
+For TPP, use the path or guid. 
+\ved\policy will be automatically applied if a full path isn't provided.
 
 ```yaml
 Type: String
-Parameter Sets: OldVersions, Id
-Aliases: Path
+Parameter Sets: Id, TppOldVersions, VaasId
+Aliases: Guid, Path
 
 Required: True
 Position: Named
@@ -81,16 +99,28 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -IncludePreviousVersions
+### -IncludeTppPreviousVersions
 Returns details about previous (historical) versions of a certificate (only from TPP).
 This option will add a property named PreviousVersions to the returned object.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: OldVersions
-Aliases:
+Parameter Sets: TppOldVersions
+Aliases: IncludePreviousVersions
 
 Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: TppAll
+Aliases: IncludePreviousVersions
+
+Required: False
 Position: Named
 Default value: False
 Accept pipeline input: False
@@ -103,7 +133,7 @@ Can only be used with the IncludePreviousVersions parameter.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: OldVersions
+Parameter Sets: TppOldVersions
 Aliases:
 
 Required: False
@@ -119,10 +149,41 @@ Can only be used with the IncludePreviousVersions parameter.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: OldVersions
+Parameter Sets: TppOldVersions
 Aliases:
 
 Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IncludeVaasOwner
+Retrieve detailed user/team owner info, only for VaaS.
+This will cause additional api calls to be made and take longer.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: VaasId, VaasAll
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -All
+Retrieve all certificates
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: TppAll, VaasAll
+Aliases:
+
+Required: True
 Position: Named
 Default value: False
 Accept pipeline input: False
@@ -152,7 +213,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### CertificateId/Path from TppObject
+### CertificateId
 ## OUTPUTS
 
 ### PSCustomObject

@@ -38,7 +38,8 @@ Get an object by guid
 ## PARAMETERS
 
 ### -Path
-The full path to the object
+The full path to the object.
+\ved\policy will be automatically applied if a full path isn't provided.
 
 ```yaml
 Type: String[]
