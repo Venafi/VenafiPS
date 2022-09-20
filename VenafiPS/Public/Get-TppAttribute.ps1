@@ -20,16 +20,16 @@ function Get-TppAttribute {
     Only retrieve the value/values for this attribute.
     For custom fields, you provided either the Guid or Label.
 
-    .PARAMETER All
-    Get all object attributes or policy attributes.
-    This will perform 3 steps, get the object type, enumerate the attributes for the object type, and get all the values.
-    Note, expect this to take longer than usual given the number of api calls.
-
     .PARAMETER Class
     Get policy attributes instead of object attributes.
     Provide the class name to retrieve the value for.
     If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
     The Attribute property will contain the path where the policy was applied.
+
+    .PARAMETER All
+    Get all object attributes or policy attributes.
+    This will perform 3 steps, get the object type, enumerate the attributes for the object type, and get all the values.
+    Note, expect this to take longer than usual given the number of api calls.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -164,12 +164,12 @@ function Get-TppAttribute {
         [ValidateNotNullOrEmpty()]
         [String[]] $Attribute,
 
-        [Parameter(Mandatory, ParameterSetName = 'All')]
-        [switch] $All,
-
         [ValidateNotNullOrEmpty()]
         [Alias('ClassName', 'PolicyClass')]
         [string] $Class,
+
+        [Parameter(Mandatory, ParameterSetName = 'All')]
+        [switch] $All,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
