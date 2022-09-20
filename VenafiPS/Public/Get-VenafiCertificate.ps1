@@ -9,7 +9,7 @@
     .PARAMETER CertificateId
     Certificate identifier.
     For Venafi as a Service, this is the unique guid.
-    For TPP, use the full path.  \ved\policy will be automatically applied if a full path isn't provided.
+    For TPP, use the path or guid.  \ved\policy will be automatically applied if a full path isn't provided.
 
     .PARAMETER IncludeTppPreviousVersions
     Returns details about previous (historical) versions of a certificate (only from TPP).
@@ -76,7 +76,7 @@
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [CmdletBinding(DefaultParameterSetName = 'Id')]
     [Alias('Get-TppCertificateDetail')]
 
     param (
@@ -86,10 +86,6 @@
         [Parameter(ParameterSetName = 'TppOldVersions', Mandatory, ValueFromPipelineByPropertyName)]
         [Alias('Guid', 'Path')]
         [string] $CertificateId,
-
-        [Parameter(Mandatory, ParameterSetName = 'TppAll')]
-        [Parameter(Mandatory, ParameterSetName = 'VaasAll')]
-        [Switch] $All,
 
         [Parameter(Mandatory, ParameterSetName = 'TppOldVersions')]
         [Parameter(ParameterSetName = 'TppAll')]
@@ -105,6 +101,10 @@
         [Parameter(ParameterSetName = 'VaasId')]
         [Parameter(ParameterSetName = 'VaasAll')]
         [Switch] $IncludeVaasOwner,
+
+        [Parameter(Mandatory, ParameterSetName = 'TppAll')]
+        [Parameter(Mandatory, ParameterSetName = 'VaasAll')]
+        [Switch] $All,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -259,7 +259,7 @@
                         $thisGuid = ([guid] $CertificateId).ToString()
                     } else {
                         # a path was provided
-                        $thisGuid = $CertificateId | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                        $thisGuid = $CertificateId | ConvertTo-TppFullPath | ConvertTo-TppGuid -VenafiSession $VenafiSession
                     }
 
                     $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
