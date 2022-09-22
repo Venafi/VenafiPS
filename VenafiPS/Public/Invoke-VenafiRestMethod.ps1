@@ -231,10 +231,18 @@ function Invoke-VenafiRestMethod {
 
         Write-Verbose ('Response status code {0}' -f $originalStatusCode)
 
-        if ( $originalStatusCode -eq '409' ) {
-            # item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
+        if ( $originalStatusCode -eq '409' -or $FullResponse ) {
+            # 409 = item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
             # treat this as non error
-            $response = $_.Exception.Response
+            $response = [pscustomobject] @{
+                StatusCode   = [int]$_.Exception.Response.StatusCode
+                Error =
+                try {
+                    $_.ErrorDetails.Message | ConvertFrom-Json
+                } catch {
+                    $_.ErrorDetails.Message
+                }
+            }
         } else {
             throw $_
         }
