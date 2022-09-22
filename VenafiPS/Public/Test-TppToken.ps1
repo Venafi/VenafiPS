@@ -201,9 +201,9 @@ function Test-TppToken {
 
         if ( $GrantDetail ) {
 
-            switch ([int]$response.StatusCode) {
+            switch ( $response.StatusCode ) {
 
-                '200' {
+                200 {
                     $responseData = $response.Content | ConvertFrom-Json
                     [PSCustomObject] @{
                         ClientId       = $responseData.application
@@ -223,12 +223,12 @@ function Test-TppToken {
         }
         else {
 
-            switch ([int]$response.StatusCode) {
-                '200' {
+            switch ( $response.StatusCode ) {
+                200 {
                     $true
                 }
 
-                '401' {
+                401 {
                     $false
                 }
 
