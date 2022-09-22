@@ -5,7 +5,9 @@ function Revoke-TppGrant {
     Revoke all grants for a specific user
 
     .DESCRIPTION
-    Revoke all grants for a specific user
+    Revoke all grants for a specific user.
+    You must either be an administrator or oauth administrator to perform this action.
+    Also, your token must have the admin:delete scope.
 
     .PARAMETER ID
     Prefixed universal id for the user.  To search, use Find-TppIdentity.
@@ -55,7 +57,7 @@ function Revoke-TppGrant {
                 }
             })]
         [Alias('PrefixedUniversalID', 'IdentityID')]
-        [string] $ID
+        [string[]] $ID
     )
 
     begin {
@@ -77,36 +79,34 @@ function Revoke-TppGrant {
 
     process {
 
-        $params.Body.GranteePrefixedUniversal = $ID
+        foreach ($thisID in $ID) {
+            $params.Body.GranteePrefixedUniversal = $thisID
 
-        if ( $PSCmdlet.ShouldProcess($ID, 'Revoke all grants') ) {
-            $response = Invoke-VenafiRestMethod @params
+            if ( $PSCmdlet.ShouldProcess($thisID, 'Revoke all grants') ) {
+                $response = Invoke-VenafiRestMethod @params
 
-            switch ( $response.StatusCode ) {
-                200 {
-                    if ( $response.Result -eq 1 ) {
-                        Write-Error 'Grant revocation was unsuccessful'
+                switch ( $response.StatusCode ) {
+                    200 {
+                        if ( $response.Result -eq 1 ) {
+                            Write-Error 'Grant revocation was unsuccessful'
+                        }
                     }
-                }
 
-                401 {
-                    if ( $response.Error.error -eq 'insufficient_rights' ) {
-                        throw 'The token user account does not have sufficient permissions for this request.  You must be an administrator or OAuth administrator.'
+                    401 {
+                        if ( $response.Error.error -eq 'insufficient_rights' ) {
+                            throw 'The token user account does not have sufficient permissions for this request.  You must be an administrator or OAuth administrator.'
+                        }
                     }
-                }
 
-                403 {
-                    throw 'The access token provided does not have the admin:delete scope.  Create a new token with this scope and try again.'
-                }
+                    403 {
+                        throw 'The access token provided does not have the admin:delete scope.  Create a new token with this scope and try again.'
+                    }
 
-                Default {
-                    throw $response.Error
+                    Default {
+                        throw $response.Error
+                    }
                 }
             }
         }
-    }
-
-    end {
-
     }
 }
