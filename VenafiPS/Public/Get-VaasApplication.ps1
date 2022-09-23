@@ -104,7 +104,13 @@ function Get-VaasApplication {
                 'e' = {
                     $_.Id
                 }
-            } -ExcludeProperty Id
+            },
+            @{
+                'n' = 'certificateIssuingTemplate'
+                'e' = {
+                    $_.certificateIssuingTemplateAliasIdMap.psobject.Properties | Select-Object name, @{'n' = 'id'; 'e' = { $_.Value } }
+                }
+            } -ExcludeProperty Id, certificateIssuingTemplateAliasIdMap
         }
     }
 }
