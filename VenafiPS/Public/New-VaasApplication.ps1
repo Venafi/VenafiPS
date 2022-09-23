@@ -192,21 +192,21 @@ function New-VaasApplication {
 
             try {
                 $response = Invoke-VenafiRestMethod @params
-                switch ([int]$response.StatusCode) {
+                switch ( $response.StatusCode ) {
 
-                    '201' {
+                    201 {
                         if ( $PassThru ) {
                             $response.Content | ConvertFrom-Json |
                             Select-Object -ExpandProperty applications | Select-Object -Property @{'n' = 'applicationId'; 'e' = { $_.id } }, * -ExcludeProperty id
                         }
                     }
 
-                    '409' {
+                    409 {
                         throw "$Name already exists"
                     }
 
                     default {
-                        throw ($response | Select-Object StatusCode, StatusDescription)
+                        throw $response
                     }
                 }
             } catch {
