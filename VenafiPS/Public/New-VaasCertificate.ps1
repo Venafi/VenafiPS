@@ -177,7 +177,7 @@ function New-VaasCertificate {
         $thisApp = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
         switch (@($thisApp).Count) {
             0 {
-                throw 'Application not found'
+                throw ('Application not found.  Valid applications are {0}.' -f ($allApps.name -join ', '))
             }
 
             1 {
@@ -186,14 +186,14 @@ function New-VaasCertificate {
             }
 
             Default {
-                throw "More than 1 application found that matches $Application"
+                throw ('More than 1 application found that matches {0}: {1}' -f $Application, ($thisApp.name -join ', '))
             }
         }
 
         $thisTemplate = $thisApp.certificateIssuingTemplate | Where-Object { $_.Name -like $IssuingTemplate -or $_.id -eq $IssuingTemplate }
         switch (@($thisTemplate).Count) {
             0 {
-                throw 'Issuing template not found or not valid for this application'
+                throw ('Issuing template not found or not valid for this application.  Valid templates are {0}.' -f ($thisApp.certificateIssuingTemplate.name -join ', '))
             }
 
             1 {
@@ -202,14 +202,14 @@ function New-VaasCertificate {
             }
 
             Default {
-                throw "More than 1 issuing template found that matches $IssuingTemplate"
+                throw ('More than 1 issuing template found that matches {0}: {1}' -f $IssuingTemplate, ($thisTemplate.name -join ', '))
             }
         }
 
         $thisServerType = $allServerTypes | Where-Object { $_.applicationServerType -like $ServerType -or $_.id -eq $ServerType }
         switch (@($thisServerType).Count) {
             0 {
-                throw 'Server type not found'
+                throw ('Server type not found.  Valid types are {0}' -f ($allServerTypes.name -join ', '))
             }
 
             1 {
@@ -218,32 +218,12 @@ function New-VaasCertificate {
             }
 
             Default {
-                throw "More than 1 server type found that matches $ServerType"
+                throw ('More than 1 server type found that matches {0}: {1}' -f $ServerType, ($thisServerType.name -join ', '))
             }
         }
 
-        $ApproxDaysPerMonth = 30.4375
-        $ApproxDaysPerYear = 365.25
-
-        # Calculate the span in days
-        [int]$iDays = ($ValidUntil - [DateTime]::Now).Days
-
-        # Calculate years as an integer division
-        [int]$iYears = [math]::floor($iDays / $ApproxDaysPerYear)
-
-        # Decrease remaing days
-        $iDays -= [int]($iYears * $ApproxDaysPerYear)
-
-        # Calculate months as an integer division
-        [int]$iMonths = [math]::floor($iDays / $ApproxDaysPerMonth)
-
-        # Decrease remaing days
-        $iDays -= [int]($iMonths * $ApproxDaysPerMonth)
-
-        $validity = 'P'
-        if ( $iYears ) { $validity += '{0}Y' -f $iYears }
-        if ( $iMonths ) { $validity += '{0}M' -f $iMonths }
-        if ( $iDays ) { $validity += '{0}D' -f $iDays }
+        $span = New-TimeSpan -Start (Get-Date) -End $ValidUntil
+        $validity = 'P{0}D' -f $span.Days
 
         $params = @{
             VenafiSession = $VenafiSession
