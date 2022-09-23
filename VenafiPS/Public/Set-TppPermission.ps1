@@ -156,13 +156,13 @@ function Set-TppPermission {
                     try {
 
                         $response = Invoke-VenafiRestMethod @params
-                        switch ([int]$response.StatusCode) {
+                        switch ( $response.StatusCode ) {
 
-                            '201' {
+                            201 {
                                 # success
                             }
 
-                            '409' {
+                            409 {
                                 # user/group already has permissions defined on this object
                                 # need to use a put method instead
                                 if ( $Force.IsPresent ) {
@@ -170,8 +170,8 @@ function Set-TppPermission {
                                     Write-Verbose "Existing user/group found and Force option provided, updating existing permissions"
                                     $params.Method = 'Put'
                                     $response = Invoke-VenafiRestMethod @params
-                                    if ( [int]$response.StatusCode -ne '200' ) {
-                                        Write-Error ('Failed to update permission with error {0}' -f $response.StatusDescription)
+                                    if ( $response.StatusCode -ne 200 ) {
+                                        Write-Error ('Failed to update permission with error {0}' -f $response.Error)
                                     }
                                 }
                                 else {
@@ -181,7 +181,7 @@ function Set-TppPermission {
                             }
 
                             default {
-                                Write-Error ('Failed to create permission with error {0}, {1}' -f [int]$response.StatusCode, $response.ReasonPhrase)
+                                Write-Error ('Failed to create permission with error {0}, {1}' -f [int]$response.StatusCode, $response.Error)
                             }
                         }
                     }

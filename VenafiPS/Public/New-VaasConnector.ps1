@@ -122,20 +122,20 @@ function New-VaasConnector {
 
             try {
                 $response = Invoke-VenafiRestMethod @params
-                switch ([int]$response.StatusCode) {
+                switch ( $response.StatusCode ) {
 
-                    '201' {
+                    201 {
                         if ( $PassThru ) {
                             $response.Content | ConvertFrom-Json | Select-Object -Property @{'n' = 'connectorId'; 'e' = { $_.id } }, * -ExcludeProperty id
                         }
                     }
 
-                    '409' {
+                    409 {
                         throw "Connector '$Name' already exists"
                     }
 
                     default {
-                        throw ($response | Select-Object StatusCode, StatusDescription)
+                        throw $response
                     }
                 }
             } catch {
