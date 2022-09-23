@@ -4,7 +4,7 @@ function New-VaasCertificate {
     Create certificate request
 
     .DESCRIPTION
-    Create certificate request
+    Create certificate request from automated secure keypair details or CSR
 
     .PARAMETER Application
     Application name (wildcards supported) or id to associate this certificate.
@@ -15,6 +15,9 @@ function New-VaasCertificate {
 
     .PARAMETER ServerType
     Server type name (wildcards supported) or id to associate
+
+    .PARAMETER Csr
+    CSR in PKCS#10 format which conforms to the rules of the issuing template
 
     .PARAMETER CommonName
     Common name (CN)
@@ -78,9 +81,14 @@ function New-VaasCertificate {
     Create certificate with specific validity
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com'
+    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -PassThru
 
     Create certificate and return the created object
+
+    .EXAMPLE
+    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
+
+    Create certificate with a CSR
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/New-VaasCertificate/
@@ -93,7 +101,7 @@ function New-VaasCertificate {
 
     #>
 
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(DefaultParameterSetName = 'Ask', SupportsShouldProcess)]
 
     param (
 
@@ -106,27 +114,30 @@ function New-VaasCertificate {
         [Parameter(Mandatory)]
         [String] $ServerType,
 
-        [Parameter(Mandatory)]
+        [Parameter(ParameterSetName = 'Csr', Mandatory)]
+        [string] $Csr,
+
+        [Parameter(ParameterSetName = 'Ask', Mandatory)]
         [ValidateNotNullOrEmpty()]
         [String] $CommonName,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Ask')]
         [ValidateNotNullOrEmpty()]
         [String] $Organization,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Ask')]
         [ValidateNotNullOrEmpty()]
         [String[]] $OrganizationalUnit,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Ask')]
         [ValidateNotNullOrEmpty()]
         [String] $City,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Ask')]
         [ValidateNotNullOrEmpty()]
         [String] $State,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'Ask')]
         [ValidateNotNullOrEmpty()]
         [String] $Country,
 
@@ -246,8 +257,13 @@ function New-VaasCertificate {
                 certificateIssuingTemplateId = $thisTemplateID
                 applicationServerTypeId      = $thisServerTypeID
                 validityPeriod               = $validity
-                csrAttributes                = @{}
             }
+        }
+
+        if ( $PSCmdlet.ParameterSetName -eq 'Ask' ) {
+            $params.Body.csrAttributes = @{}
+        } else {
+            $params.Body.certificateSigningRequest = $Csr
         }
 
         if ( $PSBoundParameters.ContainsKey('Organization') ) {
@@ -293,9 +309,14 @@ function New-VaasCertificate {
 
     process {
 
-        $params.Body.csrAttributes.commonName = $CommonName
+        if ( $PSCmdlet.ParameterSetName -eq 'Ask' ) {
+            $params.Body.csrAttributes.commonName = $CommonName
+            $target = $CommonName
+        } else {
+            $target = 'CSR'
+        }
 
-        if ( $PSCmdlet.ShouldProcess("$CommonName", 'New certificate request') ) {
+        if ( $PSCmdlet.ShouldProcess("$target", 'New certificate request') ) {
 
             try {
                 $response = Invoke-VenafiRestMethod @params
