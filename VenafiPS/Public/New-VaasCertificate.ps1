@@ -49,6 +49,10 @@ function New-VaasCertificate {
     .PARAMETER SanEmail
     One or more subject alternative name email entries
 
+    .PARAMETER ValidUntil
+    Date at which the certificate becomes invalid.
+    Days and hours are supported, not minutes.
+
     .PARAMETER PassThru
     Return the certificate request.
     If the certificate was successfully issued, it will be returned as the property 'certificate'.
@@ -159,7 +163,8 @@ function New-VaasCertificate {
         [Parameter()]
         [ValidateScript(
             {
-                if ( ($_ - (Get-Date)).Days -gt 0 ) {
+                $span = $_ - (Get-Date)
+                if ( $span.Days -ge 0 -or $span.Hours -ge 0 ) {
                     $true
                 } else {
                     throw 'ValidUntil must be a date in the future'
@@ -232,7 +237,7 @@ function New-VaasCertificate {
         }
 
         $span = New-TimeSpan -Start (Get-Date) -End $ValidUntil
-        $validity = 'P{0}D' -f $span.Days
+        $validity = 'P{0}DT{1}H' -f $span.Days, $span.Hours
 
         $params = @{
             VenafiSession = $VenafiSession
