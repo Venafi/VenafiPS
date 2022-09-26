@@ -157,6 +157,15 @@ function New-VaasCertificate {
         [String[]] $SanEmail,
 
         [Parameter()]
+        [ValidateScript(
+            {
+                if ( ($_ - (Get-Date)).Days -gt 0 ) {
+                    $true
+                } else {
+                    throw 'ValidUntil must be a date in the future'
+                }
+            }
+        )]
         [DateTime] $ValidUntil = (Get-Date).AddYears(1),
 
         [Parameter()]
