@@ -1,32 +1,26 @@
 function Add-TppAdaptableHash {
     <#
     .SYNOPSIS
-    Sets a value on an objects attribute or policies (policy attributes)
+    Adds or updates the hash value for an adaptable script
 
     .DESCRIPTION
-    Set the value on an objects attribute.  The attribute can either be built-in or custom.
-    You can also set policies (policy attributes).
+    TPP stores a base64 encoded hash of the file contents of an adaptable script in the Secret Store. This is referenced by
+    the Attribute 'PowerShell Script Hash Vault Id' on the DN of the adaptable script. This script retrieves the hash (if
+    present) from the Secret Store and compares it to the hash of the file in one of the scripts directories. It then adds 
+    a new or updated hash if required. When updating an existing hash, it removes the old one from the Secret Store.
 
     .PARAMETER Path
-    Path to the object to modify
+    Required. Path to the object to add or update the hash.
 
-    .PARAMETER Attribute
-    Hashtable with names and values to be set.
-    If setting a custom field, you can use either the name or guid as the key.
-    To clear a value overwriting policy, set the value to $null.
+    .PARAMETER Class
+    Used when setting policy attributes for an Adaptable App. The only valid parameter is 'Adaptable App'.
 
-    .PARAMETER BypassValidation
-    Bypass data validation.  Only applicable to custom fields.
+    .PARAMETER Keyname
+    The name of the Secret Encryption Key (SEK) to used when encrypting this item. Default is "Software:Default"
 
-    .PARAMETER Policy
-    Set policies (aka policy attributes) instead of object attributes
-
-    .PARAMETER ClassName
-    Required when setting policy attributes.  Provide the class name to set the value for.
-    If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
-
-    .PARAMETER Lock
-    Lock the value on the policy.  Only applicable to setting policies.
+    .PARAMETER FilePath
+    Required. The full path to the adaptable script file. This should normally be in a 
+    '<drive>:\Program Files\Venafi\Scripts\<subdir>' directory for TPP to recognize the script.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -35,58 +29,35 @@ function Add-TppAdaptableHash {
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
-    Path
+    Path and FilePath
 
     .OUTPUTS
     None
 
     .EXAMPLE
-    Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Consumers'='\VED\Policy\myappobject.company.com'}
+    Add-TppAdaptableHash -Path $Path -Class 'Adaptable App' -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableApp\AppDriver.ps1'
 
-    Set the value on an object
-
-    .EXAMPLE
-    Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'Management Type'=$null}
-
-    Clear the value on an object, reverting to policy if applicable
+    Update the hash on an adaptable app object.
 
     .EXAMPLE
-    Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'}
+    Add-TppAdaptableHash -Path $Path -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableLog\Generic-LogDriver.ps1'
 
-    Set the value on a custom field
-
-    .EXAMPLE
-    Set-TppAttribute -Path '\VED\Policy\My Folder\app.company.com' -Attribute @{'My custom field Label'='new custom value'} -BypassValidation
-
-    Set the value on a custom field bypassing field validation
-
-    .EXAMPLE
-    Set-TppAttribute -Path '\VED\Policy\My Folder' -PolicyClass 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
-
-    Set a policy attribute
-
-    .EXAMPLE
-    Set-TppAttribute -Path '\VED\Policy\My Folder' -PolicyClass 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
-
-    Set a policy attribute and lock the value
+    Update the hash on an adaptable log object.
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Set-TppAttribute/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppAdaptableHash/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Set-TppAttribute.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppAdaptableHash.ps1
 
     .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-add.php
 
     .LINK
-    https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-SetPolicy.php
+    https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-ownerdelete.php
 
     .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php
-
-    .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-writepolicy.php
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-retrieve.php
     #>
 
     [CmdletBinding(SupportsShouldProcess)]
@@ -127,10 +98,10 @@ function Add-TppAdaptableHash {
             Method        = 'Post'
         }
 
-        if ($Class) {
-            $retrieveVaultID = (Get-TppAttribute -Path $Path -Class $Class -Attribute 'PowerShell Script Hash Vault Id').'PowerShell Script Hash Vault Id'
+        if ( $Class ) {
+            $retrieveVaultID = ( Get-TppAttribute -Path $Path -Class $Class -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
         } else {
-            $retrieveVaultID = (Get-TppAttribute -Path $Path -Attribute 'PowerShell Script Hash Vault Id').'PowerShell Script Hash Vault Id'
+            $retrieveVaultID = ( Get-TppAttribute -Path $Path -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
         }
 
         $bytes = [Text.Encoding]::UTF32.GetBytes([IO.File]::ReadAllText($FilePath))
@@ -144,7 +115,7 @@ function Add-TppAdaptableHash {
             continue
         }
 
-        if ($retrieveVaultID) {
+        if ( $retrieveVaultID ) {
             $paramsretrieve = $params
             $paramsretrieve.UriLeaf = 'SecretStore/retrieve'
             $paramsretrieve.Body = @{
@@ -160,11 +131,9 @@ function Add-TppAdaptableHash {
             if($null -ne $retrieveResponse.Base64Data) {
                 $retrieveBase64 = $retrieveResponse.Base64Data
             }
-        } else {
-            Write-Error "Unable to get VaultID from $($Path)." -ErrorAction Stop
         }
 
-        if( $base64data -eq $retrieveBase64 ){
+        if ( $base64data -eq $retrieveBase64 ){
             Write-Verbose "PowerShell Script Hash Vault Id unchanged for $($Path)."
         } else {
             $paramsadd = $params
@@ -176,7 +145,7 @@ function Add-TppAdaptableHash {
                 Namespace = 'Config'
                 Owner = $Path
             }
-    
+
             $addresponse = Invoke-VenafiRestMethod @paramsadd
 
             if ( $addresponse.Result -ne [TppSecretStoreResult]::Success ) {
@@ -184,7 +153,10 @@ function Add-TppAdaptableHash {
             }
 
             Set-TppAttribute -Path $Path -Class $Class -Attribute @{ 'PowerShell Script Hash Vault Id' = $addresponse.VaultID } -Lock -ErrorAction Stop
+            Write-Verbose "PowerShell Script Hash Vault Id for $($Path) set to $($addresponse.VaultID)."
+        }
 
+        if (( $retrieveBase64 ) -and ( $addresponse.VaultID )) {
             $paramsdelete = $params
             $paramsdelete.UriLeaf = 'SecretStore/OwnerDelete'
             $paramsdelete.Body = @{
@@ -198,8 +170,6 @@ function Add-TppAdaptableHash {
             if ( $deleteResponse.Result -ne [TppSecretStoreResult]::Success ) {
                 Write-Error ("Error removing VaultID: {0}" -f [enum]::GetName([TppSecretStoreResult], $deleteResponse.Result))
             }
-            Write-Verbose "PowerShell Script Hash Vault Id for $($Path) set to $($addresponse.VaultID)."
         }
     }
-
 }
