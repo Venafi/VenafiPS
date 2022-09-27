@@ -124,7 +124,7 @@ function Add-TppAdaptableHash {
             $retrieveResponse = Invoke-VenafiRestMethod @paramsretrieve
 
             if ( $retrieveResponse.Result -ne [TppSecretStoreResult]::Success ) {
-                Write-Error ("Error retrieving VaultID: {0}" -f [enum]::GetName([TppSecretStoreResult], $retrieveResponse.Result))
+                Write-Error ("Error retrieving VaultID: {0}" -f [enum]::GetName([TppSecretStoreResult], $retrieveResponse.Result)) -ErrorAction Stop
             }
 
             if($null -ne $retrieveResponse.Base64Data) {
@@ -172,7 +172,7 @@ function Add-TppAdaptableHash {
             $deleteResponse = Invoke-VenafiRestMethod @paramsdelete
 
             if ( $deleteResponse.Result -ne [TppSecretStoreResult]::Success ) {
-                Write-Error ("Error removing VaultID: {0}" -f [enum]::GetName([TppSecretStoreResult], $deleteResponse.Result))
+                Write-Error ("Error removing VaultID: {0}" -f [enum]::GetName([TppSecretStoreResult], $deleteResponse.Result)) -ErrorAction Stop
             }
         }
     }
