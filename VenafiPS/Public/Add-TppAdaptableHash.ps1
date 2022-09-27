@@ -12,8 +12,8 @@ function Add-TppAdaptableHash {
     .PARAMETER Path
     Required. Path to the object to add or update the hash.
 
-    .PARAMETER Class
-    Used when setting policy attributes for an Adaptable App. The only valid parameter is 'Adaptable App'.
+    .PARAMETER AdaptableApp
+    Used when setting policy attributes for an Adaptable App.
 
     .PARAMETER Keyname
     The name of the Secret Encryption Key (SEK) to used when encrypting this item. Default is "Software:Default"
@@ -29,13 +29,13 @@ function Add-TppAdaptableHash {
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
-    Path and FilePath
+    None
 
     .OUTPUTS
     None
 
     .EXAMPLE
-    Add-TppAdaptableHash -Path $Path -Class 'Adaptable App' -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableApp\AppDriver.ps1'
+    Add-TppAdaptableHash -Path $Path -AdaptableApp -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableApp\AppDriver.ps1'
 
     Update the hash on an adaptable app object.
 
@@ -75,9 +75,8 @@ function Add-TppAdaptableHash {
         [String] $Path,
 
         [Parameter()]
-        [ValidateSet('Adaptable App')]
         [ValidateNotNullOrEmpty()]
-        [string] $Class,
+        [switch] $AdaptableApp,
 
         [Parameter()]
 		[string] $Keyname = "Software:Default",
@@ -98,8 +97,8 @@ function Add-TppAdaptableHash {
             Method        = 'Post'
         }
 
-        if ( $Class ) {
-            $retrieveVaultID = ( Get-TppAttribute -Path $Path -Class $Class -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
+        if ( $AdaptableApp ) {
+            $retrieveVaultID = ( Get-TppAttribute -Path $Path -Class 'Adaptable App' -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
         } else {
             $retrieveVaultID = ( Get-TppAttribute -Path $Path -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
         }
@@ -116,7 +115,7 @@ function Add-TppAdaptableHash {
         }
 
         if ( $retrieveVaultID ) {
-            $paramsretrieve = $params
+            $paramsretrieve = $params.Clone()
             $paramsretrieve.UriLeaf = 'SecretStore/retrieve'
             $paramsretrieve.Body = @{
                 VaultID = $retrieveVaultID
@@ -135,8 +134,9 @@ function Add-TppAdaptableHash {
 
         if ( $base64data -eq $retrieveBase64 ){
             Write-Verbose "PowerShell Script Hash Vault Id unchanged for $($Path)."
+            continue
         } else {
-            $paramsadd = $params
+            $paramsadd = $params.Clone()
             $paramsadd.UriLeaf = 'SecretStore/Add'
             $paramsadd.Body = @{
                 VaultType = '128'
@@ -149,15 +149,19 @@ function Add-TppAdaptableHash {
             $addresponse = Invoke-VenafiRestMethod @paramsadd
 
             if ( $addresponse.Result -ne [TppSecretStoreResult]::Success ) {
-                Write-Error ("Error adding VaultID: {0}" -f [enum]::GetName([TppSecretStoreResult], $addResponse.Result))
+                Write-Error ("Error adding VaultID: {0}" -f [enum]::GetName([TppSecretStoreResult], $addResponse.Result)) -ErrorAction Stop
             }
 
-            Set-TppAttribute -Path $Path -Class $Class -Attribute @{ 'PowerShell Script Hash Vault Id' = $addresponse.VaultID } -Lock -ErrorAction Stop
+            if ( $AdaptableApp ) {
+                Set-TppAttribute -Path $Path -PolicyClass 'Adaptable App' -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -Lock -VenafiSession $VenafiSession -ErrorAction Stop
+            } else {
+                Set-TppAttribute -Path $Path -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -VenafiSession $VenafiSession -ErrorAction Stop
+            }
             Write-Verbose "PowerShell Script Hash Vault Id for $($Path) set to $($addresponse.VaultID)."
         }
 
         if (( $retrieveBase64 ) -and ( $addresponse.VaultID )) {
-            $paramsdelete = $params
+            $paramsdelete = $params.Clone()
             $paramsdelete.UriLeaf = 'SecretStore/OwnerDelete'
             $paramsdelete.Body = @{
                 Namespace = 'Config'
