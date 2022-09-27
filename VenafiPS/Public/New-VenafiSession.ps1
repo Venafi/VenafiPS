@@ -313,7 +313,7 @@ function New-VenafiSession {
 
         { $_ -in 'KeyCredential', 'KeyIntegrated' } {
 
-            Write-Warning 'Key-based authentication will be deprecated in release 21.4 in favor of token-based.  Get started with token authentication today, https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php.'
+            Write-Warning 'Key-based authentication is being deprecated in favor of token-based.  Get started with token authentication today, https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php.'
 
             if ( $PsCmdlet.ParameterSetName -eq 'KeyCredential' ) {
                 $newSession.Connect($Credential)
