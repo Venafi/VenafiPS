@@ -93,7 +93,7 @@ function Add-TppAdaptableHash {
             Method        = 'Post'
         }
 
-        $TypeName = (Get-TppObject -Path $Path).TypeName
+        $TypeName = (Get-TppObject -Path $Path -VenafiSession $VenafiSession).TypeName
 
         if ( $TypeName -eq 'Policy' ) {
             $retrieveVaultID = ( Get-TppAttribute -Path $Path -Class 'Adaptable App' -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
