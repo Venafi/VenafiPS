@@ -185,7 +185,7 @@ function New-VaasCertificate {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         # validation
-        $allApps = Get-VaasApplication -All
+        $allApps = Get-VaasApplication -All -VenafiSession $VenafiSession
         $allServerTypes = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'applicationservertypes' -VenafiSession $VenafiSession | Select-Object -ExpandProperty applicationservertypes
 
         $thisApp = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
