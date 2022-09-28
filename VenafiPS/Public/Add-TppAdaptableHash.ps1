@@ -12,9 +12,6 @@ function Add-TppAdaptableHash {
     .PARAMETER Path
     Required. Path to the object to add or update the hash.
 
-    .PARAMETER AdaptableApp
-    Used when setting policy attributes for an Adaptable App.
-
     .PARAMETER Keyname
     The name of the Secret Encryption Key (SEK) to used when encrypting this item. Default is "Software:Default"
 
@@ -35,9 +32,12 @@ function Add-TppAdaptableHash {
     None
 
     .EXAMPLE
-    Add-TppAdaptableHash -Path $Path -AdaptableApp -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableApp\AppDriver.ps1'
+    Add-TppAdaptableHash -Path $Path -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableApp\AppDriver.ps1'
 
     Update the hash on an adaptable app object.
+    
+    Note: For an adaptable app or an onboard discovery, 'Path' must always be a policy folder as this is where
+    the hash is saved.
 
     .EXAMPLE
     Add-TppAdaptableHash -Path $Path -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableLog\Generic-LogDriver.ps1'
@@ -75,10 +75,6 @@ function Add-TppAdaptableHash {
         [String] $Path,
 
         [Parameter()]
-        [ValidateNotNullOrEmpty()]
-        [switch] $AdaptableApp,
-
-        [Parameter()]
 		[string] $Keyname = "Software:Default",
 
         [Parameter(Mandatory)]
@@ -97,7 +93,9 @@ function Add-TppAdaptableHash {
             Method        = 'Post'
         }
 
-        if ( $AdaptableApp ) {
+        $TypeName = (Get-TppObject -Path $Path).TypeName
+
+        if ( $TypeName -eq 'Policy' ) {
             $retrieveVaultID = ( Get-TppAttribute -Path $Path -Class 'Adaptable App' -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
         } else {
             $retrieveVaultID = ( Get-TppAttribute -Path $Path -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
