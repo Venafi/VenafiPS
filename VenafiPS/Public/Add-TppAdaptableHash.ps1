@@ -11,6 +11,8 @@ function Add-TppAdaptableHash {
 
     .PARAMETER Path
     Required. Path to the object to add or update the hash.
+    Note: For an adaptable app or an onboard discovery, 'Path' must always be a policy folder as this is where
+    the hash is saved.
 
     .PARAMETER Keyname
     The name of the Secret Encryption Key (SEK) to used when encrypting this item. Default is "Software:Default"
