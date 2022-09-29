@@ -152,7 +152,7 @@ function Add-TppAdaptableHash {
                 Write-Error ("Error adding VaultID: {0}" -f [enum]::GetName([TppSecretStoreResult], $addResponse.Result)) -ErrorAction Stop
             }
 
-            if ( $AdaptableApp ) {
+            if ( $TypeName -eq 'Policy' ) {
                 Set-TppAttribute -Path $Path -PolicyClass 'Adaptable App' -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -Lock -VenafiSession $VenafiSession -ErrorAction Stop
             } else {
                 Set-TppAttribute -Path $Path -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -VenafiSession $VenafiSession -ErrorAction Stop
