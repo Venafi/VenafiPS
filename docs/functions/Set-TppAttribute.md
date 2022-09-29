@@ -13,8 +13,8 @@ Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-Ven
 
 ### Policy
 ```
-Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-Policy] -PolicyClass <String>
- [-Lock] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] -Class <String> [-Lock]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -54,14 +54,14 @@ Set the value on a custom field bypassing field validation
 
 ### EXAMPLE 5
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder' -PolicyClass 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
+Set-TppAttribute -Path '\VED\Policy\My Folder' -Class 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
 ```
 
 Set a policy attribute
 
 ### EXAMPLE 6
 ```
-Set-TppAttribute -Path '\VED\Policy\My Folder' -PolicyClass 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
+Set-TppAttribute -Path '\VED\Policy\My Folder' -Class 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
 ```
 
 Set a policy attribute and lock the value
@@ -116,28 +116,15 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Policy
-Set policies (aka policy attributes) instead of object attributes
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: Policy
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PolicyClass
-{{ Fill PolicyClass Description }}
+### -Class
+Required when setting policy attributes. 
+Provide the class name to set the value for.
+If unsure of the class name, add the value through the TPP UI and go to Support-\>Policy Attributes to find it.
 
 ```yaml
 Type: String
 Parameter Sets: Policy
-Aliases: ClassName
+Aliases: ClassName, PolicyClass
 
 Required: True
 Position: Named

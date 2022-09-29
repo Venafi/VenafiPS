@@ -1,3 +1,13 @@
+## 5.1.0
+- Add `Add-TppAdaptableHash` to automate the updating of an adaptable script hash. Thanks [@wilddev65]!
+- Add `New-VaasCertificate` to create new certificates with VaaS
+- Add `Revoke-TppGrant` to revoke all grants for a specific user
+- Update `Import-VaasCertificate` to accept a name for the application (wildcards supported)
+- Add `Get-VenafiCertificate -All` for VaaS
+- Update `Get-VenafiCertificate` to persist -ExcludeExpired and -ExcludeRevoked when using -All
+- Fix parameter error with `Get-VaasIssuingTemplate` when piping multiple values
+
+
 ## 5.0.0
 - Rewrite Get-TppAttribute
   - Greatly simplified with far less parameters needed
@@ -421,6 +431,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

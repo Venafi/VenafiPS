@@ -27,6 +27,7 @@ nav:
   - Home: index.md
   - Changelog: changelog.md
   - Functions:
+    - Add-TppAdaptableHash: functions/Add-TppAdaptableHash.md
     - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
     - Add-TppEngineFolder: functions/Add-TppEngineFolder.md
     - Add-VenafiTeamMember: functions/Add-VenafiTeamMember.md
@@ -80,6 +81,7 @@ nav:
     - New-TppPolicy: functions/New-TppPolicy.md
     - New-TppToken: functions/New-TppToken.md
     - New-VaasApplication: functions/New-VaasApplication.md
+    - New-VaasCertificate: functions/New-VaasCertificate.md
     - New-VaasConnector: functions/New-VaasConnector.md
     - New-VenafiSession: functions/New-VenafiSession.md
     - New-VenafiTeam: functions/New-VenafiTeam.md
@@ -97,6 +99,7 @@ nav:
     - Remove-VenafiTeamOwner: functions/Remove-VenafiTeamOwner.md
     - Rename-TppObject: functions/Rename-TppObject.md
     - Revoke-TppCertificate: functions/Revoke-TppCertificate.md
+    - Revoke-TppGrant: functions/Revoke-TppGrant.md
     - Revoke-TppToken: functions/Revoke-TppToken.md
     - Search-TppHistory: functions/Search-TppHistory.md
     - Set-TppAttribute: functions/Set-TppAttribute.md

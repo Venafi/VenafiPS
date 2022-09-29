@@ -32,7 +32,7 @@ Import a certificate
 
 ### EXAMPLE 2
 ```
-Import-VaasCertificate -CertificatePath c:\www.VenafiPS.com.cer -Application 'a2f83b26-c712-4f46-be41-2e1fb901f20c'
+Import-VaasCertificate -CertificatePath c:\www.VenafiPS.com.cer -Application MyApp
 ```
 
 Import a certificate and assign an application
@@ -95,7 +95,7 @@ Accept wildcard characters: False
 ```
 
 ### -Application
-Application to assign to this certificate
+Application name (wildcards supported) or id to associate this certificate.
 
 ```yaml
 Type: String[]
