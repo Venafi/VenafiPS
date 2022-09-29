@@ -1,14 +1,7 @@
-- Rewrite Get-TppAttribute
-  - Greatly simplified with far less parameters needed
-  - Attributes, which have values, available as properties at the root level in the response.  This is useful for direct value access.
-  - A property named `Attribute` has been added with all attribute names, values, and configuration.  This is useful for looping over the attributes, determining where a policy attribute is set, and more.
-- Add TPP engine management functions `Add-TppEngineFolder`, `Find-TppEngine`, `Get-TppEngineFolder`, and `Remove-TppEngineFolder`.  Thanks [@ccamacho1966](https://github.com/ccamacho1966)!
-- Add VaaS connector management functions `Get-VaasConnector`, `New-VaasConnector`, and `Rmove-VaasConnector`.  Currently limited to webhooks with event type scope.
-- Add VaaS and TPP certificate deletion to `Invoke-VenafiCertificateAction`
-- Add `-IncludeVaasOwner` to `Find-VenafiCertificate` and `Get-VenafiCertificate` to include user/team owner detailed info on VaaS
-- Add 'application' property to `Find-VenafiCertificate` and `Get-VenafiCertificate` with application details on VaaS
-- Add `-All` to `Get-VenafiCertificate` to retrieve all certificates.  This replaces the default behavior of getting all with no parameters.
-- Add prepending '\ved\policy' when a root path isn't provided to many functions
-- Fix `Invoke-VenafiCertificateAction` not triggering some actions on VaaS
-- Fix `Get-VenafiCertificate` returning TppObject instead of detailed certificate info when getting all
-- **Note: please test your code when using the above functions as there are breaking changes in this release**
+- Add `Add-TppAdaptableHash` to automate the updating of an adaptable script hash. Thanks [@wilddev65]!
+- Add `New-VaasCertificate` to create new certificates with VaaS
+- Add `Revoke-TppGrant` to revoke all grants for a specific user
+- Update `Import-VaasCertificate` to accept a name for the application (wildcards supported)
+- Add `Get-VenafiCertificate -All` for VaaS
+- Update `Get-VenafiCertificate` to persist -ExcludeExpired and -ExcludeRevoked when using -All
+- Fix parameter error with `Get-VaasIssuingTemplate` when piping multiple values
