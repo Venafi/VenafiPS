@@ -14,7 +14,7 @@ function Import-VaasCertificate {
     Contents of a certificate to import.  Provide either this or CertificatePath.
 
     .PARAMETER Application
-    Application to assign to this certificate
+    Application name (wildcards supported) or id to associate this certificate.
 
     .PARAMETER PassThru
     Return imported certificate details
@@ -30,7 +30,7 @@ function Import-VaasCertificate {
     Import a certificate
 
     .EXAMPLE
-    Import-VaasCertificate -CertificatePath c:\www.VenafiPS.com.cer -Application 'a2f83b26-c712-4f46-be41-2e1fb901f20c'
+    Import-VaasCertificate -CertificatePath c:\www.VenafiPS.com.cer -Application MyApp
 
     Import a certificate and assign an application
 
@@ -105,6 +105,28 @@ function Import-VaasCertificate {
             }
         }
 
+
+        if ( $PSBoundParameters.ContainsKey('Application') ) {
+            $allApps = Get-VaasApplication -All -VenafiSession $VenafiSession
+            $appsForImport = foreach ($thisApplication in $Application) {
+                $appFound = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
+                switch (@($appFound).Count) {
+                    0 {
+                        throw ('Application not found.  Valid applications are {0}.' -f ($allApps.name -join ', '))
+                    }
+
+                    1 {
+                        Write-Verbose ('Found application {0}, ID: {1}' -f $appFound.name, $appFound.applicationId)
+                        $appFound.applicationId
+                    }
+
+                    Default {
+                        throw ('More than 1 application found that matches {0}: {1}' -f $Application, ($thisApp.name -join ', '))
+                    }
+                }
+            }
+        }
+
         $allCerts = [System.Collections.Generic.List[object]]::new()
     }
 
@@ -120,7 +142,7 @@ function Import-VaasCertificate {
                 $allCerts.Add(
                     @{
                         'certificate'    = [System.Convert]::ToBase64String($cert)
-                        'applicationIds' = $Application
+                        'applicationIds' = @($appsForImport)
                     }
                 )
             }
@@ -129,7 +151,7 @@ function Import-VaasCertificate {
                 $allCerts.Add(
                     @{
                         'certificate'    = $thisCertData
-                        'applicationIds' = $Application
+                        'applicationIds' = @($appsForImport)
                     }
                 )
             }

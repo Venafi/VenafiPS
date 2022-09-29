@@ -83,28 +83,31 @@
 
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName)]
         [Parameter(ParameterSetName = 'VaasId', Mandatory, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'TppOldVersions', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'TppId', Mandatory, ValueFromPipelineByPropertyName)]
         [Alias('Guid', 'Path')]
         [string] $CertificateId,
 
-        [Parameter(Mandatory, ParameterSetName = 'TppOldVersions')]
-        [Parameter(ParameterSetName = 'TppAll')]
+        [Parameter(Mandatory, ParameterSetName = 'All')]
+        [Parameter(Mandatory, ParameterSetName = 'VaasAll')]
+        [Parameter(Mandatory, ParameterSetName = 'TppAll')]
+        [Switch] $All,
+
+        [Parameter(Mandatory, ParameterSetName = 'TppId')]
+        [Parameter(Mandatory, ParameterSetName = 'TppAll')]
         [Alias('IncludePreviousVersions')]
         [switch] $IncludeTppPreviousVersions,
 
-        [Parameter(ParameterSetName = 'TppOldVersions')]
+        [Parameter(ParameterSetName = 'TppId')]
+        [Parameter(ParameterSetName = 'TppAll')]
         [switch] $ExcludeExpired,
 
-        [Parameter(ParameterSetName = 'TppOldVersions')]
+        [Parameter(ParameterSetName = 'TppId')]
+        [Parameter(ParameterSetName = 'TppAll')]
         [switch] $ExcludeRevoked,
 
-        [Parameter(ParameterSetName = 'VaasId')]
-        [Parameter(ParameterSetName = 'VaasAll')]
-        [Switch] $IncludeVaasOwner,
-
-        [Parameter(Mandatory, ParameterSetName = 'TppAll')]
+        [Parameter(Mandatory, ParameterSetName = 'VaasId')]
         [Parameter(Mandatory, ParameterSetName = 'VaasAll')]
-        [Switch] $All,
+        [Switch] $IncludeVaasOwner,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -115,8 +118,8 @@
 
         $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
-        # paramset 'Id' is applicable to either platform
-        if ( $PsCmdlet.ParameterSetName -ne 'Id' -and $PsCmdlet.ParameterSetName -notmatch "^$platform" ) {
+        # paramset Id and All are applicable to either platform
+        if ( $PsCmdlet.ParameterSetName -notin 'Id', 'All' -and $PsCmdlet.ParameterSetName -notmatch "^$platform" ) {
             throw "The parameters selected are not applicable to $platform"
         }
 
@@ -160,6 +163,11 @@
 
         switch ($platform) {
             'VaaS' {
+
+                if ( $All ) {
+                    return (Find-VenafiCertificate -IncludeTotalCount -IncludeVaasOwner:$IncludeVaasOwner -VenafiSession $VenafiSession)
+                }
+
                 $params.UriRoot = 'outagedetection/v1'
                 $params.UriLeaf = "certificates"
 
@@ -253,57 +261,57 @@
 
             Default {
 
-                if ( $PSCmdlet.ParameterSetName -in 'Id', 'TppOldVersions' ) {
-
-                    if ( [guid]::TryParse($CertificateId, $([ref][guid]::Empty)) ) {
-                        $thisGuid = ([guid] $CertificateId).ToString()
-                    } else {
-                        # a path was provided
-                        $thisGuid = $CertificateId | ConvertTo-TppFullPath | ConvertTo-TppGuid -VenafiSession $VenafiSession
-                    }
-
-                    $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
-
-                    $response = Invoke-VenafiRestMethod @params
-
-                    if ( $IncludeTppPreviousVersions ) {
-                        $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}/PreviousVersions")
-                        $params.Body = @{}
-
-                        if ( $ExcludeExpired.IsPresent ) {
-                            $params.Body.ExcludeExpired = $ExcludeExpired
-                        }
-                        if ( $ExcludeRevoked.IsPresent ) {
-                            $params.Body.ExcludeRevoked = $ExcludeRevoked
-                        }
-
-                        $previous = Invoke-VenafiRestMethod @params
-
-                        if ( $previous.PreviousVersions ) {
-                            $previous.PreviousVersions.CertificateDetails | ForEach-Object {
-                                $_.StoreAdded = [datetime]$_.StoreAdded
-                                $_.ValidFrom = [datetime]$_.ValidFrom
-                                $_.ValidTo = [datetime]$_.ValidTo
-                            }
-                        }
-
-                        $response | Add-Member @{'PreviousVersions' = $previous.PreviousVersions }
-                    }
-
-                    # object transformations
-                    # put in try/catch in case datetime conversion fails
-                    try {
-                        $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
-                        $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
-                        $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
-                    } catch {
-
-                    }
-                    $response | Select-Object @selectProps
-
-                } else {
-                    Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession | Get-VenafiCertificate -IncludeTppPreviousVersions:$IncludeTppPreviousVersions -VenafiSession $VenafiSession
+                if ( $All ) {
+                    return (Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession |
+                        Get-VenafiCertificate -IncludeTppPreviousVersions:$IncludeTppPreviousVersions -ExcludeExpired:$ExcludeExpired -ExcludeRevoked:$ExcludeRevoked -VenafiSession $VenafiSession)
                 }
+
+                if ( [guid]::TryParse($CertificateId, $([ref][guid]::Empty)) ) {
+                    $thisGuid = ([guid] $CertificateId).ToString()
+                } else {
+                    # a path was provided
+                    $thisGuid = $CertificateId | ConvertTo-TppFullPath | ConvertTo-TppGuid -VenafiSession $VenafiSession
+                }
+
+                $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
+
+                $response = Invoke-VenafiRestMethod @params
+
+                if ( $IncludeTppPreviousVersions ) {
+                    $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}/PreviousVersions")
+                    $params.Body = @{}
+
+                    if ( $ExcludeExpired.IsPresent ) {
+                        $params.Body.ExcludeExpired = $ExcludeExpired
+                    }
+                    if ( $ExcludeRevoked.IsPresent ) {
+                        $params.Body.ExcludeRevoked = $ExcludeRevoked
+                    }
+
+                    $previous = Invoke-VenafiRestMethod @params
+
+                    if ( $previous.PreviousVersions ) {
+                        $previous.PreviousVersions.CertificateDetails | ForEach-Object {
+                            $_.StoreAdded = [datetime]$_.StoreAdded
+                            $_.ValidFrom = [datetime]$_.ValidFrom
+                            $_.ValidTo = [datetime]$_.ValidTo
+                        }
+                    }
+
+                    $response | Add-Member @{'PreviousVersions' = $previous.PreviousVersions }
+                }
+
+                # object transformations
+                # put in try/catch in case datetime conversion fails
+                try {
+                    $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
+                    $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
+                    $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
+                } catch {
+
+                }
+                $response | Select-Object @selectProps
+
             }
         }
     }

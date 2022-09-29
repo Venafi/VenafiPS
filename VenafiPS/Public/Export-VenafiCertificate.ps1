@@ -85,7 +85,7 @@ function Export-VenafiCertificate {
 
     param (
 
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Alias('Path', 'id')]
         [string] $CertificateId,
 
