@@ -10,7 +10,7 @@ Get certificate information
 Get-VenafiCertificate -CertificateId <String> [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
-### TppOldVersions
+### TppId
 ```
 Get-VenafiCertificate -CertificateId <String> [-IncludeTppPreviousVersions] [-ExcludeExpired] [-ExcludeRevoked]
  [-VenafiSession <PSObject>] [<CommonParameters>]
@@ -24,12 +24,18 @@ Get-VenafiCertificate -CertificateId <String> [-IncludeVaasOwner] [-VenafiSessio
 
 ### TppAll
 ```
-Get-VenafiCertificate [-IncludeTppPreviousVersions] [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VenafiCertificate [-All] [-IncludeTppPreviousVersions] [-ExcludeExpired] [-ExcludeRevoked]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### VaasAll
 ```
-Get-VenafiCertificate [-IncludeVaasOwner] [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VenafiCertificate [-All] [-IncludeVaasOwner] [-VenafiSession <PSObject>] [<CommonParameters>]
+```
+
+### All
+```
+Get-VenafiCertificate [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -89,7 +95,7 @@ For TPP, use the path or guid.
 
 ```yaml
 Type: String
-Parameter Sets: Id, TppOldVersions, VaasId
+Parameter Sets: Id, TppId, VaasId
 Aliases: Guid, Path
 
 Required: True
@@ -99,14 +105,13 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -IncludeTppPreviousVersions
-Returns details about previous (historical) versions of a certificate (only from TPP).
-This option will add a property named PreviousVersions to the returned object.
+### -All
+Retrieve all certificates
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: TppOldVersions
-Aliases: IncludePreviousVersions
+Parameter Sets: TppAll, VaasAll, All
+Aliases:
 
 Required: True
 Position: Named
@@ -115,12 +120,16 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -IncludeTppPreviousVersions
+Returns details about previous (historical) versions of a certificate (only from TPP).
+This option will add a property named PreviousVersions to the returned object.
+
 ```yaml
 Type: SwitchParameter
-Parameter Sets: TppAll
+Parameter Sets: TppId, TppAll
 Aliases: IncludePreviousVersions
 
-Required: False
+Required: True
 Position: Named
 Default value: False
 Accept pipeline input: False
@@ -133,7 +142,7 @@ Can only be used with the IncludePreviousVersions parameter.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: TppOldVersions
+Parameter Sets: TppId, TppAll
 Aliases:
 
 Required: False
@@ -149,7 +158,7 @@ Can only be used with the IncludePreviousVersions parameter.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: TppOldVersions
+Parameter Sets: TppId, TppAll
 Aliases:
 
 Required: False
@@ -166,21 +175,6 @@ This will cause additional api calls to be made and take longer.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: VaasId, VaasAll
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -All
-Retrieve all certificates
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: TppAll, VaasAll
 Aliases:
 
 Required: True
