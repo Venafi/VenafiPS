@@ -21,7 +21,7 @@ function Set-TppAttribute {
     .PARAMETER Policy
     Set policies (aka policy attributes) instead of object attributes
 
-    .PARAMETER ClassName
+    .PARAMETER Class
     Required when setting policy attributes.  Provide the class name to set the value for.
     If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
 
@@ -61,12 +61,12 @@ function Set-TppAttribute {
     Set the value on a custom field bypassing field validation
 
     .EXAMPLE
-    Set-TppAttribute -Path '\VED\Policy\My Folder' -PolicyClass 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
+    Set-TppAttribute -Path '\VED\Policy\My Folder' -Class 'X509 Certificate' -Attribute @{'Notification Disabled'='0'}
 
     Set a policy attribute
 
     .EXAMPLE
-    Set-TppAttribute -Path '\VED\Policy\My Folder' -PolicyClass 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
+    Set-TppAttribute -Path '\VED\Policy\My Folder' -Class 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
 
     Set a policy attribute and lock the value
 
@@ -111,12 +111,9 @@ function Set-TppAttribute {
         [Parameter()]
         [switch] $BypassValidation,
 
-        [Parameter(ParameterSetName = 'Policy')]
-        [switch] $Policy,
-
         [Parameter(Mandatory, ParameterSetName = 'Policy')]
-        [Alias('ClassName')]
-        [string] $PolicyClass,
+        [Alias('ClassName', 'PolicyClass')]
+        [string] $Class,
 
         [Parameter(ParameterSetName = 'Policy')]
         [switch] $Lock,
@@ -127,8 +124,6 @@ function Set-TppAttribute {
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
-
-        if ( $Policy ) { Write-Warning '-Policy is no longer required; just provide -PolicyClass to set policy attributes.' }
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -210,14 +205,14 @@ function Set-TppAttribute {
 
         if ( $baseFields.Count -gt 0 ) {
 
-            if ( $PSBoundParameters.ContainsKey('PolicyClass') ) {
+            if ( $PSBoundParameters.ContainsKey('Class') ) {
                 # config/WritePolicy only allows 1 key/value per call
                 foreach ($field in $baseFields) {
 
                     $params.UriLeaf = 'config/WritePolicy'
                     $params.Body = @{
                         ObjectDN      = $Path
-                        Class         = $PolicyClass
+                        Class         = $Class
                         AttributeName = $field.Name
                         Values        = @($field.Value)
                         Locked        = [int]$Lock.ToBool()
@@ -247,11 +242,11 @@ function Set-TppAttribute {
 
         if ( $customFields.Count -gt 0 ) {
 
-            if ( $PSBoundParameters.ContainsKey('PolicyClass') ) {
+            if ( $PSBoundParameters.ContainsKey('Class') ) {
                 $params.UriLeaf = 'Metadata/SetPolicy'
                 $params.Body = @{
                     DN          = $Path
-                    ConfigClass = $PolicyClass
+                    ConfigClass = $Class
                     GuidData    = $customFields
                     Locked      = [int]$Lock.ToBool()
                 }

@@ -63,14 +63,13 @@
         $params = @{
             VenafiSession = $VenafiSession
             Method        = 'Get'
-            UriLeaf       = 'certificateissuingtemplates'
         }
     }
 
     process {
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
-            $params.UriLeaf += "/$ID"
+            $params.UriLeaf = "certificateissuingtemplates/$ID"
         }
 
         $response = Invoke-VenafiRestMethod @params
