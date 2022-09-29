@@ -322,7 +322,7 @@ function New-VaasCertificate {
                         $certRequest | Add-Member @{ 'certificate' = $actualCert }
                     }
 
-                    $certRequest
+                    $certRequest | Select-Object @{'n' = 'certificateRequestId'; 'e' = { $_.id } }, *, @{'n' = 'certificateId'; 'e' = { $_.certificateIds } } -ExcludeProperty id, certificateIds
                 }
             } catch {
                 Write-Error $_
