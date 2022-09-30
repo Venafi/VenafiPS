@@ -1,3 +1,7 @@
+## 5.1.1
+- Minor bugfix
+
+
 ## 5.1.0
 - Add `Add-TppAdaptableHash` to automate the updating of an adaptable script hash. Thanks [@wilddev65]!
 - Add `New-VaasCertificate` to create new certificates with VaaS
@@ -431,6 +435,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
