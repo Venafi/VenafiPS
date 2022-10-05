@@ -1,70 +1,81 @@
-<#
-.SYNOPSIS
-Create a new object
-
-.DESCRIPTION
-Generic use function to create a new object if a specific function hasn't been created yet for the class.
-
-.PARAMETER Path
-Full path, including name, for the object to be created.
-
-.PARAMETER Class
-Class name of the new object.
-See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php for more info.
-
-.PARAMETER Attribute
-Hashtable with initial values for the new object.
-These will be specific to the object class being created.
-
-.PARAMETER PushCertificate
-If creating an application object, you can optionally push the certificate once the creation is complete.
-Only available if a 'Certificate' key containing the certificate path is provided for Attribute.
-Please note, this feature was added in v18.3.
-
-.PARAMETER PassThru
-Return a TppObject representing the newly created object.
-
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
-
-.EXAMPLE
-New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}
-Create a new device
-
-.EXAMPLE
-New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'} -PassThru
-Create a new device and return the resultant object
-
-.EXAMPLE
-New-TppObject -Path '\VED\Policy\Test Device\App' -Class 'Basic' -Attribute @{'Driver Name'='appbasic';'Certificate'='\Ved\Policy\mycert.com'}
-Create a new Basic application and associate it to a device and certificate
-
-.INPUTS
-none
-
-.OUTPUTS
-TppObject, if PassThru provided
-
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/
-
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1
-
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php
-
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php
-
-#>
 function New-TppObject {
+    <#
+    .SYNOPSIS
+    Create a new object
+
+    .DESCRIPTION
+    Generic use function to create a new object if a specific function hasn't been created yet for the class.
+
+    .PARAMETER Path
+    Full path, including name, for the object to be created.
+    If the root path is excluded, \ved\policy will be prepended.
+
+    .PARAMETER Class
+    Class name of the new object.
+    See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php for more info.
+
+    .PARAMETER Attribute
+    Hashtable with initial values for the new object.
+    These will be specific to the object class being created.
+
+    .PARAMETER PushCertificate
+    If creating an application object, you can optionally push the certificate once the creation is complete.
+    Only available if a 'Certificate' key containing the certificate path is provided for Attribute.
+
+    .PARAMETER Force
+    Force the creation of missing parent policy folders when the class is either Policy or Device.
+
+    .PARAMETER PassThru
+    Return a TppObject representing the newly created object.
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+
+    .EXAMPLE
+    New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}
+
+    Create a new object
+
+    .EXAMPLE
+    New-TppObject -Path 'missing\folder\again' -Class 'Policy' -Force
+
+    Create a new object as well as any missing policy folders in the path
+
+    .EXAMPLE
+    New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'} -PassThru
+
+    Create a new object and return the resultant object
+
+    .EXAMPLE
+    New-TppObject -Path '\VED\Policy\Test Device\App' -Class 'Basic' -Attribute @{'Driver Name'='appbasic';'Certificate'='\Ved\Policy\mycert.com'}
+
+    Create a new Basic application and associate it to a device and certificate
+
+    .INPUTS
+    none
+
+    .OUTPUTS
+    TppObject, if PassThru provided
+
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/New-TppObject/
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-TppObject.ps1
+
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppCertificateAssociation.ps1
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-create.php
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReference/r-SDK-CNattributesWhere.php
+
+    #>
 
     [CmdletBinding(DefaultParameterSetName = 'NonApplicationObject', SupportsShouldProcess)]
     [OutputType([TppObject])]
@@ -72,14 +83,6 @@ function New-TppObject {
     param (
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                if ( $_ | Test-TppDnPath ) {
-                    $true
-                }
-                else {
-                    throw "'$_' is not a valid DN path"
-                }
-            })]
         [string] $Path,
 
         [Parameter(Mandatory)]
@@ -94,6 +97,9 @@ function New-TppObject {
         [switch] $PushCertificate,
 
         [Parameter()]
+        [switch] $Force,
+
+        [Parameter()]
         [switch] $PassThru,
 
         [Parameter()]
@@ -102,16 +108,18 @@ function New-TppObject {
 
     Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
-    if ( $PushCertificate.IsPresent -and (-not $Attribute.Certificate) ) {
+    if ( $PushCertificate -and (-not $Attribute.Certificate) ) {
         Write-Warning 'A ''Certificate'' key containing the certificate path must be provided for Attribute when using PushCertificate, eg. -Attribute @{''Certificate''=''\Ved\Policy\mycert.com''}.  Certificate provisioning will not take place.'
     }
 
+    $newPath = $Path | ConvertTo-TppFullPath
+
     $params = @{
         VenafiSession = $VenafiSession
-        Method     = 'Post'
-        UriLeaf    = 'config/create'
-        Body       = @{
-            ObjectDN = $Path
+        Method        = 'Post'
+        UriLeaf       = 'config/create'
+        Body          = @{
+            ObjectDN = $newPath
             Class    = $Class
         }
     }
@@ -124,15 +132,70 @@ function New-TppObject {
         $params.Body.Add('NameAttributeList', $updatedAttribute)
     }
 
-    if ( $PSCmdlet.ShouldProcess($Path, ('Create {0} Object' -f $Class)) ) {
+    if ( $PSCmdlet.ShouldProcess($newPath, ('Create {0} Object' -f $Class)) ) {
 
-        $response = Invoke-VenafiRestMethod @params
+        $retryCount = 0
+        do {
+            $retryCreate = $false
 
-        if ( $response.Result -ne [TppConfigResult]::Success ) {
-            Throw $response.Error
-        }
+            $response = Invoke-VenafiRestMethod @params
 
-        Write-Verbose "Successfully created $Class at $Path"
+            switch ([enum]::GetName([TppConfigResult], $response.Result)) {
+
+                'Success' {
+                    Write-Verbose "Successfully created $Class at $newPath"
+                    $returnObject = [TppObject] @{
+                        Name     = $response.Object.Name
+                        TypeName = $response.Object.TypeName
+                        Path     = $response.Object.DN
+                        Guid     = $response.Object.Guid
+                    }
+                }
+
+                'ObjectDoesNotExist' {
+                    # occurs when a parent object, anywhere in the path, is missing
+
+                    # with these classes we know the parent is a policy so we can create them
+                    if ( $Class -in 'Policy', 'Device' ) {
+                        if ( -not $Force ) {
+                            throw 'Part of -Path does not exist.  Use -Force to create the policy folders.'
+                        } else {
+
+                            $pathSplit = $newPath.Split('\')
+
+                            # create the parent policy folders
+                            # don't try and create \ved or \ved\policy levels
+                            for ($i = 3; $i -lt ($pathSplit.Count - 1); $i++) {
+                                if ( -not (Find-TppObject -Path ($pathSplit[0..($i - 1)] -join '\') -Pattern $i)) {
+                                    Write-Verbose ('Creating missing policy folder {0}' -f ($pathSplit[0..$i] -join '\'))
+                                    New-TppPolicy -Path ($pathSplit[0..$i] -join '\') -VenafiSession $VenafiSession
+                                }
+                            }
+
+                            $retryCreate = $true
+                        }
+                    } else {
+                        throw 'Part of -Path does not exist.'
+                    }
+                }
+
+                'ObjectAlreadyExists' {
+                    Write-Verbose "$newPath already existed"
+                    if ( $PassThru ) {
+                        $returnObject = Get-TppObject -Path $newPath -VenafiSession $VenafiSession
+                    }
+                }
+
+                Default {
+                    throw ('Unknown result code from config/create: {0}' -f $response.Result)
+                }
+            }
+
+            $retryCount++
+
+        } until (
+            -not $retryCreate -or $retryCount -gt 2
+        )
 
         if ( $Attribute.Certificate ) {
             $associateParams = @{
@@ -147,15 +210,7 @@ function New-TppObject {
         }
 
         if ( $PassThru ) {
-
-            $object = $response.Object
-
-            [TppObject] @{
-                Name     = $object.Name
-                TypeName = $object.TypeName
-                Path     = $object.DN
-                Guid     = $object.Guid
-            }
+            $returnObject
         }
     }
 }
