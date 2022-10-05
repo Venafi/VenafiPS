@@ -15,18 +15,15 @@ function Set-TppAttribute {
     If setting a custom field, you can use either the name or guid as the key.
     To clear a value overwriting policy, set the value to $null.
 
-    .PARAMETER BypassValidation
-    Bypass data validation.  Only applicable to custom fields.
-
-    .PARAMETER Policy
-    Set policies (aka policy attributes) instead of object attributes
-
     .PARAMETER Class
     Required when setting policy attributes.  Provide the class name to set the value for.
     If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
 
     .PARAMETER Lock
     Lock the value on the policy.  Only applicable to setting policies.
+
+    .PARAMETER BypassValidation
+    Bypass data validation.  Only applicable to custom fields.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -93,7 +90,7 @@ function Set-TppAttribute {
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = 'Being flagged incorrectly')]
 
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -108,15 +105,15 @@ function Set-TppAttribute {
         [Parameter(Mandatory)]
         [hashtable] $Attribute,
 
-        [Parameter()]
-        [switch] $BypassValidation,
-
         [Parameter(Mandatory, ParameterSetName = 'Policy')]
         [Alias('ClassName', 'PolicyClass')]
         [string] $Class,
 
         [Parameter(ParameterSetName = 'Policy')]
         [switch] $Lock,
+
+        [Parameter()]
+        [switch] $BypassValidation,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
