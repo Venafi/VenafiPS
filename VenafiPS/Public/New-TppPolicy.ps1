@@ -19,12 +19,22 @@ function New-TppPolicy {
     If setting a custom field, you can use either the name or guid as the key.
     To clear a value overwriting policy, set the value to $null.
 
+    .PARAMETER PolicyAttribute
+    Set policy attributes at policy creation time.
+    Use with -Class.
+
     .PARAMETER Class
-    Set -Attribute as policy attributes.
+    Use with -PolicyAttribute to set policy attributes at policy creation time.
     If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
+
+    .PARAMETER Lock
+    Use with -PolicyAttribute and -Class to lock the policy attribute
 
     .PARAMETER Description
     Policy description
+
+    .PARAMETER Force
+    Force the creation of missing parent policy folders when the Class is either Policy or Device.
 
     .PARAMETER PassThru
     Return a TppObject representing the newly created policy.
@@ -92,6 +102,10 @@ function New-TppPolicy {
         [Parameter(ParameterSetName = 'NameWithPolicyAttribute', Mandatory)]
         [string] $Class,
 
+        [Parameter(ParameterSetName = 'PathWithPolicyAttribute')]
+        [Parameter(ParameterSetName = 'NameWithPolicyAttribute')]
+        [switch] $Lock,
+
         [Parameter()]
         [switch] $Force,
 
@@ -137,7 +151,7 @@ function New-TppPolicy {
                 $response = New-TppObject @params
 
                 if ( $PSBoundParameters.ContainsKey('Class') ) {
-                    $response | Set-TppAttribute -Attribute $PolicyAttribute -Class $Class -VenafiSession $VenafiSession
+                    $response | Set-TppAttribute -Attribute $PolicyAttribute -Class $Class -Lock:$Lock -VenafiSession $VenafiSession
                 }
 
                 if ( $PassThru ) {
