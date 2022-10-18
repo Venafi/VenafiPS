@@ -158,7 +158,7 @@ function New-TppObject {
                     # with these classes we know the parent is a policy so we can create them
                     if ( $Class -in 'Policy', 'Device' ) {
                         if ( -not $Force ) {
-                            throw 'Part of -Path does not exist.  Use -Force to create the policy folders.'
+                            throw "Part of the path $newPath does not exist.  Use -Force to create the missing policy folders."
                         } else {
 
                             $pathSplit = $newPath.Split('\')
@@ -166,7 +166,7 @@ function New-TppObject {
                             # create the parent policy folders
                             # don't try and create \ved or \ved\policy levels
                             for ($i = 3; $i -lt ($pathSplit.Count - 1); $i++) {
-                                if ( -not (Find-TppObject -Path ($pathSplit[0..($i - 1)] -join '\') -Pattern $i)) {
+                                if ( -not (Find-TppObject -Path ($pathSplit[0..($i - 1)] -join '\') -Pattern $pathSplit[$i])) {
                                     Write-Verbose ('Creating missing policy folder {0}' -f ($pathSplit[0..$i] -join '\'))
                                     New-TppPolicy -Path ($pathSplit[0..$i] -join '\') -VenafiSession $VenafiSession
                                 }
@@ -175,19 +175,16 @@ function New-TppObject {
                             $retryCreate = $true
                         }
                     } else {
-                        throw 'Part of -Path does not exist.'
+                        throw "Part of path $newPath does not exist."
                     }
                 }
 
                 'ObjectAlreadyExists' {
-                    Write-Verbose "$newPath already existed"
-                    if ( $PassThru ) {
-                        $returnObject = Get-TppObject -Path $newPath -VenafiSession $VenafiSession
-                    }
+                    throw "$newPath already exists"
                 }
 
                 Default {
-                    throw ('Unknown result code from config/create: {0}' -f $response.Result)
+                    throw ('Error creating object: {0}, {1}' -f $response.Result, $_)
                 }
             }
 

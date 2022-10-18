@@ -4,7 +4,7 @@ function New-TppPolicy {
     Add a new policy folder
 
     .DESCRIPTION
-    Add a new policy folder(s).  Add attributes or policy attributes at the same time.
+    Add a new policy folder(s).  Add object attributes or policy attributes at the same time.
 
     .PARAMETER Path
     Full path to the new policy folder.
@@ -15,26 +15,23 @@ function New-TppPolicy {
     One of more policy folders to create under -Path.
 
     .PARAMETER Attribute
-    Hashtable with names and values to be set.
+    Hashtable with names and values to be set on the policy itself.
+    If used with -Class, this will set policy attributes.
     If setting a custom field, you can use either the name or guid as the key.
     To clear a value overwriting policy, set the value to $null.
 
-    .PARAMETER PolicyAttribute
-    Set policy attributes at policy creation time.
-    Use with -Class.
-
     .PARAMETER Class
-    Use with -PolicyAttribute to set policy attributes at policy creation time.
+    Use with -Attribute to set policy attributes at policy creation time.
     If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
 
     .PARAMETER Lock
     Use with -PolicyAttribute and -Class to lock the policy attribute
 
     .PARAMETER Description
-    Policy description
+    Deprecated.  Use -Attribute @{''Description''=''my description''} instead.
 
     .PARAMETER Force
-    Force the creation of missing parent policy folders when the Class is either Policy or Device.
+    Force the creation of missing parent policy folders
 
     .PARAMETER PassThru
     Return a TppObject representing the newly created policy.
@@ -52,12 +49,39 @@ function New-TppPolicy {
     TppObject, if PassThru provided
 
     .EXAMPLE
-    $newPolicy = New-TppPolicy -Path '\VED\Policy\Existing Policy Folder\New Policy Folder' -PassThru
-    Create policy returning the policy object created
+    $newPolicy = New-TppPolicy -Path 'new'
+
+    Create a new policy folder
 
     .EXAMPLE
-    New-TppPolicy -Path '\VED\Policy\Existing Policy Folder\New Policy Folder' -Description 'this is awesome'
-    Create policy with description
+    $newPolicy = New-TppPolicy -Path 'existing' -Name 'new1', 'new2', 'new3'
+
+    Create multiple policy folders
+
+    .EXAMPLE
+    $newPolicy = New-TppPolicy -Path 'new1\new2\new3' -Force
+
+    Create a new policy folder named new3 and create new1 and new2 if they do not exist
+
+    .EXAMPLE
+    $newPolicy = New-TppPolicy -Path 'new' -Attribute {'Description'='my new policy folder'}
+
+    Create a new policy folder setting attributes on the object at creation time
+
+    .EXAMPLE
+    $newPolicy = New-TppPolicy -Path 'new' -Class 'X509 Certificate' -Attribute {'State'='UT'}
+
+    Create a new policy folder setting policy attributes (not object attributes)
+
+    .EXAMPLE
+    $newPolicy = New-TppPolicy -Path 'new' -Class 'X509 Certificate' -Attribute {'State'='UT'} -Lock
+
+    Create a new policy folder setting policy attributes (not object attributes) and locking them
+
+    .EXAMPLE
+    $newPolicy = New-TppPolicy -Path 'new' -PassThru
+
+    Create a new policy folder returning the policy object created
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/New-TppPolicy/
@@ -83,20 +107,19 @@ function New-TppPolicy {
         [ValidateNotNullOrEmpty()]
         [string] $Path,
 
-        [Parameter(Mandatory, ParameterSetName = 'Name')]
+        [Parameter(ParameterSetName = 'Name', Mandatory)]
         [Parameter(ParameterSetName = 'NameWithPolicyAttribute', Mandatory)]
         [string[]] $Name,
 
-        [Parameter()]
-        [ValidateNotNullOrEmpty()]
+        [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Name')]
         [String] $Description,
 
-        [Parameter()]
-        [hashtable] $Attribute,
-
+        [Parameter(ParameterSetName = 'Path')]
+        [Parameter(ParameterSetName = 'Name')]
         [Parameter(ParameterSetName = 'PathWithPolicyAttribute', Mandatory)]
         [Parameter(ParameterSetName = 'NameWithPolicyAttribute', Mandatory)]
-        [hashtable] $PolicyAttribute,
+        [hashtable] $Attribute,
 
         [Parameter(ParameterSetName = 'PathWithPolicyAttribute', Mandatory)]
         [Parameter(ParameterSetName = 'NameWithPolicyAttribute', Mandatory)]
@@ -125,7 +148,7 @@ function New-TppPolicy {
             Force         = $Force
         }
 
-        if ( $PSBoundParameters.ContainsKey('Description') -or $PSBoundParameters.ContainsKey('Attribute') ) {
+        if ( ($PSBoundParameters.ContainsKey('Description') -or $PSBoundParameters.ContainsKey('Attribute')) -and $PSCmdlet.ParameterSetName -in 'Path', 'Name' ) {
             $params.Attribute = @{}
 
             if ( $PSBoundParameters.ContainsKey('Description') ) {
@@ -151,7 +174,7 @@ function New-TppPolicy {
                 $response = New-TppObject @params
 
                 if ( $PSBoundParameters.ContainsKey('Class') ) {
-                    $response | Set-TppAttribute -Attribute $PolicyAttribute -Class $Class -Lock:$Lock -VenafiSession $VenafiSession
+                    $response | Set-TppAttribute -Attribute $Attribute -Class $Class -Lock:$Lock -VenafiSession $VenafiSession
                 }
 
                 if ( $PassThru ) {
