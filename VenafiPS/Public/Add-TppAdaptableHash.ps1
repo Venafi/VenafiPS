@@ -6,7 +6,7 @@ function Add-TppAdaptableHash {
     .DESCRIPTION
     TPP stores a base64 encoded hash of the file contents of an adaptable script in the Secret Store. This is referenced by
     the Attribute 'PowerShell Script Hash Vault Id' on the DN of the adaptable script. This script retrieves the hash (if
-    present) from the Secret Store and compares it to the hash of the file in one of the scripts directories. It then adds 
+    present) from the Secret Store and compares it to the hash of the file in one of the scripts directories. It then adds
     a new or updated hash if required. When updating an existing hash, it removes the old one from the Secret Store.
 
     .PARAMETER Path
@@ -18,13 +18,13 @@ function Add-TppAdaptableHash {
     The name of the Secret Encryption Key (SEK) to used when encrypting this item. Default is "Software:Default"
 
     .PARAMETER FilePath
-    Required. The full path to the adaptable script file. This should normally be in a 
+    Required. The full path to the adaptable script file. This should normally be in a
     '<drive>:\Program Files\Venafi\Scripts\<subdir>' directory for TPP to recognize the script.
 
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
+    A TPP token can also provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -37,7 +37,7 @@ function Add-TppAdaptableHash {
     Add-TppAdaptableHash -Path $Path -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableApp\AppDriver.ps1'
 
     Update the hash on an adaptable app object.
-    
+
     Note: For an adaptable app or an onboard discovery, 'Path' must always be a policy folder as this is where
     the hash is saved.
 

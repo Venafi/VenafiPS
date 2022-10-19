@@ -10,8 +10,7 @@ function New-VaasApplication {
     Application name
 
     .PARAMETER Owner
-    List of user and/or team IDs to be owners.
-    Use Get-VenafiIdentity or Get-VenafiTeam to retrieve the ID.
+    List of user and/or team IDs or names to be owners
 
     .PARAMETER Description
     Application description
@@ -43,7 +42,7 @@ function New-VaasApplication {
     PSCustomObject, if PassThru provided
 
     .EXAMPLE
-    New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d'
+    New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d','greg@venafi.com'
 
     Create a new application
 
@@ -76,7 +75,7 @@ function New-VaasApplication {
         [string] $Name,
 
         [Parameter(Mandatory)]
-        [guid[]] $Owner,
+        [string[]] $Owner,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -115,15 +114,16 @@ function New-VaasApplication {
 
         # determine if user or team and build the payload
         $ownerHash = foreach ($thisOwner in $Owner) {
+
             $team = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
             if ( $team ) {
-                @{ 'ownerId' = $thisOwner; 'ownerType' = 'TEAM' }
+                @{ 'ownerId' = $team.teamId; 'ownerType' = 'TEAM' }
             } else {
                 $user = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
                 if ( $user ) {
-                    @{ 'ownerId' = $thisOwner; 'ownerType' = 'USER' }
+                    @{ 'ownerId' = $user.userId; 'ownerType' = 'USER' }
                 } else {
-                    Write-Error "Owner $thisOwner not found for application $Name"
+                    Write-Error "Owner $thisOwner not found"
                     Continue
                 }
             }
