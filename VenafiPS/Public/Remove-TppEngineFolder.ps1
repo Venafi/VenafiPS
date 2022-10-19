@@ -48,8 +48,8 @@ function Remove-TppEngineFolder
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
 
     param (
-        [Parameter(Mandatory,ParameterSetName = 'AllEngines')]
-        [Parameter(Mandatory,ParameterSetName = 'Matrix')]
+        [Parameter(Mandatory,ParameterSetName = 'AllEngines', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory,ParameterSetName = 'Matrix', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
             if ( $_ | Test-TppDnPath ) { $true }
@@ -58,8 +58,8 @@ function Remove-TppEngineFolder
         [Alias('FolderDN', 'Folder')]
         [String[]] $FolderPath,
 
-        [Parameter(Mandatory,ParameterSetName = 'AllFolders')]
-        [Parameter(Mandatory,ParameterSetName = 'Matrix')]
+        [Parameter(Mandatory,ParameterSetName = 'AllFolders', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory,ParameterSetName = 'Matrix', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
             if ( $_ | Test-TppDnPath ) { $true }
@@ -157,9 +157,9 @@ function Remove-TppEngineFolder
             }
             else {  # ParameterSetName='Matrix'
                 if ($FolderList.Count -gt 1) { $shouldProcessAction += "Remove $($FolderList.Count) folders" }
-                else { $shouldProcessAction += "Remove $($FolderList.Path)" }
+                else { $shouldProcessAction = "Remove $($FolderList.Path)" }
                 if ($EngineList.Count -gt 1) { $shouldProcessTarget = "$($EngineList.Count) processing engines" }
-                else { $shouldProcessTarget += "$($EngineList.Name)" }
+                else { $shouldProcessTarget = "$($EngineList.Name)" }
             }
             if ($PSCmdlet.ShouldProcess($shouldProcessTarget, $shouldProcessAction)) {
                 foreach ($engine in $EngineList) {

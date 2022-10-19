@@ -108,9 +108,9 @@
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.PSObject.Properties.Name -contains 'teams' ) {
-                $response | Select-Object -ExpandProperty teams
+                $response | Select-Object -ExpandProperty teams | Select-Object @{'n' = 'teamId'; 'e' = { $_.id } }, * -ExcludeProperty id
             } else {
-                $response
+                $response | Select-Object @{'n' = 'teamId'; 'e' = { $_.id } }, * -ExcludeProperty id
             }
         } else {
             if ( $PSCmdlet.ParameterSetName -eq 'All' ) {

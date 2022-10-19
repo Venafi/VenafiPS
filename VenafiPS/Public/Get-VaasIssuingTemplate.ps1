@@ -68,8 +68,9 @@
 
     process {
 
+        $params.UriLeaf = 'certificateissuingtemplates'
         if ( $PSBoundParameters.ContainsKey('ID') ) {
-            $params.UriLeaf = "certificateissuingtemplates/$ID"
+            $params.UriLeaf += "/$ID"
         }
 
         $response = Invoke-VenafiRestMethod @params
