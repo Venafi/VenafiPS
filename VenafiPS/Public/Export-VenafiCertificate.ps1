@@ -12,7 +12,7 @@ function Export-VenafiCertificate {
     .PARAMETER Format
     Certificate format.
     For Venafi as a Service, you can provide either PEM, DER, or JKS.
-    For TPP, Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
+    For TPP, you can provide Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
 
     .PARAMETER OutPath
     Folder path to save the certificate to.  The name of the file will be determined automatically.  TPP Only...for now.
@@ -24,7 +24,7 @@ function Export-VenafiCertificate {
     Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when Format is JKS.  TPP Only.
 
     .PARAMETER IncludePrivateKey
-    DEPRECATED. Provide a value for -PrivateKeyPassword.
+    DEPRECATED. Provide a value for -PrivateKeyPassword.  TPP only.
 
     .PARAMETER PrivateKeyPassword
     Password required to include the private key.  Not supported with DER or PKCS #7 formats.  TPP Only.
@@ -80,7 +80,7 @@ function Export-VenafiCertificate {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'Vaas')]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
     [Alias('Get-TppCertificate', 'Export-TppCertificate', 'Export-VaasCertificate')]
 
     param (
@@ -89,7 +89,8 @@ function Export-VenafiCertificate {
         [Alias('Path', 'id')]
         [string] $CertificateId,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'All')]
+        [Parameter(Mandatory, ParameterSetName = 'Tpp')]
         [ValidateSet("Base64", "Base64 (PKCS #8)", "DER", "JKS", "PKCS #7", "PKCS #12", "PEM")]
         [string] $Format,
 
@@ -130,6 +131,10 @@ function Export-VenafiCertificate {
     begin {
         $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
+        if ( $PsCmdlet.ParameterSetName -ne 'All' -and $PsCmdlet.ParameterSetName -notmatch "^$platform" ) {
+            throw "The parameters selected are not applicable to $platform"
+        }
+
         $params = @{
             VenafiSession = $VenafiSession
             Body          = @{
@@ -140,9 +145,14 @@ function Export-VenafiCertificate {
         if ( $platform -eq 'VaaS' ) {
 
             if ( $Format -notin 'PEM', 'DER', 'JKS') {
-                throw "Venafi as a Service does not support the format $Format"
+                throw 'VaaS supports format PEM, DER, and JKS'
             }
+
         } else {
+
+            if ( $Format -eq 'PEM') {
+                throw 'TPP supports format Base64, Base64 (PKCS #8), DER, JKS, PKCS #7, and PKCS #12'
+            }
 
             if ($PrivateKeyPassword) {
 
@@ -163,9 +173,6 @@ function Export-VenafiCertificate {
             }
 
             if ( $KeystorePassword ) {
-                if ( $Format -and $Format -ne 'JKS' ) {
-                    Write-Warning "Changing format from $Format to JKS as KeystorePassword was provided"
-                }
                 $params.Body.Format = 'JKS'
                 $plainTextPassword = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($KeystorePassword))
                 $params.Body.KeystorePassword = $plainTextPassword
@@ -184,7 +191,7 @@ function Export-VenafiCertificate {
             }
 
             if ($IncludePrivateKey) {
-                Write-Warning "IncludePrivateKey is DEPRECATED. Provide a value for -PrivateKeyPassword instead."
+                Write-Warning "IncludePrivateKey is DEPRECATED. Provide a value for just -PrivateKeyPassword instead."
             }
         }
     }
@@ -205,7 +212,7 @@ function Export-VenafiCertificate {
             $params.Method = 'Post'
             $params.UriLeaf = 'certificates/retrieve'
 
-            $params.Body.CertificateDN = $CertificateId
+            $params.Body.CertificateDN = $CertificateId | ConvertTo-TppFullPath
 
             $response = Invoke-VenafiRestMethod @params
 
