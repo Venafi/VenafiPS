@@ -143,7 +143,6 @@ function Find-TppObject {
             Method        = 'Post'
             Body          = @{
                 'ObjectDN' = $Path | ConvertTo-TppFullPath
-
             }
         }
 
@@ -152,13 +151,13 @@ function Find-TppObject {
                 $params.UriLeaf = 'config/find'
                 # this is the only api for this function which doesn't accept a path, let's remove it
                 $params.Body.Remove('ObjectDN')
-                $params.Body['AttributeNames'] = $Attribute
+                $params.Body.AttributeNames = $Attribute
             }
 
             { $_ -in 'FindByPath', 'FindByPattern', 'FindByClass' } {
                 # if a path wasn't provided, default to recursive enumeration of \ved\policy
                 if ( -not $PSBoundParameters.ContainsKey('Path') ) {
-                    $params.Body['Recursive'] = 'true'
+                    $params.Body.Recursive = 'true'
                 }
             }
 
@@ -174,17 +173,17 @@ function Find-TppObject {
 
         # add filters
         if ( $PSBoundParameters.ContainsKey('Pattern') ) {
-            $params.Body.Add( 'Pattern', $Pattern )
+            $params.Body.Pattern = $Pattern
         }
 
         if ( $PSBoundParameters.ContainsKey('Recursive') ) {
-            $params.Body.Add( 'Recursive', 'true' )
+            $params.Body.Recursive = 'true'
         }
 
         if ( $PSBoundParameters.ContainsKey('Class') ) {
             # the rest api doesn't have the ability to search for multiple classes and path at the same time
             # loop through classes to get around this
-            $params.Body['Class'] = ''
+            $params.Body.Class = ''
             $objects = $Class.ForEach{
                 $thisClass = $_
                 $params.Body.Class = $thisClass
