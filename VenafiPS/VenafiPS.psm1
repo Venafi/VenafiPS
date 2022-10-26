@@ -95,5 +95,9 @@ $vaasFields = @(
     'keyUsage',
     'extendedKeyUsage',
     'ocspNoCheck',
-    'versionType'
+    'versionType',
+    'activityDate',
+    'activityType',
+    'activityName',
+    'criticality'
 )
