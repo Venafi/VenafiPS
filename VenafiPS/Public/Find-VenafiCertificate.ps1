@@ -520,7 +520,7 @@ function Find-VenafiCertificate {
                     $params.Body.Add( 'CN', $CommonName )
                 }
                 'Issuer' {
-                    $params.Body.Add( 'Issuer', $Issuer )
+                    $params.Body.Add( 'Issuer', '"{0}"' -f $Issuer )
                 }
                 'KeyAlgorithm' {
                     $params.Body.Add( 'KeyAlgorithm', $KeyAlgorithm -join ',' )
