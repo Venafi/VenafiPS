@@ -238,17 +238,22 @@ function Invoke-VenafiRestMethod {
 
             409 {
                 # 409 = item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
-                # treat this as non error/exception
-                $response = [pscustomobject] @{
-                    StatusCode = $statusCode
-                    Error      =
-                    try {
-                        $originalError.ErrorDetails.Message | ConvertFrom-Json
-                    } catch {
-                        $originalError.ErrorDetails.Message
+                # treat this as non error/exception if FullResponse provided
+                if ( $FullResponse ) {
+                    $response = [pscustomobject] @{
+                        StatusCode = $statusCode
+                        Error      =
+                        try {
+                            $originalError.ErrorDetails.Message | ConvertFrom-Json
+                        } catch {
+                            $originalError.ErrorDetails.Message
+                        }
                     }
+                } else {
+                    throw $originalError
                 }
             }
+
             Default {
                 throw $originalError
             }
