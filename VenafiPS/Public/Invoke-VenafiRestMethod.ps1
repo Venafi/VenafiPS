@@ -227,24 +227,31 @@ function Invoke-VenafiRestMethod {
 
         # if trying with a slash below doesn't work, we want to provide the original error
         $originalError = $_
-        $originalStatusCode = $originalError.Exception.Response.StatusCode.value__
 
-        Write-Verbose ('Response status code {0}' -f $originalStatusCode)
+        $statusCode = [int]$originalError.Exception.Response.StatusCode
+        Write-Verbose ('Response status code {0}' -f $statusCode)
 
-        if ( $originalStatusCode -eq '409' -or $FullResponse ) {
-            # 409 = item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
-            # treat this as non error
-            $response = [pscustomobject] @{
-                StatusCode   = [int]$_.Exception.Response.StatusCode
-                Error =
-                try {
-                    $_.ErrorDetails.Message | ConvertFrom-Json
-                } catch {
-                    $_.ErrorDetails.Message
+        switch ($statusCode) {
+            403 {
+                throw 'A permissions error was encountered.  Ensure both the permissions and token scope are correct.'
+            }
+
+            409 {
+                # 409 = item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
+                # treat this as non error/exception
+                $response = [pscustomobject] @{
+                    StatusCode = $statusCode
+                    Error      =
+                    try {
+                        $originalError.ErrorDetails.Message | ConvertFrom-Json
+                    } catch {
+                        $originalError.ErrorDetails.Message
+                    }
                 }
             }
-        } else {
-            throw $_
+            Default {
+                throw $originalError
+            }
         }
 
     } finally {
