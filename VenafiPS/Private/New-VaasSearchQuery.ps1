@@ -95,8 +95,16 @@ function New-VaasSearchQuery {
             $operands = $loopFilter | ForEach-Object {
                 $thisItem = $_
                 if ( $thisItem.count -eq 3 -and -not ($thisItem | ForEach-Object { if ($_.GetType().Name -eq 'Object[]') { 'array' } })) {
+
+                    # vaas fields are case sensitive, get the proper case if we're aware of the field
+                    $newField = $thisItem[0]
+                    $properCaseField = $vaasFields | Where-Object { $_.ToLower() -eq $newField.ToLower() }
+                    if ( $properCaseField ) {
+                        $newField = $properCaseField
+                    }
+
                     $newOperand = @{
-                        'field'    = $thisItem[0]
+                        'field'    = $newField
                         'operator' = $thisItem[1].ToUpper()
                     }
 
@@ -108,7 +116,12 @@ function New-VaasSearchQuery {
                         }
 
                         'String' {
-                            $newOperand.Add('value', $thisItem[2])
+                            $newValue = $thisItem[2]
+                            # these values should be upper case, fix in case not provided that way
+                            if ( $newOperand.field.ToLower() -in $vaasValuesToUpper.ToLower() ) {
+                                $newValue = $thisItem[2].ToUpper()
+                            }
+                            $newOperand.Add('value', $newValue)
                         }
 
                         Default {

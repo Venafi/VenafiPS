@@ -19,8 +19,7 @@ foreach ( $folder in $folders) {
             if ( $folder -eq 'Public' ) {
                 Export-ModuleMember -Function $thisFile.Basename
             }
-        }
-        Catch {
+        } Catch {
             Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
         }
     }
@@ -56,5 +55,45 @@ Export-ModuleMember -Alias *
 # Force TLS 1.2
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-
-
+# vaas fields to ensure the values are upper case
+$vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
+# vaas fields proper case
+$vaasFields = @(
+    'certificateId',
+    'applicationIds',
+    'companyId',
+    'managedCertificateId',
+    'fingerprint',
+    'certificateName',
+    'issuerCertificateIds',
+    'certificateStatus',
+    'statusModificationUserId',
+    'modificationDate',
+    'statusModificationDate',
+    'validityStart',
+    'validityEnd',
+    'selfSigned',
+    'signatureAlgorithm',
+    'signatureHashAlgorithm',
+    'encryptionType',
+    'keyCurve',
+    'subjectKeyIdentifierHash',
+    'authorityKeyIdentifierHash',
+    'serialNumber',
+    'subjectDN',
+    'subjectCN',
+    'subjectO',
+    'subjectST',
+    'subjectC',
+    'subjectAlternativeNamesByType',
+    'subjectAlternativeNameDns',
+    'issuerDN',
+    'issuerCN',
+    'issuerST',
+    'issuerL',
+    'issuerC',
+    'keyUsage',
+    'extendedKeyUsage',
+    'ocspNoCheck',
+    'versionType'
+)

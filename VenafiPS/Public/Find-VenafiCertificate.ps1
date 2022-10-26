@@ -464,6 +464,7 @@ function Find-VenafiCertificate {
                 Header        = @{'Accept' = 'application/json' }
             }
 
+            $apps = [System.Collections.Generic.List[object]]::new()
             $appOwners = [System.Collections.Generic.List[object]]::new()
 
         } else {
@@ -632,7 +633,14 @@ function Find-VenafiCertificate {
                 @{
                     'n' = 'application'
                     'e' = {
-                        $_.applicationIds | Get-VaasApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                        foreach ($thisAppId in $_.applicationIds) {
+                            $thisApp = $apps | Where-Object { $_.applicationId -eq $thisAppId }
+                            if ( -not $thisApp ) {
+                                $thisApp = $thisAppId | Get-VaasApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                                $apps.Add($thisApp)
+                            }
+                            $thisApp
+                        }
                     }
                 },
                 @{
