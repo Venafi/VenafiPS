@@ -66,12 +66,15 @@ function New-VaasSearchQuery {
             'paging'     = @{}
         }
 
+        $firstMax = 18446744073709551615
         # page size limit from vaas is 1000
-        if ($PSBoundParameters.ContainsKey('First') -and $PSCmdlet.PagingParameters.First -le 1000) {
-            $query.paging.Add('pageSize', $PSCmdlet.PagingParameters.First)
-        } else {
-            $query.paging.Add('pageSize', 1000)
+        $query.paging.Add('pageSize', [Math]::Min($PSCmdlet.PagingParameters.First, 1000))
+
+        # notify user if they picked a -First value greater than 1000
+        if ( $PSCmdlet.PagingParameters.First -ne $firstMax -and $PSCmdlet.PagingParameters.First -gt 1000 ) {
+            Write-Warning '-First can not be larger than 1000 and will be updated'
         }
+
         $query.paging.Add('pageNumber', 0)
 
         function New-VaasExpression {
