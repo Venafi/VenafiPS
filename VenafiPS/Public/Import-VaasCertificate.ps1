@@ -170,7 +170,7 @@ function Import-VaasCertificate {
         Write-Verbose $response.statistics
 
         if ( $PassThru ) {
-            $response.certificateInformations
+            $response.certificateInformations | Get-VenafiCertificate -VenafiSession $VenafiSession
         }
     }
 }
