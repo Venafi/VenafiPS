@@ -510,23 +510,23 @@ function New-VenafiSession {
         # make sure we remove duplicates
         $newSession | Add-Member @{ CustomField = $certFields.Items | Sort-Object -Property Guid -Unique }
     } else {
-        $newSession | Add-Member @{
-            MachineType = (Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $newSession | Select-Object -ExpandProperty machineTypes | Select-Object @{
-                    'n' = 'machineTypeId'
-                    'e' = {
-                        $_.Id
-                    }
-                }, * -ExcludeProperty id)
-        }
+        # $newSession | Add-Member @{
+        #     MachineType = (Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $newSession | Select-Object -ExpandProperty machineTypes | Select-Object @{
+        #             'n' = 'machineTypeId'
+        #             'e' = {
+        #                 $_.Id
+        #             }
+        #         }, * -ExcludeProperty id)
+        # }
 
-        $newSession | Add-Member @{
-            ApplicationServerType = (Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'applicationservertypes' -VenafiSession $newSession | Select-Object -ExpandProperty applicationServerTypes | Select-Object @{
-                    'n' = 'applicationServerTypeId'
-                    'e' = {
-                        $_.Id
-                    }
-                }, * -ExcludeProperty id)
-        }
+        # $newSession | Add-Member @{
+        #     ApplicationServerType = (Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'applicationservertypes' -VenafiSession $newSession | Select-Object -ExpandProperty applicationServerTypes | Select-Object @{
+        #             'n' = 'applicationServerTypeId'
+        #             'e' = {
+        #                 $_.Id
+        #             }
+        #         }, * -ExcludeProperty id)
+        # }
 
         # $newSession | Add-Member @{
         #     ActivityType = (Invoke-VenafiRestMethod -UriLeaf 'activitytypes' -VenafiSession $newSession | Select-Object -ExpandProperty activityTypes | Select-Object @{
