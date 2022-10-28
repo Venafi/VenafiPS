@@ -504,7 +504,7 @@ function New-VenafiSession {
 
     # will fail if user is on an older version.  this isn't required so bypass on failure
     # only applicable to tpp
-    if ( $PSCmdlet.ParameterSetName -notin 'Vaas', 'VaultVaasKey' ) {
+    if ( $newSession.Platform -eq 'TPP' ) {
         $newSession | Add-Member @{ Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue) }
         $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-TppCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
         # make sure we remove duplicates
