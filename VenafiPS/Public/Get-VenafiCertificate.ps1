@@ -84,7 +84,7 @@
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName)]
         [Parameter(ParameterSetName = 'VaasId', Mandatory, ValueFromPipelineByPropertyName)]
         [Parameter(ParameterSetName = 'TppId', Mandatory, ValueFromPipelineByPropertyName)]
-        [Alias('Guid', 'Path')]
+        [Alias('Guid', 'Path', 'id')]
         [string] $CertificateId,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]

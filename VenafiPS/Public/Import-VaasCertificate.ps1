@@ -105,7 +105,6 @@ function Import-VaasCertificate {
             }
         }
 
-
         if ( $PSBoundParameters.ContainsKey('Application') ) {
             $allApps = Get-VaasApplication -All -VenafiSession $VenafiSession
             $appsForImport = foreach ($thisApplication in $Application) {
@@ -134,26 +133,30 @@ function Import-VaasCertificate {
 
         if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
             foreach ($thisCertPath in $CertificatePath) {
+
                 if ($PSVersionTable.PSVersion.Major -lt 6) {
                     $cert = Get-Content $thisCertPath -Encoding Byte
                 } else {
                     $cert = Get-Content $thisCertPath -AsByteStream
                 }
-                $allCerts.Add(
-                    @{
-                        'certificate'    = [System.Convert]::ToBase64String($cert)
-                        'applicationIds' = @($appsForImport)
-                    }
-                )
+
+                $newCert = @{
+                    'certificate' = [System.Convert]::ToBase64String($cert)
+                }
+                if ( $appsForImport ) {
+                    $newCert.applicationIds = @($appsForImport)
+                }
+                $allCerts.Add($newCert)
             }
         } else {
             foreach ($thisCertData in $CertificateData) {
-                $allCerts.Add(
-                    @{
-                        'certificate'    = $thisCertData
-                        'applicationIds' = @($appsForImport)
-                    }
-                )
+                $newCert = @{
+                    'certificate' = $thisCertData -replace "`r|`n|-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----"
+                }
+                if ( $appsForImport ) {
+                    $newCert.applicationIds = @($appsForImport)
+                }
+                $allCerts.Add($newCert)
             }
         }
 
@@ -167,7 +170,7 @@ function Import-VaasCertificate {
         Write-Verbose $response.statistics
 
         if ( $PassThru ) {
-            $response.certificateInformations
+            $response.certificateInformations | Get-VenafiCertificate -VenafiSession $VenafiSession
         }
     }
 }

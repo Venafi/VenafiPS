@@ -3,8 +3,8 @@ class VenafiSession {
     [string] $Server
     [PSCustomObject] $Key
     [PSCustomObject] $Token
-    [PSCustomObject] $CustomField
-    [Version] $Version
+    # [PSCustomObject] $CustomField
+    # [Version] $Version
 
     VenafiSession () {
     }
