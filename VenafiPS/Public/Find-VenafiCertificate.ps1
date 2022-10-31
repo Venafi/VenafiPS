@@ -344,6 +344,14 @@ function Find-VenafiCertificate {
         [DateTime] $IssueDate,
 
         [Parameter(ParameterSetName = 'TPP')]
+        [Alias('ValidFromGreater')]
+        [DateTime] $IssueDateAfter,
+
+        [Parameter(ParameterSetName = 'TPP')]
+        [Alias('ValidFromLess')]
+        [DateTime] $IssueDateBefore,
+
+        [Parameter(ParameterSetName = 'TPP')]
         [Alias('ValidTo')]
         [DateTime] $ExpireDate,
 
@@ -464,6 +472,7 @@ function Find-VenafiCertificate {
                 Header        = @{'Accept' = 'application/json' }
             }
 
+            $apps = [System.Collections.Generic.List[object]]::new()
             $appOwners = [System.Collections.Generic.List[object]]::new()
 
         } else {
@@ -570,6 +579,12 @@ function Find-VenafiCertificate {
                 'Thumbprint' {
                     $params.Body.Add( 'Thumbprint', $Thumbprint )
                 }
+                'IssueDateAfter' {
+                    $params.Body.Add( 'ValidFromGreater', ($IssueDateAfter | ConvertTo-UtcIso8601) )
+                }
+                'IssueDateBefore' {
+                    $params.Body.Add( 'ValidFromLess', ($IssueDateBefore | ConvertTo-UtcIso8601) )
+                }
                 'IssueDate' {
                     $params.Body.Add( 'ValidFrom', ($IssueDate | ConvertTo-UtcIso8601) )
                 }
@@ -632,7 +647,14 @@ function Find-VenafiCertificate {
                 @{
                     'n' = 'application'
                     'e' = {
-                        $_.applicationIds | Get-VaasApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                        foreach ($thisAppId in $_.applicationIds) {
+                            $thisApp = $apps | Where-Object { $_.applicationId -eq $thisAppId }
+                            if ( -not $thisApp ) {
+                                $thisApp = $thisAppId | Get-VaasApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                                $apps.Add($thisApp)
+                            }
+                            $thisApp
+                        }
                     }
                 },
                 @{
