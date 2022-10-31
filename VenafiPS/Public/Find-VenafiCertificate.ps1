@@ -344,6 +344,14 @@ function Find-VenafiCertificate {
         [DateTime] $IssueDate,
 
         [Parameter(ParameterSetName = 'TPP')]
+        [Alias('ValidFromGreater')]
+        [DateTime] $IssueDateAfter,
+
+        [Parameter(ParameterSetName = 'TPP')]
+        [Alias('ValidFromLess')]
+        [DateTime] $IssueDateBefore,
+
+        [Parameter(ParameterSetName = 'TPP')]
         [Alias('ValidTo')]
         [DateTime] $ExpireDate,
 
@@ -570,6 +578,12 @@ function Find-VenafiCertificate {
                 }
                 'Thumbprint' {
                     $params.Body.Add( 'Thumbprint', $Thumbprint )
+                }
+                'IssueDateAfter' {
+                    $params.Body.Add( 'ValidFromGreater', ($IssueDateAfter | ConvertTo-UtcIso8601) )
+                }
+                'IssueDateBefore' {
+                    $params.Body.Add( 'ValidFromLess', ($IssueDateBefore | ConvertTo-UtcIso8601) )
                 }
                 'IssueDate' {
                     $params.Body.Add( 'ValidFrom', ($IssueDate | ConvertTo-UtcIso8601) )
