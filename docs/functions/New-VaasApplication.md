@@ -7,28 +7,28 @@ Create a new application
 
 ### NoTarget (Default)
 ```
-New-VaasApplication -Name <String> -Owner <Guid[]> [-Description <String>]
+New-VaasApplication -Name <String> -Owner <String[]> [-Description <String>]
  [-CertificateIssuingTemplate <Hashtable>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
  [<CommonParameters>]
 ```
 
 ### FqdnIPRange
 ```
-New-VaasApplication -Name <String> -Owner <Guid[]> [-Description <String>]
+New-VaasApplication -Name <String> -Owner <String[]> [-Description <String>]
  [-CertificateIssuingTemplate <Hashtable>] -Fqdn <String[]> -IPRange <String[]> -Port <String[]> [-PassThru]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Fqdn
 ```
-New-VaasApplication -Name <String> -Owner <Guid[]> [-Description <String>]
+New-VaasApplication -Name <String> -Owner <String[]> [-Description <String>]
  [-CertificateIssuingTemplate <Hashtable>] -Fqdn <String[]> -Port <String[]> [-PassThru]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### IPRange
 ```
-New-VaasApplication -Name <String> -Owner <Guid[]> [-Description <String>]
+New-VaasApplication -Name <String> -Owner <String[]> [-Description <String>]
  [-CertificateIssuingTemplate <Hashtable>] -IPRange <String[]> -Port <String[]> [-PassThru]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
@@ -40,7 +40,7 @@ Create a new application with optional details
 
 ### EXAMPLE 1
 ```
-New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d'
+New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d','greg@venafi.com'
 ```
 
 Create a new application
@@ -77,11 +77,10 @@ Accept wildcard characters: False
 ```
 
 ### -Owner
-List of user and/or team IDs to be owners.
-Use Get-VenafiIdentity or Get-VenafiTeam to retrieve the ID.
+List of user and/or team IDs or names to be owners
 
 ```yaml
-Type: Guid[]
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 

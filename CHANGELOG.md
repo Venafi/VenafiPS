@@ -1,3 +1,21 @@
+## 5.2.0
+- Add `Find-VaasObject` to search for ActivityLog, Machine, MachineIdentity, CertificateRequest, and CertificateInstance
+- Add `-IssueDateBefore` and `IssueDateAfter` to `Find-VenafiCertificate` for TPP
+- Add `New-TppObject -Force` to create missing parent policy folders
+- Supercharge New-TppPolicy
+  - Add `-Name` to provide a list of policy folders to create
+  - Add `-Attribute` and `-PolicyAttribute` to set both kinds of attributes at policy creation time
+  - Add `-Force` to create missing parent policy folders
+- Update messaging for `Export-VenafiCertificate` when using parameters for the wrong platform, [#149](https://github.com/Venafi/VenafiPS/issues/149)
+- Update `New-VaasApplication -Owner` to accept a name in addition to guid
+- Update VaaS searching to be aware of fields/values case sensitivity and adjust where needed.  Eg., certificatestatus as opposed to certificateStatus.
+- Fix `Find-TppObject` parameter sets to disallow -Recursive when -Path not provided, [#153](https://github.com/Venafi/VenafiPS/issues/153)
+- Fix `Find-VenafiCertificate -Issuer` not working due to missing quotes, [#146](https://github.com/Venafi/VenafiPS/issues/146)
+- Fix `Invoke-VenafiRestMethod -FullResponse` consuming certain errors instead of throwing them, [#152](https://github.com/Venafi/VenafiPS/issues/152)
+- Fix `Get-VaasIssuingTemplate -All` not executing under certain circumstances
+ 
+
+
 ## 5.1.1
 - Minor bugfix
 
@@ -435,6 +453,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

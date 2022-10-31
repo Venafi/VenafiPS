@@ -196,7 +196,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ###     Members (if -IncludeMembers provided)
 ### For VaaS:
 ###     username
-###     id
+###     userId
 ###     companyId
 ###     firstname
 ###     lastname

@@ -18,13 +18,13 @@ Find-VenafiCertificate [-Path <String>] [-Guid <Guid>] [-Recursive] [-Limit <Int
  [-KeySizeGreaterThan <Int32>] [-KeySizeLessThan <Int32>] [-Locale <String[]>] [-Organization <String[]>]
  [-OrganizationUnit <String[]>] [-State <String[]>] [-SanDns <String>] [-SanEmail <String>] [-SanIP <String>]
  [-SanUpn <String>] [-SanUri <String>] [-SerialNumber <String>] [-SignatureAlgorithm <String>]
- [-Thumbprint <String>] [-IssueDate <DateTime>] [-ExpireDate <DateTime>] [-ExpireAfter <DateTime>]
- [-ExpireBefore <DateTime>] [-Enabled] [-InError <Boolean>] [-NetworkValidationEnabled <Boolean>]
- [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>] [-CreatedBefore <DateTime>] [-CertificateType <String[]>]
- [-ManagementType <TppManagementType[]>] [-PendingWorkflow] [-Stage <TppCertificateStage[]>]
- [-StageGreaterThan <TppCertificateStage>] [-StageLessThan <TppCertificateStage>] [-ValidationEnabled]
- [-ValidationState <String[]>] [-CountOnly] [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>]
- [-First <UInt64>] [<CommonParameters>]
+ [-Thumbprint <String>] [-IssueDate <DateTime>] [-IssueDateAfter <DateTime>] [-IssueDateBefore <DateTime>]
+ [-ExpireDate <DateTime>] [-ExpireAfter <DateTime>] [-ExpireBefore <DateTime>] [-Enabled] [-InError <Boolean>]
+ [-NetworkValidationEnabled <Boolean>] [-CreatedDate <DateTime>] [-CreatedAfter <DateTime>]
+ [-CreatedBefore <DateTime>] [-CertificateType <String[]>] [-ManagementType <TppManagementType[]>]
+ [-PendingWorkflow] [-Stage <TppCertificateStage[]>] [-StageGreaterThan <TppCertificateStage>]
+ [-StageLessThan <TppCertificateStage>] [-ValidationEnabled] [-ValidationState <String[]>] [-CountOnly]
+ [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ### VaaS
@@ -536,6 +536,36 @@ TPP only.
 Type: DateTime
 Parameter Sets: TPP
 Aliases: ValidFrom
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IssueDateAfter
+{{ Fill IssueDateAfter Description }}
+
+```yaml
+Type: DateTime
+Parameter Sets: TPP
+Aliases: ValidFromGreater
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IssueDateBefore
+{{ Fill IssueDateBefore Description }}
+
+```yaml
+Type: DateTime
+Parameter Sets: TPP
+Aliases: ValidFromLess
 
 Required: False
 Position: Named

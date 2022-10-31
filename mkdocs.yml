@@ -44,6 +44,7 @@ nav:
     - Find-TppIdentity: functions/Find-TppIdentity.md
     - Find-TppObject: functions/Find-TppObject.md
     - Find-TppVaultId: functions/Find-TppVaultId.md
+    - Find-VaasObject: functions/Find-VaasObject.md
     - Find-VenafiCertificate: functions/Find-VenafiCertificate.md
     - Get-TppAttribute: functions/Get-TppAttribute.md
     - Get-TppClassAttribute: functions/Get-TppClassAttribute.md

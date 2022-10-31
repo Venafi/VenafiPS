@@ -6,8 +6,8 @@ Create a new object
 ## SYNTAX
 
 ```
-New-TppObject [-Path] <String> [-Class] <String> [[-Attribute] <Hashtable>] [-PushCertificate] [-PassThru]
- [[-VenafiSession] <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-TppObject [-Path] <String> [-Class] <String> [[-Attribute] <Hashtable>] [-PushCertificate] [-Force]
+ [-PassThru] [[-VenafiSession] <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -18,25 +18,36 @@ Generic use function to create a new object if a specific function hasn't been c
 ### EXAMPLE 1
 ```
 New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}
-Create a new device
 ```
+
+Create a new object
 
 ### EXAMPLE 2
 ```
-New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'} -PassThru
-Create a new device and return the resultant object
+New-TppObject -Path 'missing\folder\again' -Class 'Policy' -Force
 ```
+
+Create a new object as well as any missing policy folders in the path
 
 ### EXAMPLE 3
 ```
-New-TppObject -Path '\VED\Policy\Test Device\App' -Class 'Basic' -Attribute @{'Driver Name'='appbasic';'Certificate'='\Ved\Policy\mycert.com'}
-Create a new Basic application and associate it to a device and certificate
+New-TppObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'} -PassThru
 ```
+
+Create a new object and return the resultant object
+
+### EXAMPLE 4
+```
+New-TppObject -Path '\VED\Policy\Test Device\App' -Class 'Basic' -Attribute @{'Driver Name'='appbasic';'Certificate'='\Ved\Policy\mycert.com'}
+```
+
+Create a new Basic application and associate it to a device and certificate
 
 ## PARAMETERS
 
 ### -Path
 Full path, including name, for the object to be created.
+If the root path is excluded, \ved\policy will be prepended.
 
 ```yaml
 Type: String
@@ -85,12 +96,26 @@ Accept wildcard characters: False
 ### -PushCertificate
 If creating an application object, you can optionally push the certificate once the creation is complete.
 Only available if a 'Certificate' key containing the certificate path is provided for Attribute.
-Please note, this feature was added in v18.3.
 
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: ProvisionCertificate
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Force the creation of missing parent policy folders when the class is either Policy or Device.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
 
 Required: False
 Position: Named
@@ -117,7 +142,7 @@ Accept wildcard characters: False
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
+A TPP token can also provided.
 If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
 ```yaml
