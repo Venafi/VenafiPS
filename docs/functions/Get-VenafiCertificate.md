@@ -96,7 +96,7 @@ For TPP, use the path or guid.
 ```yaml
 Type: String
 Parameter Sets: Id, TppId, VaasId
-Aliases: Guid, Path
+Aliases: Guid, Path, id
 
 Required: True
 Position: Named

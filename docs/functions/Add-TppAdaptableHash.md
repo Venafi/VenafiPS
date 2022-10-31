@@ -16,7 +16,7 @@ This is referenced by
 the Attribute 'PowerShell Script Hash Vault Id' on the DN of the adaptable script.
 This script retrieves the hash (if
 present) from the Secret Store and compares it to the hash of the file in one of the scripts directories.
-It then adds 
+It then adds
 a new or updated hash if required.
 When updating an existing hash, it removes the old one from the Secret Store.
 
@@ -78,7 +78,7 @@ Accept wildcard characters: False
 ### -FilePath
 Required.
 The full path to the adaptable script file.
-This should normally be in a 
+This should normally be in a
 '\<drive\>:\Program Files\Venafi\Scripts\\\<subdir\>' directory for TPP to recognize the script.
 
 ```yaml
@@ -96,7 +96,7 @@ Accept wildcard characters: False
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
+A TPP token can also provided.
 If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
 ```yaml

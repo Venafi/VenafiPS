@@ -5,7 +5,7 @@ Get certificate data
 
 ## SYNTAX
 
-### Vaas (Default)
+### All (Default)
 ```
 Export-VenafiCertificate -CertificateId <String> -Format <String> [-VenafiSession <PSObject>]
  [<CommonParameters>]
@@ -20,7 +20,7 @@ Export-VenafiCertificate -CertificateId <String> -Format <String> [-OutPath <Str
 
 ### TppJks
 ```
-Export-VenafiCertificate -CertificateId <String> -Format <String> [-IncludeChain] -FriendlyName <String>
+Export-VenafiCertificate -CertificateId <String> [-IncludeChain] -FriendlyName <String>
  [-PrivateKeyPassword <SecureString>] -KeystorePassword <SecureString> [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
@@ -82,11 +82,11 @@ Accept wildcard characters: False
 ### -Format
 Certificate format.
 For Venafi as a Service, you can provide either PEM, DER, or JKS.
-For TPP, Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
+For TPP, you can provide Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: All, Tpp
 Aliases:
 
 Required: True
@@ -162,7 +162,8 @@ Accept wildcard characters: False
 
 ### -IncludePrivateKey
 DEPRECATED.
-Provide a value for -PrivateKeyPassword.
+Provide a value for -PrivateKeyPassword. 
+TPP only.
 
 ```yaml
 Type: SwitchParameter

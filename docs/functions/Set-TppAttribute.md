@@ -13,7 +13,7 @@ Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-Ven
 
 ### Policy
 ```
-Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] -Class <String> [-Lock]
+Set-TppAttribute -Path <String> -Attribute <Hashtable> -Class <String> [-Lock] [-BypassValidation]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -79,7 +79,7 @@ Aliases: DN
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -96,22 +96,6 @@ Aliases:
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -BypassValidation
-Bypass data validation. 
-Only applicable to custom fields.
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -140,6 +124,22 @@ Only applicable to setting policies.
 ```yaml
 Type: SwitchParameter
 Parameter Sets: Policy
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -BypassValidation
+Bypass data validation. 
+Only applicable to custom fields.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
 Aliases:
 
 Required: False

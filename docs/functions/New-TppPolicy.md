@@ -5,56 +5,207 @@ Add a new policy folder
 
 ## SYNTAX
 
+### NameWithPolicyAttribute
 ```
-New-TppPolicy [-Path] <String> [[-Description] <String>] [-PassThru] [[-VenafiSession] <PSObject>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+New-TppPolicy -Path <String> -Name <String[]> -Attribute <Hashtable> -Class <String> [-Lock] [-Force]
+ [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### PathWithPolicyAttribute
+```
+New-TppPolicy -Path <String> -Attribute <Hashtable> -Class <String> [-Lock] [-Force] [-PassThru]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### Name
+```
+New-TppPolicy -Path <String> -Name <String[]> [-Description <String>] [-Attribute <Hashtable>] [-Force]
+ [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### Path
+```
+New-TppPolicy -Path <String> [-Description <String>] [-Attribute <Hashtable>] [-Force] [-PassThru]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Add a new policy folder
+Add a new policy folder(s). 
+Add object attributes or policy attributes at the same time.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-$newPolicy = New-TppPolicy -Path '\VED\Policy\Existing Policy Folder\New Policy Folder' -PassThru
-Create policy returning the policy object created
+$newPolicy = New-TppPolicy -Path 'new'
 ```
+
+Create a new policy folder
 
 ### EXAMPLE 2
 ```
-New-TppPolicy -Path '\VED\Policy\Existing Policy Folder\New Policy Folder' -Description 'this is awesome'
-Create policy with description
+$newPolicy = New-TppPolicy -Path 'existing' -Name 'new1', 'new2', 'new3'
 ```
+
+Create multiple policy folders
+
+### EXAMPLE 3
+```
+$newPolicy = New-TppPolicy -Path 'new1\new2\new3' -Force
+```
+
+Create a new policy folder named new3 and create new1 and new2 if they do not exist
+
+### EXAMPLE 4
+```
+$newPolicy = New-TppPolicy -Path 'new' -Attribute {'Description'='my new policy folder'}
+```
+
+Create a new policy folder setting attributes on the object at creation time
+
+### EXAMPLE 5
+```
+$newPolicy = New-TppPolicy -Path 'new' -Class 'X509 Certificate' -Attribute {'State'='UT'}
+```
+
+Create a new policy folder setting policy attributes (not object attributes)
+
+### EXAMPLE 6
+```
+$newPolicy = New-TppPolicy -Path 'new' -Class 'X509 Certificate' -Attribute {'State'='UT'} -Lock
+```
+
+Create a new policy folder setting policy attributes (not object attributes) and locking them
+
+### EXAMPLE 7
+```
+$newPolicy = New-TppPolicy -Path 'new' -PassThru
+```
+
+Create a new policy folder returning the policy object created
 
 ## PARAMETERS
 
 ### -Path
-DN path to the new policy
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases: PolicyDN
-
-Required: True
-Position: 1
-Default value: None
-Accept pipeline input: True (ByPropertyName, ByValue)
-Accept wildcard characters: False
-```
-
-### -Description
-Policy description
+Full path to the new policy folder.
+If the root path is excluded, \ved\policy will be prepended.
+If used with -Name, this will be the root path and subfolders will be created.
 
 ```yaml
 Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: False
-Position: 2
+Required: True
+Position: Named
 Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -Name
+One of more policy folders to create under -Path.
+
+```yaml
+Type: String[]
+Parameter Sets: NameWithPolicyAttribute, Name
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Description
+Deprecated. 
+Use -Attribute @{''Description''=''my description''} instead.
+
+```yaml
+Type: String
+Parameter Sets: Name, Path
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Attribute
+Hashtable with names and values to be set on the policy itself.
+If used with -Class, this will set policy attributes.
+If setting a custom field, you can use either the name or guid as the key.
+To clear a value overwriting policy, set the value to $null.
+
+```yaml
+Type: Hashtable
+Parameter Sets: NameWithPolicyAttribute, PathWithPolicyAttribute
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: Hashtable
+Parameter Sets: Name, Path
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Class
+Use with -Attribute to set policy attributes at policy creation time.
+If unsure of the class name, add the value through the TPP UI and go to Support-\>Policy Attributes to find it.
+
+```yaml
+Type: String
+Parameter Sets: NameWithPolicyAttribute, PathWithPolicyAttribute
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Lock
+Use with -PolicyAttribute and -Class to lock the policy attribute
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: NameWithPolicyAttribute, PathWithPolicyAttribute
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Force the creation of missing parent policy folders
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -86,7 +237,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 3
+Position: Named
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
