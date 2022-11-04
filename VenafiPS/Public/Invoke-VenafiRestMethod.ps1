@@ -140,7 +140,7 @@ function Invoke-VenafiRestMethod {
 
         switch ($platform) {
             'VaaS' {
-                $hdr = @{
+                $allHeaders = @{
                     "tppl-api-key" = $auth
                 }
                 if ( -not $PSBoundParameters.ContainsKey('UriRoot') ) {
@@ -149,13 +149,13 @@ function Invoke-VenafiRestMethod {
             }
 
             'TppToken' {
-                $hdr = @{
+                $allHeaders = @{
                     'Authorization' = 'Bearer {0}' -f $auth
                 }
             }
 
             'TppKey' {
-                $hdr = @{
+                $allHeaders = @{
                     "X-Venafi-Api-Key" = $auth
                 }
             }
@@ -166,17 +166,18 @@ function Invoke-VenafiRestMethod {
 
     $uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
 
-    if ( $Header ) {
-        $hdr += $Header
-    }
-
     $params = @{
         Method          = $Method
         Uri             = $uri
-        Headers         = $hdr
         ContentType     = 'application/json'
         UseBasicParsing = $true
     }
+
+    # append any headers passed in
+    if ( $Header ) { $allHeaders += $Header }
+    # if there are any headers, add to the rest payload
+    # in the case of inital authentication, eg, there won't be any
+    if ( $allHeaders ) { $params.Headers = $allHeaders }
 
     if ( $Body ) {
         $restBody = $Body
