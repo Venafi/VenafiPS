@@ -1,3 +1,8 @@
+## 5.2.1
+- Fix `Set-TppAttribute` not setting integer values, [#145](https://github.com/Venafi/VenafiPS/issues/145)
+- Fix `New-VenafiSession` sending null header for windows integrated authentication, [#162](https://github.com/Venafi/VenafiPS/issues/162)
+
+
 ## 5.2.0
 - Add `Find-VaasObject` to search for ActivityLog, Machine, MachineIdentity, CertificateRequest, and CertificateInstance
 - Add `-IssueDateBefore` and `IssueDateAfter` to `Find-VenafiCertificate` for TPP
@@ -453,6 +458,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
