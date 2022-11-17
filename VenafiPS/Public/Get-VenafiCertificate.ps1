@@ -262,7 +262,7 @@
             Default {
 
                 if ( $All ) {
-                    return (Find-TppCertificate -Path '\ved' -Recursive -VenafiSession $VenafiSession |
+                    return (Find-VenafiCertificate -Path '\ved' -Recursive -IncludeTotalCount -VenafiSession $VenafiSession |
                         Get-VenafiCertificate -IncludeTppPreviousVersions:$IncludeTppPreviousVersions -ExcludeExpired:$ExcludeExpired -ExcludeRevoked:$ExcludeRevoked -VenafiSession $VenafiSession)
                 }
 
