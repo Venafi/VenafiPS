@@ -90,7 +90,7 @@ function Remove-TppCertificate {
 
         if ( $PSCmdlet.ShouldProcess($Path, "Remove certificate $appsMessage") ) {
             if ($KeepAssociatedApps) {
-                $associatedApps = $Path | Get-TppAttribute -Attribute "Consumers" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Value
+                $associatedApps = $Path | Get-TppAttribute -Attribute "Consumers" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Consumers
                 if ( $associatedApps ) {
                     Remove-TppCertificateAssociation -Path $Path -ApplicationPath $associatedApps -VenafiSession $VenafiSession -Confirm:$false
                 }
