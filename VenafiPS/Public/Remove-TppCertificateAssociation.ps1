@@ -149,8 +149,7 @@ function Remove-TppCertificateAssociation {
 
             'RemoveAll*' {
                 $associatedApps = $Path |
-                Get-TppAttribute -Attribute "Consumers" -EffectivePolicy -VenafiSession $VenafiSession |
-                Select-Object -ExpandProperty Value
+                Get-TppAttribute -Attribute "Consumers" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Value
 
                 if ( $associatedApps ) {
                     $params.Body.ApplicationDN = @($associatedApps)
