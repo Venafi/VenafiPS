@@ -10,7 +10,7 @@ function New-VaasConnector {
     Connector name
 
     .PARAMETER Url
-    Endpoint to be called when the event type is triggered.
+    Endpoint to be called when the event type/name is triggered.
     This should be the full url and will be validated during connector creation.
 
     .PARAMETER EventType
@@ -21,7 +21,7 @@ function New-VaasConnector {
     One or more event names to trigger on.
 
     .PARAMETER Secret
-    Secret value used to calclulate signature which will be sent to the endpoint in the header
+    Secret value used to calculate signature which will be sent to the endpoint in the header
 
     .PARAMETER CriticalOnly
     Only subscribe to log messages deemed as critical
@@ -113,7 +113,7 @@ function New-VaasConnector {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         # validate inputs
-        $at = Invoke-VenafiRestMethod -UriLeaf 'activitytypes'
+        $at = Invoke-VenafiRestMethod -UriLeaf 'activitytypes' -VenafiSession $VenafiSession
      
         if ( $PSBoundParameters.ContainsKey('EventType') ) {
             $compare = compare-object -ReferenceObject $EventType -DifferenceObject $at.readablename | Where-Object { $_.SideIndicator -eq '<=' }
