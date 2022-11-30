@@ -10,15 +10,21 @@ function New-VaasConnector {
     Connector name
 
     .PARAMETER Url
-    Endpoint to be called when the event type is triggered
+    Endpoint to be called when the event type/name is triggered.
+    This should be the full url and will be validated during connector creation.
 
     .PARAMETER EventType
     One or more event types to trigger on.
     You can retrieve a list of possible values from the Event Log and filtering on Event Type.
 
-    .PARAMETER Token
-    Token/secret to pass to Url for authentication.
-    Set the token as the password on a pscredential.
+    .PARAMETER EventName
+    One or more event names to trigger on.
+
+    .PARAMETER Secret
+    Secret value used to calculate signature which will be sent to the endpoint in the header
+
+    .PARAMETER CriticalOnly
+    Only subscribe to log messages deemed as critical
 
     .PARAMETER PassThru
     Return newly created connector object
@@ -34,7 +40,7 @@ function New-VaasConnector {
     .EXAMPLE
     New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication'
 
-    Create a new connector
+    Create a new connector for one event type
 
     .EXAMPLE
     New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication', 'Certificates', 'Applications'
@@ -42,9 +48,20 @@ function New-VaasConnector {
     Create a new connector with multiple event types
 
     .EXAMPLE
-    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Token $myTokenCred
+    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventName 'Certificate Validation Started'
 
-    Create a new connector with optional token
+    Create a new connector with event names as opposed to event types.
+    This will result in fewer messages received as opposed to subscribing at the event type level.
+
+    .EXAMPLE
+    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Certificates' -CriticalOnly
+
+    Subscribe to critical messages only for a specific event type
+
+    .EXAMPLE
+    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Secret 'MySecret'
+
+    Create a new connector with optional secret
 
     .EXAMPLE
     New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -PassThru
@@ -62,7 +79,7 @@ function New-VaasConnector {
 
     #>
 
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'EventName')]
 
     param (
         [Parameter(Mandatory)]
@@ -71,12 +88,19 @@ function New-VaasConnector {
         [Parameter(Mandatory)]
         [string] $Url,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'EventType')]
         [String[]] $EventType,
+
+        [Parameter(Mandatory, ParameterSetName = 'EventName')]
+        [String[]] $EventName,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
-        [pscredential] $Token,
+        [Alias('token')]
+        [string] $Secret,
+
+        [Parameter()]
+        [switch] $CriticalOnly,
 
         [Parameter()]
         [switch] $PassThru,
@@ -87,6 +111,22 @@ function New-VaasConnector {
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+
+        # validate inputs
+        $at = Invoke-VenafiRestMethod -UriLeaf 'activitytypes' -VenafiSession $VenafiSession
+     
+        if ( $PSBoundParameters.ContainsKey('EventType') ) {
+            $compare = compare-object -ReferenceObject $EventType -DifferenceObject $at.readablename | Where-Object { $_.SideIndicator -eq '<=' }
+            if ( $compare ) {
+                throw ('{0} are not valid event types.  Valid values include {1}.' -f ($compare.InputObject -join ', '), ($at.readablename -join ', '))
+            }
+        }
+        else {
+            $compare = compare-object -ReferenceObject $EventName -DifferenceObject $at.values.readablename | Where-Object { $_.SideIndicator -eq '<=' }
+            if ( $compare ) {
+                throw ('{0} are not valid event names.  Valid values include {1}.' -f ($compare.InputObject -join ', '), ($at.values.readablename -join ', '))
+            }
+        }
     }
 
     process {
@@ -107,15 +147,23 @@ function New-VaasConnector {
                         }
                     }
                     'filter'        = @{
-                        'activityTypes' = @($EventType)
+                        criticality = [int]$CriticalOnly.IsPresent
                     }
                 }
             }
             FullResponse  = $true
         }
 
-        if ( $PSBoundParameters.ContainsKey('Token') ) {
-            $params.Body.properties.target.connection.secret = $Token.GetNetworkCredential().Password
+        # either event type or name will be provided
+        if ( $PSBoundParameters.ContainsKey('EventType') ) {
+            $params.Body.properties.filter.activityTypes = @($EventType)
+        }
+        else {
+            $params.Body.properties.filter.activities = @($EventName)
+        }
+
+        if ( $PSBoundParameters.ContainsKey('Secret') ) {
+            $params.Body.properties.target.connection.secret = $Secret
         }
 
         if ( $PSCmdlet.ShouldProcess($Name, 'Create connector') ) {
@@ -138,7 +186,8 @@ function New-VaasConnector {
                         throw $response
                     }
                 }
-            } catch {
+            }
+            catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)
             }
         }
