@@ -133,7 +133,11 @@ function Set-TppAttribute {
         $Attribute.GetEnumerator() | ForEach-Object {
 
             $thisKey = $_.Key
-            $thisValue = ($_.Value).ToString()
+            if ($null -ne $_.Value) {
+                $thisValue = ($_.Value).ToString()
+            } else {
+                $thisValue = $_.Value
+            }
             $customFieldError = $null
 
             $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisKey -or $_.Guid -eq $thisKey }
