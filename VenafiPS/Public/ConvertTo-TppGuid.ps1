@@ -80,31 +80,5 @@ function ConvertTo-TppGuid {
         } else {
             throw $response.Error
         }
-        switch ([enum]::GetName([TppConfigResult], $response.Result)) {
-
-            'Success' {
-                if ( $IncludeType ) {
-                    [PSCustomObject] @{
-                        Guid     = [Guid] $response.Guid
-                        TypeName = $response.ClassName
-                    }
-                } else {
-                    [Guid] $response.Guid
-                }
-            }
-
-            'ObjectDoesNotExist' {
-                # return null instead of an error 
-                return $null
-            }
-
-            'ObjectAlreadyExists' {
-                throw "$Path already exists"
-            }
-
-            Default {
-                throw $response.Error
-            }
-        }
     }
 }
