@@ -271,7 +271,7 @@ function Invoke-VenafiCertificateAction {
 
         if ( $performInvoke ) {
             try {
-                Invoke-VenafiRestMethod @params -FullResponse | Out-Null
+                $null = Invoke-VenafiRestMethod @params -FullResponse
             } catch {
                 $returnObject.Success = $false
                 $returnObject.Error = $_
