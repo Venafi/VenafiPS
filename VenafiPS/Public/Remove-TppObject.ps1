@@ -84,7 +84,7 @@ function Remove-TppObject {
     process {
         $params.Body.ObjectDN = $Path | ConvertTo-TppFullPath
 
-        if ($PSCmdlet.ShouldProcess($Path, 'Remove object')) {
+        if ($PSCmdlet.ShouldProcess($params.Body.ObjectDN, 'Remove object')) {
             $response = Invoke-VenafiRestMethod @params
             
             if ( $response.Result -ne [TppConfigResult]::Success ) {
