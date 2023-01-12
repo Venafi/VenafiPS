@@ -47,14 +47,6 @@ function Remove-TppObject {
     param (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                if ( $_ | Test-TppDnPath ) {
-                    $true
-                }
-                else {
-                    throw "'$_' is not a valid DN path"
-                }
-            })]
         [String] $Path,
 
         [Parameter()]
