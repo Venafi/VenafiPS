@@ -32,6 +32,14 @@ Remove an object
 Remove-TppObject -Path '\VED\Policy\folder' -Recursive
 Remove an object and all objects contained
 
+.EXAMPLE
+Find-TppObject -Class 'capi' | Remove-TppObject
+Find 1 or more objects and remove them
+
+.EXAMPLE
+Remove-TppObject -Path '\VED\Policy\folder' -Confirm:$false
+Remove an object without prompting for confirmation.  Be careful!
+
 .LINK
 http://VenafiPS.readthedocs.io/en/latest/functions/Remove-TppObject/
 
