@@ -27,6 +27,7 @@ foreach ( $folder in $folders) {
 
 $script:CloudUrl = 'https://api.venafi.cloud'
 $script:ModuleVersion = '((NEW_VERSION))'
+$script:functionConfig = ConvertFrom-Json (Get-Content "$PSScriptRoot\config\functions.json" -Raw)
 
 $Script:VenafiSession = $null
 Export-ModuleMember -Variable VenafiSession

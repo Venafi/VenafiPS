@@ -87,9 +87,11 @@ function Invoke-VenafiRestMethod {
         if ( -not $VenafiSession ) {
             if ( $env:TPP_TOKEN ) {
                 $VenafiSession = $env:TPP_TOKEN
-            } elseif ( $env:VAAS_KEY ) {
+            }
+            elseif ( $env:VAAS_KEY ) {
                 $VenafiSession = $env:VAAS_KEY
-            } else {
+            }
+            else {
                 throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
             }
         }
@@ -100,12 +102,14 @@ function Invoke-VenafiRestMethod {
                 if ( $VenafiSession.Platform -eq 'VaaS' ) {
                     $platform = 'VaaS'
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
-                } else {
+                }
+                else {
                     # TPP
                     if ( $VenafiSession.AuthType -eq 'Token' ) {
                         $platform = 'TppToken'
                         $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                    } else {
+                    }
+                    else {
                         $platform = 'TppKey'
                         $auth = $VenafiSession.Key.ApiKey
                     }
@@ -119,7 +123,8 @@ function Invoke-VenafiRestMethod {
                 if ( [System.Guid]::TryParse($VenafiSession, [System.Management.Automation.PSReference]$objectGuid) ) {
                     $Server = $script:CloudUrl
                     $platform = 'VaaS'
-                } else {
+                }
+                else {
                     # TPP access token
                     # get server from environment variable
                     if ( -not $env:TPP_SERVER ) {
@@ -224,7 +229,8 @@ function Invoke-VenafiRestMethod {
     try {
         $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
         $verboseOutput.Message | Write-VerboseWithSecret
-    } catch {
+    }
+    catch {
 
         # if trying with a slash below doesn't work, we want to provide the original error
         $originalError = $_
@@ -234,7 +240,22 @@ function Invoke-VenafiRestMethod {
 
         switch ($statusCode) {
             403 {
-                throw 'A permissions error was encountered.  Ensure both the permissions and token scope are correct.'
+
+                $permMsg = ''
+                
+                # get scope details for tpp
+                if ( $platform -ne 'VaaS' ) {
+                    $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
+                    $callingFunctionScope = ($script:functionConfig).$callingFunction.Scope
+                    if ( $callingFunctionScope ) { $permMsg += "  $callingFunction requires a token scope of $callingFunctionScope." }
+
+                    $missingScope = (Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ''(.*)''').matches.groups[1].value
+                    if ( $missingScope ) { $permMsg += "  The $missingScope scope is missing." }
+                }
+                
+                $permMsg += $originalError.ErrorDetails.Message
+
+                throw $permMsg
             }
 
             409 {
@@ -246,11 +267,13 @@ function Invoke-VenafiRestMethod {
                         Error      =
                         try {
                             $originalError.ErrorDetails.Message | ConvertFrom-Json
-                        } catch {
+                        }
+                        catch {
                             $originalError.ErrorDetails.Message
                         }
                     }
-                } else {
+                }
+                else {
                     throw $originalError
                 }
             }
@@ -260,17 +283,20 @@ function Invoke-VenafiRestMethod {
             }
         }
 
-    } finally {
+    }
+    finally {
         $ProgressPreference = $oldProgressPreference
     }
 
     if ( $FullResponse ) {
         $response
-    } else {
+    }
+    else {
         if ( $response.Content ) {
             try {
                 $response.Content | ConvertFrom-Json
-            } catch {
+            }
+            catch {
                 throw ('Invalid JSON response {0}' -f $response.Content)
             }
         }
