@@ -1,3 +1,10 @@
+## 5.2.2
+- Add specific event webhook subscription, not just types, and criticality option to `New-VaasConnector`
+- Fix `Get-TppObject` returning invalid parent path, [#166](https://github.com/Venafi/VenafiPS/issues/166)
+- Fix `Get-VenafiCertificate -All` not paging through all results, [#164](https://github.com/Venafi/VenafiPS/issues/164)
+- Update `Remove-TppCertificate` and `Remove-TppCertificateAssociation` to align with latest `Get-TppAttribute` changes, [#168](https://github.com/Venafi/VenafiPS/issues/168)
+
+
 ## 5.2.1
 - Fix `Set-TppAttribute` not setting integer values, [#145](https://github.com/Venafi/VenafiPS/issues/145)
 - Fix `New-VenafiSession` sending null header for windows integrated authentication, [#162](https://github.com/Venafi/VenafiPS/issues/162)
@@ -458,6 +465,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

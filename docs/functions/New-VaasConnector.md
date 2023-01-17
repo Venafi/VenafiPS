@@ -5,9 +5,16 @@ Create a new connector
 
 ## SYNTAX
 
+### EventName (Default)
 ```
-New-VaasConnector [-Name] <String> [-Url] <String> [-EventType] <String[]> [[-Token] <PSCredential>]
- [-PassThru] [[-VenafiSession] <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VaasConnector -Name <String> -Url <String> -EventName <String[]> [-Secret <String>] [-CriticalOnly]
+ [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### EventType
+```
+New-VaasConnector -Name <String> -Url <String> -EventType <String[]> [-Secret <String>] [-CriticalOnly]
+ [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -20,7 +27,7 @@ Create a new connector
 New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication'
 ```
 
-Create a new connector
+Create a new connector for one event type
 
 ### EXAMPLE 2
 ```
@@ -31,12 +38,27 @@ Create a new connector with multiple event types
 
 ### EXAMPLE 3
 ```
-New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Token $myTokenCred
+New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventName 'Certificate Validation Started'
 ```
 
-Create a new connector with optional token
+Create a new connector with event names as opposed to event types.
+This will result in fewer messages received as opposed to subscribing at the event type level.
 
 ### EXAMPLE 4
+```
+New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Certificates' -CriticalOnly
+```
+
+Subscribe to critical messages only for a specific event type
+
+### EXAMPLE 5
+```
+New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Secret 'MySecret'
+```
+
+Create a new connector with optional secret
+
+### EXAMPLE 6
 ```
 New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -PassThru
 ```
@@ -54,14 +76,15 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 1
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -Url
-Endpoint to be called when the event type is triggered
+Endpoint to be called when the event type/name is triggered.
+This should be the full url and will be validated during connector creation.
 
 ```yaml
 Type: String
@@ -69,7 +92,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 2
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -81,28 +104,57 @@ You can retrieve a list of possible values from the Event Log and filtering on E
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
+Parameter Sets: EventType
 Aliases:
 
 Required: True
-Position: 3
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Token
-Token/secret to pass to Url for authentication.
-Set the token as the password on a pscredential.
+### -EventName
+One or more event names to trigger on.
 
 ```yaml
-Type: PSCredential
+Type: String[]
+Parameter Sets: EventName
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Secret
+Secret value used to calculate signature which will be sent to the endpoint in the header
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases: token
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CriticalOnly
+Only subscribe to log messages deemed as critical
+
+```yaml
+Type: SwitchParameter
 Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 4
-Default value: None
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -133,7 +185,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 5
+Position: Named
 Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False

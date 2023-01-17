@@ -130,7 +130,7 @@ function Set-TppPermission {
 
         foreach ($thisInputObject in $inputObject) {
             if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
-                $thisGuid = $thisInputObject | ConvertTo-TppGuid
+                $thisGuid = $thisInputObject | ConvertTo-TppGuid -VenafiSession $VenafiSession
             }
             else {
                 $thisGuid = $thisInputObject
