@@ -1,4 +1,4 @@
-- Add specific event webhook subscription, not just types, and criticality option to `New-VaasConnector`
-- Fix `Get-TppObject` returning invalid parent path, [#166](https://github.com/Venafi/VenafiPS/issues/166)
-- Fix `Get-VenafiCertificate -All` not paging through all results, [#164](https://github.com/Venafi/VenafiPS/issues/164)
-- Update `Remove-TppCertificate` and `Remove-TppCertificateAssociation` to align with latest `Get-TppAttribute` changes, [#168](https://github.com/Venafi/VenafiPS/issues/168)
+- Add `Remove-TppObject` to remove any object.  Multiple people have asked for this so it's been added, but be careful using it as it can be very destructive.  Recommend using -WhatIf to validate.
+- Fix `Invoke-VenafiCertificateAction` always running as verbose, [#173](https://github.com/Venafi/VenafiPS/issues/173)
+- Fix `Set-TppAttribute` error when providing a null value, [#176](https://github.com/Venafi/VenafiPS/issues/176)
+- Fix `Set-TppPermission` error when providing VenafiSession directly, [#174](https://github.com/Venafi/VenafiPS/issues/174)
