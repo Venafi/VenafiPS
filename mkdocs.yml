@@ -93,6 +93,7 @@ nav:
     - Remove-TppCodeSignEnvironment: functions/Remove-TppCodeSignEnvironment.md
     - Remove-TppCodeSignProject: functions/Remove-TppCodeSignProject.md
     - Remove-TppEngineFolder: functions/Remove-TppEngineFolder.md
+    - Remove-TppObject: functions/Remove-TppObject.md
     - Remove-TppPermission: functions/Remove-TppPermission.md
     - Remove-VaasConnector: functions/Remove-VaasConnector.md
     - Remove-VenafiTeam: functions/Remove-VenafiTeam.md
