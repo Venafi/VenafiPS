@@ -1,3 +1,7 @@
+## 5.3.1
+- Fix `Get-TppClassAttribute -All` error when providing VenafiSession directly, [#182](https://github.com/Venafi/VenafiPS/issues/182)
+
+
 ## 5.3.0
 - Add `Remove-TppObject` to remove any object.  Multiple people have asked for this so it's been added, but be careful using it as it can be very destructive.  Recommend using -WhatIf to validate.
 - Fix `Invoke-VenafiCertificateAction` always running as verbose, [#173](https://github.com/Venafi/VenafiPS/issues/173)
@@ -472,6 +476,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
