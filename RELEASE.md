@@ -1,4 +1,1 @@
-- Add `Remove-TppObject` to remove any object.  Multiple people have asked for this so it's been added, but be careful using it as it can be very destructive.  Recommend using -WhatIf to validate.
-- Fix `Invoke-VenafiCertificateAction` always running as verbose, [#173](https://github.com/Venafi/VenafiPS/issues/173)
-- Fix `Set-TppAttribute` error when providing a null value, [#176](https://github.com/Venafi/VenafiPS/issues/176)
-- Fix `Set-TppPermission` error when providing VenafiSession directly, [#174](https://github.com/Venafi/VenafiPS/issues/174)
+- Fix `Get-TppClassAttribute -All` error when providing VenafiSession directly, [#182](https://github.com/Venafi/VenafiPS/issues/182)

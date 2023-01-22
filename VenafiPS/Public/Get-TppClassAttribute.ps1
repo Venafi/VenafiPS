@@ -42,7 +42,7 @@ function Get-TppClassAttribute {
         $classDetails = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty 'ClassDefinition'
 
         if ($ClassName -ne 'Top') {
-            $recurseAttribs = $classDetails.SuperClassNames | Get-TppClassAttribute
+            $recurseAttribs = $classDetails.SuperClassNames | Get-TppClassAttribute -VenafiSession $VenafiSession
             foreach ($item in $recurseAttribs) {
                 $allAttributes.Add($item)
             }
