@@ -61,7 +61,7 @@ function Write-VerboseWithSecret {
         foreach ($prop in $PropertyName) {
 
             # look for values in json string, eg. "Body": "{"Password":"MyPass"}"
-            if ( $processMe -match "\""$prop\"":\""(.*?)\""" ) {
+            if ( $processMe -match "\\?""$prop\\?"":\\?""(.*?)\\?""" ) {
                 $processMe = $processMe.replace($matches[1], '***hidden***')
             }
         }
