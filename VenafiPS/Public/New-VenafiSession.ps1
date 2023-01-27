@@ -26,6 +26,9 @@ function New-VenafiSession {
     Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
     For no privilege restriction or read access, use a value of $null.
     For a scope to privilege mapping, see https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
+    Using a scope of {'all'='core'} will set all scopes except for admin.
+    Using a scope of {'all'='admin'} will set all scopes including admin.
+    Usage of the 'all' scope is not suggested for production.
 
     .PARAMETER State
     A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
@@ -175,7 +178,8 @@ function New-VenafiSession {
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid server url, it should look like https://venafi.company.com or venafi.company.com"
                 }
             }
@@ -244,7 +248,8 @@ function New-VenafiSession {
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
                     $true
-                } else {
+                }
+                else {
                     throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
                 }
             }
@@ -256,7 +261,8 @@ function New-VenafiSession {
                 try {
                     [guid] $_.GetNetworkCredential().password
                     $true
-                } catch {
+                }
+                catch {
                     throw 'The value for -VaasKey is invalid and should be of the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
                 }
             }
@@ -317,7 +323,8 @@ function New-VenafiSession {
 
             if ( $PsCmdlet.ParameterSetName -eq 'KeyCredential' ) {
                 $newSession.Connect($Credential)
-            } else {
+            }
+            else {
                 # integrated
                 $newSession.Connect($null)
             }
@@ -373,10 +380,12 @@ function New-VenafiSession {
                     Server      = $secretInfo.Metadata.AuthServer
                     AccessToken = $tokenSecret
                     ClientId    = $secretInfo.Metadata.ClientId
+                    Scope       = $secretInfo.Metadata.Scope
                 }
 
                 $metadataStored = $true
-            } else {
+            }
+            else {
                 # need to check params as not mandatory
                 if ( -not $Server -or -not $ClientId ) {
                     throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
@@ -422,7 +431,8 @@ function New-VenafiSession {
 
                 $metadataStored = $true
 
-            } else {
+            }
+            else {
                 # need to check params as not mandatory
                 if ( -not $Server -or -not $ClientId ) {
                     throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
@@ -439,6 +449,11 @@ function New-VenafiSession {
             $newToken = New-TppToken @params
             $newSession.Token = $newToken
             $newSession.Server = $newToken.Server
+
+            if ( $metadataStored ) {
+                $newSession.Token.Scope = $secretInfo.Metadata.Scope | ConvertFrom-Json
+            }
+
             Write-Verbose ('server: {0}' -f $newToken.Server)
         }
 
@@ -470,7 +485,8 @@ function New-VenafiSession {
         # set new refresh token in vault
         if ( $newSession.Token.RefreshToken ) {
             Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS'
-        } else {
+        }
+        else {
             Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
         }
     }
@@ -480,7 +496,7 @@ function New-VenafiSession {
         Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
     }
 
-    if ( $VaultMetadata.IsPresent -or $metadataStored ) {
+    if ( $VaultMetadata -or $metadataStored ) {
         if ( -not $VaultAccessTokenName -and -not $VaultRefreshTokenName) {
             throw 'Vaulting metadata requires either -VaultAccessTokenName or -VaultRefreshTokenName is provided'
         }
@@ -489,6 +505,7 @@ function New-VenafiSession {
             AuthServer = $newSession.Token.Server
             ClientId   = $newSession.Token.ClientId
             Expires    = $newSession.Expires
+            Scope      = $newSession.Token.Scope | ConvertTo-Json -Compress
         }
 
         $metadata | ConvertTo-Json | Write-Verbose
@@ -509,7 +526,8 @@ function New-VenafiSession {
         $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-TppCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
         # make sure we remove duplicates
         $newSession | Add-Member @{ CustomField = $certFields.Items | Sort-Object -Property Guid -Unique }
-    } else {
+    }
+    else {
         # $newSession | Add-Member @{
         #     MachineType = (Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $newSession | Select-Object -ExpandProperty machineTypes | Select-Object @{
         #             'n' = 'machineTypeId'
@@ -540,7 +558,8 @@ function New-VenafiSession {
 
     if ( $PassThru ) {
         $newSession
-    } else {
+    }
+    else {
         $Script:VenafiSession = $newSession
     }
 }
