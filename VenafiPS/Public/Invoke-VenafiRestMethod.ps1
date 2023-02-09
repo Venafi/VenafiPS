@@ -218,6 +218,10 @@ function Invoke-VenafiRestMethod {
         $params.Add('Certificate', $Certificate)
     }
 
+    if ( $env:VENAFIPS_SKIP_CERT_CHECK -eq '1' ) {
+        $params.Add('SkipCertificateCheck', $true)
+    }
+
     $oldProgressPreference = $ProgressPreference
     $ProgressPreference = 'SilentlyContinue'
 
