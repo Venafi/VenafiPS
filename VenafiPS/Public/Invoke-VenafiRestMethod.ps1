@@ -87,9 +87,11 @@ function Invoke-VenafiRestMethod {
         if ( -not $VenafiSession ) {
             if ( $env:TPP_TOKEN ) {
                 $VenafiSession = $env:TPP_TOKEN
-            } elseif ( $env:VAAS_KEY ) {
+            }
+            elseif ( $env:VAAS_KEY ) {
                 $VenafiSession = $env:VAAS_KEY
-            } else {
+            }
+            else {
                 throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
             }
         }
@@ -100,12 +102,14 @@ function Invoke-VenafiRestMethod {
                 if ( $VenafiSession.Platform -eq 'VaaS' ) {
                     $platform = 'VaaS'
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
-                } else {
+                }
+                else {
                     # TPP
                     if ( $VenafiSession.AuthType -eq 'Token' ) {
                         $platform = 'TppToken'
                         $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                    } else {
+                    }
+                    else {
                         $platform = 'TppKey'
                         $auth = $VenafiSession.Key.ApiKey
                     }
@@ -119,7 +123,8 @@ function Invoke-VenafiRestMethod {
                 if ( [System.Guid]::TryParse($VenafiSession, [System.Management.Automation.PSReference]$objectGuid) ) {
                     $Server = $script:CloudUrl
                     $platform = 'VaaS'
-                } else {
+                }
+                else {
                     # TPP access token
                     # get server from environment variable
                     if ( -not $env:TPP_SERVER ) {
@@ -219,7 +224,21 @@ function Invoke-VenafiRestMethod {
     }
 
     if ( $env:VENAFIPS_SKIP_CERT_CHECK -eq '1' ) {
-        $params.Add('SkipCertificateCheck', $true)
+        if ( $PSVersionTable.PSVersion.Major -lt 6 ) {
+            add-type @"
+            using System.Net;
+            using System.Security.Cryptography.X509Certificates;
+            public class TrustAllCertsPolicy : ICertificatePolicy {
+                public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem) {
+                    return true;
+                }
+            }
+"@
+            [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+        }
+        else {
+            $params.Add('SkipCertificateCheck', $true)
+        }
     }
 
     $oldProgressPreference = $ProgressPreference
@@ -228,7 +247,8 @@ function Invoke-VenafiRestMethod {
     try {
         $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
         $verboseOutput.Message | Write-VerboseWithSecret
-    } catch {
+    }
+    catch {
 
         # if trying with a slash below doesn't work, we want to provide the original error
         $originalError = $_
@@ -250,11 +270,13 @@ function Invoke-VenafiRestMethod {
                         Error      =
                         try {
                             $originalError.ErrorDetails.Message | ConvertFrom-Json
-                        } catch {
+                        }
+                        catch {
                             $originalError.ErrorDetails.Message
                         }
                     }
-                } else {
+                }
+                else {
                     throw $originalError
                 }
             }
@@ -264,17 +286,20 @@ function Invoke-VenafiRestMethod {
             }
         }
 
-    } finally {
+    }
+    finally {
         $ProgressPreference = $oldProgressPreference
     }
 
     if ( $FullResponse ) {
         $response
-    } else {
+    }
+    else {
         if ( $response.Content ) {
             try {
                 $response.Content | ConvertFrom-Json
-            } catch {
+            }
+            catch {
                 throw ('Invalid JSON response {0}' -f $response.Content)
             }
         }
