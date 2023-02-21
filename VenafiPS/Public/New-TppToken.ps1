@@ -2,18 +2,18 @@ function New-TppToken {
     <#
     .SYNOPSIS
     Get a new access token or refresh an existing one
-    
+
     .DESCRIPTION
     Get an access token and refresh token (if enabled) to be used with New-VenafiSession or other scripts/utilities that take such a token.
     You can also refresh an existing access token if you have the associated refresh token.
     Authentication can be provided as integrated, credential, or certificate.
-    
+
     .PARAMETER AuthServer
     Auth server or url, eg. venafi.company.com
-    
+
     .PARAMETER ClientId
     Applcation Id configured in Venafi for token-based authentication
-    
+
     .PARAMETER Scope
     Hashtable with Scopes and privilege restrictions.
     The key is the scope and the value is one or more privilege restrictions separated by commas.
@@ -23,45 +23,45 @@ function New-TppToken {
     Using a scope of {'all'='core'} will set all scopes except for admin.
     Using a scope of {'all'='admin'} will set all scopes including admin.
     Usage of the 'all' scope is not suggested for production.
-    
+
     .PARAMETER Credential
     Username / password credential used to request API Token
-    
+
     .PARAMETER State
     A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
-    
+
     .PARAMETER Certificate
     Certificate used to request API token.  Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/current/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
-    
+
     .PARAMETER RefreshToken
     Provide RefreshToken along with ClientId to obtain a new access and refresh token.  Format should be a pscredential where the password is the refresh token.
-    
+
     .PARAMETER VenafiSession
     VenafiSession object created from New-VenafiSession method.
-    
+
     .EXAMPLE
     New-TppToken -AuthServer 'https://mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Credential $credential
     Get a new token with OAuth
-    
+
     .EXAMPLE
     New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId'
     Get a new token with Integrated authentication
-    
+
     .EXAMPLE
     New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Certificate $cert
     Get a new token with certificate authentication
-    
+
     .EXAMPLE
     New-TppToken -AuthServer 'mytppserver.example.com' -ClientId 'MyApp' -RefreshToken $refreshCred
     Refresh an existing access token by providing the refresh token directly
-    
+
     .EXAMPLE
     New-TppToken -VenafiSession $mySession
     Refresh an existing access token by providing a VenafiSession object
-    
+
     .INPUTS
     None
-    
+
     .OUTPUTS
     PSCustomObject with the following properties:
         Server
@@ -121,6 +121,9 @@ function New-TppToken {
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [pscredential] $RefreshToken,
 
+        [Parameter()]
+        [switch] $SkipCertificateCheck,
+
         [Parameter(ParameterSetName = 'RefreshSession', Mandatory)]
         [ValidateScript( {
                 if ( -not $_.Token.RefreshToken ) {
@@ -141,6 +144,7 @@ function New-TppToken {
         Method  = 'Post'
         UriRoot = 'vedauth'
         Body    = @{}
+        SkipCertificateCheck = $SkipCertificateCheck
     }
 
     if ( $PsCmdlet.ParameterSetName -eq 'RefreshSession' ) {

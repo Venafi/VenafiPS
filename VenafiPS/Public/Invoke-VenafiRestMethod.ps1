@@ -78,7 +78,10 @@ function Invoke-VenafiRestMethod {
         [Hashtable] $Body,
 
         [Parameter()]
-        [switch] $FullResponse
+        [switch] $FullResponse,
+
+        [Parameter()]
+        [switch] $SkipCertificateCheck
     )
 
 
@@ -114,6 +117,7 @@ function Invoke-VenafiRestMethod {
                         $auth = $VenafiSession.Key.ApiKey
                     }
                 }
+                $SkipCertificateCheck = $VenafiSession.SkipCertificateCheck
                 break
             }
 
@@ -223,18 +227,20 @@ function Invoke-VenafiRestMethod {
         $params.Add('Certificate', $Certificate)
     }
 
-    if ( $env:VENAFIPS_SKIP_CERT_CHECK -eq '1' ) {
+    if ( $SkipCertificateCheck -or $env:VENAFIPS_SKIP_CERT_CHECK -eq '1' ) {
         if ( $PSVersionTable.PSVersion.Major -lt 6 ) {
-            add-type @"
-            using System.Net;
-            using System.Security.Cryptography.X509Certificates;
-            public class TrustAllCertsPolicy : ICertificatePolicy {
-                public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem) {
-                    return true;
+            if ( [System.Net.ServicePointManager]::CertificatePolicy.GetType().FullName -ne 'TrustAllCertsPolicy' ) {
+                add-type @"
+                using System.Net;
+                using System.Security.Cryptography.X509Certificates;
+                public class TrustAllCertsPolicy : ICertificatePolicy {
+                    public bool CheckValidationResult(ServicePoint srvPoint, X509Certificate certificate, WebRequest request, int certificateProblem) {
+                        return true;
+                    }
                 }
-            }
 "@
-            [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+                [System.Net.ServicePointManager]::CertificatePolicy = New-Object TrustAllCertsPolicy
+            }
         }
         else {
             $params.Add('SkipCertificateCheck', $true)

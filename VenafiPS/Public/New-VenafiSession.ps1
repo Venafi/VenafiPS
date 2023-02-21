@@ -70,11 +70,9 @@ function New-VenafiSession {
     First time use requires it to be provided with -VaasKey to populate the vault.
     With subsequent uses, it can be provided standalone and the key will be retrieved with the need for -VaasKey.
 
-    .PARAMETER VaultMetadata
-    When a token vault entry, access or refresh, is created with -VaultAccessTokenName or -VaultRefreshTokenName, store the server and clientid with it so this doesn't need to be provided each time.
-    Once used, the server and clientid will continue to be stored with updated vault entries regardless if -VaultMetadata was provided again.
-    To clear the metadata, reauthenticate with this function with a credential and without providing -VaultMetadata.
-    To use this parameter, the SecretManagement vault must support it.
+    .PARAMETER SkipCertificateCheck
+    Bypass certificate validation when connecting to the server.
+    This can be helpful for pre-prod environments where ssl isn't setup on the website or you are connecting via IP.
 
     .PARAMETER PassThru
     Optionally, send the session object to the pipeline instead of script scope.
@@ -121,10 +119,6 @@ function New-VenafiSession {
     .EXAMPLE
     New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh
     Create session using a refresh token and store the newly created refresh token in the vault
-
-    .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh -VaultMetadata
-    Create session using a refresh token, store the newly created refresh token in the vault, and store the server and clientid with the secret
 
     .EXAMPLE
     New-VenafiSession -VaasKey $cred
@@ -274,10 +268,16 @@ function New-VenafiSession {
         [string] $VaultVaasKeyName,
 
         [Parameter()]
-        [switch] $PassThru
+        [switch] $PassThru,
+
+        [Parameter()]
+        [switch] $SkipCertificateCheck
     )
 
     $isVerbose = if ($PSBoundParameters.Verbose -eq $true) { $true } else { $false }
+    if ( $VaultMetadata ) {
+        Write-Warning '-VaultMetadata is now deprecated.  Metadata will be vaulted by default.'
+    }
 
     $serverUrl = $Server
     # add prefix if just server url was provided
@@ -297,8 +297,7 @@ function New-VenafiSession {
         Server = $serverUrl
     }
 
-    # use this to know if we need to re-store vault entry metadata when it already exists and -VaultMetadata not provided
-    $metadataStored = $false
+    $newSession | Add-Member @{ 'SkipCertificateCheck' = $SkipCertificateCheck.IsPresent }
 
     Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
 
@@ -333,9 +332,10 @@ function New-VenafiSession {
 
         { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate' } {
             $params = @{
-                AuthServer = $authServerUrl
-                ClientId   = $ClientId
-                Scope      = $Scope
+                AuthServer           = $authServerUrl
+                ClientId             = $ClientId
+                Scope                = $Scope
+                SkipCertificateCheck = $SkipCertificateCheck
             }
 
             if ($Credential) {
@@ -382,24 +382,12 @@ function New-VenafiSession {
                     ClientId    = $secretInfo.Metadata.ClientId
                     Scope       = $secretInfo.Metadata.Scope
                 }
-
-                $metadataStored = $true
+                $newSession.SkipCertificateCheck = [bool] $secretInfo.Metadata.SkipCertificateCheck
             }
             else {
-                # need to check params as not mandatory
-                if ( -not $Server -or -not $ClientId ) {
-                    throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
-                }
-
-                $newSession.Token = [PSCustomObject]@{
-                    Server      = $authServerUrl
-                    AccessToken = $tokenSecret
-                    Expires     = (Get-Date).AddMonths(12)
-                }
-                # we don't have the expiry so create one
-                # rely on the api call itself to fail if access token is invalid
-                # $newSession.Expires = (Get-Date).AddMonths(12)
+                throw 'Server and ClientId metadata not found.  Execute New-VenafiSession -Server $server -Credential $cred -ClientId $clientId -Scope $scope -VaultAccessToken $secretName and attempt the operation again.'
             }
+
         }
 
         'RefreshToken' {
@@ -428,20 +416,9 @@ function New-VenafiSession {
                     AuthServer = $secretInfo.Metadata.AuthServer
                     ClientId   = $secretInfo.Metadata.ClientId
                 }
-
-                $metadataStored = $true
-
             }
             else {
-                # need to check params as not mandatory
-                if ( -not $Server -or -not $ClientId ) {
-                    throw '-Server and -ClientId are required parameters as they weren''t stored with -VaultMetadata'
-                }
-
-                $params = @{
-                    AuthServer = $authServerUrl
-                    ClientId   = $ClientId
-                }
+                throw 'Server and ClientId metadata not found.  Execute New-VenafiSession -Server $server -Credential $cred -ClientId $clientId -Scope $scope -VaultRefreshToken $secretName and attempt the operation again.'
             }
 
             $params.RefreshToken = $tokenSecret
@@ -449,12 +426,8 @@ function New-VenafiSession {
             $newToken = New-TppToken @params
             $newSession.Token = $newToken
             $newSession.Server = $newToken.Server
-
-            if ( $metadataStored ) {
-                $newSession.Token.Scope = $secretInfo.Metadata.Scope | ConvertFrom-Json
-            }
-
-            Write-Verbose ('server: {0}' -f $newToken.Server)
+            $newSession.Token.Scope = $secretInfo.Metadata.Scope | ConvertFrom-Json
+            $newSession.SkipCertificateCheck = [bool] $secretInfo.Metadata.SkipCertificateCheck
         }
 
         'Vaas' {
@@ -469,6 +442,8 @@ function New-VenafiSession {
                 throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
             }
             $newSession.Key = $keySecret
+
+            Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
         }
 
         Default {
@@ -476,46 +451,28 @@ function New-VenafiSession {
         }
     }
 
-    if ( $VaultAccessTokenName ) {
-        # set new access token in vault
-        Set-Secret -Name $VaultAccessTokenName -Secret $newSession.Token.AccessToken -Vault 'VenafiPS'
-    }
-
-    if ( $VaultRefreshTokenName ) {
-        # set new refresh token in vault
-        if ( $newSession.Token.RefreshToken ) {
-            Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS'
-        }
-        else {
-            Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
-        }
-    }
-
-    if ( $VaultVaasKeyName ) {
-        # set new vaas key in vault
-        Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
-    }
-
-    if ( $VaultMetadata -or $metadataStored ) {
-        if ( -not $VaultAccessTokenName -and -not $VaultRefreshTokenName) {
-            throw 'Vaulting metadata requires either -VaultAccessTokenName or -VaultRefreshTokenName is provided'
-        }
+    if ( $VaultAccessTokenName -or $VaultRefreshTokenName ) {
         $metadata = @{
-            Server     = $newSession.Server
-            AuthServer = $newSession.Token.Server
-            ClientId   = $newSession.Token.ClientId
-            Expires    = $newSession.Expires
-            Scope      = $newSession.Token.Scope | ConvertTo-Json -Compress
+            Server               = $newSession.Server
+            AuthServer           = $newSession.Token.Server
+            ClientId             = $newSession.Token.ClientId
+            Expires              = $newSession.Expires
+            Scope                = $newSession.Token.Scope | ConvertTo-Json -Compress
+            SkipCertificateCheck = [int]$newSession.SkipCertificateCheck
         }
 
         $metadata | ConvertTo-Json | Write-Verbose
 
         if ( $VaultAccessTokenName ) {
-            Set-SecretInfo -Name $VaultAccessTokenName -Vault 'VenafiPS' -Metadata $metadata
+            Set-Secret -Name $VaultAccessTokenName -Secret $newSession.Token.AccessToken -Vault 'VenafiPS' -Metadata $metadata
         }
-
-        if ( $VaultRefreshTokenName ) {
-            Set-SecretInfo -Name $VaultRefreshTokenName -Vault 'VenafiPS' -Metadata $metadata
+        else {
+            if ( $newSession.Token.RefreshToken ) {
+                Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS' -Metadata $metadata
+            }
+            else {
+                Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
+            }
         }
     }
 
