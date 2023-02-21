@@ -40,7 +40,6 @@ function New-VenafiSession {
     Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
     This value can be provided standalone or with credentials.  First time use requires it to be provided with credentials to retrieve the access token to populate the vault.
     With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
-    See -VaultMetadata to store server and clientid with the token.
 
     .PARAMETER RefreshToken
     PSCredential object with the refresh token as the password.  An access token will be retrieved and a new session created.
@@ -50,7 +49,6 @@ function New-VenafiSession {
     This value can be provided standalone or with credentials.  Each time this is used, a new access and refresh token will be obtained.
     First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
     With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
-    See -VaultMetadata to store server and clientid with the token.
 
     .PARAMETER Certificate
     Certificate for token-based authentication
