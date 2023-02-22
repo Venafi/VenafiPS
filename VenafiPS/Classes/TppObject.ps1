@@ -16,8 +16,8 @@ class TppObject {
         $this.Guid = $Guid
         # issue 129
         $this.Name = $this.Path.Split('\')[-1]
-        # issue 166
-        $this.ParentPath = $this.Path -replace "(.*)\\$($this.Name)$", '$1'
+        # issue 166, 186
+        $this.ParentPath = $this.Path.Substring(0, $this.Path.LastIndexOf("\$($this.Name)"))
         $this | Add-Member -MemberType ScriptMethod -Name ToString -Value { $this.Path } -Force
     }
 
