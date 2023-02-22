@@ -8,14 +8,14 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 ### Session (Default)
 ```
 Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot <String>] -UriLeaf <String>
- [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [<CommonParameters>]
+ [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### URL
 ```
 Invoke-VenafiRestMethod -Server <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
  [-Method <String>] [-UriRoot <String>] -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>]
- [-FullResponse] [<CommonParameters>]
+ [-FullResponse] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -178,6 +178,21 @@ Accept wildcard characters: False
 
 ### -FullResponse
 {{ Fill FullResponse Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SkipCertificateCheck
+{{ Fill SkipCertificateCheck Description }}
 
 ```yaml
 Type: SwitchParameter
