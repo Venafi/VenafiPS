@@ -84,9 +84,13 @@ function Move-TppObject {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         # determine if target is a policy or other object
-        # if policy, we'll need to append the object name when moving
-        # if not policy, the item won't exist so handle the error
-        $targetObject = Get-TppObject -Path $TargetPath -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
+        # if policy, we'll need to append the object name in the process block when moving
+        try {
+            $targetObject = Get-TppObject -Path $TargetPath -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
+        }
+        catch {
+            # expected if target is a new object name and not policy
+        }
         $targetIsPolicy = ($targetObject.TypeName -eq 'Policy')
     }
 
@@ -106,7 +110,7 @@ function Move-TppObject {
         if ( $targetIsPolicy ) {
             # get object name, issue 129
             $childPath = $SourcePath.Split('\')[-1]
-            $params.Body.NewObjectDN = Join-Path -Path $TargetPath -ChildPath $childPath
+            $params.Body.NewObjectDN = '{0}\{1}' -f $targetObject.Path, $childPath
         }
 
         if ( $PSCmdlet.ShouldProcess($SourcePath, ('Move to {0}' -f $params.Body.NewObjectDN)) ) {
