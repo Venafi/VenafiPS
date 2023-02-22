@@ -7,31 +7,31 @@ Get a new access token or refresh an existing one
 
 ### Integrated (Default)
 ```
-New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> [-State <String>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> [-State <String>]
+ [-SkipCertificateCheck] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RefreshToken
 ```
-New-TppToken -AuthServer <String> -ClientId <String> -RefreshToken <PSCredential> [-WhatIf] [-Confirm]
- [<CommonParameters>]
+New-TppToken -AuthServer <String> -ClientId <String> -RefreshToken <PSCredential> [-SkipCertificateCheck]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Certificate
 ```
 New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-SkipCertificateCheck] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### OAuth
 ```
 New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Credential <PSCredential>
- [-State <String>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-State <String>] [-SkipCertificateCheck] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RefreshSession
 ```
-New-TppToken -VenafiSession <VenafiSession> [-WhatIf] [-Confirm] [<CommonParameters>]
+New-TppToken [-SkipCertificateCheck] -VenafiSession <VenafiSession> [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -110,6 +110,9 @@ The key is the scope and the value is one or more privilege restrictions separat
 A privilege restriction of none or read, use a value of $null.
 Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
 See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
+Using a scope of {'all'='core'} will set all scopes except for admin.
+Using a scope of {'all'='admin'} will set all scopes including admin.
+Usage of the 'all' scope is not suggested for production.
 
 ```yaml
 Type: Hashtable
@@ -181,6 +184,21 @@ Aliases:
 Required: True
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SkipCertificateCheck
+{{ Fill SkipCertificateCheck Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
