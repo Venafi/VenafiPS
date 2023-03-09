@@ -17,6 +17,12 @@ New-TppToken -AuthServer <String> -ClientId <String> -RefreshToken <PSCredential
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+### Jwt
+```
+New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Jwt <String> [-SkipCertificateCheck]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
 ### Certificate
 ```
 New-TppToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
@@ -79,7 +85,7 @@ venafi.company.com
 
 ```yaml
 Type: String
-Parameter Sets: Integrated, RefreshToken, Certificate, OAuth
+Parameter Sets: Integrated, RefreshToken, Jwt, Certificate, OAuth
 Aliases: Server
 
 Required: True
@@ -94,7 +100,7 @@ Applcation Id configured in Venafi for token-based authentication
 
 ```yaml
 Type: String
-Parameter Sets: Integrated, RefreshToken, Certificate, OAuth
+Parameter Sets: Integrated, RefreshToken, Jwt, Certificate, OAuth
 Aliases:
 
 Required: True
@@ -116,7 +122,7 @@ Usage of the 'all' scope is not suggested for production.
 
 ```yaml
 Type: Hashtable
-Parameter Sets: Integrated, Certificate, OAuth
+Parameter Sets: Integrated, Jwt, Certificate, OAuth
 Aliases:
 
 Required: True
@@ -150,6 +156,23 @@ Parameter Sets: Integrated, OAuth
 Aliases:
 
 Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Jwt
+JSON web token.
+Available in TPP v22.4 and later.
+Ensure jwt mapping has been configured in VCC, Access Management-\>JWT Mappings.
+
+```yaml
+Type: String
+Parameter Sets: Jwt
+Aliases:
+
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False

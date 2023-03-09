@@ -35,6 +35,12 @@ New-VenafiSession -Server <String> -AccessToken <PSCredential> [-VaultAccessToke
  [-VaultMetadata] [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
+### TokenJwt
+```
+New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Jwt <String> [-PassThru]
+ [-SkipCertificateCheck] [<CommonParameters>]
+```
+
 ### TokenCertificate
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
@@ -162,7 +168,7 @@ If just the server name is provided, https:// will be appended.
 
 ```yaml
 Type: String
-Parameter Sets: KeyIntegrated, RefreshToken, AccessToken, TokenCertificate, TokenIntegrated, TokenOAuth, KeyCredential
+Parameter Sets: KeyIntegrated, RefreshToken, AccessToken, TokenJwt, TokenCertificate, TokenIntegrated, TokenOAuth, KeyCredential
 Aliases: ServerUrl, Url
 
 Required: True
@@ -217,7 +223,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String
-Parameter Sets: RefreshToken, TokenCertificate, TokenIntegrated, TokenOAuth
+Parameter Sets: RefreshToken, TokenJwt, TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: True
@@ -251,7 +257,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: Hashtable
-Parameter Sets: TokenCertificate, TokenIntegrated, TokenOAuth
+Parameter Sets: TokenJwt, TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: True
@@ -298,6 +304,23 @@ An access token will be retrieved and a new session created.
 ```yaml
 Type: PSCredential
 Parameter Sets: RefreshToken
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Jwt
+JSON web token.
+Available in TPP v22.4 and later.
+Ensure jwt mapping has been configured in VCC, Access Management-\>JWT Mappings.
+
+```yaml
+Type: String
+Parameter Sets: TokenJwt
 Aliases:
 
 Required: True
@@ -518,6 +541,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeJwt.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeJwt.php)
 
 [https://github.com/PowerShell/SecretManagement](https://github.com/PowerShell/SecretManagement)
 

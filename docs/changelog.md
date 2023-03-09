@@ -1,3 +1,6 @@
+## 5.4.1
+- Add support for JWT token authentication in `New-VenafiSession` and `New-TppToken`
+
 ## 5.4.0
 - Add 'all' token scope with 2 values, 'core' and 'admin'.  'Core' is all scopes except for admin and 'admin' includes admin.  Use as `New-VenafiSession -Scope @{'all'='core'}`.  Not suggested for production environments
 - Add `-SkipCertificateCheck` to `New-VenafiSession` and `New-TppToken` to bypass certificate checking, useful in pre-production environments, connecting via IP, etc.  If you aren't creating a new session, but providing a token directly to a function, the same functionality can be found by setting an environment variable `$env:VENAFIPS_SKIP_CERT_CHECK=1`.  If vaulting your token, this value will also be vaulted in the metadata making it very easy to use `New-VenafiSession -VaultRefreshAccessToken $name` and connect to pre-prod environments with no certificate checking
@@ -486,6 +489,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
