@@ -50,6 +50,11 @@ function New-VenafiSession {
     First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
     With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
 
+    .PARAMETER Jwt
+    JSON web token.
+    Available in TPP v22.4 and later.
+    Ensure jwt mapping has been configured in VCC, Access Management->JWT Mappings.
+
     .PARAMETER Certificate
     Certificate for token-based authentication
 
@@ -148,6 +153,9 @@ function New-VenafiSession {
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php
 
     .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeJwt.php
+
+    .LINK
     https://github.com/PowerShell/SecretManagement
 
     .LINK
@@ -163,6 +171,7 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
+        [Parameter(Mandatory, ParameterSetName = 'TokenJwt')]
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
         [Parameter(ParameterSetName = 'VaultAccessToken')]
@@ -186,6 +195,7 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
+        [Parameter(Mandatory, ParameterSetName = 'TokenJwt')]
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [string] $ClientId,
@@ -193,6 +203,7 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'TokenIntegrated')]
         [Parameter(Mandatory, ParameterSetName = 'TokenOAuth')]
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
+        [Parameter(Mandatory, ParameterSetName = 'TokenJwt')]
         [Parameter(ParameterSetName = 'VaultAccessToken')]
         [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [hashtable] $Scope,
@@ -206,6 +217,9 @@ function New-VenafiSession {
 
         [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
         [PSCredential] $RefreshToken,
+
+        [Parameter(Mandatory, ParameterSetName = 'TokenJwt')]
+        [string] $Jwt,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
         [X509Certificate] $Certificate,
@@ -328,7 +342,7 @@ function New-VenafiSession {
 
         }
 
-        { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate' } {
+        { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate', 'TokenJwt' } {
             $params = @{
                 AuthServer           = $authServerUrl
                 ClientId             = $ClientId
@@ -342,6 +356,10 @@ function New-VenafiSession {
 
             if ($Certificate) {
                 $params.Certificate = $Certificate
+            }
+
+            if ( $PSBoundParameters.ContainsKey('Jwt') ) {
+                $params.Jwt = $Jwt
             }
 
             if ($State) {
