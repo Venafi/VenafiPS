@@ -1,7 +1,1 @@
-- Add 'all' token scope with 2 values, 'core' and 'admin'.  'Core' is all scopes except for admin and 'admin' includes admin.  Use as `New-VenafiSession -Scope @{'all'='core'}`.  Not suggested for production environments
-- Add `-SkipCertificateCheck` to `New-VenafiSession` and `New-TppToken` to bypass certificate checking, useful in pre-production environments, connecting via IP, etc.  If you aren't creating a new session, but providing a token directly to a function, the same functionality can be found by setting an environment variable `$env:VENAFIPS_SKIP_CERT_CHECK=1`.  If vaulting your token, this value will also be vaulted in the metadata making it very easy to use `New-VenafiSession -VaultRefreshAccessToken $name` and connect to pre-prod environments with no certificate checking
-- `New-VenafiSession -VaultMetadata` is now deprecated and metadata will be vaulted by default
-- Token scope is now vaulted in metadata and added to $VenafiSession when using `-VaultAccessTokenName` or `-VaultRefreshTokenName` of `New-VenafiSession`
-- Update `Write-VerboseWithSecret` to support secrets in delimited json
-- Fix TppObject ParentPath error when it contains certain characters, [#186](https://github.com/Venafi/VenafiPS/issues/186)
-- Fix object does not exist error with `Move-TppObject` in a try/catch, [#185](https://github.com/Venafi/VenafiPS/issues/185)
+- Add support for JWT token authentication in `New-VenafiSession` and `New-TppToken`

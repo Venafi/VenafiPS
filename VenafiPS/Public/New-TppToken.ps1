@@ -30,6 +30,11 @@ function New-TppToken {
     .PARAMETER State
     A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
+    .PARAMETER Jwt
+    JSON web token.
+    Available in TPP v22.4 and later.
+    Ensure jwt mapping has been configured in VCC, Access Management->JWT Mappings.
+
     .PARAMETER Certificate
     Certificate used to request API token.  Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/current/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
 
@@ -84,6 +89,7 @@ function New-TppToken {
         [Parameter(ParameterSetName = 'OAuth', Mandatory)]
         [Parameter(ParameterSetName = 'Integrated', Mandatory)]
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [Parameter(ParameterSetName = 'Jwt', Mandatory)]
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
@@ -101,11 +107,13 @@ function New-TppToken {
         [Parameter(ParameterSetName = 'Integrated', Mandatory)]
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
+        [Parameter(ParameterSetName = 'Jwt', Mandatory)]
         [string] $ClientId,
 
         [Parameter(ParameterSetName = 'OAuth', Mandatory)]
         [Parameter(ParameterSetName = 'Integrated', Mandatory)]
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [Parameter(ParameterSetName = 'Jwt', Mandatory)]
         [hashtable] $Scope,
 
         [Parameter(ParameterSetName = 'OAuth', Mandatory)]
@@ -114,6 +122,9 @@ function New-TppToken {
         [Parameter(ParameterSetName = 'Integrated')]
         [Parameter(ParameterSetName = 'OAuth')]
         [string] $State,
+
+        [Parameter(ParameterSetName = 'Jwt', Mandatory)]
+        [string] $Jwt,
 
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
         [X509Certificate] $Certificate,
@@ -141,9 +152,9 @@ function New-TppToken {
     )
 
     $params = @{
-        Method  = 'Post'
-        UriRoot = 'vedauth'
-        Body    = @{}
+        Method               = 'Post'
+        UriRoot              = 'vedauth'
+        Body                 = @{}
         SkipCertificateCheck = $SkipCertificateCheck
     }
 
@@ -181,9 +192,11 @@ function New-TppToken {
 
             $scopeString = if ( $Scope.all -eq 'core' ) {
                 'agent:delete;certificate:approve,delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:delete,manage;codesignclient'
-            } elseif ($Scope.all -eq 'admin' ) {
+            }
+            elseif ($Scope.all -eq 'admin' ) {
                 'admin:delete,viewlogs,recyclebin;agent:delete;certificate:delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:approve,admin,delete,manage;codesignclient'
-            } else {
+            }
+            else {
                 @(
                     $scope.GetEnumerator() | ForEach-Object {
                         if ($_.Value) {
@@ -215,6 +228,10 @@ function New-TppToken {
 
                 'Certificate' {
                     $params.Certificate = $Certificate
+                }
+
+                'Jwt' {
+                    $params.Body.jwt = $Jwt
                 }
 
                 Default {
