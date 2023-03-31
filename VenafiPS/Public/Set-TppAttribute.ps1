@@ -25,6 +25,11 @@ function Set-TppAttribute {
     .PARAMETER BypassValidation
     Bypass data validation.  Only applicable to custom fields.
 
+    .PARAMETER NoOverwrite
+    Add to any existing value, if there is one, as opposed to overwriting.
+    Unlike overwriting, adding can only be a single value, not an array.
+    Not applicable to custom fields.
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -80,6 +85,12 @@ function Set-TppAttribute {
     https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-SetPolicy.php
 
     .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addvalue.php
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addpolicyvalue.php
+
+    .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php
 
     .LINK
@@ -95,7 +106,8 @@ function Set-TppAttribute {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -116,6 +128,9 @@ function Set-TppAttribute {
         [switch] $BypassValidation,
 
         [Parameter()]
+        [switch] $NoOverwrite,
+
+        [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
     )
 
@@ -133,9 +148,18 @@ function Set-TppAttribute {
         $Attribute.GetEnumerator() | ForEach-Object {
 
             $thisKey = $_.Key
+
             if ($null -ne $_.Value) {
-                $thisValue = ($_.Value).ToString()
-            } else {
+                if ( $_.Value.GetType().BaseType.Name -eq 'Array' ) {
+                    $thisValue = @($_.Value)
+                }
+                else {
+                    $thisValue = ($_.Value).ToString()
+                }
+            }
+            else {
+                # cannot add 'null', only overwrite to blank out the value
+                $NoOverwrite = $false
                 $thisValue = $_.Value
             }
             $customFieldError = $null
@@ -168,7 +192,8 @@ function Set-TppAttribute {
                         # date/time
                         try {
                             [datetime] $thisValue
-                        } catch {
+                        }
+                        catch {
                             $customFieldError = 'value is not a valid date'
                         }
                     }
@@ -180,16 +205,19 @@ function Set-TppAttribute {
 
                 if ( $customFieldError -and -not $BypassValidation ) {
                     Write-Error ('The value ''{0}'' for field ''{1}'' encountered an error, {2}' -f $thisValue, $thisKey, $customFieldError)
-                } else {
+                }
+                else {
                     $customFields += @{
                         ItemGuid = $customField.Guid
                         List     = if ($null -eq $thisValue) { , @() } else { , @($thisValue) }
                     }
                 }
-            } else {
+            }
+            else {
                 $baseFields += @{
                     Name  = $thisKey
-                    Value = if ($null -eq $thisValue) { , @() } else { , @($thisValue) }
+                    Value = if ($null -eq $thisValue) { '' } else { $thisValue }
+                    # Value = if ($null -eq $thisValue) { , @() } else { , @($thisValue) }
                 }
             }
         }
@@ -207,16 +235,23 @@ function Set-TppAttribute {
         if ( $baseFields.Count -gt 0 ) {
 
             if ( $PSBoundParameters.ContainsKey('Class') ) {
-                # config/WritePolicy only allows 1 key/value per call
+                # config/WritePolicy and AddPolicyValue only allows 1 key/value per call
                 foreach ($field in $baseFields) {
 
-                    $params.UriLeaf = 'config/WritePolicy'
                     $params.Body = @{
                         ObjectDN      = $Path
                         Class         = $Class
                         AttributeName = $field.Name
-                        Values        = @($field.Value)
                         Locked        = [int]$Lock.ToBool()
+                    }
+
+                    if ( $NoOverwrite ) {
+                        $params.UriLeaf = 'config/AddPolicyValue'
+                        $params.Body.Value = $field.Value
+                    }
+                    else {
+                        $params.UriLeaf = 'config/WritePolicy'
+                        $params.Body.Values = @($field.Value)
                     }
 
                     $response = Invoke-VenafiRestMethod @params
@@ -225,18 +260,39 @@ function Set-TppAttribute {
                         Write-Error $response.Error
                     }
                 }
-            } else {
+            }
+            else {
 
-                $params.UriLeaf = 'config/Write'
-                $params.Body = @{
-                    ObjectDN      = $Path
-                    AttributeData = $baseFields
+                if ( $NoOverwrite ) {
+
+                    $params.UriLeaf = 'config/AddValue'
+                    foreach ( $field in $baseFields ) {
+                        $params.Body = @{
+                            ObjectDN      = $Path
+                            AttributeName = $field.Name
+                            Value         = $field.Value
+                        }
+
+                        $response = Invoke-VenafiRestMethod @params
+
+                        if ( $response.Result -ne [TppConfigResult]::Success ) {
+                            Write-Error $response.Error
+                        }
+
+                    }
                 }
+                else {
+                    $params.UriLeaf = 'config/Write'
+                    $params.Body = @{
+                        ObjectDN      = $Path
+                        AttributeData = @($baseFields)
+                    }
 
-                $response = Invoke-VenafiRestMethod @params
+                    $response = Invoke-VenafiRestMethod @params
 
-                if ( $response.Result -ne [TppConfigResult]::Success ) {
-                    Write-Error $response.Error
+                    if ( $response.Result -ne [TppConfigResult]::Success ) {
+                        Write-Error $response.Error
+                    }
                 }
             }
         }
@@ -251,7 +307,8 @@ function Set-TppAttribute {
                     GuidData    = $customFields
                     Locked      = [int]$Lock.ToBool()
                 }
-            } else {
+            }
+            else {
 
                 $params.UriLeaf = 'Metadata/Set'
                 $params.Body = @{
