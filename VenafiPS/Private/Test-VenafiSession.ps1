@@ -56,7 +56,7 @@ function Test-VenafiSession {
 
         [Parameter(Mandatory, ParameterSetName = 'Platform')]
         [Parameter(Mandatory, ParameterSetName = 'AuthType')]
-        [ValidateSet('VaaS', 'TPP')]
+        # [ValidateSet('VaaS', 'TPP')]
         [string] $Platform,
 
         [Parameter(Mandatory, ParameterSetName = 'AuthType')]
@@ -72,9 +72,11 @@ function Test-VenafiSession {
         if ( -not $VenafiSession ) {
             if ( $env:TPP_TOKEN ) {
                 $VenafiSession = $env:TPP_TOKEN
-            } elseif ( $env:VAAS_KEY ) {
+            }
+            elseif ( $env:VAAS_KEY ) {
                 $VenafiSession = $env:VAAS_KEY
-            } else {
+            }
+            else {
                 throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
             }
         }
@@ -84,11 +86,19 @@ function Test-VenafiSession {
 
                 Write-Verbose 'Session is VenafiSession'
 
+                if ( $PSBoundParameters.ContainsKey('Platform') ) {
+                    $newPlatform = $Platform
+                    if ( $Platform -match '^(vaas|tpp)' ) {
+                        $newPlatform = $matches[1]
+                    }
+                }
                 if ( $AuthType ) {
-                    $VenafiSession.Validate($Platform, $AuthType)
-                } elseif ($Platform) {
-                    $VenafiSession.Validate($Platform)
-                } else {
+                    $VenafiSession.Validate($newPlatform, $AuthType)
+                }
+                elseif ($Platform) {
+                    $VenafiSession.Validate($newPlatform)
+                }
+                else {
                     $VenafiSession.Validate()
                 }
 
@@ -103,16 +113,17 @@ function Test-VenafiSession {
 
                     Write-Verbose 'Session is VaaS key'
 
-                    if ( $Platform -and $Platform -ne 'VaaS' ) {
+                    if ( $Platform -and $Platform -notmatch '^VaaS' ) {
                         throw "This function or parameter set is only accessible for $Platform"
                     }
 
                     $platformOut = 'VaaS'
-                } else {
+                }
+                else {
 
                     # TPP access token
                     Write-Verbose 'Session is TPP token'
-                    if ( $Platform -and $Platform -ne 'TPP' ) {
+                    if ( $Platform -and $Platform -notmatch '^TPP' ) {
                         throw "This function or parameter set is only accessible for $Platform"
                     }
                     # get server from environment variable
