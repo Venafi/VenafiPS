@@ -43,6 +43,7 @@ jobs:
         run: |
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module PowerShellBuild -ErrorAction Stop
+          # setting a path other than the current dir for Build-PSBuildModule didn't work
           cd ${{ github.workspace }}/${{ env.module_name }}
           Build-PSBuildModule -Path . -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
           gci ${{ github.workspace }}/merged
@@ -109,6 +110,7 @@ jobs:
           $YMLtext | Set-Content -Path '${{ github.workspace }}/mkdocs.yml'
 
       - name: Update repo
+        if: github.ref == 'refs/heads/main'
         run: |
           git config --global user.name 'Greg Brownstein'
           git config --global user.email 'greg@jagtechnical.com'
