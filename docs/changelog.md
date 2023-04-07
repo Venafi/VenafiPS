@@ -1,3 +1,6 @@
+## 5.4.2
+- Add support for JWT token authentication in `New-VenafiSession` and `New-TppToken`
+
 ## 5.4.1
 - Add support for JWT token authentication in `New-VenafiSession` and `New-TppToken`
 
@@ -489,6 +492,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
