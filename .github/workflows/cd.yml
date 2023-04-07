@@ -63,7 +63,7 @@ jobs:
         shell: pwsh
         run: |
           Remove-Module '${{ env.module_name }}' -Force -ea SilentlyContinue -Verbose
-          Import-Module '${{ github.workspace }}/${{ env.module_name }}.psd1' -Force -Verbose
+          Import-Module '${{ github.workspace }}/merged/${{ env.module_name }}.psd1' -Force -Verbose
 
           #Build YAMLText starting with the header
           $YMLtext = (Get-Content "${{ github.workspace }}/header-mkdocs.yml") -join "`n"
