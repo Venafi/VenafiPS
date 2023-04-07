@@ -155,7 +155,7 @@ jobs:
         if: github.ref == 'refs/heads/main'
         shell: pwsh
         run: |
-          Publish-Module -Path "${{ github.workspace }}/${{ env.module_name }}" -NuGetApiKey ${{ secrets.NUGET_KEY }} -Verbose
+          Publish-Module -Path "${{ github.workspace }}/merged" -NuGetApiKey ${{ secrets.NUGET_KEY }} -Verbose
 
       - name: Login to dockerhub
         uses: docker/login-action@v2
@@ -172,4 +172,5 @@ jobs:
           .
 
       - name: Publish image and tags
+        if: github.ref == 'refs/heads/main'
         run: docker push --all-tags venafi/venafips-module
