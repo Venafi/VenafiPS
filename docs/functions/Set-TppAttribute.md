@@ -7,14 +7,14 @@ Sets a value on an objects attribute or policies (policy attributes)
 
 ### NotPolicy (Default)
 ```
-Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-VenafiSession <PSObject>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-TppAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-NoOverwrite]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Policy
 ```
 Set-TppAttribute -Path <String> -Attribute <Hashtable> -Class <String> [-Lock] [-BypassValidation]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-NoOverwrite] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -149,6 +149,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -NoOverwrite
+Add to any existing value, if there is one, as opposed to overwriting.
+Unlike overwriting, adding can only be a single value, not an array.
+Not applicable to custom fields.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -218,6 +235,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-Set.php)
 
 [https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-SetPolicy.php](https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Metadata-SetPolicy.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addvalue.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addvalue.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addpolicyvalue.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-addpolicyvalue.php)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-write.php)
 
