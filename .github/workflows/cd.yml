@@ -8,7 +8,7 @@ jobs:
     env:
       module_name: VenafiPS
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           token: ${{ secrets.CD_TOKEN }}
 
@@ -46,10 +46,9 @@ jobs:
           # setting a path other than the current dir for Build-PSBuildModule didn't work
           cd ${{ github.workspace }}/${{ env.module_name }}
           Build-PSBuildModule -Path . -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
-          gci ${{ github.workspace }}/merged
 
       - name: Upload module artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: published_module
           path: |
@@ -136,7 +135,7 @@ jobs:
           } | ConvertTo-Json | Out-File -FilePath ${{ github.workspace }}/hash.json
 
       - name: Upload hash.json artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: hash.json
           path: ${{ github.workspace }}/hash.json
@@ -145,7 +144,10 @@ jobs:
         if: github.ref == 'refs/heads/main'
         uses: softprops/action-gh-release@v1
         with:
-          files: ${{ github.workspace }}/hash.json
+          files: |
+            ${{ github.workspace }}/hash.json
+            ${{ github.workspace }}/merged/${{ env.module_name }}.psd1
+            ${{ github.workspace }}/merged/${{ env.module_name }}.psm1
           tag_name: v${{ env.venafips_new_version }}
           body_path: ${{ github.workspace }}/RELEASE.md
 
