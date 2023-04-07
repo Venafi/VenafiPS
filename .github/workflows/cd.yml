@@ -92,6 +92,21 @@ jobs:
           }
           $YMLtext | Set-Content -Path '${{ github.workspace }}/mkdocs.yml'
 
+      - name: Build psm1
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module PowerShellBuild -ErrorAction Stop
+          cd ${{ env.module_name }}
+          Build-PSBuildModule -Path . -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
+          gci ${{ github.workspace }}/merged
+
+      - name: Upload module artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: merged_module
+          path: ${{ github.workspace }}/*
+
       - name: Update repo
         run: |
           git config --global user.name 'Greg Brownstein'
