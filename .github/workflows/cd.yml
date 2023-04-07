@@ -38,6 +38,21 @@ jobs:
           $changelog = Get-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Raw
           Set-Content -Path '${{ github.workspace }}/CHANGELOG.md' -Value ($newVersionString + "`r`n" + $releaseNotes + "`r`n`r`n" + $changelog)
 
+      - name: Build psm1
+        shell: pwsh
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module PowerShellBuild -ErrorAction Stop
+          cd ${{ env.module_name }}
+          Build-PSBuildModule -Path . -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
+          gci ${{ github.workspace }}/merged
+
+      - name: Upload module artifact
+        uses: actions/upload-artifact@v2
+        with:
+          name: merged_module
+          path: ${{ github.workspace }}/*
+
       - name: Install platyPS module
         shell: pwsh
         run: |
@@ -48,7 +63,7 @@ jobs:
         shell: pwsh
         run: |
           Remove-Module '${{ env.module_name }}' -Force -ea SilentlyContinue -Verbose
-          Import-Module '${{ github.workspace }}/${{ env.module_name }}/${{ env.module_name }}.psd1' -Force -Verbose
+          Import-Module '${{ github.workspace }}/${{ env.module_name }}.psd1' -Force -Verbose
 
           #Build YAMLText starting with the header
           $YMLtext = (Get-Content "${{ github.workspace }}/header-mkdocs.yml") -join "`n"
@@ -91,21 +106,6 @@ jobs:
               $Part
           }
           $YMLtext | Set-Content -Path '${{ github.workspace }}/mkdocs.yml'
-
-      - name: Build psm1
-        shell: pwsh
-        run: |
-          Set-PSRepository PSGallery -InstallationPolicy Trusted
-          Install-Module PowerShellBuild -ErrorAction Stop
-          cd ${{ env.module_name }}
-          Build-PSBuildModule -Path . -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
-          gci ${{ github.workspace }}/merged
-
-      - name: Upload module artifact
-        uses: actions/upload-artifact@v2
-        with:
-          name: merged_module
-          path: ${{ github.workspace }}/*
 
       - name: Update repo
         run: |
