@@ -52,8 +52,9 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: published_module
-          path: ${{ github.workspace }}/merged/${{ env.module_name }}.psm1
-          path: ${{ github.workspace }}/merged/${{ env.module_name }}.psd1
+          path: |
+            ${{ github.workspace }}/merged/${{ env.module_name }}.psm1
+            ${{ github.workspace }}/merged/${{ env.module_name }}.psd1
 
       - name: Install platyPS module
         shell: pwsh
