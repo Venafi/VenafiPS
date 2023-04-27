@@ -10,14 +10,12 @@ function ConvertTo-TppFullPath {
     }
 
     process {
-        # $pathOut = $Path
         if ( $Path.ToLower() -notlike '\ved*') {
             "\VED\Policy\$Path"
-        } else
-        {
+        }
+        else {
             $Path
         }
-        # $pathOut
     }
 
     end {
