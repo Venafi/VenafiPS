@@ -10,11 +10,14 @@ function ConvertTo-TppFullPath {
     }
 
     process {
-        $pathOut = $Path
+        # $pathOut = $Path
         if ( $Path.ToLower() -notlike '\ved*') {
-            $pathOut = Join-Path -Path '\VED\Policy' -ChildPath $Path
+            "\VED\Policy\$Path"
+        } else
+        {
+            $Path
         }
-        $pathOut
+        # $pathOut
     }
 
     end {

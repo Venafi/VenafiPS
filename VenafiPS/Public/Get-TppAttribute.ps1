@@ -228,7 +228,7 @@ function Get-TppAttribute {
         $thisObject = Get-TppObject -Path $newPath -VenafiSession $VenafiSession
 
         if ( $PSBoundParameters.ContainsKey('Class') -and $thisObject.TypeName -ne 'Policy' ) {
-            Write-Error ('You are attempting to retrieve policy attributes, but {0} is not a policy path' -f $Path)
+            Write-Error ('You are attempting to retrieve policy attributes, but {0} is not a policy path' -f $newPath)
             continue
         }
 
@@ -271,7 +271,7 @@ function Get-TppAttribute {
 
             if ( $response.Error ) {
                 if ( $response.Result -in 601, 112) {
-                    Write-Error "'$thisAttribute' is not a valid attribute for $Path.  Are you looking for a policy attribute?  If so, add -Class."
+                    Write-Error "'$thisAttribute' is not a valid attribute for $newPath.  Are you looking for a policy attribute?  If so, add -Class."
                     continue
                 }
                 elseif ( $response.Result -eq 102) {
