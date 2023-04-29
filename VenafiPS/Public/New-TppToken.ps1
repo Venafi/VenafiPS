@@ -20,8 +20,10 @@ function New-TppToken {
     A privilege restriction of none or read, use a value of $null.
     Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
     See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
-    Using a scope of {'all'='core'} will set all scopes except for admin.
+    Using a scope of {'all'='core'} will set all scopes except for codesignclient and admin.
+    Using a scope of {'all'='core-cs'} will set all scopes inclduing codesignclient except for admin.
     Using a scope of {'all'='admin'} will set all scopes including admin.
+    Using a scope of {'all'='admin-cs'} will set all scopes including admin.
     Usage of the 'all' scope is not suggested for production.
 
     .PARAMETER Credential
@@ -189,24 +191,35 @@ function New-TppToken {
         }
         else {
             # obtain new token
+            $scopeString = switch ($Scope.all) {
+                'core' {
+                    'agent:delete;certificate:approve,delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:delete,manage'
+                }
 
-            $scopeString = if ( $Scope.all -eq 'core' ) {
-                'agent:delete;certificate:approve,delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:delete,manage;codesignclient'
-            }
-            elseif ($Scope.all -eq 'admin' ) {
-                'admin:delete,viewlogs,recyclebin;agent:delete;certificate:delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:approve,admin,delete,manage;codesignclient'
-            }
-            else {
-                @(
-                    $scope.GetEnumerator() | ForEach-Object {
-                        if ($_.Value) {
-                            '{0}:{1}' -f $_.Key, $_.Value
+                'core-cs' {
+                    'agent:delete;certificate:approve,delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:delete,manage;codesignclient'
+                }
+
+                'admin' {
+                    'admin:delete,viewlogs,recyclebin;agent:delete;certificate:delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:approve,admin,delete,manage'
+                }
+
+                'admin-cs' {
+                    'admin:delete,viewlogs,recyclebin;agent:delete;certificate:delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:approve,admin,delete,manage;codesignclient'
+                }
+
+                Default {
+                    @(
+                        $scope.GetEnumerator() | ForEach-Object {
+                            if ($_.Value) {
+                                '{0}:{1}' -f $_.Key, $_.Value
+                            }
+                            else {
+                                $_.Key
+                            }
                         }
-                        else {
-                            $_.Key
-                        }
-                    }
-                ) -join ';'
+                    ) -join ';'
+                }
             }
 
             $params.Body = @{
