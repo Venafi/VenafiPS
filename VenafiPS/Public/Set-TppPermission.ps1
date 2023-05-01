@@ -95,6 +95,11 @@ Get-TppPermission -Path '\ved\policy\my folder' -IdentityId 'AD+mydomain.com:azs
 Permission a user/group based on permissions of an existing user/group
 
 .EXAMPLE
+Get-TppPermission -Path '\ved\policy\my folder' -IdentityId 'AD+mydomain.com:azsxdcfvgbhnjmlk09877654321' -Explicit | Set-TppPermission -IsWriteAllowed
+
+Add specific permission(s) for a specific user/group associated with an object
+
+.EXAMPLE
 Get-TppPermission -Path '\ved\policy\my folder' -Explicit | Set-TppPermission -IsAssociateAllowed -IsWriteAllowed
 
 Add specific permission(s) for all existing user/group associated with an object
