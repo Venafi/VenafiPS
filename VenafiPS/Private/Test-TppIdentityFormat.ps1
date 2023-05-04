@@ -29,54 +29,39 @@ function Test-TppIdentityFormat {
         [string] $ID,
 
         [Parameter()]
-        [ValidateSet('Name', 'Universal', 'Local')]
-        [string[]] $Format = @('Name', 'Universal')
+        [ValidateSet('Name', 'Universal', 'Domain', 'Local')]
+        [string] $Format
     )
 
     begin {
-
-        # https://docs.microsoft.com/en-US/troubleshoot/windows-server/identity/naming-conventions-for-computer-domain-site-ou#domain-names
-        $prefixRegex = '(?im)^(local|(AD|LDAP)\+[a-z0-9\-]{1,15}):'
-        $localPrefixRegex = '(?im)^local:'
+        $domainProviderRegex = '(?im)^(AD|LDAP)\+.+:'
+        $localProviderRegex = '(?im)^local:'
         $nameRegex = '.+$'
         $universalRegex = '\{?([0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12})\}?$'
-
-        $success = $false
     }
+
     process {
+        switch ( $Format ) {
 
-        foreach ($thisType in $Format) {
-            switch ($thisType) {
-
-                'Name' {
-                    $thisMatch = $ID -match ($prefixRegex + $nameRegex)
-                    if ( $thisMatch ) {
-                        Write-Verbose "$ID is a valid name identity"
-                    }
-                }
-
-                'Universal' {
-                    $thisMatch = $ID -match ($prefixRegex + $universalRegex)
-                    if ( $thisMatch ) {
-                        Write-Verbose "$ID is a valid universal identity"
-                    }
-                }
-
-                'Local' {
-                    $thisMatch = $ID -match ($localPrefixRegex + $nameRegex) -or $ID -match ($localPrefixRegex + $universalRegex)
-                    if ( $thisMatch ) {
-                        Write-Verbose "$ID is a valid local identity"
-                    }
-                }
+            'Name' {
+                $ID -match ($domainProviderRegex + $nameRegex) -or $ID -match ($localProviderRegex + $nameRegex)
             }
 
-            if ( $thisMatch ) {
-                $success = $true
+            'Universal' {
+                $ID -match ($domainProviderRegex + $universalRegex) -or $ID -match ($localProviderRegex + $universalRegex)
+            }
+
+            'Domain' {
+                $ID -match ($domainProviderRegex + $universalRegex) -or $ID -match ($domainProviderRegex + $nameRegex)
+            }
+
+            'Local' {
+                $ID -match ($localProviderRegex + $universalRegex) -or $ID -match ($localProviderRegex + $nameRegex)
+            }
+
+            default {
+                $ID -match ($domainProviderRegex + $universalRegex) -or $ID -match ($domainProviderRegex + $nameRegex) -or $ID -match ($localProviderRegex + $universalRegex) -or $ID -match ($localProviderRegex + $nameRegex)
             }
         }
-    }
-
-    end {
-        $success
     }
 }

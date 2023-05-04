@@ -87,7 +87,7 @@ function Set-TppPermission {
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateScript( {
-                if ( $_ | Test-TppIdentityFormat ) {
+                if ( $_ | Test-TppIdentityFormat -Format 'Universal' ) {
                     $true
                 }
                 else {
