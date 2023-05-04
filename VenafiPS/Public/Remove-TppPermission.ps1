@@ -65,7 +65,7 @@ function Remove-TppPermission {
 
         [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateScript( {
-                if ( $_ | Test-TppIdentityFormat ) {
+                if ( $_ | Test-TppIdentityFormat -Format 'Universal' ) {
                     $true
                 } else {
                     throw "'$_' is not a valid Prefixed Universal Id format.  See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-IdentityInformation.php."
