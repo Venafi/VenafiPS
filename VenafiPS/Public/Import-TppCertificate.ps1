@@ -147,12 +147,8 @@ function Import-TppCertificate {
             Method        = 'Post'
             UriLeaf       = 'certificates/import'
             Body          = @{
-                PolicyDN = $PolicyPath
+                PolicyDN = $PolicyPath | ConvertTo-TppFullPath
             }
-        }
-
-        if ( $params.Body.PolicyDN.ToLower() -notlike '\ved\*') {
-            $params.Body.PolicyDN = Join-Path -Path '\ved\policy' -ChildPath $PolicyPath
         }
 
         if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {

@@ -161,49 +161,52 @@ function Set-TppAttribute {
                 # cannot add 'null', only overwrite to blank out the value
                 $NoOverwrite = $false
                 $thisValue = $_.Value
+                $BypassValidation = $true
             }
             $customFieldError = $null
 
             $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisKey -or $_.Guid -eq $thisKey }
             if ( $customField ) {
-                switch ( $customField.Type.ToString() ) {
-                    '1' {
-                        # string
-                        if ( $customField.RegularExpression -and $thisValue -notmatch $customField.RegularExpression ) {
-                            $customFieldError = 'regular expression ''{0}'' validation failed' -f $customField.RegularExpression
+                if ( -not $BypassValidation ) {
+                    switch ( $customField.Type.ToString() ) {
+                        '1' {
+                            # string
+                            if ( $customField.RegularExpression -and $thisValue -notmatch $customField.RegularExpression ) {
+                                $customFieldError = 'regular expression ''{0}'' validation failed' -f $customField.RegularExpression
+                            }
                         }
-                    }
 
-                    '2' {
-                        # list
-                        if ( $thisValue -notin $customField.AllowedValues ) {
-                            $customFieldError = 'value is not in the list of allowed values ''{0}''' -f $customField.AllowedValues
+                        '2' {
+                            # list
+                            if ( $thisValue -notin $customField.AllowedValues ) {
+                                $customFieldError = 'value is not in the list of allowed values ''{0}''' -f $customField.AllowedValues
+                            }
                         }
-                    }
 
-                    '5' {
-                        # identity
-                        if ( -not ($thisValue | Test-TppIdentity -ExistOnly -VenafiSession $VenafiSession) ) {
-                            $customFieldError = 'value is not a valid identity'
+                        '5' {
+                            # identity
+                            if ( -not ($thisValue | Test-TppIdentity -ExistOnly -VenafiSession $VenafiSession) ) {
+                                $customFieldError = 'value is not a valid identity'
+                            }
                         }
-                    }
 
-                    '4' {
-                        # date/time
-                        try {
-                            [datetime] $thisValue
+                        '4' {
+                            # date/time
+                            try {
+                                [datetime] $thisValue
+                            }
+                            catch {
+                                $customFieldError = 'value is not a valid date'
+                            }
                         }
-                        catch {
-                            $customFieldError = 'value is not a valid date'
-                        }
-                    }
 
-                    Default {
-                        $customFieldError = 'unknown custom field type'
+                        Default {
+                            $customFieldError = 'unknown custom field type'
+                        }
                     }
                 }
 
-                if ( $customFieldError -and -not $BypassValidation ) {
+                if ( $customFieldError ) {
                     Write-Error ('The value ''{0}'' for field ''{1}'' encountered an error, {2}' -f $thisValue, $thisKey, $customFieldError)
                 }
                 else {
