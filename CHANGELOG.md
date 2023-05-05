@@ -1,3 +1,14 @@
+## 5.5.0
+- Add `Set-TppAttribute -NoOverwrite` to allow additions to an attribute list.  [#189](https://github.com/Venafi/VenafiPS/issues/189)
+- Add `Get-TppAttribute -NoLookup` for the remote cases where a built-in attribute and custom field have the same name.  The default will be to look for a custom field.  Use `-NoLookup` to override.  [#192](https://github.com/Venafi/VenafiPS/issues/192)
+- Add ability to export the chain on VaaS with `Export-VenafiCertificate`
+- Add ability to export a certificate to a file on VaaS with `Export-VenafiCertificate`
+- Fix certain characters in friendly name causing `Test-TppIdentityFormat` to fail, [#205](https://github.com/Venafi/VenafiPS/issues/205)
+- Add ability to set specific permission with `Set-TppPermission` and not just an entire permissions object, [#197](https://github.com/Venafi/VenafiPS/issues/197)
+- Enhance pipeline support for `Set-TppPermission`
+- Fix failure removing a custom field value with `Set-TppAttribute`, [#199](https://github.com/Venafi/VenafiPS/issues/199)
+- Fix `ConvertTo-TppFullPath` appending '\ved\policy' incorrectly on non-Windows environments
+
 ## 5.4.1
 - Add support for JWT token authentication in `New-VenafiSession` and `New-TppToken`
 
@@ -489,6 +500,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

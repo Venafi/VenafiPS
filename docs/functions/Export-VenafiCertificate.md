@@ -5,17 +5,16 @@ Get certificate data
 
 ## SYNTAX
 
-### All (Default)
+### VaasChain
 ```
-Export-VenafiCertificate -CertificateId <String> -Format <String> [-VenafiSession <PSObject>]
- [<CommonParameters>]
+Export-VenafiCertificate -CertificateId <String> -VaasFormat <String> [-OutPath <String>] [-IncludeChain]
+ [-RootFirst] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
-### Tpp
+### Vaas
 ```
-Export-VenafiCertificate -CertificateId <String> -Format <String> [-OutPath <String>] [-IncludeChain]
- [-FriendlyName <String>] [-IncludePrivateKey] [-PrivateKeyPassword <SecureString>] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+Export-VenafiCertificate -CertificateId <String> -VaasFormat <String> [-OutPath <String>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### TppJks
@@ -25,6 +24,12 @@ Export-VenafiCertificate -CertificateId <String> [-IncludeChain] -FriendlyName <
  [<CommonParameters>]
 ```
 
+### Tpp
+```
+Export-VenafiCertificate -CertificateId <String> -TppFormat <String> [-OutPath <String>] [-IncludeChain]
+ [-FriendlyName <String>] [-PrivateKeyPassword <SecureString>] [-VenafiSession <PSObject>] [<CommonParameters>]
+```
+
 ## DESCRIPTION
 Get certificate data from either Venafi as a Service or TPP.
 
@@ -32,32 +37,38 @@ Get certificate data from either Venafi as a Service or TPP.
 
 ### EXAMPLE 1
 ```
-$certId | Export-VenafiCertificate -Format PEM
+$certId | Export-VenafiCertificate -VaasFormat PEM
 Get certificate data from Venafi as a Service
 ```
 
 ### EXAMPLE 2
 ```
-$cert | Export-VenafiCertificate -Format 'PKCS #7' -OutPath 'c:\temp'
-Get certificate data and save to a file, TPP
+$cert | Export-VenafiCertificate -TppFormat 'PKCS #7' -OutPath 'c:\temp'
+Get certificate data and save to a file
 ```
 
 ### EXAMPLE 3
 ```
-$cert | Export-VenafiCertificate -Format 'PKCS #7' -IncludeChain
+$cert | Export-VenafiCertificate -TppFormat 'PKCS #7' -IncludeChain
 Get one or more certificates with the certificate chain included, TPP
 ```
 
 ### EXAMPLE 4
 ```
-$cert | Export-VenafiCertificate -Format 'PKCS #12' -PrivateKeyPassword $cred.password
-Get one or more certificates with private key included, TPP
+$cert | Export-VenafiCertificate -VaasFormat PEM -IncludeChain -RootFirst
+Get one or more certificates with the certificate chain included and the root first in the chain, VaaS
 ```
 
 ### EXAMPLE 5
 ```
+$cert | Export-VenafiCertificate -TppFormat 'PKCS #12' -PrivateKeyPassword $cred.password
+Get one or more certificates with private key included, TPP
+```
+
+### EXAMPLE 6
+```
 $cert | Export-VenafiCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
-Get certificates in JKS format, TPP
+Get certificates in JKS format, TPP.  -TppFormat not needed since we know its JKS via -KeystorePassword.
 ```
 
 ## PARAMETERS
@@ -79,14 +90,27 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -Format
-Certificate format.
-For Venafi as a Service, you can provide either PEM, DER, or JKS.
-For TPP, you can provide Base64, Base64 (PKCS#8), DER, JKS, PKCS #7, or PKCS #12.
+### -TppFormat
+Certificate format, either Base64, Base64 (PKCS#8), DER, PKCS #7, or PKCS #12.
 
 ```yaml
 Type: String
-Parameter Sets: All, Tpp
+Parameter Sets: Tpp
+Aliases: Format
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -VaasFormat
+Certificate format, either DER or PEM
+
+```yaml
+Type: String
+Parameter Sets: VaasChain, Vaas
 Aliases:
 
 Required: True
@@ -98,12 +122,11 @@ Accept wildcard characters: False
 
 ### -OutPath
 Folder path to save the certificate to. 
-The name of the file will be determined automatically. 
-TPP Only...for now.
+The name of the file will be determined automatically.
 
 ```yaml
 Type: String
-Parameter Sets: Tpp
+Parameter Sets: VaasChain, Vaas, Tpp
 Aliases:
 
 Required: False
@@ -115,12 +138,38 @@ Accept wildcard characters: False
 
 ### -IncludeChain
 Include the certificate chain with the exported certificate. 
-Not supported with DER format. 
-TPP Only.
+Not supported with DER format.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Tpp, TppJks
+Parameter Sets: VaasChain
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: TppJks, Tpp
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -RootFirst
+Use with -IncludeChain for VaaS to return the root first instead of the end entity first
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: VaasChain
 Aliases:
 
 Required: False
@@ -133,20 +182,8 @@ Accept wildcard characters: False
 ### -FriendlyName
 Label or alias to use. 
 Permitted with Base64 and PKCS #12 formats. 
-Required when Format is JKS. 
+Required when exporting JKS. 
 TPP Only.
-
-```yaml
-Type: String
-Parameter Sets: Tpp
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
 
 ```yaml
 Type: String
@@ -160,19 +197,14 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IncludePrivateKey
-DEPRECATED.
-Provide a value for -PrivateKeyPassword. 
-TPP only.
-
 ```yaml
-Type: SwitchParameter
+Type: String
 Parameter Sets: Tpp
 Aliases:
 
 Required: False
 Position: Named
-Default value: False
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -191,7 +223,7 @@ You must adhere to the following rules:
 
 ```yaml
 Type: SecureString
-Parameter Sets: Tpp, TppJks
+Parameter Sets: TppJks, Tpp
 Aliases: SecurePassword
 
 Required: False
