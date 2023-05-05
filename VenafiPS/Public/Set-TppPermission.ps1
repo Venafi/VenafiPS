@@ -1,12 +1,13 @@
 ﻿<#
 .SYNOPSIS
-Set permissions for TPP objects
+Set explicit permissions for TPP objects
 
 .DESCRIPTION
-Adds or modifies permissions on TPP objects
+Adds, modifies, or removes explicit permissions on TPP objects.
+You can provide a complete permission object or modify individual permissions.
 
 .PARAMETER Path
-Path to an object.  Can pipe output from many other functions.
+Path to an object
 
 .PARAMETER Guid
 Guid representing a unique object
@@ -15,10 +16,56 @@ Guid representing a unique object
 The id that represents the user or group.  You can use Find-TppIdentity or Get-TppPermission to get the id.
 
 .PARAMETER Permission
-TppPermission object.  You can create a new object or get existing object from Get-TppPermission.
+TppPermission object to set.
+You can create a new object and modify it or get an existing object with Get-TppPermission.
 
 .PARAMETER Force
-Overwrite an existing permission if one exists
+When setting a TppPermission object with -Permission and one already exists, use this to overwrite
+
+.PARAMETER IsAssociateAllowed
+Associate or disassociate an Application and Device object with a certificate.
+Push the certificate and private key to the Application object.
+Retry the certificate installation.
+
+.PARAMETER IsCreateAllowed
+The caller can create subordinate objects, such as Devices and Applications. Create permission grants implicit View permission.
+
+.PARAMETER IsDeleteAllowed
+The caller can delete objects.
+
+.PARAMETER IsManagePermissionsAllowed
+The caller can grant other user or group Identities permission to the current object or subordinate objects.
+
+.PARAMETER IsPolicyWriteAllowed
+The caller can modify policy values on folders.
+Also requires View permission.
+Manage Policy permission grants implicit Read permission and Write permission.
+
+.PARAMETER IsPrivateKeyReadAllowed
+The caller can download the private key for Policy and Certificate objects.
+
+.PARAMETER IsPrivateKeyWriteAllowed
+The caller can upload the private key for Policy, Certificate, and Private Key Credential objects to Trust Protection Platform.
+
+.PARAMETER IsReadAllowed
+The caller can view and read object data from the Policy tree.
+However, to view subordinate objects, View permission or higher permissions is also required.
+
+.PARAMETER IsRenameAllowed
+The caller can rename and move Policy tree objects.
+Move capability also requires Rename permission to the object and Create permission to the target folder.
+
+.PARAMETER IsRevokeAllowed
+The caller can invalidate a certificate.
+Also requires Write permission to the certificate.
+
+.PARAMETER IsViewAllowed
+The caller can confirm that the object is present in the Policy tree.
+
+.PARAMETER IsWriteAllowed
+The caller can edit object attributes.
+To move objects in the tree, the caller must have Write permission to the objects and Create permission to the target folder.
+Write permission grants implicit Read permission.
 
 .PARAMETER VenafiSession
 Authentication for the function.
@@ -27,7 +74,7 @@ A TPP token or VaaS key can also provided.
 If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
 .INPUTS
-Path, Guid, IdentityId
+Guid, IdentityId, Permission
 
 .OUTPUTS
 None
@@ -41,6 +88,26 @@ Permission a user/group on an object specified by guid
 Set-TppPermission -Path '\ved\policy\my folder' -IdentityId 'AD+mydomain.com:azsxdcfvgbhnjmlk09877654321' -Permission $TppPermObject
 
 Permission a user/group on an object specified by path
+
+.EXAMPLE
+Get-TppPermission -Path '\ved\policy\my folder' -IdentityId 'AD+mydomain.com:azsxdcfvgbhnjmlk09877654321' -Explicit | Set-TppPermission -IdentityId $newId
+
+Permission a user/group based on permissions of an existing user/group
+
+.EXAMPLE
+Get-TppPermission -Path '\ved\policy\my folder' -IdentityId 'AD+mydomain.com:azsxdcfvgbhnjmlk09877654321' -Explicit | Set-TppPermission -IsWriteAllowed
+
+Add specific permission(s) for a specific user/group associated with an object
+
+.EXAMPLE
+Get-TppPermission -Path '\ved\policy\my folder' -Explicit | Set-TppPermission -IsAssociateAllowed -IsWriteAllowed
+
+Add specific permission(s) for all existing user/group associated with an object
+
+.EXAMPLE
+Get-TppPermission -Path '\ved\policy\my folder' -Explicit | Set-TppPermission -IsAssociateAllowed:$false
+
+Remove specific permission(s) for all existing user/group associated with an object
 
 .EXAMPLE
 $id = Find-TppIdentity -Name 'brownstein' | Select-Object -ExpandProperty Id
@@ -60,14 +127,18 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Permis
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Permissions-object-guid-principal.php
 
+.LINK
+https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-Permissions-Effective.php
+
 .NOTES
 Confirmation impact is set to Medium, set ConfirmPreference accordingly.
 #>
 function Set-TppPermission {
 
-    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'ByGuid')]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'Medium', DefaultParameterSetName = 'PermissionObjectGuid')]
     param (
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName = 'ByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'PermissionObjectPath')]
+        [Parameter(Mandatory, ParameterSetName = 'PermissionPath')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -78,12 +149,13 @@ function Set-TppPermission {
                 }
             })]
         [Alias('DN')]
-        [String[]] $Path,
+        [String] $Path,
 
-        [Parameter(Mandatory, ParameterSetName = 'ByGuid', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'PermissionObjectGuid', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'PermissionGuid', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [Alias('ObjectGuid')]
-        [guid[]] $Guid,
+        [guid] $Guid,
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateScript( {
@@ -95,10 +167,60 @@ function Set-TppPermission {
                 }
             })]
         [Alias('PrefixedUniversalId', 'ID')]
-        [string[]] $IdentityId,
+        [string] $IdentityId,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'PermissionObjectPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'PermissionObjectGuid', ValueFromPipelineByPropertyName)]
+        [Alias('ExplicitPermissions')]
         [TppPermission] $Permission,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsAssociateAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsCreateAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsDeleteAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsManagePermissionsAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsPolicyWriteAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsPrivateKeyReadAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsPrivateKeyWriteAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsReadAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsRenameAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsRevokeAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsViewAllowed,
+
+        [Parameter(ParameterSetName = 'PermissionPath')]
+        [Parameter(ParameterSetName = 'PermissionGuid')]
+        [switch] $IsWriteAllowed,
 
         [Parameter()]
         [switch] $Force,
@@ -110,85 +232,99 @@ function Set-TppPermission {
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
+    }
+
+    process {
+        Write-Verbose "Parameterset = $($PSCmdlet.ParameterSetName)"
+
         $params = @{
             VenafiSession = $VenafiSession
             Method        = 'Post'
             UriLeaf       = 'placeholder'
-            Body          = $Permission.ToHashtable()
+            Body          = $null
             FullResponse  = $true
         }
-    }
 
-    process {
-
-        if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
-            $inputObject = $Path
+        if ( $Path ) {
+            $thisGuid = $Path | ConvertTo-TppGuid -VenafiSession $VenafiSession
         }
         else {
-            $inputObject = $Guid
+            $thisGuid = $Guid
+        }
+        $params.UriLeaf = "Permissions/Object/{$thisGuid}"
+
+        if ( $IdentityId.StartsWith('local:') ) {
+            # format of local is local:universalId
+            $type, $id = $IdentityId.Split(':')
+            $params.UriLeaf += "/$type/$id"
+        }
+        else {
+            # external source, eg. AD, LDAP
+            # format is type+name:universalId
+            $type, $name, $id = $IdentityId -Split { $_ -in '+', ':' }
+            $params.UriLeaf += "/$type/$name/$id"
         }
 
-        foreach ($thisInputObject in $inputObject) {
-            if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
-                $thisGuid = $thisInputObject | ConvertTo-TppGuid -VenafiSession $VenafiSession
+        if ( $PSCmdlet.ParameterSetName -like 'PermissionObject*' ) {
+            $params.Body = $Permission.ToHashtable()
+        }
+        else {
+            Write-Verbose "Getting existing permissions for $IdentityId"
+            $thisPerm = $thisGuid | Get-TppPermission -IdentityId $IdentityId -Explicit -VenafiSession $VenafiSession | Select-Object -ExpandProperty ExplicitPermissions
+
+            if ( $thisPerm ) {
+                Write-Verbose 'Existing identity found will be updated'
+                $params.Method = 'Put'
             }
             else {
-                $thisGuid = $thisInputObject
+                Write-Verbose 'Existing identity not found.  Only the permissions switches set will be true, all others will be false.'
+                $thisPerm = [TppPermission]::new()
             }
 
-            $params.UriLeaf = "Permissions/Object/{$thisGuid}"
-
-            foreach ( $thisId in $IdentityId ) {
-
-                if ( $thisId.StartsWith('local:') ) {
-                    # format of local is local:universalId
-                    $type, $id = $thisId.Split(':')
-                    $params.UriLeaf += "/$type/$id"
+            foreach ($k in $PSBoundParameters.Keys) {
+                if ($k -in 'IsAssociateAllowed', 'IsCreateAllowed', 'IsDeleteAllowed', 'IsManagePermissionsAllowed', 'IsPolicyWriteAllowed', 'IsPrivateKeyReadAllowed', 'IsPrivateKeyWriteAllowed', 'IsReadAllowed', 'IsRenameAllowed', 'IsRevokeAllowed', 'IsViewAllowed', 'IsWriteAllowed') {
+                    $thisPerm.$k = $PSBoundParameters[$k]
                 }
-                else {
-                    # external source, eg. AD, LDAP
-                    # format is type+name:universalId
-                    $type, $name, $id = $thisId -Split { $_ -in '+', ':' }
-                    $params.UriLeaf += "/$type/$name/$id"
-                }
+            }
 
-                if ( $PSCmdlet.ShouldProcess($thisInputObject, "Set permission for $thisId") ) {
-                    try {
+            $params.Body = $thisPerm.ToHashtable()
+        }
 
-                        $response = Invoke-VenafiRestMethod @params
-                        switch ( $response.StatusCode ) {
+        if ( $PSCmdlet.ShouldProcess($Path, "Set permission for $IdentityId") ) {
+            try {
 
-                            201 {
-                                # success
-                            }
+                $response = Invoke-VenafiRestMethod @params
+                switch ( $response.StatusCode ) {
 
-                            409 {
-                                # user/group already has permissions defined on this object
-                                # need to use a put method instead
-                                if ( $Force.IsPresent ) {
+                    { $_ -in 200, 201 } {
+                        # success
+                    }
 
-                                    Write-Verbose "Existing user/group found and Force option provided, updating existing permissions"
-                                    $params.Method = 'Put'
-                                    $response = Invoke-VenafiRestMethod @params
-                                    if ( $response.StatusCode -ne 200 ) {
-                                        Write-Error ('Failed to update permission with error {0}' -f $response.Error)
-                                    }
-                                }
-                                else {
-                                    # force option not provided, let the user know what's up
-                                    Write-Error ('Permission for {0} already exists.  To override, provide the -Force option.' -f $thisId)
-                                }
-                            }
+                    409 {
+                        # user/group already has permissions defined on this object
+                        # need to use a put method instead
+                        if ( $Force ) {
 
-                            default {
-                                Write-Error ('Failed to create permission with error {0}, {1}' -f [int]$response.StatusCode, $response.Error)
+                            Write-Verbose "Existing user/group found and Force option provided, updating existing permissions"
+                            $params.Method = 'Put'
+                            $response = Invoke-VenafiRestMethod @params
+                            if ( $response.StatusCode -ne 200 ) {
+                                Write-Error ('Failed to update permission with error {0}' -f $response.Error)
                             }
                         }
+                        else {
+                            # force option not provided, let the user know what's up
+                            Write-Error ('Permission for {0} already exists.  To override, provide the -Force option.' -f $IdentityId)
+                        }
                     }
-                    catch {
-                        Write-Error ("Failed to set permissions on object $thisInputObject, user/group $thisId.  $_")
+
+                    default {
+                        Write-Error ('Failed to create permission with error {0}, {1}' -f [int]$response.StatusCode, $response.Error)
                     }
                 }
+            }
+            catch {
+                Write-Error ("Failed to set permissions on $Path, user/group $IdentityId.  $_")
             }
         }
     }
