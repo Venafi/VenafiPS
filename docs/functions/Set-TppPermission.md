@@ -1,24 +1,41 @@
 # Set-TppPermission
 
 ## SYNOPSIS
-Set permissions for TPP objects
+Set explicit permissions for TPP objects
 
 ## SYNTAX
 
-### ByGuid (Default)
+### PermissionObjectGuid (Default)
 ```
-Set-TppPermission -Guid <Guid[]> -IdentityId <String[]> -Permission <TppPermission> [-Force]
+Set-TppPermission -Guid <Guid> -IdentityId <String> -Permission <TppPermission> [-Force]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
-### ByPath
+### PermissionPath
 ```
-Set-TppPermission -Path <String[]> -IdentityId <String[]> -Permission <TppPermission> [-Force]
+Set-TppPermission -Path <String> -IdentityId <String> [-IsAssociateAllowed] [-IsCreateAllowed]
+ [-IsDeleteAllowed] [-IsManagePermissionsAllowed] [-IsPolicyWriteAllowed] [-IsPrivateKeyReadAllowed]
+ [-IsPrivateKeyWriteAllowed] [-IsReadAllowed] [-IsRenameAllowed] [-IsRevokeAllowed] [-IsViewAllowed]
+ [-IsWriteAllowed] [-Force] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### PermissionObjectPath
+```
+Set-TppPermission -Path <String> -IdentityId <String> -Permission <TppPermission> [-Force]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### PermissionGuid
+```
+Set-TppPermission -Guid <Guid> -IdentityId <String> [-IsAssociateAllowed] [-IsCreateAllowed] [-IsDeleteAllowed]
+ [-IsManagePermissionsAllowed] [-IsPolicyWriteAllowed] [-IsPrivateKeyReadAllowed] [-IsPrivateKeyWriteAllowed]
+ [-IsReadAllowed] [-IsRenameAllowed] [-IsRevokeAllowed] [-IsViewAllowed] [-IsWriteAllowed] [-Force]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Adds or modifies permissions on TPP objects
+Adds, modifies, or removes explicit permissions on TPP objects.
+You can provide a complete permission object or modify individual permissions.
 
 ## EXAMPLES
 
@@ -38,6 +55,34 @@ Permission a user/group on an object specified by path
 
 ### EXAMPLE 3
 ```
+Get-TppPermission -Path '\ved\policy\my folder' -IdentityId 'AD+mydomain.com:azsxdcfvgbhnjmlk09877654321' -Explicit | Set-TppPermission -IdentityId $newId
+```
+
+Permission a user/group based on permissions of an existing user/group
+
+### EXAMPLE 4
+```
+Get-TppPermission -Path '\ved\policy\my folder' -IdentityId 'AD+mydomain.com:azsxdcfvgbhnjmlk09877654321' -Explicit | Set-TppPermission -IsWriteAllowed
+```
+
+Add specific permission(s) for a specific user/group associated with an object
+
+### EXAMPLE 5
+```
+Get-TppPermission -Path '\ved\policy\my folder' -Explicit | Set-TppPermission -IsAssociateAllowed -IsWriteAllowed
+```
+
+Add specific permission(s) for all existing user/group associated with an object
+
+### EXAMPLE 6
+```
+Get-TppPermission -Path '\ved\policy\my folder' -Explicit | Set-TppPermission -IsAssociateAllowed:$false
+```
+
+Remove specific permission(s) for all existing user/group associated with an object
+
+### EXAMPLE 7
+```
 $id = Find-TppIdentity -Name 'brownstein' | Select-Object -ExpandProperty Id
 Find-TppObject -Path '\VED' -Recursive | Get-TppPermission -IdentityId $id | Set-TppPermission -Permission $TppPermObject -Force
 ```
@@ -48,18 +93,17 @@ Note the use of -Force to overwrite existing permissions.
 ## PARAMETERS
 
 ### -Path
-Path to an object. 
-Can pipe output from many other functions.
+Path to an object
 
 ```yaml
-Type: String[]
-Parameter Sets: ByPath
+Type: String
+Parameter Sets: PermissionPath, PermissionObjectPath
 Aliases: DN
 
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -67,8 +111,8 @@ Accept wildcard characters: False
 Guid representing a unique object
 
 ```yaml
-Type: Guid[]
-Parameter Sets: ByGuid
+Type: Guid
+Parameter Sets: PermissionObjectGuid, PermissionGuid
 Aliases: ObjectGuid
 
 Required: True
@@ -83,7 +127,7 @@ The id that represents the user or group.
 You can use Find-TppIdentity or Get-TppPermission to get the id.
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: (All)
 Aliases: PrefixedUniversalId, ID
 
@@ -95,23 +139,213 @@ Accept wildcard characters: False
 ```
 
 ### -Permission
-TppPermission object. 
-You can create a new object or get existing object from Get-TppPermission.
+TppPermission object to set.
+You can create a new object and modify it or get an existing object with Get-TppPermission.
 
 ```yaml
 Type: TppPermission
-Parameter Sets: (All)
-Aliases:
+Parameter Sets: PermissionObjectGuid, PermissionObjectPath
+Aliases: ExplicitPermissions
 
 Required: True
 Position: Named
 Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -IsAssociateAllowed
+Associate or disassociate an Application and Device object with a certificate.
+Push the certificate and private key to the Application object.
+Retry the certificate installation.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsCreateAllowed
+The caller can create subordinate objects, such as Devices and Applications.
+Create permission grants implicit View permission.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsDeleteAllowed
+The caller can delete objects.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsManagePermissionsAllowed
+The caller can grant other user or group Identities permission to the current object or subordinate objects.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsPolicyWriteAllowed
+The caller can modify policy values on folders.
+Also requires View permission.
+Manage Policy permission grants implicit Read permission and Write permission.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsPrivateKeyReadAllowed
+The caller can download the private key for Policy and Certificate objects.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsPrivateKeyWriteAllowed
+The caller can upload the private key for Policy, Certificate, and Private Key Credential objects to Trust Protection Platform.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsReadAllowed
+The caller can view and read object data from the Policy tree.
+However, to view subordinate objects, View permission or higher permissions is also required.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsRenameAllowed
+The caller can rename and move Policy tree objects.
+Move capability also requires Rename permission to the object and Create permission to the target folder.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsRevokeAllowed
+The caller can invalidate a certificate.
+Also requires Write permission to the certificate.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsViewAllowed
+The caller can confirm that the object is present in the Policy tree.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsWriteAllowed
+The caller can edit object attributes.
+To move objects in the tree, the caller must have Write permission to the objects and Create permission to the target folder.
+Write permission grants implicit Read permission.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PermissionPath, PermissionGuid
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -Force
-Overwrite an existing permission if one exists
+When setting a TppPermission object with -Permission and one already exists, use this to overwrite
 
 ```yaml
 Type: SwitchParameter
@@ -179,7 +413,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Path, Guid, IdentityId
+### Guid, IdentityId, Permission
 ## OUTPUTS
 
 ### None
@@ -195,4 +429,6 @@ Confirmation impact is set to Medium, set ConfirmPreference accordingly.
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Permissions-object-guid-principal.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Permissions-object-guid-principal.php)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Permissions-object-guid-principal.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Permissions-object-guid-principal.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-Permissions-Effective.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-Permissions-Effective.php)
 

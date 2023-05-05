@@ -7,13 +7,14 @@ Get object attributes as well as policy attributes
 
 ### Attribute (Default)
 ```
-Get-TppAttribute -Path <String> -Attribute <String[]> [-Class <String>] [-VenafiSession <PSObject>]
+Get-TppAttribute -Path <String> -Attribute <String[]> [-Class <String>] [-NoLookup] [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-TppAttribute -Path <String> [-Class <String>] [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-TppAttribute -Path <String> [-Class <String>] [-All] [-NoLookup] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -76,6 +77,20 @@ You can specify either the guid or custom field label name.
 
 ### EXAMPLE 4
 ```
+Get-TppAttribute -Path '\VED\Policy\mydevice\myapp' -Attribute 'Certificate' -NoLookup
+```
+
+Name                        : myapp
+Path                        : \VED\Policy\mydevice\myapp
+TypeName                    : Adaptable App
+Guid                        : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+Attribute                   : {@{Name=Certificate; PolicyPath=; Value=\VED\Policy\mycert; Locked=False; Overridden=False}}
+Certificate                 : \VED\Policy\mycert
+
+Retrieve an attribute value without custom value lookup
+
+### EXAMPLE 5
+```
 Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -All
 ```
 
@@ -97,7 +112,7 @@ Driver Name                           : appx509certificate
 
 Retrieve all attributes applicable to this object
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 Get-TppAttribute -Path 'Certificates' -Class 'X509 Certificate' -Attribute 'State'
 ```
@@ -113,7 +128,7 @@ State     : UT
 Retrieve a policy attribute value for the specified policy folder and class.
 \ved\policy will be prepended to the path.
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 Get-TppAttribute -Path '\VED\Policy\certificates' -Class 'X509 Certificate' -All
 ```
@@ -199,6 +214,25 @@ Parameter Sets: All
 Aliases:
 
 Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -NoLookup
+Default functionality is to perform lookup of attributes names to see if they are custom fields or not.
+If they are, pass along the guid instead of name required by the api for custom fields.
+To override this behavior and use the attribute name as is, add -NoLookup.
+Useful if on the off chance you have a custom field with the same name as a built-in attribute.
+Can also be used with -All and the output will contain guids instead of looked up names.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
 Position: Named
 Default value: False
 Accept pipeline input: False
