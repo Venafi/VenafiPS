@@ -183,7 +183,7 @@ function New-TppPolicy {
             }
         } else {
             foreach ($thisName in $Name) {
-                $PSBoundParameters['Path'] = Join-Path -Path $newPath -ChildPath $thisName
+                $PSBoundParameters['Path'] = "$newPath\$thisName"
                 $null = $PSBoundParameters.Remove('Name')
 
                 New-TppPolicy @PSBoundParameters
