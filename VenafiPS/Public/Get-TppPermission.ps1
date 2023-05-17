@@ -23,11 +23,6 @@ You can use Find-TppIdentity to search for identities.
 .PARAMETER Explicit
 Get explicit (direct) and implicit (inherited) permissions instead of effective.
 
-.PARAMETER Attribute
-Retrieve identity attribute values for the users and groups.
-Attributes include Group Membership, Name, Internet Email Address, Given Name, Surname.
-This parameter will be deprecated in a future release.
-
 .PARAMETER VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -153,10 +148,6 @@ function Get-TppPermission {
         [Parameter()]
         [Alias('ExplicitImplicit')]
         [switch] $Explicit,
-
-        # [Parameter()]
-        # [ValidateSet('Group Membership', 'Name', 'Internet Email Address', 'Given Name', 'Surname')]
-        # [string[]] $Attribute,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
