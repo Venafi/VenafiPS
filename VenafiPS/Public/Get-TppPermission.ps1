@@ -46,7 +46,7 @@ PSCustomObject with the following properties:
     ImplicitPermissions (if Explicit switch is used)
 
 .EXAMPLE
-Get-TppPermission -Path '\VED\Policy\My folder'
+Get-TppPermission -Path '\VED\Policy\barron'
 
 Path                 : \ved\policy\barron
 Guid                 : 3ba630d8-acf0-4b52-9824-df549cb33b82
@@ -65,7 +65,7 @@ Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission
 Get all assigned effective permissions for users/groups on a specific policy folder by piping the object
 
 .EXAMPLE
-Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission -Explicit
+Get-TppObject -Path '\VED\Policy\barron' | Get-TppPermission -Explicit
 
 Path                : \ved\policy\barron
 Guid                : 3ba630d8-acf0-4b52-9824-df549cb33b82
