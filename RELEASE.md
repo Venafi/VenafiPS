@@ -1,9 +1,2 @@
-- Add `Set-TppAttribute -NoOverwrite` to allow additions to an attribute list.  [#189](https://github.com/Venafi/VenafiPS/issues/189)
-- Add `Get-TppAttribute -NoLookup` for the remote cases where a built-in attribute and custom field have the same name.  The default will be to look for a custom field.  Use `-NoLookup` to override.  [#192](https://github.com/Venafi/VenafiPS/issues/192)
-- Add ability to export the chain on VaaS with `Export-VenafiCertificate`
-- Add ability to export a certificate to a file on VaaS with `Export-VenafiCertificate`
-- Fix certain characters in friendly name causing `Test-TppIdentityFormat` to fail, [#205](https://github.com/Venafi/VenafiPS/issues/205)
-- Add ability to set specific permission with `Set-TppPermission` and not just an entire permissions object, [#197](https://github.com/Venafi/VenafiPS/issues/197)
-- Enhance pipeline support for `Set-TppPermission`
-- Fix failure removing a custom field value with `Set-TppAttribute`, [#199](https://github.com/Venafi/VenafiPS/issues/199)
-- Fix `ConvertTo-TppFullPath` appending '\ved\policy' incorrectly on non-Windows environments
+- Fix error with `Get-TppPermission` when an identity which had been permissioned has had its account deleted.  Explicit permissions will be returned, but the identity path and name will be null as we can no longer look it up from the provider.
+- `Get-TppPermission -Attribute` has been deprecated.  Identity path and name are included in the return object.  For other attributes, use `Get-TppIdentityAttribute`.
