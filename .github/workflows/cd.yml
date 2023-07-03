@@ -8,7 +8,7 @@ jobs:
     env:
       module_name: VenafiPS
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
         with:
           token: ${{ secrets.CD_TOKEN }}
 
@@ -117,7 +117,7 @@ jobs:
           } | ConvertTo-Json | Out-File -FilePath ${{ github.workspace }}/hash.json
 
       - name: Upload hash.json artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: hash.json
           path: ${{ github.workspace }}/hash.json

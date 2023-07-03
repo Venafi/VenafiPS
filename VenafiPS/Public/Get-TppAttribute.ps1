@@ -31,6 +31,13 @@ function Get-TppAttribute {
     This will perform 3 steps, get the object type, enumerate the attributes for the object type, and get all the values.
     Note, expect this to take longer than usual given the number of api calls.
 
+    .PARAMETER NoLookup
+    Default functionality is to perform lookup of attributes names to see if they are custom fields or not.
+    If they are, pass along the guid instead of name required by the api for custom fields.
+    To override this behavior and use the attribute name as is, add -NoLookup.
+    Useful if on the off chance you have a custom field with the same name as a built-in attribute.
+    Can also be used with -All and the output will contain guids instead of looked up names.
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -82,6 +89,18 @@ function Get-TppAttribute {
 
     Retrieve a custom field attribute.
     You can specify either the guid or custom field label name.
+
+    .EXAMPLE
+    Get-TppAttribute -Path '\VED\Policy\mydevice\myapp' -Attribute 'Certificate' -NoLookup
+
+    Name                        : myapp
+    Path                        : \VED\Policy\mydevice\myapp
+    TypeName                    : Adaptable App
+    Guid                        : b7a7221b-e038-41d9-9d49-d7f45c1ca128
+    Attribute                   : {@{Name=Certificate; PolicyPath=; Value=\VED\Policy\mycert; Locked=False; Overridden=False}}
+    Certificate                 : \VED\Policy\mycert
+
+    Retrieve an attribute value without custom value lookup
 
     .EXAMPLE
     Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -All
@@ -172,6 +191,9 @@ function Get-TppAttribute {
         [switch] $All,
 
         [Parameter()]
+        [switch] $NoLookup,
+
+        [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
     )
 
@@ -206,7 +228,7 @@ function Get-TppAttribute {
         $thisObject = Get-TppObject -Path $newPath -VenafiSession $VenafiSession
 
         if ( $PSBoundParameters.ContainsKey('Class') -and $thisObject.TypeName -ne 'Policy' ) {
-            Write-Error ('You are attempting to retrieve policy attributes, but {0} is not a policy path' -f $Path)
+            Write-Error ('You are attempting to retrieve policy attributes, but {0} is not a policy path' -f $newPath)
             continue
         }
 
@@ -234,24 +256,29 @@ function Get-TppAttribute {
 
             Write-Verbose "Processing attribute $thisAttribute"
 
-            $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+            $params.Body.AttributeName = $thisAttribute
+            $customField = $null
 
-            if ( $customField ) {
-                $params.Body.AttributeName = $customField.Guid
-            } else {
-                $params.Body.AttributeName = $thisAttribute
+            if ( -not $NoLookup ) {
+                $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+
+                if ( $customField ) {
+                    $params.Body.AttributeName = $customField.Guid
+                }
             }
 
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Error ) {
                 if ( $response.Result -in 601, 112) {
-                    Write-Error "'$thisAttribute' is not a valid attribute for $Path.  Are you looking for a policy attribute?  If so, add -Class."
+                    Write-Error "'$thisAttribute' is not a valid attribute for $newPath.  Are you looking for a policy attribute?  If so, add -Class."
                     continue
-                } elseif ( $response.Result -eq 102) {
+                }
+                elseif ( $response.Result -eq 102) {
                     # attribute is valid, but value not set
                     # we're ok with this one
-                } else {
+                }
+                else {
                     Write-Error $response.Error
                     continue
                 }
@@ -292,7 +319,8 @@ function Get-TppAttribute {
                     $return | Add-Member @{ $customField.Label = $valueOut }
                 }
 
-            } else {
+            }
+            else {
 
                 if ( $valueOut ) {
                     $return | Add-Member @{ $thisAttribute = $valueOut } -ErrorAction SilentlyContinue

@@ -1,4 +1,2 @@
-- Add specific event webhook subscription, not just types, and criticality option to `New-VaasConnector`
-- Fix `Get-TppObject` returning invalid parent path, [#166](https://github.com/Venafi/VenafiPS/issues/166)
-- Fix `Get-VenafiCertificate -All` not paging through all results, [#164](https://github.com/Venafi/VenafiPS/issues/164)
-- Update `Remove-TppCertificate` and `Remove-TppCertificateAssociation` to align with latest `Get-TppAttribute` changes, [#168](https://github.com/Venafi/VenafiPS/issues/168)
+- Fix error with `Get-TppPermission` when an identity which had been permissioned has had its account deleted.  Explicit permissions will be returned, but the identity path and name will be null as we can no longer look it up from the provider.
+- `Get-TppPermission -Attribute` has been deprecated.  Identity path and name are included in the return object.  For other attributes, use `Get-TppIdentityAttribute`.

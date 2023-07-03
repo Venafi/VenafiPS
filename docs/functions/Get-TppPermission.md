@@ -7,20 +7,20 @@ Get permissions for TPP objects
 
 ### ByObject (Default)
 ```
-Get-TppPermission -InputObject <TppObject> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-TppPermission -InputObject <TppObject> [-IdentityId <String[]>] [-Explicit] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
 ```
 
 ### ByPath
 ```
-Get-TppPermission -Path <String[]> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-TppPermission -Path <String[]> [-IdentityId <String[]>] [-Explicit] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
-Get-TppPermission -Guid <Guid[]> [-IdentityId <String[]>] [-Explicit] [-Attribute <String[]>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-TppPermission -Guid <Guid[]> [-IdentityId <String[]>] [-Explicit] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -32,19 +32,45 @@ You can retrieve all permissions for an object or for a specific user/group.
 
 ### EXAMPLE 1
 ```
-Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission
+Get-TppPermission -Path '\VED\Policy\barron'
 ```
+
+Path                 : \ved\policy\barron
+Guid                 : 3ba630d8-acf0-4b52-9824-df549cb33b82
+Name                 : barron
+TypeName             : Policy
+IdentityId           : AD+domain:410aaf10ea816c4d823e9e05b1ad055d
+IdentityPath         : CN=Greg Brownstein,OU=Users,OU=Enterprise Administration,DC=domain,DC=net
+IdentityName         : greg
+EffectivePermissions : TppPermission
 
 Get all assigned effective permissions for users/groups on a specific policy folder
 
 ### EXAMPLE 2
 ```
-Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission -Explicit
+Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission
 ```
+
+Get all assigned effective permissions for users/groups on a specific policy folder by piping the object
+
+### EXAMPLE 3
+```
+Get-TppObject -Path '\VED\Policy\barron' | Get-TppPermission -Explicit
+```
+
+Path                : \ved\policy\barron
+Guid                : 3ba630d8-acf0-4b52-9824-df549cb33b82
+Name                : barron
+TypeName            : Policy
+IdentityId          : AD+domain:410aaf10ea816c4d823e9e05b1ad055d
+IdentityPath        : CN=Greg Brownstein,OU=Users,OU=Enterprise Administration,DC=domain,DC=net
+IdentityName        : greg
+ExplicitPermissions : TppPermission
+ImplicitPermissions : TppPermission
 
 Get explicit and implicit permissions for users/groups on a specific policy folder
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Find-TppObject -Path '\VED' -Recursive | Get-TppPermission -IdentityId 'AD+myprov:jasdf87s9dfsdfhkashfg78f7'
 ```
@@ -130,23 +156,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Attribute
-Retrieve identity attribute values for the users and groups.
-Attributes include Group Membership, Name, Internet Email Address, Given Name, Surname.
-This parameter will be deprecated in a future release.
-
-```yaml
-Type: String[]
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -179,12 +188,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ###     Name
 ###     TypeName
 ###     IdentityId
-###     IdentityPath
-###     IdentityName
+###     IdentityPath, may be null if the identity has been deleted
+###     IdentityName, may be null if the identity has been deleted
 ###     EffectivePermissions (if Explicit switch is not used)
 ###     ExplicitPermissions (if Explicit switch is used)
 ###     ImplicitPermissions (if Explicit switch is used)
-###     Attribute (if Attribute parameter provided, to be deprecated)
 ## NOTES
 
 ## RELATED LINKS

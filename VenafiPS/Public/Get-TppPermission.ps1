@@ -23,11 +23,6 @@ You can use Find-TppIdentity to search for identities.
 .PARAMETER Explicit
 Get explicit (direct) and implicit (inherited) permissions instead of effective.
 
-.PARAMETER Attribute
-Retrieve identity attribute values for the users and groups.
-Attributes include Group Membership, Name, Internet Email Address, Given Name, Surname.
-This parameter will be deprecated in a future release.
-
 .PARAMETER VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -44,20 +39,43 @@ PSCustomObject with the following properties:
     Name
     TypeName
     IdentityId
-    IdentityPath
-    IdentityName
+    IdentityPath, may be null if the identity has been deleted
+    IdentityName, may be null if the identity has been deleted
     EffectivePermissions (if Explicit switch is not used)
     ExplicitPermissions (if Explicit switch is used)
     ImplicitPermissions (if Explicit switch is used)
-    Attribute (if Attribute parameter provided, to be deprecated)
 
 .EXAMPLE
-Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission
+Get-TppPermission -Path '\VED\Policy\barron'
+
+Path                 : \ved\policy\barron
+Guid                 : 3ba630d8-acf0-4b52-9824-df549cb33b82
+Name                 : barron
+TypeName             : Policy
+IdentityId           : AD+domain:410aaf10ea816c4d823e9e05b1ad055d
+IdentityPath         : CN=Greg Brownstein,OU=Users,OU=Enterprise Administration,DC=domain,DC=net
+IdentityName         : greg
+EffectivePermissions : TppPermission
 
 Get all assigned effective permissions for users/groups on a specific policy folder
 
 .EXAMPLE
-Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission -Explicit
+Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission
+
+Get all assigned effective permissions for users/groups on a specific policy folder by piping the object
+
+.EXAMPLE
+Get-TppObject -Path '\VED\Policy\barron' | Get-TppPermission -Explicit
+
+Path                : \ved\policy\barron
+Guid                : 3ba630d8-acf0-4b52-9824-df549cb33b82
+Name                : barron
+TypeName            : Policy
+IdentityId          : AD+domain:410aaf10ea816c4d823e9e05b1ad055d
+IdentityPath        : CN=Greg Brownstein,OU=Users,OU=Enterprise Administration,DC=domain,DC=net
+IdentityName        : greg
+ExplicitPermissions : TppPermission
+ImplicitPermissions : TppPermission
 
 Get explicit and implicit permissions for users/groups on a specific policy folder
 
@@ -86,6 +104,7 @@ https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permiss
 
 .LINK
 https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid-principal.php
+
 
 #>
 function Get-TppPermission {
@@ -129,10 +148,6 @@ function Get-TppPermission {
         [Parameter()]
         [Alias('ExplicitImplicit')]
         [switch] $Explicit,
-
-        [Parameter()]
-        [ValidateSet('Group Membership', 'Name', 'Internet Email Address', 'Given Name', 'Surname')]
-        [string[]] $Attribute,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
@@ -192,6 +207,7 @@ function Get-TppPermission {
                 continue
             }
 
+            # limit to specific identities provided
             if ( $PSBoundParameters.ContainsKey('IdentityId') ) {
                 $identities = $identities | Where-Object { $_ -in $IdentityId }
             }
@@ -218,73 +234,80 @@ function Get-TppPermission {
                     $params.UriLeaf += '/Effective'
                 }
 
+                $thisReturnObject = [PSCustomObject] @{
+                    Path         = $thisTppObject.Path
+                    Guid         = $thisTppObject.Guid
+                    Name         = $thisTppObject.Name
+                    TypeName     = $thisTppObject.TypeName
+                    IdentityId   = $thisId
+                    IdentityPath = $null
+                    IdentityName = $null
+                }
+
+                if ( $Explicit ) {
+                    $thisReturnObject | Add-Member @{
+                        ExplicitPermissions = $null
+                        ImplicitPermissions = $null
+                    }
+                }
+                else {
+                    $thisReturnObject | Add-Member @{
+                        EffectivePermissions = $null
+                    }
+                }
+
                 try {
 
                     $response = Invoke-VenafiRestMethod @params
 
-                    # if no permissions are assigned, we won't get anything back
-                    if ( $response ) {
+                    if ( $Explicit ) {
+                        $thisReturnObject.ExplicitPermissions = [TppPermission] $response.ExplicitPermissions
+                        $thisReturnObject.ImplicitPermissions = [TppPermission] $response.ImplicitPermissions
+                    }
+                    else {
+                        $thisReturnObject.EffectivePermissions = [TppPermission] $response.EffectivePermissions
+                    }
 
-                        $thisReturnObject = [PSCustomObject] @{
-                            Path       = $thisTppObject.Path
-                            Guid       = $thisTppObject.Guid
-                            Name       = $thisTppObject.Name
-                            TypeName   = $thisTppObject.TypeName
-                            IdentityId = $thisId
-                        }
+                    $attribParams = @{
+                        IdentityId    = $thisReturnObject.IdentityId
+                        VenafiSession = $VenafiSession
+                    }
 
-                        # add in identity name and path to return object
-                        $thisReturnObject | Add-Member @{
-                            IdentityPath = $null
-                            IdentityName = $null
-                        }
+                    $attribResponse = Get-TppIdentityAttribute @attribParams -ErrorAction SilentlyContinue
 
-                        $attribParams = @{
-                            IdentityId    = $thisReturnObject.IdentityId
-                            VenafiSession = $VenafiSession
-                        }
-                        try {
-                            $attribResponse = Get-TppIdentityAttribute @attribParams
-                            $thisReturnObject.IdentityPath = $attribResponse.Attributes.FullName
-                            $thisReturnObject.IdentityName = $attribResponse.Attributes.Name
-                        }
-                        catch {
-                            Write-Error "Couldn't obtain identity attributes for $($attribParams.IdentityId).  $_"
-                        }
-
-                        # old identity info, to be deprecated
-                        if ( $PSBoundParameters.ContainsKey('Attribute') ) {
-
-                            Write-Warning 'The Attribute parameter will soon be deprecated.  Identity name and path have been added by default to the return object.  For other attributes, please call Get-TppIdentityAttribute.'
-
-                            $thisReturnObject | Add-Member @{
-                                Attributes = $null
-                            }
-
-                            $attribParams.Attribute = $Attribute
-                            $attribResponse = Get-TppIdentityAttribute @attribParams
-                            $thisReturnObject.Attributes = $attribResponse.Attributes
-                        }
-
-                        # finally, add in the permissions depending on if explicit or not
-                        if ( $Explicit.IsPresent ) {
-                            $thisReturnObject | Add-Member @{
-                                ExplicitPermissions = [TppPermission] $response.ExplicitPermissions
-                                ImplicitPermissions = [TppPermission] $response.ImplicitPermissions
-                            }
-                        }
-                        else {
-                            $thisReturnObject | Add-Member @{
-                                EffectivePermissions = [TppPermission] $response.EffectivePermissions
-                            }
-                        }
-
-                        $thisReturnObject
+                    if ( $attribResponse ) {
+                        $thisReturnObject.IdentityPath = $attribResponse.Attributes.FullName
+                        $thisReturnObject.IdentityName = $attribResponse.Attributes.Name
                     }
                 }
                 catch {
-                    Write-Error ('Couldn''t obtain permission set for path {0}, identity {1}.  {2}' -f $thisTppObject.Path, $thisId, $_)
+                    # handle edge case where permissions had been set, but the user account has been deleted
+                    # this way we can return the permissions that are set, just not the identity attributes, eg. name
+                    if ( $_ -like '*Unable to verify principal*' ) {
+                        if ( $Explicit ) {
+                            # this will only return explicit permissions, not effective
+                            $notFoundParams = @{
+                                Method  = 'Post'
+                                UriLeaf = 'permissions/getpermissions'
+                                Body    = @{
+                                    ObjectDN  = $thisTppObject.Path
+                                    Principal = $thisID
+                                }
+                            }
+
+                            $notFoundResponse = invoke-venafirestmethod @notFoundParams
+
+                            if ( $notFoundResponse.Permissions ) {
+                                $thisReturnObject.ExplicitPermissions = [TppPermission]$notFoundResponse.Permissions
+                            }
+                        }
+                    }
+                    else {
+                        Write-Error ('Unable to retrieve permissions.  Path: {0}, Id: {1}, Error: {2}' -f $thisTppObject.Path, $thisId, $_)
+                    }
                 }
+
+                $thisReturnObject
             }
         }
     }

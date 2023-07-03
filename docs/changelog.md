@@ -1,3 +1,43 @@
+## 5.5.1
+- Fix error with `Get-TppPermission` when an identity which had been permissioned has had its account deleted.  Explicit permissions will be returned, but the identity path and name will be null as we can no longer look it up from the provider.
+- `Get-TppPermission -Attribute` has been deprecated.  Identity path and name are included in the return object.  For other attributes, use `Get-TppIdentityAttribute`.
+
+
+## 5.5.0
+- Add `Set-TppAttribute -NoOverwrite` to allow additions to an attribute list.  [#189](https://github.com/Venafi/VenafiPS/issues/189)
+- Add `Get-TppAttribute -NoLookup` for the remote cases where a built-in attribute and custom field have the same name.  The default will be to look for a custom field.  Use `-NoLookup` to override.  [#192](https://github.com/Venafi/VenafiPS/issues/192)
+- Add ability to export the chain on VaaS with `Export-VenafiCertificate`
+- Add ability to export a certificate to a file on VaaS with `Export-VenafiCertificate`
+- Fix certain characters in friendly name causing `Test-TppIdentityFormat` to fail, [#205](https://github.com/Venafi/VenafiPS/issues/205)
+- Add ability to set specific permission with `Set-TppPermission` and not just an entire permissions object, [#197](https://github.com/Venafi/VenafiPS/issues/197)
+- Enhance pipeline support for `Set-TppPermission`
+- Fix failure removing a custom field value with `Set-TppAttribute`, [#199](https://github.com/Venafi/VenafiPS/issues/199)
+- Fix `ConvertTo-TppFullPath` appending '\ved\policy' incorrectly on non-Windows environments
+
+## 5.4.1
+- Add support for JWT token authentication in `New-VenafiSession` and `New-TppToken`
+
+## 5.4.0
+- Add 'all' token scope with 2 values, 'core' and 'admin'.  'Core' is all scopes except for admin and 'admin' includes admin.  Use as `New-VenafiSession -Scope @{'all'='core'}`.  Not suggested for production environments
+- Add `-SkipCertificateCheck` to `New-VenafiSession` and `New-TppToken` to bypass certificate checking, useful in pre-production environments, connecting via IP, etc.  If you aren't creating a new session, but providing a token directly to a function, the same functionality can be found by setting an environment variable `$env:VENAFIPS_SKIP_CERT_CHECK=1`.  If vaulting your token, this value will also be vaulted in the metadata making it very easy to use `New-VenafiSession -VaultRefreshAccessToken $name` and connect to pre-prod environments with no certificate checking
+- `New-VenafiSession -VaultMetadata` is now deprecated and metadata will be vaulted by default
+- Token scope is now vaulted in metadata and added to $VenafiSession when using `-VaultAccessTokenName` or `-VaultRefreshTokenName` of `New-VenafiSession`
+- Update `Write-VerboseWithSecret` to support secrets in delimited json
+- Fix TppObject ParentPath error when it contains certain characters, [#186](https://github.com/Venafi/VenafiPS/issues/186)
+- Fix object does not exist error with `Move-TppObject` in a try/catch, [#185](https://github.com/Venafi/VenafiPS/issues/185)
+
+
+## 5.3.1
+- Fix `Get-TppClassAttribute -All` error when providing VenafiSession directly, [#182](https://github.com/Venafi/VenafiPS/issues/182)
+
+
+## 5.3.0
+- Add `Remove-TppObject` to remove any object.  Multiple people have asked for this so it's been added, but be careful using it as it can be very destructive.  Recommend using -WhatIf to validate.
+- Fix `Invoke-VenafiCertificateAction` always running as verbose, [#173](https://github.com/Venafi/VenafiPS/issues/173)
+- Fix `Set-TppAttribute` error when providing a null value, [#176](https://github.com/Venafi/VenafiPS/issues/176)
+- Fix `Set-TppPermission` error when providing VenafiSession directly, [#174](https://github.com/Venafi/VenafiPS/issues/174)
+
+
 ## 5.2.2
 - Add specific event webhook subscription, not just types, and criticality option to `New-VaasConnector`
 - Fix `Get-TppObject` returning invalid parent path, [#166](https://github.com/Venafi/VenafiPS/issues/166)
@@ -465,6 +505,12 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
+
+
+
+
+
 
 
 

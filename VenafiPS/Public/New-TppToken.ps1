@@ -1,76 +1,86 @@
-<#
-.SYNOPSIS
-Get a new access token or refresh an existing one
-
-.DESCRIPTION
-Get an access token and refresh token (if enabled) to be used with New-VenafiSession or other scripts/utilities that take such a token.
-You can also refresh an existing access token if you have the associated refresh token.
-Authentication can be provided as integrated, credential, or certificate.
-
-.PARAMETER AuthServer
-Auth server or url, eg. venafi.company.com
-
-.PARAMETER ClientId
-Applcation Id configured in Venafi for token-based authentication
-
-.PARAMETER Scope
-Hashtable with Scopes and privilege restrictions.
-The key is the scope and the value is one or more privilege restrictions separated by commas.
-A privilege restriction of none or read, use a value of $null.
-Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
-See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
-
-.PARAMETER Credential
-Username / password credential used to request API Token
-
-.PARAMETER State
-A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
-
-.PARAMETER Certificate
-Certificate used to request API token.  Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/current/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
-
-.PARAMETER RefreshToken
-Provide RefreshToken along with ClientId to obtain a new access and refresh token.  Format should be a pscredential where the password is the refresh token.
-
-.PARAMETER VenafiSession
-VenafiSession object created from New-VenafiSession method.
-
-.EXAMPLE
-New-TppToken -AuthServer 'https://mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Credential $credential
-Get a new token with OAuth
-
-.EXAMPLE
-New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId'
-Get a new token with Integrated authentication
-
-.EXAMPLE
-New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Certificate $cert
-Get a new token with certificate authentication
-
-.EXAMPLE
-New-TppToken -AuthServer 'mytppserver.example.com' -ClientId 'MyApp' -RefreshToken $refreshCred
-Refresh an existing access token by providing the refresh token directly
-
-.EXAMPLE
-New-TppToken -VenafiSession $mySession
-Refresh an existing access token by providing a VenafiSession object
-
-.INPUTS
-None
-
-.OUTPUTS
-PSCustomObject with the following properties:
-    Server
-    AccessToken
-    RefreshToken
-    Scope
-    Identity
-    TokenType
-    ClientId
-    Expires
-    RefreshExpires (This property is null when TPP version is less than 21.1)
-#>
 function New-TppToken {
+    <#
+    .SYNOPSIS
+    Get a new access token or refresh an existing one
+
+    .DESCRIPTION
+    Get an access token and refresh token (if enabled) to be used with New-VenafiSession or other scripts/utilities that take such a token.
+    You can also refresh an existing access token if you have the associated refresh token.
+    Authentication can be provided as integrated, credential, or certificate.
+
+    .PARAMETER AuthServer
+    Auth server or url, eg. venafi.company.com
+
+    .PARAMETER ClientId
+    Applcation Id configured in Venafi for token-based authentication
+
+    .PARAMETER Scope
+    Hashtable with Scopes and privilege restrictions.
+    The key is the scope and the value is one or more privilege restrictions separated by commas.
+    A privilege restriction of none or read, use a value of $null.
+    Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
+    See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
+    Using a scope of {'all'='core'} will set all scopes except for codesignclient and admin.
+    Using a scope of {'all'='core-cs'} will set all scopes inclduing codesignclient except for admin.
+    Using a scope of {'all'='admin'} will set all scopes including admin.
+    Using a scope of {'all'='admin-cs'} will set all scopes including admin.
+    Usage of the 'all' scope is not suggested for production.
+
+    .PARAMETER Credential
+    Username / password credential used to request API Token
+
+    .PARAMETER State
+    A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
+
+    .PARAMETER Jwt
+    JSON web token.
+    Available in TPP v22.4 and later.
+    Ensure jwt mapping has been configured in VCC, Access Management->JWT Mappings.
+
+    .PARAMETER Certificate
+    Certificate used to request API token.  Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/current/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
+
+    .PARAMETER RefreshToken
+    Provide RefreshToken along with ClientId to obtain a new access and refresh token.  Format should be a pscredential where the password is the refresh token.
+
+    .PARAMETER VenafiSession
+    VenafiSession object created from New-VenafiSession method.
+
+    .EXAMPLE
+    New-TppToken -AuthServer 'https://mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Credential $credential
+    Get a new token with OAuth
+
+    .EXAMPLE
+    New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId'
+    Get a new token with Integrated authentication
+
+    .EXAMPLE
+    New-TppToken -AuthServer 'mytppserver.example.com' -Scope @{ Certificate = "manage,discover"; Configuration = "manage" } -ClientId 'MyAppId' -Certificate $cert
+    Get a new token with certificate authentication
+
+    .EXAMPLE
+    New-TppToken -AuthServer 'mytppserver.example.com' -ClientId 'MyApp' -RefreshToken $refreshCred
+    Refresh an existing access token by providing the refresh token directly
+
+    .EXAMPLE
+    New-TppToken -VenafiSession $mySession
+    Refresh an existing access token by providing a VenafiSession object
+
+    .INPUTS
+    None
+
+    .OUTPUTS
+    PSCustomObject with the following properties:
+        Server
+        AccessToken
+        RefreshToken
+        Scope
+        Identity
+        TokenType
+        ClientId
+        Expires
+        RefreshExpires (This property is null when TPP version is less than 21.1)
+    #>
 
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Integrated')]
     [OutputType([PSCustomObject])]
@@ -81,6 +91,7 @@ function New-TppToken {
         [Parameter(ParameterSetName = 'OAuth', Mandatory)]
         [Parameter(ParameterSetName = 'Integrated', Mandatory)]
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [Parameter(ParameterSetName = 'Jwt', Mandatory)]
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [ValidateScript( {
                 if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
@@ -98,11 +109,13 @@ function New-TppToken {
         [Parameter(ParameterSetName = 'Integrated', Mandatory)]
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
+        [Parameter(ParameterSetName = 'Jwt', Mandatory)]
         [string] $ClientId,
 
         [Parameter(ParameterSetName = 'OAuth', Mandatory)]
         [Parameter(ParameterSetName = 'Integrated', Mandatory)]
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [Parameter(ParameterSetName = 'Jwt', Mandatory)]
         [hashtable] $Scope,
 
         [Parameter(ParameterSetName = 'OAuth', Mandatory)]
@@ -112,11 +125,17 @@ function New-TppToken {
         [Parameter(ParameterSetName = 'OAuth')]
         [string] $State,
 
+        [Parameter(ParameterSetName = 'Jwt', Mandatory)]
+        [string] $Jwt,
+
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
         [X509Certificate] $Certificate,
 
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
         [pscredential] $RefreshToken,
+
+        [Parameter()]
+        [switch] $SkipCertificateCheck,
 
         [Parameter(ParameterSetName = 'RefreshSession', Mandatory)]
         [ValidateScript( {
@@ -135,9 +154,10 @@ function New-TppToken {
     )
 
     $params = @{
-        Method  = 'Post'
-        UriRoot = 'vedauth'
-        Body    = @{}
+        Method               = 'Post'
+        UriRoot              = 'vedauth'
+        Body                 = @{}
+        SkipCertificateCheck = $SkipCertificateCheck
     }
 
     if ( $PsCmdlet.ParameterSetName -eq 'RefreshSession' ) {
@@ -171,16 +191,36 @@ function New-TppToken {
         }
         else {
             # obtain new token
-            $scopeString = @(
-                $scope.GetEnumerator() | ForEach-Object {
-                    if ($_.Value) {
-                        '{0}:{1}' -f $_.Key, $_.Value
-                    }
-                    else {
-                        $_.Key
-                    }
+            $scopeString = switch ($Scope.all) {
+                'core' {
+                    'agent:delete;certificate:approve,delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:delete,manage'
                 }
-            ) -join ';'
+
+                'core-cs' {
+                    'agent:delete;certificate:approve,delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:delete,manage;codesignclient'
+                }
+
+                'admin' {
+                    'admin:delete,viewlogs,recyclebin;agent:delete;certificate:delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:approve,admin,delete,manage'
+                }
+
+                'admin-cs' {
+                    'admin:delete,viewlogs,recyclebin;agent:delete;certificate:delete,discover,manage,revoke;configuration:delete,manage;restricted:delete,manage;security:delete,manage;ssh:approve,delete,discover,manage;statistics;codesign:approve,admin,delete,manage;codesignclient'
+                }
+
+                Default {
+                    @(
+                        $scope.GetEnumerator() | ForEach-Object {
+                            if ($_.Value) {
+                                '{0}:{1}' -f $_.Key, $_.Value
+                            }
+                            else {
+                                $_.Key
+                            }
+                        }
+                    ) -join ';'
+                }
+            }
 
             $params.Body = @{
                 client_id = $ClientId
@@ -201,6 +241,10 @@ function New-TppToken {
 
                 'Certificate' {
                     $params.Certificate = $Certificate
+                }
+
+                'Jwt' {
+                    $params.Body.jwt = $Jwt
                 }
 
                 Default {

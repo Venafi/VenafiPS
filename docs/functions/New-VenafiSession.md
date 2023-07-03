@@ -7,67 +7,76 @@ Create a new Venafi TPP or Venafi as a Service session
 
 ### KeyIntegrated (Default)
 ```
-New-VenafiSession -Server <String> [-PassThru] [<CommonParameters>]
+New-VenafiSession -Server <String> [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### VaultRefreshToken
 ```
 New-VenafiSession [-Server <String>] [-ClientId <String>] [-Scope <Hashtable>] -VaultRefreshTokenName <String>
- [-VaultMetadata] [-PassThru] [<CommonParameters>]
+ [-VaultMetadata] [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### VaultAccessToken
 ```
 New-VenafiSession [-Server <String>] [-Scope <Hashtable>] -VaultAccessTokenName <String> [-VaultMetadata]
- [-PassThru] [<CommonParameters>]
+ [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### RefreshToken
 ```
 New-VenafiSession -Server <String> -ClientId <String> -RefreshToken <PSCredential>
- [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>] [-PassThru] [<CommonParameters>]
+ [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>] [-PassThru] [-SkipCertificateCheck]
+ [<CommonParameters>]
 ```
 
 ### AccessToken
 ```
 New-VenafiSession -Server <String> -AccessToken <PSCredential> [-VaultAccessTokenName <String>]
- [-VaultMetadata] [-PassThru] [<CommonParameters>]
+ [-VaultMetadata] [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+```
+
+### TokenJwt
+```
+New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Jwt <String> [-PassThru]
+ [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### TokenCertificate
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
  [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>]
- [-PassThru] [<CommonParameters>]
+ [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### TokenIntegrated
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>]
  [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>]
- [-PassThru] [<CommonParameters>]
+ [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### TokenOAuth
 ```
 New-VenafiSession -Server <String> -Credential <PSCredential> -ClientId <String> -Scope <Hashtable>
  [-State <String>] [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata]
- [-AuthServer <String>] [-PassThru] [<CommonParameters>]
+ [-AuthServer <String>] [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### KeyCredential
 ```
-New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [<CommonParameters>]
+New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [-SkipCertificateCheck]
+ [<CommonParameters>]
 ```
 
 ### Vaas
 ```
-New-VenafiSession -VaasKey <PSCredential> [-VaultVaasKeyName <String>] [-PassThru] [<CommonParameters>]
+New-VenafiSession -VaasKey <PSCredential> [-VaultVaasKeyName <String>] [-PassThru] [-SkipCertificateCheck]
+ [<CommonParameters>]
 ```
 
 ### VaultVaasKey
 ```
-New-VenafiSession -VaultVaasKeyName <String> [-PassThru] [<CommonParameters>]
+New-VenafiSession -VaultVaasKeyName <String> [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -140,17 +149,11 @@ Create session using a refresh token and store the newly created refresh token i
 
 ### EXAMPLE 11
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh -VaultMetadata
-Create session using a refresh token, store the newly created refresh token in the vault, and store the server and clientid with the secret
-```
-
-### EXAMPLE 12
-```
 New-VenafiSession -VaasKey $cred
 Create session against Venafi as a Service
 ```
 
-### EXAMPLE 13
+### EXAMPLE 12
 ```
 New-VenafiSession -VaultVaasKeyName vaas-key
 Create session against Venafi as a Service with a key stored in a vault
@@ -165,7 +168,7 @@ If just the server name is provided, https:// will be appended.
 
 ```yaml
 Type: String
-Parameter Sets: KeyIntegrated, RefreshToken, AccessToken, TokenCertificate, TokenIntegrated, TokenOAuth, KeyCredential
+Parameter Sets: KeyIntegrated, RefreshToken, AccessToken, TokenJwt, TokenCertificate, TokenIntegrated, TokenOAuth, KeyCredential
 Aliases: ServerUrl, Url
 
 Required: True
@@ -220,7 +223,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String
-Parameter Sets: RefreshToken, TokenCertificate, TokenIntegrated, TokenOAuth
+Parameter Sets: RefreshToken, TokenJwt, TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: True
@@ -236,6 +239,11 @@ The key is the scope and the value is one or more privilege restrictions separat
 Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
 For no privilege restriction or read access, use a value of $null.
 For a scope to privilege mapping, see https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
+Using a scope of {'all'='core'} will set all scopes except for codesignclient and admin.
+Using a scope of {'all'='core-cs'} will set all scopes inclduing codesignclient except for admin.
+Using a scope of {'all'='admin'} will set all scopes including admin.
+Using a scope of {'all'='admin-cs'} will set all scopes including admin.
+Usage of the 'all' scope is not suggested for production.
 
 ```yaml
 Type: Hashtable
@@ -251,7 +259,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: Hashtable
-Parameter Sets: TokenCertificate, TokenIntegrated, TokenOAuth
+Parameter Sets: TokenJwt, TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: True
@@ -307,6 +315,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Jwt
+JSON web token.
+Available in TPP v22.4 and later.
+Ensure jwt mapping has been configured in VCC, Access Management-\>JWT Mappings.
+
+```yaml
+Type: String
+Parameter Sets: TokenJwt
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Certificate
 Certificate for token-based authentication
 
@@ -327,7 +352,6 @@ Name of the SecretManagement vault entry for the access token; the name of the v
 This value can be provided standalone or with credentials. 
 First time use requires it to be provided with credentials to retrieve the access token to populate the vault.
 With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
-See -VaultMetadata to store server and clientid with the token.
 
 ```yaml
 Type: String
@@ -359,7 +383,6 @@ This value can be provided standalone or with credentials.
 Each time this is used, a new access and refresh token will be obtained.
 First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
 With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
-See -VaultMetadata to store server and clientid with the token.
 
 ```yaml
 Type: String
@@ -386,10 +409,7 @@ Accept wildcard characters: False
 ```
 
 ### -VaultMetadata
-When a token vault entry, access or refresh, is created with -VaultAccessTokenName or -VaultRefreshTokenName, store the server and clientid with it so this doesn't need to be provided each time.
-Once used, the server and clientid will continue to be stored with updated vault entries regardless if -VaultMetadata was provided again.
-To clear the metadata, reauthenticate with this function with a credential and without providing -VaultMetadata.
-To use this parameter, the SecretManagement vault must support it.
+{{ Fill VaultMetadata Description }}
 
 ```yaml
 Type: SwitchParameter
@@ -482,6 +502,22 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -SkipCertificateCheck
+Bypass certificate validation when connecting to the server.
+This can be helpful for pre-prod environments where ssl isn't setup on the website or you are connecting via IP.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -507,6 +543,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeOAuth.php)
 
 [https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeCertificate.php)
+
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeJwt.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-POST-AuthorizeJwt.php)
 
 [https://github.com/PowerShell/SecretManagement](https://github.com/PowerShell/SecretManagement)
 
