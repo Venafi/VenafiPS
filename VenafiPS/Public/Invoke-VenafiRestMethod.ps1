@@ -266,17 +266,17 @@ function Invoke-VenafiRestMethod {
             403 {
 
                 $permMsg = ''
-                
+
                 # get scope details for tpp
                 if ( $platform -ne 'VaaS' ) {
                     $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
-                    $callingFunctionScope = ($script:functionConfig).$callingFunction.Scope
-                    if ( $callingFunctionScope ) { $permMsg += "  $callingFunction requires a token scope of $callingFunctionScope." }
+                    $callingFunctionScope = ($script:functionConfig).$callingFunction.TppTokenScope
+                    if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of $callingFunctionScope." }
 
-                    $missingScope = (Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ''(.*)''').matches.groups[1].value
-                    if ( $missingScope ) { $permMsg += "  The $missingScope scope is missing." }
+                    $rejectedScope = (Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ''(.*)''').matches.groups[1].value
+                    if ( $rejectedScope ) { $permMsg += "  The current scope of $rejectedScope is insufficient.`r`n`r`n" }
                 }
-                
+
                 $permMsg += $originalError.ErrorDetails.Message
 
                 throw $permMsg
