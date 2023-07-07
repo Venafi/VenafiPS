@@ -8,6 +8,14 @@ Describe 'New-VenafiSession' {
     }
     Context 'VaaS key' {
         BeforeAll {
+            Mock New-VenafiSession -MockWith {
+                [VenafiSession]@{
+                    Platform = 'VaaS'
+                    AuthType = 'Key'
+                    Server   = 'https://api.venafi.cloud'
+                    Key      = $cred
+                }
+            }
             $sess = New-VenafiSession -VaasKey $cred -PassThru
         }
         It 'should set platform to VaaS' {
@@ -15,6 +23,9 @@ Describe 'New-VenafiSession' {
         }
         It 'should set AuthType to Key' {
             $sess.AuthType | Should -Be 'Key'
+        }
+        It 'should set Server url' {
+            $sess.Server | Should -Be 'https://api.venafi.cloud'
         }
         It 'should set key to the credential provided' {
             $sess.Key | Should -Be $cred
