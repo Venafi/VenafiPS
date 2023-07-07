@@ -9,12 +9,12 @@ Describe 'New-VenafiSession' {
     Context 'VaaS key' {
         BeforeAll {
             Mock New-VenafiSession -MockWith {
-                [VenafiSession]@{
-                    Platform = 'VaaS'
-                    AuthType = 'Key'
-                    Server   = 'https://api.venafi.cloud'
-                    Key      = $cred
+                $newSession = [VenafiSession] @{
+                    Server = $serverUrl
                 }
+                $newSession.AuthType = 'Key'
+                $newSession.Key = $cred
+                $newSession
             }
             $sess = New-VenafiSession -VaasKey $cred -PassThru
         }
