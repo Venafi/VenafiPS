@@ -94,11 +94,13 @@
 
             if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
                 $params.UriLeaf = 'teams'
-            } else {
+            }
+            else {
                 if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
                     $guid = [guid] $ID
                     $params.UriLeaf = 'teams/{0}' -f $guid.ToString()
-                } else {
+                }
+                else {
                     # assume team name
                     $allTeams = Get-VenafiTeam -All -VenafiSession $VenafiSession
                     return $allTeams | Where-Object { $_.name -eq $ID }
@@ -108,16 +110,19 @@
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.PSObject.Properties.Name -contains 'teams' ) {
-                $response | Select-Object -ExpandProperty teams | Select-Object @{'n' = 'teamId'; 'e' = { $_.id } }, * -ExcludeProperty id
-            } else {
-                $response | Select-Object @{'n' = 'teamId'; 'e' = { $_.id } }, * -ExcludeProperty id
+                $response | Select-Object -ExpandProperty teams | ConvertTo-VaasTeam
             }
-        } else {
+            else {
+                $response | ConvertTo-VaasTeam
+            }
+        }
+        else {
             if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
 
                 # no built-in api for this, get group objects and then get details
                 Find-TppObject -Path '\VED\Identity' -Class 'Group' -VenafiSession $VenafiSession | Where-Object { $_.Name -ne 'Everyone' } | Get-VenafiTeam -VenafiSession $VenafiSession
-            } else {
+            }
+            else {
 
                 # not only does -match set $matches, but -notmatch does as well
                 if ( $ID -notmatch '(?im)^(local:)?\{?([0-9A-F]{8}[-]?(?:[0-9A-F]{4}[-]?){3}[0-9A-F]{12})\}?$' ) {
@@ -137,12 +142,14 @@
                         Owners  = $response.Owners | ConvertTo-TppIdentity
                     }
                     $out
-                } catch {
+                }
+                catch {
 
                     # handle known errors where the local group is not actually a team
                     if ( $_.ErrorDetails.Message -like '*Failed to read the team identity;*' ) {
                         Write-Verbose "$ID looks to be a local group and not a Team.  The server responded with $_"
-                    } else {
+                    }
+                    else {
                         Write-Error "$ID : $_"
                     }
                 }
