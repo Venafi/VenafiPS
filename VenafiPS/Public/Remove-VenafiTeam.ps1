@@ -6,7 +6,7 @@ Remove a team
 Remove a team from either VaaS or TPP
 
 .PARAMETER ID
-Team ID.  For VaaS, this is the team guid.  For TPP, this is the local ID.
+Team ID.  For VaaS, this is the team uuid.  For TPP, this is the local ID.
 
 .PARAMETER VenafiSession
 Authentication for the function.
@@ -57,7 +57,7 @@ function Remove-VenafiTeam {
 
         if ( $platform -eq 'VaaS' ) {
 
-            $params.UriLeaf = "teams/$ID"
+            Remove-VaasObject -TeamID $ID -VenafiSession $VenafiSession
         }
         else {
             # check if just a guid or prefixed universal id
@@ -74,10 +74,11 @@ function Remove-VenafiTeam {
                 }
             }
             $params.UriLeaf = ('Teams/local/{{{0}}}' -f $guid.ToString())
+
+            if ( $PSCmdlet.ShouldProcess($ID, "Delete team") ) {
+                Invoke-VenafiRestMethod @params | Out-Null
+            }
         }
 
-        if ( $PSCmdlet.ShouldProcess($ID, "Delete team") ) {
-            Invoke-VenafiRestMethod @params | Out-Null
-        }
     }
 }
