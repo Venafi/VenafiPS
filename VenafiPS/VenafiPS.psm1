@@ -29,7 +29,6 @@ $script:CloudUrl = 'https://api.venafi.cloud'
 $script:ModuleVersion = '((NEW_VERSION))'
 
 $Script:VenafiSession = $null
-$script:VenafiSessionInFlight = $null
 Export-ModuleMember -Variable VenafiSession
 
 $aliases = @{

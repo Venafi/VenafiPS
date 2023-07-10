@@ -32,15 +32,19 @@ A VaaS key can also provided.
 TeamID, ApplicationID, MachineID, MachineIdentityID, TagName, ConnectorID
 
 .EXAMPLE
-Remove-VenafiTeam -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Remove-VaasObject -TeamID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 Remove a VaaS team
 
 .EXAMPLE
-Remove-VenafiTeam -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}'
-Remove a TPP team
+Get-VenafiTeam -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | Remove-VaasObject
+Remove a VaaS team
 
 .EXAMPLE
-Remove-VenafiTeam -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Confirm:$false
+Get-VaasConnector | Remove-VaasObject
+Remove all connectors
+
+.EXAMPLE
+Remove-VaasObject -TeamID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Confirm:$false
 Remove a team bypassing the confirmation prompt
 
 #>

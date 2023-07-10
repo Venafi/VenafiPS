@@ -1,12 +1,12 @@
 <#
 .SYNOPSIS
-Convert identity to standard format
+Convert vaas team to standard format
 
 .DESCRIPTION
-Convert identity to standard format
+Convert vaas team to standard format
 
 .PARAMETER InputObject
-Identity object
+Team object
 
 .INPUTS
 InputObject
@@ -15,7 +15,7 @@ InputObject
 PSCustomObject
 
 .EXAMPLE
-$identityObj | ConvertTo-TppIdentity
+$teamObj | ConvertTo-VaasTeam
 
 #>
 function ConvertTo-VaasTeam {

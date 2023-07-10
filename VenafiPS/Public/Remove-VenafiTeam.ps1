@@ -76,7 +76,7 @@ function Remove-VenafiTeam {
             $params.UriLeaf = ('Teams/local/{{{0}}}' -f $guid.ToString())
 
             if ( $PSCmdlet.ShouldProcess($ID, "Delete team") ) {
-                Invoke-VenafiRestMethod @params | Out-Null
+                $null = Invoke-VenafiRestMethod @params
             }
         }
 

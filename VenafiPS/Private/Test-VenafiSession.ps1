@@ -103,9 +103,6 @@ function Test-VenafiSession {
                 }
 
                 $platformOut = $VenafiSession.Platform
-
-                $script:VenafiSessionInFlight = $VenafiSession
-
                 break
             }
 
