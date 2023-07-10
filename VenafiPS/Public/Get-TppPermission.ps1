@@ -113,7 +113,7 @@ function Get-TppPermission {
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
+        [pscustomobject] $InputObject,
 
         [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
@@ -191,7 +191,7 @@ function Get-TppPermission {
                 }
 
                 Default {
-                    $thisTppObject = [TppObject]::new($thisInputObject, $VenafiSession)
+                    $thisTppObject = $thisInputObject | ConvertTo-TppObject -VenafiSession $VenafiSession
                 }
             }
 

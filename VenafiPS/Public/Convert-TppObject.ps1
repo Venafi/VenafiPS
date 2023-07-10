@@ -98,7 +98,7 @@ function Convert-TppObject {
 
             if ( $response.Result -eq [TppConfigResult]::Success ) {
                 if ( $PassThru ) {
-                    [TppObject]::new($Path, $VenafiSession)
+                    ConvertTo-TppObject -Path $Path -VenafiSession $VenafiSession
                 }
             }
             else {
