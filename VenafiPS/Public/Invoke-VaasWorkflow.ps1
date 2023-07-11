@@ -1,16 +1,48 @@
 function Invoke-VaasWorkflow {
     <#
     .SYNOPSIS
-        Start a machine or machine identity workflow
+    Start a machine or machine identity workflow
+
     .DESCRIPTION
-        Start a workflow to either test
-    .NOTES
-        Information or caveats about the function e.g. 'This function is not supported in Linux'
-    .LINK
-        Specify a URI to a help page, this will show when Get-Help -Online is used.
+    Start a workflow to either test machine credentials or provision or discover machine identities
+
+    .PARAMETER ID
+    Machine or machine identity id for the workflow to trigger.
+    Workflows 'Test' and 'GetConfig' require the machine ID.
+    Workflows 'Provision' and 'Discover' require the machine identity ID.
+
+    .PARAMETER WorkflowName
+    The name of the workflow to trigger.
+    Valid values are 'Test', 'GetConfig', 'Provision', or 'Discover'.
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A VaaS key can also provided.
+
     .EXAMPLE
-        Test-MyTestFunction -Verbose
-        Explanation of the function or its result. You can include multiple examples with additional .EXAMPLE lines
+    Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -WorkflowName 'Provision'
+
+    ID                                   WorkflowName Success
+    --                                   ------------ -------
+    89fa4370-2026-11ee-8a18-ff9579bb988e Test            True
+
+    Trigger provisioning
+
+    .EXAMPLE
+    Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -WorkflowName 'Provision'
+
+    ID                                   WorkflowName Success Error
+    --                                   ------------ ------- -----
+    1345baf1-fc56-49b7-aa03-78e35bfe0a1a Provision    False   Failed for some reason....
+
+    Trigger provisioning, but it failed
+
+    .INPUTS
+    ID
+
+    .OUTPUTS
+    pscustomobject
     #>
 
 
@@ -27,10 +59,6 @@ function Invoke-VaasWorkflow {
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
     )
-
-    begin {
-
-    }
 
     process {
 
@@ -132,9 +160,5 @@ function Invoke-VaasWorkflow {
         finally {
             $WS.Dispose()
         }
-    }
-
-    end {
-
     }
 }
