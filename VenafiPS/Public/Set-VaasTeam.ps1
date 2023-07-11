@@ -137,7 +137,7 @@
 
         $thisID = $ID
         if ( $PSCmdlet.ParameterSetName -eq 'Name' ) {
-            $matchingTeams = Set-VaasTeam -All | Where-Object { $_.name -eq $Name }
+            $matchingTeams = Get-VenafiTeam -All | Where-Object { $_.name -eq $Name }
             switch ($matchingTeams.count) {
                 0 {
                     Write-Error "$Name team name not found"
@@ -175,7 +175,7 @@
             }
             if ( $NoOverwrite ) {
                 # get existing rules so we can append to the new ones
-                $existingTeam = Set-VaasTeam -ID $thisID -VenafiSession $VenafiSession
+                $existingTeam = Get-VenafiTeam -ID $thisID -VenafiSession $VenafiSession
                 $params.Body.userMatchingRules += $existingTeam.userMatchingRules
             }
         }
