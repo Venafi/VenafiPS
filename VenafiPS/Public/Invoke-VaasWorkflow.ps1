@@ -38,6 +38,19 @@ function Invoke-VaasWorkflow {
 
     Trigger provisioning, but it failed
 
+    .EXAMPLE
+    Find-VaasObject -Type MachineIdentity -Filter @('certificateValidityEnd', 'lt', (get-date).AddDays(30)) | ForEach-Object {
+        $null = $_ | Invoke-VenafiCertificateAction -Renew
+        $_ | Invoke-VaasWorkflow -WorkflowName 'Provision'
+    }
+
+    ID                                   WorkflowName Success
+    --                                   ------------ -------
+    89fa4370-2026-11ee-8a18-ff9579bb988e Provision    True
+    7598917c-7027-4927-be73-e592bcc4c567 Provision    True
+
+    Renew and provision all machine identities with certificates expiring within 30 days
+
     .INPUTS
     ID
 
