@@ -150,9 +150,13 @@
 
                 Default {
                     Write-Error "Multiple teams named $Name found.  Provide -ID instead of -Name."
-                    Continue
                 }
             }
+        }
+
+        if ( -not $thisID ) {
+            # process the next one in the pipeline if we don't have a valid ID this time
+            Continue
         }
 
         $params.UriLeaf = "teams/$thisID"
