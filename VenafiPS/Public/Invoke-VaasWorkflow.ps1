@@ -39,7 +39,7 @@ function Invoke-VaasWorkflow {
     Trigger provisioning, but it failed
 
     .EXAMPLE
-    Find-VaasObject -Type MachineIdentity -Filter @('certificateValidityEnd', 'lt', (get-date).AddDays(30)) | ForEach-Object {
+    Find-VaasObject -Type MachineIdentity -Filter @('and', @('certificateValidityEnd', 'lt', (get-date).AddDays(30)), @('certificateValidityEnd', 'gt', (get-date))) | ForEach-Object {
         $null = $_ | Invoke-VenafiCertificateAction -Renew
         $_ | Invoke-VaasWorkflow -WorkflowName 'Provision'
     }
