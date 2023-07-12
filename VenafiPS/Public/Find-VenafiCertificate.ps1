@@ -773,11 +773,7 @@ function Find-VenafiCertificate {
 
             $content = $response.content | ConvertFrom-Json
             $content.Certificates.ForEach{
-                [TppObject] @{
-                    TypeName = $_.SchemaClass
-                    Path     = $_.DN
-                    Guid     = [guid] $_.Guid
-                }
+                ConvertTo-TppObject -Path $_.DN -Guid $_.Guid -TypeName $_.SchemaClass
             }
 
             # if option to get all records was provided, loop and get them all
@@ -807,11 +803,7 @@ function Find-VenafiCertificate {
 
                     $content = $response.content | ConvertFrom-Json
                     $content.Certificates.ForEach{
-                        [TppObject] @{
-                            TypeName = $_.SchemaClass
-                            Path     = $_.DN
-                            Guid     = [guid] $_.Guid
-                        }
+                        ConvertTo-TppObject -Path $_.DN -Guid $_.Guid -TypeName $_.SchemaClass
                     }
                 }
             }

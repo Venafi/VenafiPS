@@ -47,6 +47,9 @@ function Remove-VaasConnector {
     )
 
     begin {
+
+        Write-Warning 'Remove-VaasConnector will soon be deprecated.  Please use Remove-VaasObject -ConnectorID.'
+
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         $params = @{

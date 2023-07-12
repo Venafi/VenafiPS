@@ -78,7 +78,6 @@ function New-TppObject {
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'NonApplicationObject', SupportsShouldProcess)]
-    [OutputType([TppObject])]
 
     param (
         [Parameter(Mandatory)]
@@ -144,12 +143,7 @@ function New-TppObject {
 
                 'Success' {
                     Write-Verbose "Successfully created $Class at $newPath"
-                    $returnObject = [TppObject] @{
-                        Name     = $response.Object.Name
-                        TypeName = $response.Object.TypeName
-                        Path     = $response.Object.DN
-                        Guid     = $response.Object.Guid
-                    }
+                    $returnObject = ConvertTo-TppObject -Path $response.Object.DN -Guid $response.Object.Guid -TypeName $response.Object.TypeName
                 }
 
                 'ObjectDoesNotExist' {
