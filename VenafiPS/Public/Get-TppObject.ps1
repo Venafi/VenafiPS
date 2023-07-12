@@ -23,7 +23,7 @@ function Get-TppObject {
     Path, Guid
 
     .OUTPUTS
-    TppObject
+    PSCustomObject
 
     .EXAMPLE
     Get-TppObject -Path '\VED\Policy\My object'
@@ -67,13 +67,14 @@ function Get-TppObject {
     process {
 
         if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
-            $inputObject = $Path | ConvertTo-TppFullPath
-        } else {
-            $inputObject = $Guid
+            $Path | ConvertTo-TppFullPath | ForEach-Object {
+                ConvertTo-TppObject -Path $_ -VenafiSession $VenafiSession
+            }
         }
-
-        foreach ($thisInputObject in $inputObject) {
-            [TppObject]::new($thisInputObject, $VenafiSession)
+        else {
+            $Guid | ConvertTo-TppFullPath | ForEach-Object {
+                ConvertTo-TppObject -Guid $_ -VenafiSession $VenafiSession
+            }
         }
     }
 }

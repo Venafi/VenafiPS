@@ -39,7 +39,6 @@ function Find-TppCodeSignEnvironment {
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '',	Justification = 'Param is being used, possible pssa bug?')]
-    [OutputType([TppObject])]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
@@ -68,12 +67,7 @@ function Find-TppCodeSignEnvironment {
         }
 
         foreach ($env in $envs) {
-            [TppObject] @{
-                Name     = $env.Name
-                TypeName = $env.TypeName
-                Path     = $env.Path
-                Guid     = $env.Guid
-            }
+            ConvertTo-TppObject -Path $env.Path -Guid $env.Guid -TypeName $env.TypeName
         }
     }
 }

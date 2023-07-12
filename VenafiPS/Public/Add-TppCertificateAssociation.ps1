@@ -60,7 +60,7 @@ function Add-TppCertificateAssociation {
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'AddByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
+        [pscustomobject] $InputObject,
 
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'AddByPath')]
         [ValidateNotNullOrEmpty()]

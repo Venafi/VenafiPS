@@ -1,0 +1,346 @@
+{
+    "Add-TppAdaptableHash": {
+        "TppVersion": "",
+        "TppTokenScope": "restricted:manage,delete"
+    },
+    "Add-TppCertificateAssociation": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:manage"
+    },
+    "Add-TppEngineFolder": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Add-VenafiTeamMember": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Add-VenafiTeamOwner": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Convert-TppObject": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "ConvertTo-TppGuid": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "ConvertTo-TppPath": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Export-VenafiCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:manage"
+    },
+    "Find-TppClient": {
+        "TppVersion": "",
+        "TppTokenScope": "agent:$null"
+    },
+    "Find-TppCodeSignEnvironment": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:$null"
+    },
+    "Find-TppCodeSignProject": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:$null"
+    },
+    "Find-TppCodeSignTemplate": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:$null"
+    },
+    "Find-TppEngine": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:$null"
+    },
+    "Find-TppIdentity": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:$null"
+    },
+    "Find-TppObject": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:$null"
+    },
+    "Find-TppVaultId": {
+        "TppVersion": "",
+        "TppTokenScope": "restricted:$null"
+    },
+    "Find-VaasObject": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "Find-VenafiCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:$null"
+    },
+    "Get-TppAttribute": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:$null"
+    },
+    "Get-TppClassAttribute": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Get-TppCodeSignConfig": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:manage"
+    },
+    "Get-TppCodeSignEnvironment": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:$null"
+    },
+    "Get-TppCodeSignProject": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:$null"
+    },
+    "Get-TppCredential": {
+        "TppVersion": "",
+        "TppTokenScope": "security:manage"
+    },
+    "Get-TppCustomField": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Get-TppEngineFolder": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Get-TppIdentityAttribute": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:$null"
+    },
+    "Get-TppObject": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Get-TppPermission": {
+        "TppVersion": "",
+        "TppTokenScope": "security:$null"
+    },
+    "Get-TppSystemStatus": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Get-TppVersion": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Get-TppWorkflowTicket": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Get-VaasApplication": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "Get-VaasConnector": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "Get-VaasIssuingTemplate": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "Get-VenafiCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:$null"
+    },
+    "Get-VenafiIdentity": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:$null"
+    },
+    "Get-VenafiTeam": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Import-TppCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:discover"
+    },
+    "Import-VaasCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "Invoke-TppCertificatePush": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:manage"
+    },
+    "Invoke-TppCertificateRenewal": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:manage"
+    },
+    "Invoke-VenafiCertificateAction": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:manage for Reset, Renew, Push, and Validate.  certificate:revoke for Revoke.  certificate:delete for Delete."
+    },
+    "Move-TppObject": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "New-TppCapiApplication": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "New-TppCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:manage"
+    },
+    "New-TppCodeSignProject": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:manage"
+    },
+    "New-TppCustomField": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "New-TppDevice": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "New-TppObject": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage.  If a certificate is provided as an attribute, certificate:manage as well."
+    },
+    "New-TppPolicy": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "New-TppToken": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "New-VaasApplication": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "New-VaasCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "New-VaasConnector": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "New-VenafiSession": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "New-VenafiTeam": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Read-VenafiLog": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Remove-TppCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:delete.  If using KeepAssociatedApps, configuration:$null,certificate:manage as well."
+    },
+    "Remove-TppCertificateAssociation": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:manage.  If using -All, configuration:$null as well."
+    },
+    "Remove-TppClient": {
+        "TppVersion": "",
+        "TppTokenScope": "agent:delete"
+    },
+    "Remove-TppCodeSignEnvironment": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:delete"
+    },
+    "Remove-TppCodeSignProject": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:delete"
+    },
+    "Remove-TppEngineFolder": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:delete"
+    },
+    "Remove-TppObject": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:delete"
+    },
+    "Remove-TppPermission": {
+        "TppVersion": "",
+        "TppTokenScope": "security:delete"
+    },
+    "Remove-VaasConnector": {
+        "TppVersion": "",
+        "TppTokenScope": ""
+    },
+    "Remove-VenafiTeam": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:delete"
+    },
+    "Remove-VenafiTeamMember": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Remove-VenafiTeamOwner": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Rename-TppObject": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Revoke-TppCertificate": {
+        "TppVersion": "",
+        "TppTokenScope": "certificate:revoke"
+    },
+    "Revoke-TppGrant": {
+        "TppVersion": "22.3",
+        "TppTokenScope": "admin:delete"
+    },
+    "Revoke-TppToken": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Search-TppHistory": {
+        "TppVersion": "",
+        "TppTokenScope": "restricted:$null, certificate:$null"
+    },
+    "Set-TppAttribute": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:manage"
+    },
+    "Set-TppCodeSignProjectStatus": {
+        "TppVersion": "",
+        "TppTokenScope": "codesign:manage"
+    },
+    "Set-TppCredential": {
+        "TppVersion": "",
+        "TppTokenScope": "security:manage"
+    },
+    "Set-TppPermission": {
+        "TppVersion": "",
+        "TppTokenScope": "security:manage"
+    },
+    "Set-TppWorkflowTicketStatus": {
+        "TppVersion": "",
+        "TppTokenScope": "approve with any scope"
+    },
+    "Test-ModuleHash": {
+        "TppVersion": "",
+        "TppTokenScope": "none"
+    },
+    "Test-TppIdentity": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:$null"
+    },
+    "Test-TppObject": {
+        "TppVersion": "",
+        "TppTokenScope": "configuration:$null"
+    },
+    "Test-TppToken": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    },
+    "Write-TppLog": {
+        "TppVersion": "",
+        "TppTokenScope": "any scope"
+    }
+}

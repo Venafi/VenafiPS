@@ -77,11 +77,7 @@ function Find-TppCodeSignProject {
 
         if ( $response.Success ) {
             $allProjects += foreach ($thisProject in $response.Projects) {
-                [TppObject] @{
-                    TypeName = 'Code Signing Project'
-                    Path     = $thisProject.DN
-                    Guid     = $thisProject.Guid
-                }
+                ConvertTo-TppObject -Path $thisProject.DN -Guid $thisProject.Guid -TypeName 'Code Signing Project'
             }
 
         } else {

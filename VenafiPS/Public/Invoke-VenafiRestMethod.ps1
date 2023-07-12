@@ -264,7 +264,22 @@ function Invoke-VenafiRestMethod {
 
         switch ($statusCode) {
             403 {
-                throw 'A permissions error was encountered.  Ensure both the permissions and token scope are correct.'
+
+                $permMsg = ''
+
+                # get scope details for tpp
+                if ( $platform -ne 'VaaS' ) {
+                    $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
+                    $callingFunctionScope = ($script:functionConfig).$callingFunction.TppTokenScope
+                    if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of $callingFunctionScope." }
+
+                    $rejectedScope = (Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ''(.*)''').matches.groups[1].value
+                    if ( $rejectedScope ) { $permMsg += "  The current scope of $rejectedScope is insufficient.`r`n`r`n" }
+                }
+
+                $permMsg += $originalError.ErrorDetails.Message
+
+                throw $permMsg
             }
 
             409 {

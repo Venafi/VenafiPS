@@ -57,7 +57,7 @@ PowerShellVersion = '5.1'
 # RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-ScriptsToProcess = 'Classes\TppObject.ps1', 'Classes\TppPermission.ps1',
+ScriptsToProcess = 'Classes\TppPermission.ps1',
                'Classes\VenafiSession.ps1', 'Enum\TppCertificateStage.ps1',
                'Enum\TppCodeSignProjectStatus.ps1', 'Enum\TppCodeSignResult.ps1',
                'Enum\TppConfigResult.ps1', 'Enum\TppEventSeverity.ps1',

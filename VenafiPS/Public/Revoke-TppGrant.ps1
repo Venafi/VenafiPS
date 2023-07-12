@@ -8,6 +8,7 @@ function Revoke-TppGrant {
     Revoke all grants for a specific user.
     You must either be an administrator or oauth administrator to perform this action.
     Also, your token must have the admin:delete scope.
+    Available in TPP v22.3 and later.
 
     .PARAMETER ID
     Prefixed universal id for the user.  To search, use Find-TppIdentity.

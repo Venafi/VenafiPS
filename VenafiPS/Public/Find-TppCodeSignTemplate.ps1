@@ -77,11 +77,7 @@ function Find-TppCodeSignTemplate {
 
         if ( $response.Success ) {
             $allTemplates += foreach ($thisTemplate in $response.CertificateTemplates) {
-                [TppObject] @{
-                    TypeName = $thisTemplate.Type
-                    Path     = $thisTemplate.DN
-                    Guid     = $thisTemplate.Guid
-                }
+                ConvertTo-TppObject -Path $thisTemplate.DN -Guid $thisTemplate.Guid - TypeName $thisTemplate.Type
             }
 
         } else {
