@@ -25,7 +25,7 @@ function Invoke-VaasWorkflow {
 
     ID                                   WorkflowName Success
     --                                   ------------ -------
-    89fa4370-2026-11ee-8a18-ff9579bb988e Test            True
+    89fa4370-2026-11ee-8a18-ff9579bb988e Test         True
 
     Trigger provisioning
 
@@ -40,7 +40,8 @@ function Invoke-VaasWorkflow {
 
     .EXAMPLE
     Find-VaasObject -Type MachineIdentity -Filter @('and', @('certificateValidityEnd', 'lt', (get-date).AddDays(30)), @('certificateValidityEnd', 'gt', (get-date))) | ForEach-Object {
-        $null = $_ | Invoke-VenafiCertificateAction -Renew
+        $renewResult = $_ | Invoke-VenafiCertificateAction -Renew
+        # optionally add renew validation
         $_ | Invoke-VaasWorkflow -WorkflowName 'Provision'
     }
 
