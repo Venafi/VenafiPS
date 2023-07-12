@@ -1,3 +1,10 @@
+## 5.6.0
+- Add specific error messages when a TPP token scope/privilege is not sufficient for the current function.  The message will include both the current and missing scope/privilege, [#175](https://github.com/Venafi/VenafiPS/issues/175).
+- Add `Set-VaasTeam` to update existing VaaS teams. You can update the name, role, and/or user matching rules. User matching rules can be overwritten or appended to.
+- Add `Remove-VaasObject` to remove a VaaS team, application, machine, machine identity, tag, or connector.
+- Remove `TppObject` class. This was causing issues for some who aren't familiar with the Using keyword and differences between it and import-module when it comes to classes.
+- Add `Invoke-VaasWorkflow` to trigger either a Test, Provision, or Discover machine/machine identity workflow. As one example, this is super helpful when looking to automate renewal and provisioning of certificates that may expire soon.
+
 ## 5.5.1
 - Fix error with `Get-TppPermission` when an identity which had been permissioned has had its account deleted.  Explicit permissions will be returned, but the identity path and name will be null as we can no longer look it up from the provider.
 - `Get-TppPermission -Attribute` has been deprecated.  Identity path and name are included in the return object.  For other attributes, use `Get-TppIdentityAttribute`.
@@ -505,6 +512,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

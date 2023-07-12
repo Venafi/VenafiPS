@@ -7,13 +7,13 @@ Remove certificate associations
 
 ### RemoveAllByObject
 ```
-Remove-TppCertificateAssociation -InputObject <TppObject> [-OrphanCleanup] [-All] [-VenafiSession <PSObject>]
+Remove-TppCertificateAssociation -InputObject <PSObject> [-OrphanCleanup] [-All] [-VenafiSession <PSObject>]
  [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RemoveOneByObject
 ```
-Remove-TppCertificateAssociation -InputObject <TppObject> -ApplicationPath <String[]> [-OrphanCleanup]
+Remove-TppCertificateAssociation -InputObject <PSObject> -ApplicationPath <String[]> [-OrphanCleanup]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -59,7 +59,7 @@ Remove all certificate associations
 TppObject which represents a unique object
 
 ```yaml
-Type: TppObject
+Type: PSObject
 Parameter Sets: RemoveAllByObject, RemoveOneByObject
 Aliases:
 

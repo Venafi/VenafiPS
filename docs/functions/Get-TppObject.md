@@ -94,7 +94,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Path, Guid
 ## OUTPUTS
 
-### TppObject
+### PSCustomObject
 ## NOTES
 
 ## RELATED LINKS

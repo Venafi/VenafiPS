@@ -7,7 +7,7 @@ Add certificate association
 
 ### AddByObject
 ```
-Add-TppCertificateAssociation -InputObject <TppObject> [-ApplicationPath <String[]>] [-PushCertificate]
+Add-TppCertificateAssociation -InputObject <PSObject> [-ApplicationPath <String[]>] [-PushCertificate]
  [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -41,7 +41,7 @@ Add the association and push the certificate
 TppObject which represents a certificate
 
 ```yaml
-Type: TppObject
+Type: PSObject
 Parameter Sets: AddByObject
 Aliases:
 

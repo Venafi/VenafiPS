@@ -7,7 +7,7 @@ Get permissions for TPP objects
 
 ### ByObject (Default)
 ```
-Get-TppPermission -InputObject <TppObject> [-IdentityId <String[]>] [-Explicit] [-VenafiSession <PSObject>]
+Get-TppPermission -InputObject <PSObject> [-IdentityId <String[]>] [-Explicit] [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
@@ -84,7 +84,7 @@ TppObject representing an object in TPP, eg.
 from Find-TppObject or Get-TppObject
 
 ```yaml
-Type: TppObject
+Type: PSObject
 Parameter Sets: ByObject
 Aliases:
 

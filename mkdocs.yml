@@ -70,6 +70,7 @@ nav:
     - Import-VaasCertificate: functions/Import-VaasCertificate.md
     - Invoke-TppCertificatePush: functions/Invoke-TppCertificatePush.md
     - Invoke-TppCertificateRenewal: functions/Invoke-TppCertificateRenewal.md
+    - Invoke-VaasWorkflow: functions/Invoke-VaasWorkflow.md
     - Invoke-VenafiCertificateAction: functions/Invoke-VenafiCertificateAction.md
     - Invoke-VenafiRestMethod: functions/Invoke-VenafiRestMethod.md
     - Move-TppObject: functions/Move-TppObject.md
@@ -96,6 +97,7 @@ nav:
     - Remove-TppObject: functions/Remove-TppObject.md
     - Remove-TppPermission: functions/Remove-TppPermission.md
     - Remove-VaasConnector: functions/Remove-VaasConnector.md
+    - Remove-VaasObject: functions/Remove-VaasObject.md
     - Remove-VenafiTeam: functions/Remove-VenafiTeam.md
     - Remove-VenafiTeamMember: functions/Remove-VenafiTeamMember.md
     - Remove-VenafiTeamOwner: functions/Remove-VenafiTeamOwner.md
@@ -109,6 +111,7 @@ nav:
     - Set-TppCredential: functions/Set-TppCredential.md
     - Set-TppPermission: functions/Set-TppPermission.md
     - Set-TppWorkflowTicketStatus: functions/Set-TppWorkflowTicketStatus.md
+    - Set-VaasTeam: functions/Set-VaasTeam.md
     - Test-ModuleHash: functions/Test-ModuleHash.md
     - Test-TppIdentity: functions/Test-TppIdentity.md
     - Test-TppObject: functions/Test-TppObject.md
