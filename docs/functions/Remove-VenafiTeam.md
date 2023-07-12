@@ -36,7 +36,7 @@ Remove a team bypassing the confirmation prompt
 
 ### -ID
 Team ID. 
-For VaaS, this is the team guid. 
+For VaaS, this is the team uuid. 
 For TPP, this is the local ID.
 
 ```yaml

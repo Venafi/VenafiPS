@@ -7,7 +7,7 @@ Get workflow ticket
 
 ### ByObject
 ```
-Get-TppWorkflowTicket -InputObject <TppObject> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-TppWorkflowTicket -InputObject <PSObject> [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### ByPath
@@ -43,7 +43,7 @@ Get ticket details for multiple certificates
 TppObject which represents a certificate object
 
 ```yaml
-Type: TppObject
+Type: PSObject
 Parameter Sets: ByObject
 Aliases:
 
