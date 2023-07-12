@@ -95,7 +95,6 @@ function Find-TppObject {
 
     [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
     [Alias('fto')]
-    [OutputType([TppObject])]
 
     param (
         [Parameter(ParameterSetName = 'FindByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -208,11 +207,7 @@ function Find-TppObject {
         }
 
         foreach ($object in $objects) {
-            [TppObject] @{
-                Path     = $object.DN
-                TypeName = $object.TypeName
-                Guid     = $object.Guid
-            }
+            ConvertTo-TppObject -Path $object.DN -Guid $object.Guid -TypeName $object.TypeName
         }
     }
 }

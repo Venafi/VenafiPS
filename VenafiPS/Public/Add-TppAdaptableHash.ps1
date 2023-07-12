@@ -84,7 +84,7 @@ function Add-TppAdaptableHash {
         [string] $FilePath,
 
         [Parameter()]
-        [psobject] $VenafiSession = $VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {

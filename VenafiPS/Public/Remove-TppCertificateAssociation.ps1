@@ -69,7 +69,7 @@ function Remove-TppCertificateAssociation {
 
         [Parameter(Mandatory, ParameterSetName = 'RemoveOneByObject', ValueFromPipeline)]
         [Parameter(Mandatory, ParameterSetName = 'RemoveAllByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
+        [PSCustomObject] $InputObject,
 
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'RemoveOneByPath')]
         [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'RemoveAllByPath')]

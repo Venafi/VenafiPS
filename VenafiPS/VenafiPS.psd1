@@ -57,7 +57,7 @@ PowerShellVersion = '5.1'
 # RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-ScriptsToProcess = 'Classes\TppObject.ps1', 'Classes\TppPermission.ps1',
+ScriptsToProcess = 'Classes\TppPermission.ps1',
                'Classes\VenafiSession.ps1', 'Enum\TppCertificateStage.ps1',
                'Enum\TppCodeSignProjectStatus.ps1', 'Enum\TppCodeSignResult.ps1',
                'Enum\TppConfigResult.ps1', 'Enum\TppEventSeverity.ps1',
@@ -107,7 +107,7 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'New-VaasConnector', 'Find-TppEngine', 'Get-TppEngineFolder',
                'Remove-TppEngineFolder', 'Add-TppEngineFolder', 'Revoke-TppGrant',
                'Add-TppAdaptableHash', 'New-VaasCertificate', 'Find-VaasObject',
-               'Remove-TppObject'
+               'Remove-TppObject', 'Set-VaasTeam', 'Remove-VaasObject'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

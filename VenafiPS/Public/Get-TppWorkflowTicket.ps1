@@ -64,7 +64,7 @@ function Get-TppWorkflowTicket {
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
-        [TppObject] $InputObject,
+        [PSCustomObject] $InputObject,
 
         [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
