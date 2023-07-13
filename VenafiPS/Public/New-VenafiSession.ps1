@@ -451,6 +451,10 @@ function New-VenafiSession {
         'Vaas' {
             $newSession.Server = $script:CloudUrl
             $newSession.Key = $VaasKey
+
+            if ( $VaultVaasKeyName ) {
+                Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
+            }
         }
 
         'VaultVaasKey' {
@@ -460,8 +464,6 @@ function New-VenafiSession {
                 throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
             }
             $newSession.Key = $keySecret
-
-            Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
         }
 
         Default {
