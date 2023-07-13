@@ -30,6 +30,27 @@ function Get-VaasSatellite {
     .EXAMPLE
     Get-VaasSatellite -ID 'VSatellite Hub 0001'
 
+    companyId                   : a05013bd-921d-440c-bc22-c9ead5c8d548
+    productEntitlements         : {ANY}
+    environmentId               : a05013bd-921d-440c-bc22-c9ead5c8d548
+    pairingCodeId               : a05013bd-921d-440c-bc22-c9ead5c8d548
+    name                        : VSatellite Hub 0001
+    edgeType                    : HUB
+    edgeStatus                  : ACTIVE
+    clientId                    : a05013bd-921d-440c-bc22-c9ead5c8d548
+    modificationDate            : 6/15/2023 11:48:40 AM
+    address                     : 1.2.3.4
+    deploymentDate              : 6/15/2023 11:44:14 AM
+    lastSeenOnDate              : 7/13/2023 12:00:40 PM
+    reconciliationFailed        : False
+    encryptionKeyId             : mwU4oTet9KwTGggRfhek0UtvighIw=
+    encryptionKeyDeploymentDate : 6/15/2023 11:48:40 AM
+    kubernetesVersion           : v1.23.6+k3s1
+    integrationServicesCount    : 0
+    vsatelliteId                : a05013bd-921d-440c-bc22-c9ead5c8d548
+    encryptionKey               :
+    encryptionKeyAlgorithm      :
+
     Get info for a specific VSatellite by name
 
     .EXAMPLE
@@ -44,6 +65,27 @@ function Get-VaasSatellite {
 
     .EXAMPLE
     Get-VaasSatellite -All -IncludeKey
+
+    companyId                   : a05013bd-921d-440c-bc22-c9ead5c8d548
+    productEntitlements         : {ANY}
+    environmentId               : a05013bd-921d-440c-bc22-c9ead5c8d548
+    pairingCodeId               : a05013bd-921d-440c-bc22-c9ead5c8d548
+    name                        : VSatellite Hub 0001
+    edgeType                    : HUB
+    edgeStatus                  : ACTIVE
+    clientId                    : a05013bd-921d-440c-bc22-c9ead5c8d548
+    modificationDate            : 6/15/2023 11:48:40 AM
+    address                     : 1.2.3.4
+    deploymentDate              : 6/15/2023 11:44:14 AM
+    lastSeenOnDate              : 7/13/2023 12:00:40 PM
+    reconciliationFailed        : False
+    encryptionKeyId             : mwU4oTet9KwTGggRfhek0UtvighIw=
+    encryptionKeyDeploymentDate : 6/15/2023 11:48:40 AM
+    kubernetesVersion           : v1.23.6+k3s1
+    integrationServicesCount    : 0
+    vsatelliteId                : a05013bd-921d-440c-bc22-c9ead5c8d548
+    encryptionKey               : o4aFaJUTtCydprvgRupQ1ZiY=
+    encryptionKeyAlgorithm      : ED25519
 
     Get info for VSatellites including the encryption key and algorithm
 
