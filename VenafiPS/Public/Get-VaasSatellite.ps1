@@ -138,7 +138,7 @@ function Get-VaasSatellite {
 
         if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
             $params.UriLeaf = 'edgeinstances'
-            $response = Invoke-VenafiRestMethod @params
+            $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty edgeinstances
         }
         else {
             if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
@@ -158,14 +158,7 @@ function Get-VaasSatellite {
             continue
         }
 
-        if ( $response.PSObject.Properties.Name -contains 'edgeinstances' ) {
-            $thisInstance = $response | Select-Object -ExpandProperty edgeinstances
-        }
-        else {
-            $thisInstance = $response
-        }
-
-        $thisInstance | Select-Object *,
+        $response | Select-Object *,
         @{
             'n' = 'vsatelliteId'
             'e' = {
