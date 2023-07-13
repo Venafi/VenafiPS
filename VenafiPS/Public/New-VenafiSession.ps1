@@ -505,7 +505,13 @@ function New-VenafiSession {
         $newSession | Add-Member @{ CustomField = $certFields.Items | Sort-Object -Property Guid -Unique }
     }
     else {
-        $userInfo = Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession -ErrorAction SilentlyContinue | Select-Object -ExpandProperty user
+        $userInfo = Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession -ErrorAction SilentlyContinue | Select-Object -ExpandProperty user | Select-Object *,
+        @{
+            'n' = 'userId'
+            'e' = {
+                $_.Id
+            }
+        } -ExcludeProperty id
         $newSession | Add-Member @{'User' = $userInfo }
         # $newSession | Add-Member @{
         #     MachineType = (Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $newSession | Select-Object -ExpandProperty machineTypes | Select-Object @{
