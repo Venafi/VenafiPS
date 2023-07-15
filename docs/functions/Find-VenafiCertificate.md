@@ -33,6 +33,12 @@ Find-VenafiCertificate [-Filter <ArrayList>] [-Order <PSObject[]>] [-IncludeVaas
  [-VenafiSession <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
+### VaasSavedSearch
+```
+Find-VenafiCertificate -SavedSearchName <String> [-IncludeVaasOwner] [-VenafiSession <PSObject>]
+ [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+```
+
 ## DESCRIPTION
 Find certificates based on various attributes.
 Supports standard PS paging parameters First, Skip, and IncludeTotalCount.
@@ -890,13 +896,28 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -SavedSearchName
+{{ Fill SavedSearchName Description }}
+
+```yaml
+Type: String
+Parameter Sets: VaasSavedSearch
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -IncludeVaasOwner
 Retrieve detailed user/team owner info, only for VaaS.
 This will cause additional api calls to be made and take longer.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: VaaS
+Parameter Sets: VaaS, VaasSavedSearch
 Aliases:
 
 Required: False

@@ -63,6 +63,7 @@ nav:
     - Get-VaasApplication: functions/Get-VaasApplication.md
     - Get-VaasConnector: functions/Get-VaasConnector.md
     - Get-VaasIssuingTemplate: functions/Get-VaasIssuingTemplate.md
+    - Get-VaasSatellite: functions/Get-VaasSatellite.md
     - Get-VenafiCertificate: functions/Get-VenafiCertificate.md
     - Get-VenafiIdentity: functions/Get-VenafiIdentity.md
     - Get-VenafiTeam: functions/Get-VenafiTeam.md
@@ -111,6 +112,7 @@ nav:
     - Set-TppCredential: functions/Set-TppCredential.md
     - Set-TppPermission: functions/Set-TppPermission.md
     - Set-TppWorkflowTicketStatus: functions/Set-TppWorkflowTicketStatus.md
+    - Set-VaasCertificateAssignment: functions/Set-VaasCertificateAssignment.md
     - Set-VaasTeam: functions/Set-VaasTeam.md
     - Test-ModuleHash: functions/Test-ModuleHash.md
     - Test-TppIdentity: functions/Test-TppIdentity.md
