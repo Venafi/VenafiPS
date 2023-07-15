@@ -107,7 +107,7 @@ FunctionsToExport = 'Add-TppCertificateAssociation', 'Convert-TppObject',
                'Remove-TppEngineFolder', 'Add-TppEngineFolder', 'Revoke-TppGrant',
                'Add-TppAdaptableHash', 'New-VaasCertificate', 'Find-VaasObject',
                'Remove-TppObject', 'Set-VaasTeam', 'Remove-VaasObject',
-               'Invoke-VaasWorkflow'
+               'Invoke-VaasWorkflow', 'Get-VaasSatellite', 'Set-VaasCertificateAssignment'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
