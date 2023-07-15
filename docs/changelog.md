@@ -1,3 +1,11 @@
+## 5.7.0
+- Add `Find-VenafiCertificate -SavedSearchName` to find VaaS certificate details via an existing saved search filter
+- Add `Get-VaasSatellite` to retrieve vsatellite details optionally including encryption key and algorithm
+- Add `Set-VaasCertificateAssignment` to add or replace applications associated to certificates
+- Add User property to `$VenafiSession` when connecting to VaaS.  All kinds of helpful info here including company ID.
+- Fix credentials not being written to the vault with `New-VenafiSession -VaultVaasKeyName`
+
+
 ## 5.6.0
 - Add specific error messages when a TPP token scope/privilege is not sufficient for the current function.  The message will include both the current and missing scope/privilege, [#175](https://github.com/Venafi/VenafiPS/issues/175).
 - Add `Set-VaasTeam` to update existing VaaS teams. You can update the name, role, and/or user matching rules. User matching rules can be overwritten or appended to.
@@ -512,6 +520,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
