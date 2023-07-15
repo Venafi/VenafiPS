@@ -178,15 +178,6 @@ function New-VenafiSession {
         [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
         [Parameter(ParameterSetName = 'VaultAccessToken')]
         [Parameter(ParameterSetName = 'VaultRefreshToken')]
-        [ValidateScript( {
-                if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
-                    $true
-                }
-                else {
-                    throw "'$_' is not a valid server url, it should look like https://venafi.company.com or venafi.company.com"
-                }
-            }
-        )]
         [Alias('ServerUrl', 'Url')]
         [string] $Server,
 
@@ -451,6 +442,10 @@ function New-VenafiSession {
         'Vaas' {
             $newSession.Server = $script:CloudUrl
             $newSession.Key = $VaasKey
+
+            if ( $VaultVaasKeyName ) {
+                Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
+            }
         }
 
         'VaultVaasKey' {
@@ -460,8 +455,6 @@ function New-VenafiSession {
                 throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
             }
             $newSession.Key = $keySecret
-
-            Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
         }
 
         Default {
@@ -503,7 +496,13 @@ function New-VenafiSession {
         $newSession | Add-Member @{ CustomField = $certFields.Items | Sort-Object -Property Guid -Unique }
     }
     else {
-        $userInfo = Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession -ErrorAction SilentlyContinue | Select-Object -ExpandProperty user
+        $userInfo = Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession -ErrorAction SilentlyContinue | Select-Object -ExpandProperty user | Select-Object *,
+        @{
+            'n' = 'userId'
+            'e' = {
+                $_.Id
+            }
+        } -ExcludeProperty id
         $newSession | Add-Member @{'User' = $userInfo }
         # $newSession | Add-Member @{
         #     MachineType = (Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $newSession | Select-Object -ExpandProperty machineTypes | Select-Object @{

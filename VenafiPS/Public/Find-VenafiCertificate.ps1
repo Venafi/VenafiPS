@@ -418,7 +418,11 @@ function Find-VenafiCertificate {
         [parameter(ParameterSetName = 'VaaS')]
         [psobject[]] $Order,
 
+        [parameter(Mandatory, ParameterSetName = 'VaasSavedSearch')]
+        [string] $SavedSearchName,
+
         [Parameter(ParameterSetName = 'VaaS')]
+        [Parameter(ParameterSetName = 'VaasSavedSearch')]
         [Switch] $IncludeVaasOwner,
 
         [Parameter(ParameterSetName = 'TPP')]
@@ -435,7 +439,8 @@ function Find-VenafiCertificate {
         if ( $PSCmdlet.ParameterSetName -eq 'NoParams' ) {
             # validate based on the session platform
             $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
-        } else {
+        }
+        else {
             # validate based on the paramset
             $platform = Test-VenafiSession -VenafiSession $VenafiSession -Platform $PSCmdlet.ParameterSetName -PassThru
         }
@@ -448,7 +453,8 @@ function Find-VenafiCertificate {
 
             $toRetrieveCount = if ($PSBoundParameters.ContainsKey('First') ) {
                 $PSCmdlet.PagingParameters.First
-            } else {
+            }
+            else {
                 1000 # default to max page size allowed
             }
 
@@ -461,6 +467,18 @@ function Find-VenafiCertificate {
             }
 
             $body = New-VaasSearchQuery @queryParams
+
+            if ( $PSBoundParameters.ContainsKey('SavedSearchName') ) {
+                # get saved search data and update payload
+                $thisSavedSearch = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'savedsearches' | Select-Object -ExpandProperty savedSearchInfo | Where-Object { $_.name -eq $SavedSearchName }
+                if ( $thisSavedSearch ) {
+                    $body.expression = $thisSavedSearch.searchDetails.expression
+                    $body.ordering = $thisSavedSearch.searchDetails.ordering
+                }
+                else {
+                    throw "The saved search name $SavedSearchName does not exist"
+                }
+            }
 
             $params = @{
                 VenafiSession = $VenafiSession
@@ -475,7 +493,8 @@ function Find-VenafiCertificate {
             $apps = [System.Collections.Generic.List[object]]::new()
             $appOwners = [System.Collections.Generic.List[object]]::new()
 
-        } else {
+        }
+        else {
 
             $params = @{
                 VenafiSession = $VenafiSession
@@ -707,7 +726,8 @@ function Find-VenafiCertificate {
                                 }
                                 $thisOwnerDetail
                             }
-                        } else {
+                        }
+                        else {
                             $_.ownership.owningContainers | Select-Object owningUsers, owningTeams
                         }
                     }
@@ -738,12 +758,14 @@ function Find-VenafiCertificate {
                 $response.'count' -eq 0 -or $response.'count' -lt $body.paging.pageSize
             )
 
-        } else {
+        }
+        else {
 
 
             if ( $PSBoundParameters.ContainsKey('Path') ) {
                 $thisPath = $Path | ConvertTo-TppFullPath
-            } elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
+            }
+            elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
                 # guid provided, get path
                 $thisPath = $Guid | ConvertTo-TppPath -VenafiSession $VenafiSession
             }
@@ -751,7 +773,8 @@ function Find-VenafiCertificate {
             if ( $thisPath ) {
                 if ( $Recursive.IsPresent ) {
                     $params.Body.ParentDnRecursive = $thisPath
-                } else {
+                }
+                else {
                     $params.Body.ParentDn = $thisPath
                 }
             }
@@ -761,7 +784,8 @@ function Find-VenafiCertificate {
             $totalRecordCount = 0
             if ($PSVersionTable.PSVersion.Major -lt 6) {
                 $totalRecordCount = [int]$response.Headers.'X-Record-Count'
-            } else {
+            }
+            else {
                 $totalRecordCount = [int]($response.Headers.'X-Record-Count'[0])
             }
 
@@ -789,14 +813,16 @@ function Find-VenafiCertificate {
 
                     $end = if ( $totalRecordCount -lt $setPoint ) {
                         $totalRecordCount
-                    } else {
+                    }
+                    else {
                         $setPoint
                     }
 
                     Write-Verbose ('getting {0}-{1} of {2}' -f ($params.Body.Offset + 1), $end, $totalRecordCount)
                     try {
                         $response = Invoke-VenafiRestMethod @params -Verbose:$false
-                    } catch {
+                    }
+                    catch {
                         $ProgressPreference = $oldProgressPreference
                         throw $_
                     }
