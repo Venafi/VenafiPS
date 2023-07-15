@@ -1,5 +1,5 @@
-- Add specific error messages when a TPP token scope/privilege is not sufficient for the current function.  The message will include both the current and missing scope/privilege, [#175](https://github.com/Venafi/VenafiPS/issues/175).
-- Add `Set-VaasTeam` to update existing VaaS teams. You can update the name, role, and/or user matching rules. User matching rules can be overwritten or appended to.
-- Add `Remove-VaasObject` to remove a VaaS team, application, machine, machine identity, tag, or connector.
-- Remove `TppObject` class. This was causing issues for some who aren't familiar with the Using keyword and differences between it and import-module when it comes to classes.
-- Add `Invoke-VaasWorkflow` to trigger either a Test, Provision, or Discover machine/machine identity workflow. As one example, this is super helpful when looking to automate renewal and provisioning of certificates that may expire soon.
+- Add `Find-VenafiCertificate -SavedSearchName` to find VaaS certificate details via an existing saved search filter
+- Add `Get-VaasSatellite` to retrieve vsatellite details optionally including encryption key and algorithm
+- Add `Set-VaasCertificateAssignment` to add or replace applications associated to certificates
+- Add User property to `$VenafiSession` when connecting to VaaS.  All kinds of helpful info here including company ID.
+- Fix credentials not being written to the vault with `New-VenafiSession -VaultVaasKeyName`
