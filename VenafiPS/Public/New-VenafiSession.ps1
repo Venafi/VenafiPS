@@ -515,14 +515,17 @@ function New-VenafiSession {
                 }, * -ExcludeProperty id)
         }
 
-        # $machineTypeArgCompleterSb = {
-        #     $newSession.MachineType | ForEach-Object {
-        #         $_.machineType
-        #         # '''{0}''' -f $_.machineType
-        #     }
-        # }
+        $machineTypeArgCompleterSb = {
+            param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
 
-        # Register-ArgumentCompleter -CommandName 'New-VaasMachine' -ParameterName 'MachineType' -ScriptBlock $machineTypeArgCompleterSb
+            $VenafiSession.MachineType.machineType | Where-Object {
+                $_ -like "$wordToComplete*"
+            } | ForEach-Object {
+                "'$_'"
+            }
+        }
+
+        Register-ArgumentCompleter -CommandName 'New-VaasMachine', 'Find-VaasMachine' -ParameterName 'MachineType' -ScriptBlock $machineTypeArgCompleterSb
 
     }
 
