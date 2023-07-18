@@ -1,10 +1,11 @@
 function Find-VaasMachine {
     <#
     .SYNOPSIS
-    Find machines
+    Find machine info
 
     .DESCRIPTION
-    Find machines based on type and/or status
+    Find machine info based on type and/or status.
+    Multiple filters will be additive.
 
     .PARAMETER MachineType
     Machine type to retrieve.  Use tab-ahead for complete list.
