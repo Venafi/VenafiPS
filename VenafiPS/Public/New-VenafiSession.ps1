@@ -496,40 +496,34 @@ function New-VenafiSession {
         $newSession | Add-Member @{ CustomField = $certFields.Items | Sort-Object -Property Guid -Unique }
     }
     else {
-        $userInfo = Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession -ErrorAction SilentlyContinue | Select-Object -ExpandProperty user | Select-Object *,
-        @{
-            'n' = 'userId'
-            'e' = {
-                $_.Id
-            }
-        } -ExcludeProperty id
-        $newSession | Add-Member @{'User' = $userInfo }
-        # $newSession | Add-Member @{
-        #     MachineType = (Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $newSession | Select-Object -ExpandProperty machineTypes | Select-Object @{
-        #             'n' = 'machineTypeId'
-        #             'e' = {
-        #                 $_.Id
-        #             }
-        #         }, * -ExcludeProperty id)
+
+        $newSession | Add-Member @{
+            User = (Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession | Select-Object -ExpandProperty user | Select-Object @{
+                    'n' = 'userId'
+                    'e' = {
+                        $_.Id
+                    }
+                }, * -ExcludeProperty id)
+        }
+
+        $newSession | Add-Member @{
+            MachineType = (Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $newSession | Select-Object -ExpandProperty machineTypes | Select-Object @{
+                    'n' = 'machineTypeId'
+                    'e' = {
+                        $_.Id
+                    }
+                }, * -ExcludeProperty id)
+        }
+
+        # $machineTypeArgCompleterSb = {
+        #     $newSession.MachineType | ForEach-Object {
+        #         $_.machineType
+        #         # '''{0}''' -f $_.machineType
+        #     }
         # }
 
-        # $newSession | Add-Member @{
-        #     ApplicationServerType = (Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'applicationservertypes' -VenafiSession $newSession | Select-Object -ExpandProperty applicationServerTypes | Select-Object @{
-        #             'n' = 'applicationServerTypeId'
-        #             'e' = {
-        #                 $_.Id
-        #             }
-        #         }, * -ExcludeProperty id)
-        # }
+        # Register-ArgumentCompleter -CommandName 'New-VaasMachine' -ParameterName 'MachineType' -ScriptBlock $machineTypeArgCompleterSb
 
-        # $newSession | Add-Member @{
-        #     ActivityType = (Invoke-VenafiRestMethod -UriLeaf 'activitytypes' -VenafiSession $newSession | Select-Object -ExpandProperty activityTypes | Select-Object @{
-        #             'n' = 'activityTypeId'
-        #             'e' = {
-        #                 $_.Id
-        #             }
-        #         }, * -ExcludeProperty id)
-        # }
     }
 
     if ( $PassThru ) {
