@@ -11,7 +11,7 @@ function Invoke-VaasWorkflow {
     Workflows 'Test' and 'GetConfig' require the machine ID.
     Workflows 'Provision' and 'Discover' require the machine identity ID.
 
-    .PARAMETER WorkflowName
+    .PARAMETER Workflow
     The name of the workflow to trigger.
     Valid values are 'Test', 'GetConfig', 'Provision', or 'Discover'.
 
@@ -21,18 +21,18 @@ function Invoke-VaasWorkflow {
     A VaaS key can also provided.
 
     .EXAMPLE
-    Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -WorkflowName 'Provision'
+    Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -Workflow 'Provision'
 
-    ID                                   WorkflowName Success
+    ID                                   Workflow     Success
     --                                   ------------ -------
     89fa4370-2026-11ee-8a18-ff9579bb988e Test         True
 
     Trigger provisioning
 
     .EXAMPLE
-    Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -WorkflowName 'Provision'
+    Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -Workflow 'Provision'
 
-    ID                                   WorkflowName Success Error
+    ID                                   Workflow     Success Error
     --                                   ------------ ------- -----
     1345baf1-fc56-49b7-aa03-78e35bfe0a1a Provision    False   Failed for some reason....
 
@@ -42,10 +42,10 @@ function Invoke-VaasWorkflow {
     Find-VaasObject -Type MachineIdentity -Filter @('and', @('certificateValidityEnd', 'lt', (get-date).AddDays(30)), @('certificateValidityEnd', 'gt', (get-date))) | ForEach-Object {
         $renewResult = $_ | Invoke-VenafiCertificateAction -Renew
         # optionally add renew validation
-        $_ | Invoke-VaasWorkflow -WorkflowName 'Provision'
+        $_ | Invoke-VaasWorkflow -Workflow 'Provision'
     }
 
-    ID                                   WorkflowName Success
+    ID                                   Workflow     Success
     --                                   ------------ -------
     89fa4370-2026-11ee-8a18-ff9579bb988e Provision    True
     7598917c-7027-4927-be73-e592bcc4c567 Provision    True
@@ -68,7 +68,7 @@ function Invoke-VaasWorkflow {
 
         [Parameter()]
         [ValidateSet('Test', 'GetConfig', 'Provision', 'Discover')]
-        [string] $WorkflowName = 'Test',
+        [string] $Workflow = 'Test',
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
@@ -128,7 +128,7 @@ function Invoke-VaasWorkflow {
                 }
             }
 
-            switch ($WorkflowName) {
+            switch ($Workflow) {
                 'GetConfig' {
                     $triggerParams.Body.workflowName = 'getTargetConfiguration'
                 }
@@ -158,9 +158,9 @@ function Invoke-VaasWorkflow {
             $responseObj = $response | ConvertFrom-Json
 
             $out = [pscustomobject]@{
-                ID           = $ID
-                WorkflowName = $WorkflowName
-                Success      = $true
+                ID       = $ID
+                Workflow = $Workflow
+                Success  = $true
             }
 
             if ( $responseObj.data.result -ne $true ) {
