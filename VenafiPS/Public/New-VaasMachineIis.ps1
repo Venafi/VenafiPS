@@ -145,7 +145,7 @@ function New-VaasMachineIis {
         VenafiSession     = $VenafiSession
         Name              = $Name
         MachineType       = $machineTypeId
-        VSatelliteID      = $thisVsat.vsatelliteId
+        VSatellite        = $thisVsat.vsatelliteId
         DekID             = $thisVsat.encryptionKeyId
         Owner             = $Owner
         PassThru          = $true
@@ -171,7 +171,7 @@ function New-VaasMachineIis {
         $params.Status = $Status
     }
 
-    $response = New-VaasMachine @params
+    $response = New-VaasMachineBase @params
 
     if ( $PassThru ) {
         $response

@@ -231,7 +231,7 @@ function New-VaasMachineCommonKeystore {
         VenafiSession     = $VenafiSession
         Name              = $Name
         MachineType       = $machineTypeId
-        VSatelliteID      = $thisVsat.vsatelliteId
+        VSatellite        = $thisVsat.vsatelliteId
         DekID             = $thisVsat.encryptionKeyId
         Owner             = $Owner
         PassThru          = $true
@@ -262,7 +262,7 @@ function New-VaasMachineCommonKeystore {
         $params.Status = $Status
     }
 
-    $response = New-VaasMachine @params
+    $response = New-VaasMachineBase @params
 
     if ( $PassThru ) {
         $response
