@@ -62,9 +62,26 @@ function Get-VaasMachine {
     owningTeamId     : 59920180-a3e2-11ec-8dcd-3fcbf84c7da7
     machineId        : d68c7420-24df-11ee-9c2f-49251618e0a7
 
-    Get info for all machines.  -All does not retrieve connectionDetails.
-    To get all machines including connectionDetails, pipe the output back into Get-VaasMachine.
-    Eg. Get-VaasMachine -All | Get-VaasMachine.
+    Get info for all machines
+
+    .EXAMPLE
+    Get-VaasMachine -All -IncludeConnectionDetail
+
+    companyId         : 09b24f81-b22b-11ea-91f3-ebd6dea5452e
+    name              : c1
+    machineType       : Citrix ADC
+    pluginId          : ff645e14-bd1a-11ed-a009-ce063932f86d
+    integrationId     : d68a571d-24df-11ee-a0ae-f24d11bc4208
+    edgeInstanceId    : 79fe96d0-0b93-11ee-8894-cb74b07067e5
+    creationDate      : 7/17/2023 4:23:49 PM
+    modificationDate  : 7/17/2023 4:32:48 PM
+    status            : VERIFIED
+    owningTeamId      : 59920180-a3e2-11ec-8dcd-3fcbf84c7da7
+    connectionDetails : @{credentialType=local; hostnameOrAddress=1.2.3.4; password=RpSYhMjqxRr1QPROGqH4bKa1b3AQoik=;
+                        username=7sEvTe9CAEmXB/tKwF3NLCMFFWCv3+}
+    machineId         : d68c7420-24df-11ee-9c2f-49251618e0a7
+
+    Get info for all machines including connection details
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ID')]
@@ -77,6 +94,9 @@ function Get-VaasMachine {
 
         [Parameter(ParameterSetName = 'All', Mandatory)]
         [switch] $All,
+
+        [Parameter(ParameterSetName = 'All')]
+        [switch] $IncludeConnectionDetail,
 
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
@@ -96,6 +116,10 @@ function Get-VaasMachine {
         if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
             $params.UriLeaf = 'machines'
             $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty machines
+
+            if ( $IncludeConnectionDetail ) {
+                return $response | Get-VaasMachine
+            }
         }
         else {
             if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
