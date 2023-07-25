@@ -26,7 +26,7 @@ function Get-VaasMachine {
     .EXAMPLE
     Get-VaasMachine -ID 'c1'
 
-    companyId         : 09b24f81-b22b-11ea-91f3-ebd6dea5452e
+    companyId         : 0bc771e1-7abe-4339-9fcd-93fffe9cba7f
     name              : c1
     machineType       : Citrix ADC
     pluginId          : ff645e14-bd1a-11ed-a009-ce063932f86d
@@ -50,7 +50,7 @@ function Get-VaasMachine {
     .EXAMPLE
     Get-VaasMachine -All
 
-    companyId        : 09b24f81-b22b-11ea-91f3-ebd6dea5452e
+    companyId        : 0bc771e1-7abe-4339-9fcd-93fffe9cba7f
     name             : c1
     machineType      : Citrix ADC
     pluginId         : ff645e14-bd1a-11ed-a009-ce063932f86d
@@ -67,7 +67,7 @@ function Get-VaasMachine {
     .EXAMPLE
     Get-VaasMachine -All -IncludeConnectionDetail
 
-    companyId         : 09b24f81-b22b-11ea-91f3-ebd6dea5452e
+    companyId         : 0bc771e1-7abe-4339-9fcd-93fffe9cba7f
     name              : c1
     machineType       : Citrix ADC
     pluginId          : ff645e14-bd1a-11ed-a009-ce063932f86d
