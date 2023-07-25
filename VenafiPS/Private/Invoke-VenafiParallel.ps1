@@ -84,6 +84,10 @@ function Invoke-VenafiParallel {
 
         $thisDir = $PSScriptRoot
         $starterSb = {
+
+            # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
+            # import via path instead of just module name to support development work
+
             Import-Module (Join-Path -Path (Split-Path $using:thisDir -Parent) -ChildPath 'VenafiPS.psd1') -Force
 
             # grab the api key as passing VenafiSession as is causes powershell to hang
