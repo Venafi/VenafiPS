@@ -2,35 +2,30 @@ function New-VaasMachine {
 
     <#
     .SYNOPSIS
-    Create machines
+    Create 1 or more machines
 
     .DESCRIPTION
-    Create machines in VaaS with a limited set of parameters.
     This creation function is to be used for 'simple' machine types, eg. F5 and Citrix, where hostname, credential and optionally port are used.
-    Machine creation for types with additional functionality will have dedicated functions, , eg. New-VaasMachineIis.
+    Machine creation for types with additional functionality will have dedicated functions, eg. New-VaasMachineIis.
     By default, the machine details will be verified by performing a test connection; this can be turned off with -NoVerify.
-    PowerShell v7+ is required.
+    Creation will occur in parallel and PowerShell v7+ is required.
 
     .PARAMETER Name
     Machine name
 
     .PARAMETER MachineType
-    Machine type by either ID or name, eg. 'Citrix ADC'
+    Machine type by either ID or name, eg. 'Citrix ADC'.
+    A list can be found by create a new session and executing $VenafiSession.MachineType.
 
     .PARAMETER VSatellite
-    ID or name of a vsatellite
+    ID or name of a vsatellite.
+    If not provided, the first vsatellite found will be used.
 
     .PARAMETER Owner
     ID or name of a team to be the owner of the machine
 
     .PARAMETER Tag
     Optional list of tags to assign
-
-    .PARAMETER Status
-    Set the machine status to either 'DRAFT', 'VERIFIED', or 'UNVERIFIED'.
-    This optional field has been added for flexibility, but should not be needed under typical usage.
-    The platform will handle changing the status to the appropriate value.
-    Setting this to a value other than VERIFIED will affect the ability to initiate workflows.
 
     .PARAMETER Hostname
     IP or fqdn of the machine.
@@ -56,7 +51,13 @@ function New-VaasMachine {
     Not recommended.
 
     .PARAMETER ThrottleLimit
-     Max number of threads at once
+    Max number of threads at once
+
+    .PARAMETER Status
+    Set the machine status to either 'DRAFT', 'VERIFIED', or 'UNVERIFIED'.
+    This optional field has been added for flexibility, but should not be needed under typical usage.
+    The platform will handle changing the status to the appropriate value.
+    Setting this to a value other than VERIFIED will affect the ability to initiate workflows.
 
     .PARAMETER PassThru
     Return newly created object
@@ -67,8 +68,40 @@ function New-VaasMachine {
     A VaaS key can also provided.
 
     .EXAMPLE
-    Test-MyTestFunction -Verbose
-    Explanation of the function or its result. You can include multiple examples with additional .EXAMPLE lines
+    $params = @{
+        Name = 'c1'
+        MachineType = 'Citrix ADC'
+        Owner = 'MyTeam'
+        Hostname = 'c1.company.com'
+        Credential = $cred
+    }
+    New-VaasMachine @params
+
+    machineId        : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
+    testConnection   : @{Success=True; Error=; WorkflowID=c39310ee-51fc-49f3-8b5b-e504e1bc43d2}
+    companyId        : 20b24f81-b22b-11ea-91f3-ebd6dea5453f
+    name             : c1
+    machineType      : Citrix ADC
+    pluginId         : ff645e14-bd1a-11ed-a009-ce063932f86d
+    integrationId    : cf7c8014-2b2a-11ee-9a03-fa8930555887
+    edgeInstanceId   : 0bc771e1-7abe-4339-9fcd-93fffe9cba7f
+    creationDate     : 7/25/2023 4:35:36 PM
+    modificationDate : 7/25/2023 4:35:36 PM
+    status           : UNVERIFIED
+    owningTeamId     : 59920180-a3e2-11ec-8dcd-3fcbf84c7da7
+
+    Create a new Citrix machine
+
+    .EXAMPLE
+    [pscustomobject] @{
+        Name = 'c1.company.com'
+        MachineType = 'Citrix ADC'
+        Owner = 'MyTeam'
+        Credential = $cred
+    } | New-VaasMachine
+
+    Use pipeline data to create a machine.
+    More than 1 machine can be sent thru the pipeline and they will be created in parallel.
     #>
 
 
@@ -80,13 +113,6 @@ function New-VaasMachine {
         [string] $Name,
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [ValidateScript(
-            {
-                if ( $_ -in 'c1521d80-db7a-11ec-b79a-f3ded6c9808c', 'Microsoft IIS' ) { throw 'To create IIS machines, please use New-VaasMachineIis' }
-                if ( $_ -in '575389b0-e6be-11ec-9172-d3c56ea8bcf6', 'Common Keystore (PEM, JKS, PKCS#12)' ) { throw 'To create Common Keystore machines, please use New-VaasMachineCommonKeystore' }
-                $true
-            }
-        )]
         [string] $MachineType,
 
         [Parameter(ParameterSetName = 'BasicMachine', ValueFromPipelineByPropertyName)]
@@ -144,6 +170,11 @@ function New-VaasMachine {
         else {
             # session is just key, get machine types
             $machineTypes = Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $VenafiSession | Select-Object -ExpandProperty machineTypes
+        }
+
+        if ( $Credential ) {
+            if ( $MachineType -in 'c1521d80-db7a-11ec-b79a-f3ded6c9808c', 'Microsoft IIS' ) { throw 'To create IIS machines, please use New-VaasMachineIis' }
+            if ( $MachineType -in '575389b0-e6be-11ec-9172-d3c56ea8bcf6', 'Common Keystore (PEM, JKS, PKCS#12)' ) { throw 'To create Common Keystore machines, please use New-VaasMachineCommonKeystore' }
         }
     }
 
@@ -241,7 +272,7 @@ function New-VaasMachine {
                     'e' = { $workflowResponse | Select-Object Success, Error, WorkflowID }
                 }, * -ExcludeProperty id
             }
-        } -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
 
         if ( $PassThru ) {
             $response
