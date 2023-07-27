@@ -44,6 +44,7 @@ nav:
     - Find-TppIdentity: functions/Find-TppIdentity.md
     - Find-TppObject: functions/Find-TppObject.md
     - Find-TppVaultId: functions/Find-TppVaultId.md
+    - Find-VaasMachine: functions/Find-VaasMachine.md
     - Find-VaasObject: functions/Find-VaasObject.md
     - Find-VenafiCertificate: functions/Find-VenafiCertificate.md
     - Get-TppAttribute: functions/Get-TppAttribute.md
@@ -63,6 +64,7 @@ nav:
     - Get-VaasApplication: functions/Get-VaasApplication.md
     - Get-VaasConnector: functions/Get-VaasConnector.md
     - Get-VaasIssuingTemplate: functions/Get-VaasIssuingTemplate.md
+    - Get-VaasMachine: functions/Get-VaasMachine.md
     - Get-VaasSatellite: functions/Get-VaasSatellite.md
     - Get-VenafiCertificate: functions/Get-VenafiCertificate.md
     - Get-VenafiIdentity: functions/Get-VenafiIdentity.md
@@ -86,6 +88,9 @@ nav:
     - New-VaasApplication: functions/New-VaasApplication.md
     - New-VaasCertificate: functions/New-VaasCertificate.md
     - New-VaasConnector: functions/New-VaasConnector.md
+    - New-VaasMachine: functions/New-VaasMachine.md
+    - New-VaasMachineCommonKeystore: functions/New-VaasMachineCommonKeystore.md
+    - New-VaasMachineIis: functions/New-VaasMachineIis.md
     - New-VenafiSession: functions/New-VenafiSession.md
     - New-VenafiTeam: functions/New-VenafiTeam.md
     - Read-VenafiLog: functions/Read-VenafiLog.md

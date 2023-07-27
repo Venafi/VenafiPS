@@ -6,8 +6,7 @@ Start a machine or machine identity workflow
 ## SYNTAX
 
 ```
-Invoke-VaasWorkflow [-ID] <String> [[-WorkflowName] <String>] [[-VenafiSession] <PSObject>]
- [<CommonParameters>]
+Invoke-VaasWorkflow [-ID] <String> [[-Workflow] <String>] [[-VenafiSession] <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -17,39 +16,42 @@ Start a workflow to either test machine credentials or provision or discover mac
 
 ### EXAMPLE 1
 ```
-Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -WorkflowName 'Provision'
+Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -Workflow 'Provision'
 ```
 
-ID                                   WorkflowName Success
---                                   ------------ -------
-89fa4370-2026-11ee-8a18-ff9579bb988e Test         True
+ID                                   Success WorkflowName WorkflowID
+--                                   ------- ------------ ----------
+1345baf1-fc56-49b7-aa03-78e35bfe0a1a    True Provision    345b9d33-8c8a-4d4b-9fea-124f3a72f957
 
 Trigger provisioning
 
 ### EXAMPLE 2
 ```
-Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -WorkflowName 'Provision'
+Invoke-VaasWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -Workflow 'Test'
 ```
 
-ID                                   WorkflowName Success Error
---                                   ------------ ------- -----
-1345baf1-fc56-49b7-aa03-78e35bfe0a1a Provision    False   Failed for some reason....
+ID               : 1345baf1-fc56-49b7-aa03-78e35bfe0a1a
+Success          : False
+WorkflowName     : Test
+WorkflowID       : 345b9d33-8c8a-4d4b-9fea-124f3a72f957
+Error            : failed to connect to Citrix ADC: \[ERROR\] nitro-go: Failed to create resource of type login, name=login, err=failed: 401 Unauthorized ({ "errorcode": 354,
+                   "message": "Invalid username or password", "severity": "ERROR" })
 
-Trigger provisioning, but it failed
+Trigger test connection, but it failed
 
 ### EXAMPLE 3
 ```
 Find-VaasObject -Type MachineIdentity -Filter @('and', @('certificateValidityEnd', 'lt', (get-date).AddDays(30)), @('certificateValidityEnd', 'gt', (get-date))) | ForEach-Object {
     $renewResult = $_ | Invoke-VenafiCertificateAction -Renew
     # optionally add renew validation
-    $_ | Invoke-VaasWorkflow -WorkflowName 'Provision'
+    $_ | Invoke-VaasWorkflow -Workflow 'Provision'
 }
 ```
 
-ID                                   WorkflowName Success
---                                   ------------ -------
-89fa4370-2026-11ee-8a18-ff9579bb988e Provision    True
-7598917c-7027-4927-be73-e592bcc4c567 Provision    True
+ID                                   Success WorkflowName WorkflowID
+--                                   ------- ------------ ----------
+1345baf1-fc56-49b7-aa03-78e35bfe0a1a    True Provision    345b9d33-8c8a-4d4b-9fea-124f3a72f957
+89fa4370-2026-11ee-8a18-ff9579bb988e    True Provision    7598917c-7027-4927-be73-e592bcc4c567
 
 Renew and provision all machine identities with certificates expiring within 30 days
 
@@ -72,7 +74,7 @@ Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -WorkflowName
+### -Workflow
 The name of the workflow to trigger.
 Valid values are 'Test', 'GetConfig', 'Provision', or 'Discover'.
 
