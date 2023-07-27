@@ -1,5 +1,8 @@
-- Add `Find-VenafiCertificate -SavedSearchName` to find VaaS certificate details via an existing saved search filter
-- Add `Get-VaasSatellite` to retrieve vsatellite details optionally including encryption key and algorithm
-- Add `Set-VaasCertificateAssignment` to add or replace applications associated to certificates
-- Add User property to `$VenafiSession` when connecting to VaaS.  All kinds of helpful info here including company ID.
-- Fix credentials not being written to the vault with `New-VenafiSession -VaultVaasKeyName`
+- Add `Find-VaasMachine` to find machines by type or status.  The list of attributes to search by will increase over time.  `Find-VaasObject -Type Machine` can always be used as well.
+- Add `Get-VaasMachine` to get machines by uuid, name, or get all.
+- Update `Invoke-VaasWorkflow` output to include workflow id (wsClientId)
+- Add machine creation functions `New-VaasMachine`, `New-VaasMachineIis`, and `New-VaasMachineCommonKeystore`.  These require PowerShell v7+ and have parallel processing.  `New-VaasMachine` is for basic machines with hostname, credential, and optional port, eg. Citrix and F5.
+- Add machine types to $VenafiSession.MachineTypes when using `New-VenafiSession` for VaaS
+- Add `Invoke-VenafiParallel` private function to easily execute operations in parallel.  Requires PowerShell v7+.
+- Add argument completer to `New-VaasMachine -MachineType` and `Find-VaasMachine -MachineType` for dynamic tab-ahead list of machine types
+- Add [PSSodium](https://github.com/TylerLeonhardt/PSSodium) as a nested module, required for machine creation functions
