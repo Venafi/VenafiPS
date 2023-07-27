@@ -6,6 +6,9 @@ PowerShell module to access the features of Venafi Trust Protection Platform RES
 Author: Greg Brownstein
 #>
 
+# Force TLS 1.2
+[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+
 $folders = @('Enum', 'Classes', 'Public', 'Private')
 
 foreach ( $folder in $folders) {
@@ -53,8 +56,8 @@ $aliases.GetEnumerator() | ForEach-Object {
 }
 Export-ModuleMember -Alias *
 
-# Force TLS 1.2
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+# load sodium needed for vaas encryption
+Import-Module "$PSScriptRoot\import\PSSodium\PSSodium.psd1" -Force
 
 # vaas fields to ensure the values are upper case
 $vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
