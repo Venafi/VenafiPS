@@ -107,7 +107,7 @@ function Get-VaasSatellite {
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Alias('applicationId')]
+        [Alias('vsatelliteId')]
         [string] $ID,
 
         [Parameter(ParameterSetName = 'All', Mandatory)]
@@ -147,7 +147,7 @@ function Get-VaasSatellite {
                 $response = Invoke-VenafiRestMethod @params
             }
             else {
-                # assume team name
+                # get all and find by name since another method doesn't exist
                 $params.UriLeaf = 'edgeinstances'
                 $allInstances = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty edgeinstances
                 $response = $allInstances | Where-Object { $_.name -eq $ID }

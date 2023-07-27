@@ -54,7 +54,7 @@ function Import-TppCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
+    A TPP token can also provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .EXAMPLE
@@ -202,7 +202,7 @@ function Import-TppCertificate {
                     Write-Verbose ('Successfully imported {0}' -f $response.CertificateDN)
 
                     if ( $PassThru ) {
-                        Get-TppObject -Guid $response.Guid
+                        Get-TppObject -Guid $response.Guid -VenafiSession $VenafiSession
                     }
                 } catch {
                     Write-Error $_
