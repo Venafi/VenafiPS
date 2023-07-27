@@ -1,3 +1,13 @@
+## 5.8.0
+- Add `Find-VaasMachine` to find machines by type or status.  The list of attributes to search by will increase over time.  `Find-VaasObject -Type Machine` can always be used as well.
+- Add `Get-VaasMachine` to get machines by uuid, name, or get all.
+- Update `Invoke-VaasWorkflow` output to include workflow id (wsClientId)
+- Add machine creation functions `New-VaasMachine`, `New-VaasMachineIis`, and `New-VaasMachineCommonKeystore`.  These require PowerShell v7+ and have parallel processing.  `New-VaasMachine` is for basic machines with hostname, credential, and optional port, eg. Citrix and F5.
+- Add machine types to $VenafiSession.MachineTypes when using `New-VenafiSession` for VaaS
+- Add `Invoke-VenafiParallel` private function to easily execute operations in parallel.  Requires PowerShell v7+.
+- Add argument completer to `New-VaasMachine -MachineType` and `Find-VaasMachine -MachineType` for dynamic tab-ahead list of machine types
+- Add [PSSodium](https://github.com/TylerLeonhardt/PSSodium) as a nested module, required for machine creation functions
+
 ## 5.7.0
 - Add `Find-VenafiCertificate -SavedSearchName` to find VaaS certificate details via an existing saved search filter
 - Add `Get-VaasSatellite` to retrieve vsatellite details optionally including encryption key and algorithm
@@ -520,6 +530,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

@@ -243,7 +243,7 @@ Accept wildcard characters: False
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
+A TPP token can also provided.
 If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
 ```yaml

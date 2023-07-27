@@ -99,7 +99,7 @@ Name or uuid to get info for a specific VSatellite
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: applicationId
+Aliases: vsatelliteId
 
 Required: True
 Position: Named
