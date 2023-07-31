@@ -18,7 +18,8 @@ function New-VenafiSession {
     Username and password used for key and token-based authentication.  Not required for integrated authentication.
 
     .PARAMETER ClientId
-    Applcation Id configured in Venafi for token-based authentication
+    Application/integration ID configured in Venafi for token-based authentication.
+    Case sensitive.
 
     .PARAMETER Scope
     Hashtable with Scopes and privilege restrictions.
@@ -422,8 +423,9 @@ function New-VenafiSession {
 
             if ( $secretInfo.Metadata.Count -gt 0 ) {
                 $params = @{
-                    AuthServer = $secretInfo.Metadata.AuthServer
-                    ClientId   = $secretInfo.Metadata.ClientId
+                    AuthServer           = $secretInfo.Metadata.AuthServer
+                    ClientId             = $secretInfo.Metadata.ClientId
+                    SkipCertificateCheck = [bool] $secretInfo.Metadata.SkipCertificateCheck
                 }
             }
             else {

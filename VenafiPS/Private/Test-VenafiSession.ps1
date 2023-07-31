@@ -82,7 +82,7 @@ function Test-VenafiSession {
         }
 
         switch ($VenafiSession.GetType().Name) {
-            'VenafiSession' {
+            {$_ -in 'VenafiSession', 'PSCustomObject'} {
 
                 Write-Verbose 'Session is VenafiSession'
 

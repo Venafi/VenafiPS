@@ -75,6 +75,18 @@ function Invoke-VenafiParallel {
         if ( -not $NoProgress ) {
             Write-Progress -Activity $ProgressTitle -Status "Initializing..."
         }
+
+        # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
+        # so can't pass VenafiSession as is unless it's an token/key string
+        $vs = if ( $VenafiSession.GetType().Name -eq 'VenafiSession' ) {
+            $vsTemp = [pscustomobject]@{}
+            $VenafiSession.psobject.properties | ForEach-Object { $vsTemp | Add-Member @{$_.name = $_.value } }
+            $vsTemp
+        }
+        else {
+            # token or api key provided directly
+            $VenafiSession
+        }
     }
 
     process {
@@ -82,49 +94,58 @@ function Invoke-VenafiParallel {
 
     end {
 
-        $thisDir = $PSScriptRoot
-        $starterSb = {
-
-            # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
-            # import via path instead of just module name to support development work
-
-            Import-Module (Join-Path -Path (Split-Path $using:thisDir -Parent) -ChildPath 'VenafiPS.psd1') -Force
-
-            # grab the api key as passing VenafiSession as is causes powershell to hang
-            $VenafiSession = if ( ($using:VenafiSession).GetType().Name -eq 'VenafiSession' ) {
-                ($using:VenafiSession).Key.GetNetworkCredential().Password
-            }
-            else {
-                $using:VenafiSession
-            }
+        if ( $PSVersionTable.PSVersion.Major -lt 7 ) {
+            Write-Warning 'Upgrade to PowerShell Core v7+ to make this function execute in parallel and be much faster!'
+            ForEach-Object -InputObject $InputObject -Process $ScriptBlock
         }
+        else {
 
-        $newSb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
+            $thisDir = $PSScriptRoot
+            $starterSb = {
 
-        $job = $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $newSb
+                # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
+                # import via path instead of just module name to support development work
 
-        if ( -not $job.ChildJobs ) {
-            return
-        }
+                Import-Module (Join-Path -Path (Split-Path $using:thisDir -Parent) -ChildPath 'VenafiPS.psd1') -Force
 
-        do {
-
-            # Sleep a bit to allow the threads to run - adjust as desired.
-            Start-Sleep -Seconds 1
-
-            # Determine how many jobs have completed so far.
-            $completedJobsCount =
-            $job.ChildJobs.Where({ $_.State -notin 'NotStarted', 'Running' }).Count
-
-            # Relay any pending output from the child jobs.
-            $job | Receive-Job
-
-            if ( -not $NoProgress ) {
-                # Update the progress display.
-                [int] $percent = ($completedJobsCount / $job.ChildJobs.Count) * 100
-                Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
+                # grab the api key as passing VenafiSession as is causes powershell to hang
+                # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
+                $VenafiSession = $using:vs
+                # if ( $using:server ) { $env:TPP_SERVER = $using:server }
+                # $VenafiSession = if ( ($using:VenafiSession).GetType().Name -eq 'VenafiSession' ) {
+                #     ($using:VenafiSession).Key.GetNetworkCredential().Password
+                # }
+                # else {
+                #     $using:VenafiSession
+                # }
             }
 
-        } while ($completedJobsCount -lt $job.ChildJobs.Count)
+            $newSb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
+
+            $job = $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $newSb
+
+            if ( -not $job.ChildJobs ) {
+                return
+            }
+
+            do {
+
+                # Sleep a bit to allow the threads to run
+                Start-Sleep -Seconds 1
+
+                $completedJobsCount =
+                $job.ChildJobs.Where({ $_.State -notin 'NotStarted', 'Running' }).Count
+
+                # Relay any pending output from the child jobs.
+                $job | Receive-Job
+
+                if ( -not $NoProgress ) {
+                    # Update the progress display.
+                    [int] $percent = ($completedJobsCount / $job.ChildJobs.Count) * 100
+                    Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
+                }
+
+            } while ($completedJobsCount -lt $job.ChildJobs.Count)
+        }
     }
 }
