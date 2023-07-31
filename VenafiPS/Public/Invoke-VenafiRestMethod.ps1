@@ -100,7 +100,7 @@ function Invoke-VenafiRestMethod {
         }
 
         switch ($VenafiSession.GetType().Name) {
-            'VenafiSession' {
+            {$_ -in 'VenafiSession', 'PSCustomObject'} {
                 $Server = $VenafiSession.Server
                 if ( $VenafiSession.Platform -eq 'VaaS' ) {
                     $platform = 'VaaS'

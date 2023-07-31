@@ -12,7 +12,8 @@ function New-TppToken {
     Auth server or url, eg. venafi.company.com
 
     .PARAMETER ClientId
-    Applcation Id configured in Venafi for token-based authentication
+    Application/integration ID configured in Venafi for token-based authentication.
+    Case sensitive.
 
     .PARAMETER Scope
     Hashtable with Scopes and privilege restrictions.

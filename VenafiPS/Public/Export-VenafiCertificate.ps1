@@ -27,9 +27,6 @@ function Export-VenafiCertificate {
     .PARAMETER FriendlyName
     Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when exporting JKS.  TPP Only.
 
-    .PARAMETER IncludePrivateKey
-    DEPRECATED. Provide a value for -PrivateKeyPassword.  TPP only.
-
     .PARAMETER PrivateKeyPassword
     Password required to include the private key.  Not supported with DER or PKCS #7 formats.  TPP Only.
     You must adhere to the following rules:
@@ -92,10 +89,10 @@ function Export-VenafiCertificate {
 
     param (
 
-        [Parameter(ParameterSetName = 'Tpp', Mandatory, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'TppJks', Mandatory, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'Vaas', Mandatory, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'VaasChain', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'Tpp', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'TppJks', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'Vaas', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'VaasChain', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('Path', 'id')]
         [string] $CertificateId,
 
