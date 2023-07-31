@@ -70,22 +70,24 @@ function Invoke-VenafiParallel {
 
     begin {
 
-        if ($PSVersionTable.PSVersion.Major -lt 7) { throw 'PowerShell v7 or greater is required for this function' }
+        # if ($PSVersionTable.PSVersion.Major -lt 7) { throw 'PowerShell v7 or greater is required for this function' }
 
-        if ( -not $NoProgress ) {
-            Write-Progress -Activity $ProgressTitle -Status "Initializing..."
-        }
+        if ( $PSVersionTable.PSVersion.Major -lt 7 ) {
+            if ( -not $NoProgress ) {
+                Write-Progress -Activity $ProgressTitle -Status "Initializing..."
+            }
 
-        # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
-        # so can't pass VenafiSession as is unless it's an token/key string
-        $vs = if ( $VenafiSession.GetType().Name -eq 'VenafiSession' ) {
-            $vsTemp = [pscustomobject]@{}
-            $VenafiSession.psobject.properties | ForEach-Object { $vsTemp | Add-Member @{$_.name = $_.value } }
-            $vsTemp
-        }
-        else {
-            # token or api key provided directly
-            $VenafiSession
+            # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
+            # so can't pass VenafiSession as is unless it's an token/key string
+            $vs = if ( $VenafiSession.GetType().Name -eq 'VenafiSession' ) {
+                $vsTemp = [pscustomobject]@{}
+                $VenafiSession.psobject.properties | ForEach-Object { $vsTemp | Add-Member @{$_.name = $_.value } }
+                $vsTemp
+            }
+            else {
+                # token or api key provided directly
+                $VenafiSession
+            }
         }
     }
 
