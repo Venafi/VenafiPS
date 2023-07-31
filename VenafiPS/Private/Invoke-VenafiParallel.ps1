@@ -100,7 +100,7 @@ function Invoke-VenafiParallel {
             Write-Warning 'Upgrade to PowerShell Core v7+ to make this function execute in parallel and be much faster!'
 
             # ensure no $using: vars
-            ForEach-Object -InputObject $InputObject -Process [ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$'))
+            ForEach-Object -InputObject $InputObject -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
         }
         else {
 
