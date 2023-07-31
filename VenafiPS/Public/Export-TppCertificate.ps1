@@ -214,7 +214,7 @@ function Export-TppCertificate {
 
             # combine cert path with body
             $body = $using:body
-            $body.CertificateDN = $PSItem
+            $body.CertificateDN = $_
 
             Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $body
 
