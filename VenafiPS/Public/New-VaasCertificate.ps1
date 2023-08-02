@@ -13,9 +13,6 @@ function New-VaasCertificate {
     Issuing template name (wildcards supported) or id to use.
     The template must be available with the selected Application.
 
-    .PARAMETER ServerType
-    Server type name (wildcards supported) or id to associate
-
     .PARAMETER Csr
     CSR in PKCS#10 format which conforms to the rules of the issuing template
 
@@ -69,27 +66,27 @@ function New-VaasCertificate {
     pscustomobject, if PassThru is provided
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com'
+    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com'
 
     Create certificate
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
+    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
 
     Create certificate with optional SAN data
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -ValidUntil (Get-Date).AddMonths(6)
+    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -ValidUntil (Get-Date).AddMonths(6)
 
     Create certificate with specific validity
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -PassThru
+    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -PassThru
 
     Create certificate and return the created object
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
+    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
 
     Create certificate with a CSR
 
@@ -113,9 +110,6 @@ function New-VaasCertificate {
 
         [Parameter(Mandatory)]
         [String] $IssuingTemplate,
-
-        [Parameter(Mandatory)]
-        [String] $ServerType,
 
         [Parameter(ParameterSetName = 'Csr', Mandatory)]
         [string] $Csr,
@@ -186,7 +180,6 @@ function New-VaasCertificate {
 
         # validation
         $allApps = Get-VaasApplication -All -VenafiSession $VenafiSession
-        $allServerTypes = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'applicationservertypes' -VenafiSession $VenafiSession | Select-Object -ExpandProperty applicationservertypes
 
         $thisApp = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
         switch (@($thisApp).Count) {
@@ -220,22 +213,6 @@ function New-VaasCertificate {
             }
         }
 
-        $thisServerType = $allServerTypes | Where-Object { $_.applicationServerType -like $ServerType -or $_.id -eq $ServerType }
-        switch (@($thisServerType).Count) {
-            0 {
-                throw ('Server type not found.  Valid types are {0}' -f ($allServerTypes.name -join ', '))
-            }
-
-            1 {
-                Write-Verbose ('Found server type {0}, ID: {1}' -f $thisServerType.applicationServerType, $thisServerType.id)
-                $thisServerTypeID = $thisServerType.id
-            }
-
-            Default {
-                throw ('More than 1 server type found that matches {0}: {1}' -f $ServerType, ($thisServerType.name -join ', '))
-            }
-        }
-
         $span = New-TimeSpan -Start (Get-Date) -End $ValidUntil
         $validity = 'P{0}DT{1}H' -f $span.Days, $span.Hours
 
@@ -248,7 +225,6 @@ function New-VaasCertificate {
                 isVaaSGenerated              = $true
                 applicationId                = $thisAppID
                 certificateIssuingTemplateId = $thisTemplateID
-                applicationServerTypeId      = $thisServerTypeID
                 validityPeriod               = $validity
             }
         }
