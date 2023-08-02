@@ -1,3 +1,6 @@
+## 5.8.1
+- Remove deprecated application server types from `New-VaasCertificate`
+
 ## 5.8.0
 - Add `Find-VaasMachine` to find machines by type or status.  The list of attributes to search by will increase over time.  `Find-VaasObject -Type Machine` can always be used as well.
 - Add `Get-VaasMachine` to get machines by uuid, name, or get all.
@@ -530,6 +533,7 @@
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
