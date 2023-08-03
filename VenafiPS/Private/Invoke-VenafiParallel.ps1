@@ -2,10 +2,11 @@ function Invoke-VenafiParallel {
 
     <#
     .SYNOPSIS
-        Helper function to execute a scriptblock in parallel
+    Helper function to execute a scriptblock in parallel
 
     .DESCRIPTION
-        This is a wrapper around ForEach-Object -Parallel
+    If using powershell v7+, execute a scriptblock in parallel with progress.
+    Otherwise, fallback to executing linearly.
 
     .PARAMETER InputObject
     List of items to iterate over
@@ -24,9 +25,6 @@ function Invoke-VenafiParallel {
 
     .PARAMETER VenafiSession
     Authentication for the function.
-
-    .NOTES
-    PowerShell v7+ is supported
 
     .EXAMPLE
     Invoke-VenafiParallel -InputObject $myObjects -ScriptBlock { Do-Something $PSItem }
@@ -72,7 +70,7 @@ function Invoke-VenafiParallel {
 
         # if ($PSVersionTable.PSVersion.Major -lt 7) { throw 'PowerShell v7 or greater is required for this function' }
 
-        if ( $PSVersionTable.PSVersion.Major -lt 7 ) {
+        if ( $PSVersionTable.PSVersion.Major -ge 7 ) {
             if ( -not $NoProgress ) {
                 Write-Progress -Activity $ProgressTitle -Status "Initializing..."
             }
@@ -100,7 +98,7 @@ function Invoke-VenafiParallel {
             Write-Warning 'Upgrade to PowerShell Core v7+ to make this function execute in parallel and be much faster!'
 
             # ensure no $using: vars
-            ForEach-Object -InputObject $InputObject -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
+            $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
         }
         else {
 
@@ -115,13 +113,6 @@ function Invoke-VenafiParallel {
                 # grab the api key as passing VenafiSession as is causes powershell to hang
                 # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
                 $VenafiSession = $using:vs
-                # if ( $using:server ) { $env:TPP_SERVER = $using:server }
-                # $VenafiSession = if ( ($using:VenafiSession).GetType().Name -eq 'VenafiSession' ) {
-                #     ($using:VenafiSession).Key.GetNetworkCredential().Password
-                # }
-                # else {
-                #     $using:VenafiSession
-                # }
             }
 
             $newSb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
@@ -134,17 +125,16 @@ function Invoke-VenafiParallel {
 
             do {
 
-                # Sleep a bit to allow the threads to run
+                # let threads run
                 Start-Sleep -Seconds 1
 
                 $completedJobsCount =
                 $job.ChildJobs.Where({ $_.State -notin 'NotStarted', 'Running' }).Count
 
-                # Relay any pending output from the child jobs.
+                # get latest job info
                 $job | Receive-Job
 
                 if ( -not $NoProgress ) {
-                    # Update the progress display.
                     [int] $percent = ($completedJobsCount / $job.ChildJobs.Count) * 100
                     Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
                 }
