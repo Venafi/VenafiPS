@@ -73,7 +73,7 @@ function Find-VaasObject {
     param (
 
         [Parameter(Mandatory)]
-        [ValidateSet('ActivityLog', 'Machine', 'MachineIdentity', 'CertificateRequest', 'CertificateInstance')]
+        [ValidateSet('Certificate', 'ActivityLog', 'Machine', 'MachineIdentity', 'CertificateRequest', 'CertificateInstance')]
         [string] $Type,
 
         [Parameter()]
