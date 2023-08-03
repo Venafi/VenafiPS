@@ -8,7 +8,7 @@
 
     .PARAMETER CertificateId
     Certificate identifier.
-    For Venafi as a Service, this is the unique guid.
+    For Venafi as a Service, this is the ID or certificate name.
     For TPP, use the path or guid.  \ved\policy will be automatically applied if a full path isn't provided.
 
     .PARAMETER IncludeTppPreviousVersions
@@ -85,7 +85,7 @@
         [Parameter(ParameterSetName = 'VaasId', Mandatory, ValueFromPipelineByPropertyName)]
         [Parameter(ParameterSetName = 'TppId', Mandatory, ValueFromPipelineByPropertyName)]
         [Alias('Guid', 'Path', 'id')]
-        [string] $CertificateId,
+        [string] $CertificateID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [Parameter(Mandatory, ParameterSetName = 'VaasAll')]
@@ -169,10 +169,18 @@
                 }
 
                 $params.UriRoot = 'outagedetection/v1'
-                $params.UriLeaf = "certificates"
+                $params.UriLeaf = "certificates/"
 
-                if ( $PSBoundParameters.ContainsKey('CertificateId') ) {
-                    $params.UriLeaf += "/$CertificateId"
+                if ( Test-IsGuid($CertificateID) ) {
+                    $params.UriLeaf += $CertificateID
+                }
+                else {
+                    $findParams = @{
+                        Filter           = @('certificateName', 'eq', $CertificateID)
+                        IncludeVaasOwner = $IncludeVaasOwner
+                        VenafiSession    = $VenafiSession
+                    }
+                    return (Find-VaasCertificate @findParams | Get-VenafiCertificate)
                 }
 
                 $params.UriLeaf += "?ownershipTree=true"
@@ -181,7 +189,8 @@
 
                 if ( $response.PSObject.Properties.Name -contains 'certificates' ) {
                     $certs = $response | Select-Object -ExpandProperty certificates
-                } else {
+                }
+                else {
                     $certs = $response
                 }
 
@@ -247,7 +256,8 @@
                                 }
                                 $thisOwnerDetail
                             }
-                        } else {
+                        }
+                        else {
                             $_.ownership.owningContainers | Select-Object owningUsers, owningTeams
                         }
                     }
@@ -268,7 +278,8 @@
 
                 if ( [guid]::TryParse($CertificateId, $([ref][guid]::Empty)) ) {
                     $thisGuid = ([guid] $CertificateId).ToString()
-                } else {
+                }
+                else {
                     # a path was provided
                     $thisGuid = $CertificateId | ConvertTo-TppFullPath | ConvertTo-TppGuid -VenafiSession $VenafiSession
                 }
@@ -307,7 +318,8 @@
                     $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
                     $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
                     $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
-                } catch {
+                }
+                catch {
 
                 }
                 $response | Select-Object @selectProps
