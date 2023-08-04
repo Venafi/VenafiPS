@@ -68,8 +68,6 @@ function Invoke-VenafiParallel {
 
     begin {
 
-        # if ($PSVersionTable.PSVersion.Major -lt 7) { throw 'PowerShell v7 or greater is required for this function' }
-
         if ( $PSVersionTable.PSVersion.Major -ge 7 ) {
             if ( -not $NoProgress ) {
                 Write-Progress -Activity $ProgressTitle -Status "Initializing..."
@@ -77,6 +75,7 @@ function Invoke-VenafiParallel {
 
             # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
             # so can't pass VenafiSession as is unless it's an token/key string
+            # pscustomobject are safe so convert to that
             $vs = if ( $VenafiSession.GetType().Name -eq 'VenafiSession' ) {
                 $vsTemp = [pscustomobject]@{}
                 $VenafiSession.psobject.properties | ForEach-Object { $vsTemp | Add-Member @{$_.name = $_.value } }
@@ -106,12 +105,9 @@ function Invoke-VenafiParallel {
             $starterSb = {
 
                 # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
-                # import via path instead of just module name to support development work
+                # import via path instead of just module name to support non-standard paths, eg. development work
 
                 Import-Module (Join-Path -Path (Split-Path $using:thisDir -Parent) -ChildPath 'VenafiPS.psd1') -Force
-
-                # grab the api key as passing VenafiSession as is causes powershell to hang
-                # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
                 $VenafiSession = $using:vs
             }
 
