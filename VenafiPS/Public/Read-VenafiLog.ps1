@@ -35,6 +35,9 @@ function Read-VenafiLog {
     .PARAMETER Value2
     TPP.  Filter matching results of Value2
 
+    .PARAMETER First
+    TPP.  Return only these number of records
+
     .PARAMETER Filter
     VaaS.  Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @('operator', @(field, comparison operator, value), @(field2, comparison operator2, value2)).
@@ -146,7 +149,7 @@ function Read-VenafiLog {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'TPP', SupportsPaging)]
+    [CmdletBinding(DefaultParameterSetName = 'TPP')]
     [Alias('Read-TppLog')]
 
     param (
@@ -188,6 +191,9 @@ function Read-VenafiLog {
         [Parameter(ParameterSetName = 'TPP')]
         [int] $Value2,
 
+        [Parameter(ParameterSetName='TPP')]
+        [int] $First,
+
         [Parameter(ParameterSetName = 'VaaS')]
         [System.Collections.ArrayList] $Filter,
 
@@ -203,9 +209,6 @@ function Read-VenafiLog {
         $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
 
         if ( $platform -eq 'TPP' ) {
-            if ( $PSBoundParameters.Keys -contains 'Skip' -or $PSBoundParameters.Keys -contains 'IncludeTotalCount' ) {
-                Write-Warning '-Skip and -IncludeTotalCount not implemented yet'
-            }
 
             $params = @{
                 VenafiSession = $VenafiSession
@@ -249,7 +252,7 @@ function Read-VenafiLog {
                 }
 
                 'First' {
-                    $params.Body.Add('Limit', $PSCmdlet.PagingParameters.First)
+                    $params.Body.Add('Limit', $First)
                 }
             }
         }

@@ -5,8 +5,8 @@ function Find-VenafiCertificate {
 
     .DESCRIPTION
     Find certificates based on various attributes.
-    Supports standard PS paging parameters First, Skip, and IncludeTotalCount.
-    If -First or -IncludeTotalCount not provided, the default return is 1000 records.
+    Supports standard PS paging parameters First and Skip.
+    If -First not provided, the default return is 1000 records.
 
     .PARAMETER Path
     Starting path to search from.  If not provided, the default is \ved\policy.  TPP only.
@@ -203,19 +203,19 @@ function Find-VenafiCertificate {
     Get detailed certificate info
 
     .EXAMPLE
-    Find-VenafiCertificate -ExpireBefore "2019-09-01" -IncludeTotalCount | Invoke-VenafiCertificateAction -Renew
+    Find-VenafiCertificate -ExpireBefore "2019-09-01" | Invoke-VenafiCertificateAction -Renew
 
     Renew all certificates expiring before a certain date
 
     .EXAMPLE
-    Find-VenafiCertificate -IncludeTotalCount
+    Find-VenafiCertificate
 
     Find all certificates, paging 1000 at a time
 
     .EXAMPLE
-    Find-VenafiCertificate -First 500 -IncludeTotalCount
+    Find-VenafiCertificate -First 500
 
-    Find all certificates, paging 500 at a time
+    Find the first 500 certificates
 
     .EXAMPLE
     Find-VenafiCertificate -Filter @('fingerprint', 'EQ', '075C43428E70BCF941039F54B8ED78DE4FACA87F')
@@ -459,11 +459,10 @@ function Find-VenafiCertificate {
             }
 
             $queryParams = @{
-                Filter            = $Filter
-                Order             = $Order
-                First             = $PSCmdlet.PagingParameters.First
-                Skip              = $PSCmdlet.PagingParameters.Skip # not available in vaas yet
-                IncludeTotalCount = $PSCmdlet.PagingParameters.IncludeTotalCount
+                Filter = $Filter
+                Order  = $Order
+                First  = $PSCmdlet.PagingParameters.First
+                Skip   = $PSCmdlet.PagingParameters.Skip # not available in vaas yet
             }
 
             $body = New-VaasSearchQuery @queryParams
@@ -740,19 +739,19 @@ function Find-VenafiCertificate {
 
                 $body.paging.pageNumber += 1
 
-                if ( -not $PSCmdlet.PagingParameters.IncludeTotalCount ) {
-                    $toRetrieveCount -= $response.'count'
+                # if ( -not $PSCmdlet.PagingParameters.IncludeTotalCount ) {
+                $toRetrieveCount -= $response.'count'
 
-                    if ( $toRetrieveCount -le 0 ) {
-                        break
-                    }
-
-                    if ( $toRetrieveCount -lt $body.paging.pageSize ) {
-                        # if what's left to retrieve is less than the page size
-                        # adjust to just retrieve the remaining amount
-                        $body.paging.pageSize = $toRetrieveCount
-                    }
+                if ( $toRetrieveCount -le 0 ) {
+                    break
                 }
+
+                if ( $toRetrieveCount -lt $body.paging.pageSize ) {
+                    # if what's left to retrieve is less than the page size
+                    # adjust to just retrieve the remaining amount
+                    $body.paging.pageSize = $toRetrieveCount
+                }
+                # }
 
             } until (
                 $response.'count' -eq 0 -or $response.'count' -lt $body.paging.pageSize
@@ -801,38 +800,38 @@ function Find-VenafiCertificate {
             }
 
             # if option to get all records was provided, loop and get them all
-            if ( $PSCmdlet.PagingParameters.IncludeTotalCount ) {
+            # if ( $PSCmdlet.PagingParameters.IncludeTotalCount ) {
 
+            $setPoint = $params.Body.Offset + $params.Body.Limit
+
+            while ($totalRecordCount -gt $setPoint) {
+
+                # up the offset so we get the next set of records
+                $params.Body.Offset += $params.Body.Limit
                 $setPoint = $params.Body.Offset + $params.Body.Limit
 
-                while ($totalRecordCount -gt $setPoint) {
+                $end = if ( $totalRecordCount -lt $setPoint ) {
+                    $totalRecordCount
+                }
+                else {
+                    $setPoint
+                }
 
-                    # up the offset so we get the next set of records
-                    $params.Body.Offset += $params.Body.Limit
-                    $setPoint = $params.Body.Offset + $params.Body.Limit
+                Write-Verbose ('getting {0}-{1} of {2}' -f ($params.Body.Offset + 1), $end, $totalRecordCount)
+                try {
+                    $response = Invoke-VenafiRestMethod @params -Verbose:$false
+                }
+                catch {
+                    $ProgressPreference = $oldProgressPreference
+                    throw $_
+                }
 
-                    $end = if ( $totalRecordCount -lt $setPoint ) {
-                        $totalRecordCount
-                    }
-                    else {
-                        $setPoint
-                    }
-
-                    Write-Verbose ('getting {0}-{1} of {2}' -f ($params.Body.Offset + 1), $end, $totalRecordCount)
-                    try {
-                        $response = Invoke-VenafiRestMethod @params -Verbose:$false
-                    }
-                    catch {
-                        $ProgressPreference = $oldProgressPreference
-                        throw $_
-                    }
-
-                    $content = $response.content | ConvertFrom-Json
-                    $content.Certificates.ForEach{
-                        ConvertTo-TppObject -Path $_.DN -Guid $_.Guid -TypeName $_.SchemaClass
-                    }
+                $content = $response.content | ConvertFrom-Json
+                $content.Certificates.ForEach{
+                    ConvertTo-TppObject -Path $_.DN -Guid $_.Guid -TypeName $_.SchemaClass
                 }
             }
+            # }
         }
     }
 }

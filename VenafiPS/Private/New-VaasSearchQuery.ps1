@@ -43,7 +43,7 @@ function New-VaasSearchQuery {
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'No state is actually changing')]
 
-    [CmdletBinding(SupportsPaging)]
+    [CmdletBinding()]
     [OutputType([Hashtable])]
 
     param(
@@ -52,8 +52,10 @@ function New-VaasSearchQuery {
         [System.Collections.ArrayList] $Filter,
 
         [parameter()]
-        [psobject[]] $Order
+        [psobject[]] $Order,
 
+        [Parameter()]
+        [int] $First
     )
 
     begin {
@@ -66,14 +68,13 @@ function New-VaasSearchQuery {
             'paging'     = @{}
         }
 
-        $firstMax = 18446744073709551615
-        # page size limit from vaas is 1000
-        $query.paging.Add('pageSize', [Math]::Min($PSCmdlet.PagingParameters.First, 1000))
+        $vaasPageSizeLimit = 1000
 
-        # notify user if they picked a -First value greater than 1000
-        if ( $PSCmdlet.PagingParameters.First -ne $firstMax -and $PSCmdlet.PagingParameters.First -gt 1000 ) {
-            Write-Warning '-First can not be larger than 1000 and will be updated'
+        if ( $First -le 0 ) {
+            $First = $vaasPageSizeLimit
         }
+
+        $query.paging.Add('pageSize', [Math]::Min($First, $vaasPageSizeLimit))
 
         $query.paging.Add('pageNumber', 0)
 
@@ -134,7 +135,8 @@ function New-VaasSearchQuery {
                     }
 
                     $newOperand
-                } else {
+                }
+                else {
                     New-VaasExpression -Filter $thisItem
                 }
 
@@ -144,7 +146,8 @@ function New-VaasSearchQuery {
                     'operator' = $operator
                     'operands' = @($operands)
                 }
-            } else {
+            }
+            else {
                 $operands
             }
         }
