@@ -232,15 +232,6 @@ function New-VenafiSession {
         [Parameter(ParameterSetName = 'TokenCertificate')]
         [string] $VaultRefreshTokenName,
 
-        [Parameter(ParameterSetName = 'TokenIntegrated')]
-        [Parameter(ParameterSetName = 'TokenOAuth')]
-        [Parameter(ParameterSetName = 'TokenCertificate')]
-        [Parameter(ParameterSetName = 'AccessToken')]
-        [Parameter(ParameterSetName = 'RefreshToken')]
-        [Parameter(ParameterSetName = 'VaultAccessToken')]
-        [Parameter(ParameterSetName = 'VaultRefreshToken')]
-        [switch] $VaultMetadata,
-
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenCertificate')]
@@ -281,9 +272,6 @@ function New-VenafiSession {
     )
 
     $isVerbose = if ($PSBoundParameters.Verbose -eq $true) { $true } else { $false }
-    if ( $VaultMetadata ) {
-        Write-Warning '-VaultMetadata is now deprecated.  Metadata will be vaulted by default.'
-    }
 
     $serverUrl = $Server
     # add prefix if just server url was provided
