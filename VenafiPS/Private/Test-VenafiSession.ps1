@@ -68,6 +68,14 @@ function Test-VenafiSession {
     )
 
     process {
+        if ( (Get-PSCallStack).Count -gt 3 ) {
+
+            # nested function, no need to continue testing session since it was already done
+            if ( $PassThru ) {
+                return $script:PlatformInProcess
+            }
+            return
+        }
 
         if ( -not $VenafiSession ) {
             if ( $env:TPP_TOKEN ) {
@@ -76,15 +84,16 @@ function Test-VenafiSession {
             elseif ( $env:VAAS_KEY ) {
                 $VenafiSession = $env:VAAS_KEY
             }
+            elseif ( $script:VenafiSession ) {
+                $VenafiSession = $script:VenafiSession
+            }
             else {
                 throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
             }
         }
 
         switch ($VenafiSession.GetType().Name) {
-            {$_ -in 'VenafiSession', 'PSCustomObject'} {
-
-                Write-Verbose 'Session is VenafiSession'
+            'VenafiSession' {
 
                 if ( $PSBoundParameters.ContainsKey('Platform') ) {
                     $newPlatform = $Platform
@@ -106,10 +115,24 @@ function Test-VenafiSession {
                 break
             }
 
-            'String' {
-                $objectGuid = [System.Guid]::empty
+            'PSCustomObject' {
 
-                if ( [System.Guid]::TryParse($VenafiSession, [System.Management.Automation.PSReference]$objectGuid) ) {
+                if ( $PSBoundParameters.ContainsKey('Platform') ) {
+                    $newPlatform = $Platform
+                    if ( $Platform -match '^(vaas|tpp)' ) {
+                        $newPlatform = $matches[1]
+                    }
+                }
+                # don't perform .Validate as we do above since this
+                # isn't the class, it's a converted pscustomobject
+                # for Invoke-VenafiParallel usage
+                $platformOut = $VenafiSession.Platform
+                break
+            }
+
+            'String' {
+
+                if ( Test-IsGuid($VenafiSession) ) {
 
                     Write-Verbose 'Session is VaaS key'
 
@@ -138,6 +161,12 @@ function Test-VenafiSession {
             Default {
                 throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a VaaS key or TPP token."
             }
+        }
+
+        # at entry function call, not nested, set the temp variables
+        if ( (Get-PSCallStack).Count -eq 3 ) {
+            $script:VenafiSessionNested = $VenafiSession
+            $script:PlatformInProcess = $Platform
         }
 
         if ( $PassThru ) {
