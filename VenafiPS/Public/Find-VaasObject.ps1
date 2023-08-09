@@ -5,12 +5,15 @@ function Find-VaasObject {
 
     .DESCRIPTION
     Find objects of type ActivityLog, Machine, MachineIdentity, CertificateRequest, CertificateInstance on VaaS.
-    Supports -First for page size and -IncludeTotalCount to retrieve all by paging.
-    The max page size is 1000.
+    Supports -First for page size; the max page size is 1000.
     To find certificate objects, use Find-VenafiCertificate.
 
     .PARAMETER Type
-    Type of object to retrieve.  Can be ActivityLog, Machine, MachineIdentity, CertificateRequest, or CertificateInstance.
+    Type of object to retrieve, either Certificate, ActivityLog, Machine, MachineIdentity, CertificateRequest, or CertificateInstance.
+
+    .PARAMETER Name
+    Case sensitive name to search for.
+    The field to be searched is different for each object type.
 
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
@@ -34,17 +37,12 @@ function Find-VaasObject {
     .EXAMPLE
     Find-VaasObject -Type CertificateInstance
 
-    Get first 1000 records
+    Get all records
 
     .EXAMPLE
     Find-VaasObject -Type CertificateInstance -First 50
 
     Get first 50 records
-
-    .EXAMPLE
-    Find-VaasObject -Type CertificateInstance -First 500 -IncludeTotalCount
-
-    Get all records paging 500 at a time
 
     .EXAMPLE
     Find-VaasObject -Type ActivityLog -Filter @('activityType', 'eq', 'Notifications') -First 10
@@ -68,7 +66,7 @@ function Find-VaasObject {
     https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VaasObject.ps1
     #>
 
-    [CmdletBinding(SupportsPaging)]
+    [CmdletBinding()]
 
     param (
 
@@ -77,36 +75,27 @@ function Find-VaasObject {
         [string] $Type,
 
         [Parameter()]
+        [string] $Name,
+
+        [Parameter()]
         [System.Collections.ArrayList] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [int] $First,
+
+        [Parameter()]
+        [psobject] $VenafiSession
     )
 
     Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
-    if ( $PSBoundParameters.ContainsKey('Skip') ) {
-        Write-Warning '-Skip is not currently supported by VaaS'
-    }
-
     $queryParams = @{
-        Filter            = $Filter
-        Order             = $Order
-        First             = $PSCmdlet.PagingParameters.First
-        Skip              = $PSCmdlet.PagingParameters.Skip
-        IncludeTotalCount = $PSCmdlet.PagingParameters.IncludeTotalCount
-    }
-
-    $body = New-VaasSearchQuery @queryParams
-
-    $params = @{
-        VenafiSession = $VenafiSession
-        Method        = 'Post'
-        Body          = $body
-        Header        = @{'Accept' = 'application/json' }
+        Filter = $Filter
+        Order  = $Order
+        First  = $First
     }
 
     $objectData = @{
@@ -114,6 +103,11 @@ function Find-VaasObject {
             'uriroot'  = 'outagedetection/v1'
             'urileaf'  = 'certificatesearch'
             'property' = 'certificates'
+            'filter'   = @{
+                Property        = @{'n' = 'certificateId'; 'e' = { $_.Id } }
+                ExcludeProperty = 'id'
+            }
+            'name'     = 'certificateName'
         }
         'CertificateRequest'  = @{
             'uriroot'  = 'outagedetection/v1'
@@ -123,12 +117,14 @@ function Find-VaasObject {
                 Property        = @{'n' = 'certificateRequestId'; 'e' = { $_.Id } }
                 ExcludeProperty = 'id'
             }
+            'name'     = 'subjectDN'
         }
         'CertificateInstance' = @{
             'uriroot'  = 'outagedetection/v1'
             'urileaf'  = 'certificateinstancesearch'
             'property' = 'instances'
             'filter'   = ''
+            'name'     = 'hostname'
         }
         'Machine'             = @{
             'uriroot'  = 'v1'
@@ -138,6 +134,7 @@ function Find-VaasObject {
                 Property        = @{'n' = 'machineId'; 'e' = { $_.Id } }
                 ExcludeProperty = 'id'
             }
+            'name'     = 'machineName'
         }
         'MachineIdentity'     = @{
             'uriroot'  = 'v1'
@@ -147,6 +144,7 @@ function Find-VaasObject {
                 Property        = @{'n' = 'machineIdentityId'; 'e' = { $_.Id } }
                 ExcludeProperty = 'id'
             }
+            'name'     = 'certificateName'
         }
         'ActivityLog'         = @{
             'uriroot'  = 'v1'
@@ -156,7 +154,21 @@ function Find-VaasObject {
                 Property        = @{'n' = 'activityLogId'; 'e' = { $_.Id } }
                 ExcludeProperty = 'id'
             }
+            'name'     = 'activityName'
         }
+    }
+
+    if ($Name) {
+        $queryParams.Filter = @($objectData.$Type.name, 'find', $Name)
+    }
+
+    $body = New-VaasSearchQuery @queryParams
+
+    $params = @{
+        VenafiSession = $VenafiSession
+        Method        = 'Post'
+        Body          = $body
+        Header        = @{'Accept' = 'application/json' }
     }
 
     $params.UriRoot = $objectData.$Type.uriroot
@@ -169,22 +181,34 @@ function Find-VaasObject {
 
         $response = Invoke-VenafiRestMethod @params
 
-        if ( -not $response ) {
-            continue
-        }
+        if ( -not $response ) { continue }
 
         $thisObjects = $response | Select-Object -ExpandProperty $objectData.$Type.property
 
-        $thisObjects | ForEach-Object { $allObjects.Add($_) }
+        if ( -not $thisObjects ) { break }
+
+        $allObjects.AddRange(@($thisObjects))
+
+        if ( $thisObjects.Count -lt $params.Body.paging.pageSize ) { break }
+
+        if ( $First ) {
+            # break out if we have all the objects we asked for
+            if ( $allObjects.Count -eq $First ) {
+                break
+            }
+            else {
+                $params.Body.paging.pageSize = [System.Math]::Min($First - $allObjects.Count, 1000)
+            }
+        }
+
         $params.body.paging.pageNumber += 1
 
-    } until (
-        @($thisObjects).Count -lt $params.Body.paging.pageSize -or @($thisObjects).Count -eq 0 -or (-not $PSCmdlet.PagingParameters.IncludeTotalCount)
-    )
+    } while ( $true )
 
     if ( $objectData.$Type.filter ) {
         $allObjects | Select-Object -Property $objectData.$Type.filter.Property, * -ExcludeProperty $objectData.$Type.filter.ExcludeProperty
-    } else {
+    }
+    else {
         $allObjects
     }
 }
