@@ -61,7 +61,7 @@ function Invoke-VenafiParallel {
         [Parameter()]
         [switch] $NoProgress,
 
-        [Parameter(Mandatory)]
+        [Parameter()]
         [psobject] $VenafiSession
 
     )
@@ -71,6 +71,22 @@ function Invoke-VenafiParallel {
         if ( $PSVersionTable.PSVersion.Major -ge 7 ) {
             if ( -not $NoProgress ) {
                 Write-Progress -Activity $ProgressTitle -Status "Initializing..."
+            }
+
+            if ( $env:TPP_TOKEN ) {
+                $VenafiSession = $env:TPP_TOKEN
+            }
+            elseif ( $env:VAAS_KEY ) {
+                $VenafiSession = $env:VAAS_KEY
+            }
+            elseif ($script:VenafiSessionNested) {
+                $VenafiSession = $script:VenafiSessionNested
+            }
+            elseif ( $script:VenafiSession ) {
+                $VenafiSession = $script:VenafiSession
+            }
+            else {
+                throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
             }
 
             # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
@@ -108,7 +124,8 @@ function Invoke-VenafiParallel {
                 # import via path instead of just module name to support non-standard paths, eg. development work
 
                 Import-Module (Join-Path -Path (Split-Path $using:thisDir -Parent) -ChildPath 'VenafiPS.psd1') -Force
-                $VenafiSession = $using:vs
+                $script:VenafiSession = $using:vs
+
             }
 
             $newSb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
