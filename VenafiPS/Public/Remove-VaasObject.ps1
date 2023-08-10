@@ -1,58 +1,75 @@
-﻿<#
-.SYNOPSIS
-Remove an object from VaaS
+﻿function Remove-VaasObject {
+    <#
+    .SYNOPSIS
+    Remove an object from VaaS
 
-.DESCRIPTION
-Remove a team, application, machine, machine identity, tag, or connector
+    .DESCRIPTION
+    Remove a certificate, team, application, machine, machine identity, tag, connector or issuing template.
+    Use PowerShell v7+ to speed up the process.
 
-.PARAMETER TeamID
-Team ID
+    .PARAMETER CertificateID
+    Certificate ID of a certificate that has been retired
 
-.PARAMETER ApplicationID
-Application ID
+    .PARAMETER TeamID
+    Team ID
 
-.PARAMETER MachineID
-Machine ID
+    .PARAMETER ApplicationID
+    Application ID
 
-.PARAMETER MachineIdentityID
-Machine Identity ID
+    .PARAMETER MachineID
+    Machine ID
 
-.PARAMETER TagName
-Name of the tag to be removed
+    .PARAMETER MachineIdentityID
+    Machine Identity ID
 
-.PARAMETER ConnectorID
-Connector ID
+    .PARAMETER TagName
+    Name of the tag to be removed
 
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A VaaS key can also provided.
+    .PARAMETER ConnectorID
+    Connector ID
 
-.INPUTS
-TeamID, ApplicationID, MachineID, MachineIdentityID, TagName, ConnectorID
+    .PARAMETER IssuingTemplateID
+    Issuing template ID
 
-.EXAMPLE
-Remove-VaasObject -TeamID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-Remove a VaaS team
+    .PARAMETER ThrottleLimit
+    Control the number of parallel threads.  Default is 20.
 
-.EXAMPLE
-Get-VenafiTeam -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | Remove-VaasObject
-Remove a VaaS team
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A VaaS key can also provided.
 
-.EXAMPLE
-Get-VaasConnector | Remove-VaasObject
-Remove all connectors
+    .INPUTS
+    CertificateID, TeamID, ApplicationID, MachineID, MachineIdentityID, TagName, ConnectorID, IssuingTemplateID
 
-.EXAMPLE
-Remove-VaasObject -TeamID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Confirm:$false
-Remove a team bypassing the confirmation prompt
+    .EXAMPLE
+    Remove-VaasObject -TeamID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
-#>
-function Remove-VaasObject {
+    Remove a single object by ID
+
+    .EXAMPLE
+    Find-VaasObject -Type Machine -Filter @('machineName','find','BadMachine') | Remove-VaasObject
+
+    Remove multiple objects based on a search
+
+    .EXAMPLE
+    Get-VaasConnector -All | Remove-VaasObject
+
+    Remove all connectors
+
+    .EXAMPLE
+    Remove-VaasObject -TeamID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Confirm:$false
+
+    Remove an object bypassing the confirmation prompt
+
+    #>
 
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
 
     param (
+
+        [Parameter(Mandatory, ParameterSetName = 'Certificate', ValueFromPipelineByPropertyName)]
+        [string] $CertificateID,
 
         [Parameter(Mandatory, ParameterSetName = 'Team', ValueFromPipelineByPropertyName)]
         [string] $TeamID,
@@ -72,6 +89,12 @@ function Remove-VaasObject {
         [Parameter(Mandatory, ParameterSetName = 'Connector', ValueFromPipelineByPropertyName)]
         [string] $ConnectorID,
 
+        [Parameter(Mandatory, ParameterSetName = 'IssuingTemplate', ValueFromPipelineByPropertyName)]
+        [string] $IssuingTemplateID,
+
+        [Parameter()]
+        [int] $ThrottleLimit = 20,
+
         [Parameter()]
         [psobject] $VenafiSession = $script:VenafiSession
     )
@@ -83,39 +106,91 @@ function Remove-VaasObject {
             VenafiSession = $VenafiSession
             Method        = 'Delete'
         }
+
+        $allObjects = [System.Collections.Generic.List[object]]::new()
+        $allCerts = [System.Collections.Generic.List[object]]::new()
     }
 
     process {
 
-        switch ($PSCmdlet.ParameterSetName) {
+        $thisObject = switch ($PSCmdlet.ParameterSetName) {
+
             'Team' {
-                $params.UriLeaf = "teams/$TeamID"
+                @{
+                    UriLeaf = "teams/$TeamID"
+                }
             }
 
             'Application' {
-                $params.UriRoot = 'outagedetection/v1'
-                $params.UriLeaf = "applications/$ApplicationID"
+                @{
+                    UriRoot = 'outagedetection/v1'
+                    UriLeaf = "applications/$ApplicationID"
+                }
             }
 
             'Machine' {
-                $params.UriLeaf = "machines/$MachineID"
+                @{
+                    UriLeaf = "machines/$MachineID"
+                }
             }
 
             'MachineIdentity' {
-                $params.UriLeaf = "machineidentities/$MachineIdentityID"
+                @{
+                    UriLeaf = "machineidentities/$MachineIdentityID"
+                }
             }
 
             'Tag' {
-                $params.UriLeaf = "tags/$TagName"
+                @{
+                    UriLeaf = "tags/$TagName"
+                }
             }
 
             'Connector' {
-                $params.UriLeaf = "connectors/$ConnectorID"
+                @{
+                    UriLeaf = "connectors/$ConnectorID"
+                }
+            }
+
+            'IssuingTemplate' {
+                @{
+                    UriLeaf = "certificateissuingtemplates/$IssuingTemplateID"
+                }
             }
         }
 
-        if ( $PSCmdlet.ShouldProcess($params.UriLeaf.Split('/')[-1], "Delete $($PSCmdlet.ParameterSetName)") ) {
+        if ( $PSCmdlet.ParameterSetName -eq 'Certificate' ) {
+            if ( $PSCmdlet.ShouldProcess($CertificateID, "Delete Certificate") ) {
+                $allCerts.Add($CertificateID)
+            }
+        }
+        else {
+            if ( $PSCmdlet.ShouldProcess($thisObject.UriLeaf.Split('/')[-1], "Delete $($PSCmdlet.ParameterSetName)") ) {
+                $allObjects.Add($thisObject)
+            }
+        }
+    }
+
+    end {
+
+        # handle certs differently since you send them all in 1 call
+        # and parallel functionality not needed
+        if ( $allCerts ) {
+            $params = @{
+                Method  = 'Post'
+                UriRoot = 'outagedetection/v1'
+                UriLeaf = 'certificates/deletion'
+                Body    = @{
+                    certificateIds = $allCerts
+                }
+            }
             $null = Invoke-VenafiRestMethod @params
         }
+        else {
+            Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
+                $null = Invoke-VenafiRestMethod -Method 'Delete' @PSItem
+            } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
+        }
+
     }
 }
