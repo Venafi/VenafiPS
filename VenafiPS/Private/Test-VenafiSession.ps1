@@ -72,7 +72,7 @@ function Test-VenafiSession {
 
             # nested function, no need to continue testing session since it was already done
             if ( $PassThru ) {
-                return $script:PlatformInProcess
+                return $script:PlatformNested
             }
             return
         }
@@ -166,7 +166,7 @@ function Test-VenafiSession {
         # at entry function call, not nested, set the temp variables
         if ( (Get-PSCallStack).Count -eq 3 ) {
             $script:VenafiSessionNested = $VenafiSession
-            $script:PlatformInProcess = $Platform
+            $script:PlatformNested = $Platform
         }
 
         if ( $PassThru ) {
