@@ -1,19 +1,21 @@
-﻿function Get-VCMachine {
+﻿function Get-VcMachine {
     <#
     .SYNOPSIS
-    Get different types of objects from VaaS
+    Get machine details
 
     .DESCRIPTION
-    Get 1 or all objects from VaaS.
-    You can retrieve teams, applications, machines, machine identities, tags, issuing templates, and vsatellites.
-    Where applicable, associated additional data will be retrieved and appended to the response.
-    For example, when getting tags their values will be provided.
+    Get machine details for 1 or all.
 
     .PARAMETER ID
-    Application ID or name
+    Machine ID or name
 
     .PARAMETER All
-    Get all applications
+    Get all machines
+
+    .PARAMETER IncludeConnectionDetail
+    Getting all machines does not include connection details.
+    Use -IncludeConnectionDetail to add this to the output, but note it will require an additional API call for each machine and can take some time.
+    Execute with PowerShell v7+ to run in parallel and speed things up.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -24,33 +26,90 @@
     ID
 
     .EXAMPLE
-    Get-VaasObject -ApplicationID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+    Get-VcMachine -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
-    Get a single object by ID
+    machineId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
+    companyId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
+    machineTypeId          : fc569b60-cf24-11ed-bdc6-77a4bac4cb50
+    pluginId               : ff645e14-bd1a-11ed-a009-ce063932f86d
+    integrationId          : cf7c8014-2b2a-11ee-9a03-fa8930555887
+    machineName            : MyCitrix
+    status                 : VERIFIED
+    machineType            : Citrix ADC
+    creationDate           : 7/25/2023 4:35:36 PM
+    modificationDate       : 7/25/2023 4:35:36 PM
+    machineIdentitiesCount : 0
+    owningTeam             : 59920180-a3e2-11ec-8dcd-3fcbf84c7db1
+    ownership              : @{owningTeams=System.Object[]}
+    connectionDetails      : @{hostnameOrAddress=1.2.3.4; password=uYroVBk/KtuuujEbfFC/06wtkIrOga7N96JdFSEQFhhn7KPUEWA=;
+                             username=ZLQlnciWsVp+qIUJQ8nYcAuHh55FxKdFsWhHVp7LLU+0y8aDp1pw==}
+
+    Get a single machine by ID
 
     .EXAMPLE
-    Get-VaasObject -ApplicationID 'My Awesome App'
+    Get-VcMachine -ID 'MyCitrix'
 
-    Get a single object by name.  The name is case sensitive.
+    Get a single machine by name.  The name is case sensitive.
 
     .EXAMPLE
-    Get-VaasObject -ConnectorAll | Remove-VaasObject
+    Get-VcMachine -All
 
-    Get all connectors and remove them all
+    machineId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
+    companyId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
+    machineTypeId          : fc569b60-cf24-11ed-bdc6-77a4bac4cb50
+    pluginId               : ff645e14-bd1a-11ed-a009-ce063932f86d
+    integrationId          : cf7c8014-2b2a-11ee-9a03-fa8930555887
+    machineName            : MyCitrix
+    status                 : VERIFIED
+    machineType            : Citrix ADC
+    creationDate           : 7/25/2023 4:35:36 PM
+    modificationDate       : 7/25/2023 4:35:36 PM
+    machineIdentitiesCount : 0
+    owningTeam             : 59920180-a3e2-11ec-8dcd-3fcbf84c7db1
+    ownership              : @{owningTeams=System.Object[]}
+
+    Get all machines.  Note the connection details are not included by default with -All.
+    See -IncludeConnectionDetails if this is needed.
+
+    .EXAMPLE
+    Get-VcMachine -All -IncludeConnectionDetails
+
+    machineId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
+    companyId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
+    machineTypeId          : fc569b60-cf24-11ed-bdc6-77a4bac4cb50
+    pluginId               : ff645e14-bd1a-11ed-a009-ce063932f86d
+    integrationId          : cf7c8014-2b2a-11ee-9a03-fa8930555887
+    machineName            : MyCitrix
+    status                 : VERIFIED
+    machineType            : Citrix ADC
+    creationDate           : 7/25/2023 4:35:36 PM
+    modificationDate       : 7/25/2023 4:35:36 PM
+    machineIdentitiesCount : 0
+    owningTeam             : 59920180-a3e2-11ec-8dcd-3fcbf84c7db1
+    ownership              : @{owningTeams=System.Object[]}
+    connectionDetails      : @{hostnameOrAddress=1.2.3.4; password=uYroVBk/KtuuujEbfFC/06wtkIrOga7N96JdFSEQFhhn7KPUEWA=;
+                             username=ZLQlnciWsVp+qIUJQ8nYcAuHh55FxKdFsWhHVp7LLU+0y8aDp1pw==}
+
+    Get all machines and include the connection details.
+    Getting connection details will require an additional API call for each machine and can take some time.
+    Use PowerShell v7+ to perform this in parallel and speed things up.
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
     [Alias('Get-VaasMachine')]
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
         [Alias('machineId')]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
+
+        [Parameter(ParameterSetName = 'All')]
+        [switch] $IncludeConnectionDetail,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -64,17 +123,23 @@
 
         if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
 
-            $params = @{
-                InputObject = Find-VaasObject -Type Machine
-                ScriptBlock = { $PSItem | Get-VaasObject }
+            $allMachines = Find-VcObject -Type Machine
+
+            if ( $IncludeConnectionDetail ) {
+                $params = @{
+                    InputObject = $allMachines
+                    ScriptBlock = { $PSItem | Get-VcMachine }
+                }
+                return Invoke-VenafiParallel @params
             }
-            return Invoke-VenafiParallel @params
+            else {
+                return $allMachines
+            }
         }
         else {
             if ( Test-IsGuid($ID) ) {
-                $guid = [guid] $ID
                 try {
-                    $response = Invoke-VenafiRestMethod -UriLeaf ('machines/{0}' -f $guid.ToString())
+                    $response = Invoke-VenafiRestMethod -UriLeaf ('machines/{0}' -f $ID)
                 }
                 catch {
                     if ( $_.Exception.Response.StatusCode.value__ -eq 404 ) {
@@ -88,12 +153,13 @@
             }
             else {
                 # no lookup by name directly.  search for it and then get details
-                Find-VaasObject -Type 'Machine' -Name $ID | Get-VaasObject
+                Find-VcObject -Type 'Machine' -Name $ID | Get-VcMachine
+            }
+
+            if ( $response ) {
+                $response | Select-Object @{ 'n' = 'machineId'; 'e' = { $_.Id } }, * -ExcludeProperty Id
             }
         }
 
-        if ( $response ) {
-            $response | Select-Object @{ 'n' = 'machineId'; 'e' = { $_.Id } }, * -ExcludeProperty Id
-        }
     }
 }

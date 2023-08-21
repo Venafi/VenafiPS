@@ -1,19 +1,16 @@
-﻿function Get-VCConnector {
+﻿function Get-VcConnector {
     <#
     .SYNOPSIS
-    Get different types of objects from VaaS
+    Get connector/webhook info
 
     .DESCRIPTION
-    Get 1 or all objects from VaaS.
-    You can retrieve teams, applications, machines, machine identities, tags, issuing templates, and vsatellites.
-    Where applicable, associated additional data will be retrieved and appended to the response.
-    For example, when getting tags their values will be provided.
+    Get 1 or all connector/webhook info
 
     .PARAMETER ID
-    Application ID or name
+    Connector ID or name
 
     .PARAMETER All
-    Get all applications
+    Get all connectors
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -24,28 +21,47 @@
     ID
 
     .EXAMPLE
-    Get-VaasObject -ApplicationID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+    Get-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
+
+    {
+        "connectorId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
+        "name": "ServiceNow-expiry,
+        "properties": {
+            "connectorKind": "WEBHOOK",
+            "filter": {
+                "filterType": "EXPIRATION",
+                "applicationIds": []
+            },
+            "target": {
+                "type": "generic",
+                "connection": {
+                    "secret": "MySecret",
+                    "url": "https://instance.service-now.com/api/company/endpoint"
+                }
+            }
+        }
+    }
 
     Get a single object by ID
 
     .EXAMPLE
-    Get-VaasObject -ApplicationID 'My Awesome App'
+    Get-VcConnector -ID 'My Connector'
 
     Get a single object by name.  The name is case sensitive.
 
     .EXAMPLE
-    Get-VaasObject -ConnectorAll | Remove-VaasObject
+    Get-VcConnector -All
 
-    Get all connectors and remove them all
+    Get all connectors
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
     [Alias('Get-VaasConnector')]
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
         [Alias('connectorId')]
         [string] $ID,
 
@@ -68,12 +84,11 @@
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
             if ( Test-IsGuid($ID) ) {
-                $guid = [guid] $ID
-                $params.UriLeaf += "/{0}" -f $guid.ToString()
+                $params.UriLeaf += "/{0}" -f $ID
             }
             else {
                 # search by name
-                return Get-VCConnector -All | Where-Object { $_.name -eq $ID }
+                return Get-VcConnector -All | Where-Object { $_.name -eq $ID }
             }
         }
 

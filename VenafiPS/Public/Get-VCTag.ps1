@@ -1,4 +1,4 @@
-﻿function Get-VCTag {
+﻿function Get-VcTag {
     <#
     .SYNOPSIS
     Get different types of objects from VaaS
@@ -44,7 +44,7 @@
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
         [string] $Name,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]

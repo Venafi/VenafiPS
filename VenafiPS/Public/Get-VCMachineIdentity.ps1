@@ -1,19 +1,16 @@
-﻿function Get-VCMachineIdentity {
+﻿function Get-VcMachineIdentity {
     <#
     .SYNOPSIS
-    Get different types of objects from VaaS
+    Get machine identities
 
     .DESCRIPTION
-    Get 1 or all objects from VaaS.
-    You can retrieve teams, applications, machines, machine identities, tags, issuing templates, and vsatellites.
-    Where applicable, associated additional data will be retrieved and appended to the response.
-    For example, when getting tags their values will be provided.
+    Get 1 or all machine identities
 
     .PARAMETER ID
-    Application ID or name
+    Machine identity ID
 
     .PARAMETER All
-    Get all applications
+    Get all machine identities
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -24,29 +21,39 @@
     ID
 
     .EXAMPLE
-    Get-VaasObject -ApplicationID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+    Get-VcMachineIdentity -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
-    Get a single object by ID
+    machineIdentityId : cc57e830-1a90-11ee-abe7-bda0c823b1ad
+    companyId         : cc57e830-1a90-11ee-abe7-bda0c823b1ad
+    machineId         : 5995ecf0-19ca-11ee-9386-3ba941243b67
+    certificateId     : cc535450-1a90-11ee-8774-3d248c9b48c5
+    status            : DISCOVERED
+    creationDate      : 7/4/2023 1:32:50 PM
+    lastSeenOn        : 7/4/2023 1:32:50 PM
+    modificationDate  : 7/4/2023 1:32:50 PM
+    keystore          : @{friendlyName=1.test.net; keystoreCapiStore=my; privateKeyIsExportable=False}
+    binding           : @{createBinding=False; port=40112; siteName=domain.io}
+
+    Get a single machine identity by ID
 
     .EXAMPLE
-    Get-VaasObject -ApplicationID 'My Awesome App'
+    Get-VcMachineIdentity -All
 
-    Get a single object by name.  The name is case sensitive.
-
-    .EXAMPLE
-    Get-VaasObject -ConnectorAll | Remove-VaasObject
-
-    Get all connectors and remove them all
+    Get all machine identities
 
     #>
 
-    [CmdletBinding()]
-    [Alias('Get-VaasApplication')]
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
         [Alias('machineIdentityId')]
+        [ValidateScript(
+            {
+                if ( Test-IsGuid($_) ) { $true } else { throw '-ID must be a uuid/guid' }
+            }
+        )]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
@@ -65,24 +72,39 @@
         if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
 
             $params = @{
-                InputObject = Find-VaasObject -Type MachineIdentity | Select-Object -Property machineIdentityId
-                ScriptBlock = { $PSItem | Get-VCMachineIdentity }
+                InputObject = Find-VcObject -Type MachineIdentity
+                ScriptBlock = {
+                    $thisItem = $PSItem
+                    $thisItem | Get-VcMachineIdentity | Select-Object *,
+                    @{
+                        'n' = 'certificateValidityEnd'
+                        'e' = { $thisItem.certificateValidityEnd }
+                    }
+                }
             }
-            return Invoke-VenafiParallel @params
+            Invoke-VenafiParallel @params
         }
         else {
-            if ( Test-IsGuid($ID) ) {
-                $guid = [guid] $ID
-                $response = Invoke-VenafiRestMethod -UriLeaf ('machineidentities/{0}' -f $guid.ToString())
+            try {
+                $response = Invoke-VenafiRestMethod -UriLeaf ('machineidentities/{0}' -f $ID)
             }
-            else {
-                # no lookup by name directly.  search for it and then get details
-                Find-VaasObject -Type 'MachineIdentity' -Name $ID | Get-VCMachineIdentity
+            catch {
+                if ( $_.Exception.Response.StatusCode.value__ -eq 404 ) {
+                    # not found, return nothing
+                    return
+                }
+                else {
+                    throw $_
+                }
             }
-        }
 
-        if ( $response ) {
-            $response | Select-Object @{ 'n' = 'machineIdentityId'; 'e' = { $_.Id } }, * -ExcludeProperty Id
+            if ( $response ) {
+                $response | Select-Object @{ 'n' = 'machineIdentityId'; 'e' = { $_.Id } },
+                @{
+                    'n'='certificateValidityEnd'
+                    'e'={ Get-VenafiCertificate -CertificateID $_.certificateId | Select-Object -ExpandProperty validityEnd }
+                }, * -ExcludeProperty Id
+            }
         }
     }
 }

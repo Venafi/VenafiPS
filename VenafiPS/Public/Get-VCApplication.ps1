@@ -1,13 +1,10 @@
-﻿function Get-VCApplication {
+﻿function Get-VcApplication {
     <#
     .SYNOPSIS
-    Get different types of objects from VaaS
+    Get application info
 
     .DESCRIPTION
-    Get 1 or all objects from VaaS.
-    You can retrieve teams, applications, machines, machine identities, tags, issuing templates, and vsatellites.
-    Where applicable, associated additional data will be retrieved and appended to the response.
-    For example, when getting tags their values will be provided.
+    Get 1 or more applications.
 
     .PARAMETER ID
     Application ID or name
@@ -24,27 +21,41 @@
     ID
 
     .EXAMPLE
-    Get-VaasObject -ApplicationID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+    Get-VcApplication -ApplicationID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+
+    applicationId              : 96fc9310-67ec-11eb-a8a7-794fe75a8e6f
+    certificateIssuingTemplate : @{Name=MyTemplate; id=7fb6af20-b22e-11ea-9a24-930fb5d2b247}
+    companyId                  : 09b24f81-b22b-11ea-91f3-ebd6dea5452e
+    name                       : myapp
+    description                :
+    ownerIdsAndTypes           : {@{ownerId=0a2adae0-b22b-11ea-91f3-ebd6dea5452f; ownerType=TEAM}}
+    fullyQualifiedDomainNames  : {}
+    ipRanges                   : {}
+    ports                      : {}
+    modificationDate           : 6/8/2023 11:06:43 AM
+    creationDate               : 2/5/2021 2:59:00 PM
+    ownership                  : @{owningUsers=System.Object[]}
 
     Get a single object by ID
 
     .EXAMPLE
-    Get-VaasObject -ApplicationID 'My Awesome App'
+    Get-VcApplication -ID 'My Awesome App'
 
     Get a single object by name.  The name is case sensitive.
 
     .EXAMPLE
-    Get-VaasObject -ConnectorAll | Remove-VaasObject
+    Get-VcApplication -All
 
-    Get all connectors and remove them all
+    Get all applications
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
+    [Alias('Get-VaasApplication')]
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
         [Alias('applicationId')]
         [string] $ID,
 
@@ -68,8 +79,7 @@
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
             if ( Test-IsGuid($ID) ) {
-                $guid = [guid] $ID
-                $params.UriLeaf += "/{0}" -f $guid.ToString()
+                $params.UriLeaf += "/{0}" -f $ID
             }
             else {
                 # search by name
@@ -98,11 +108,11 @@
         }
 
         if ( $applications ) {
-            $applications | Select-Object @{'n' = 'applicationId'; 'e' = { $_.Id }},
+            $applications | Select-Object @{'n' = 'applicationId'; 'e' = { $_.Id } },
             @{
-                'n' = 'certificateIssuingTemplate'
+                'n' = 'issuingTemplate'
                 'e' = {
-                    $_.certificateIssuingTemplateAliasIdMap.psobject.Properties | Select-Object name, @{'n' = 'id'; 'e' = { $_.Value } }
+                    $_.certificateIssuingTemplateAliasIdMap.psobject.Properties | Select-Object @{'n' = 'name'; 'e' = { $_.Name } }, @{'n' = 'issuingTemplateId'; 'e' = { $_.Value } }
                 }
             }, * -ExcludeProperty Id, certificateIssuingTemplateAliasIdMap
         }
