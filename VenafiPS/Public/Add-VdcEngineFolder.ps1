@@ -1,41 +1,42 @@
-<#
-.SYNOPSIS
-Add policy folder assignments to a TPP processing engine
-.DESCRIPTION
-Add one or more policy folder assignments to a TPP processing engine.
-.PARAMETER EnginePath
-The full DN path to a TPP processing engine.
-.PARAMETER EngineObject
-TPPObject belonging to the 'Venafi Platform' class.
-.PARAMETER FolderPath
-The full DN path to one or more policy folders (string array).
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
-.INPUTS
-EnginePath or EngineObject, FolderPath[]
-.OUTPUTS
-None
-.EXAMPLE
-Add-TppEngineFolder -EnginePath '\VED\Engines\MYVENAFI01' -FolderPath '\VED\Policy\Certificates\Web Team'
-Add processing engine MYVENAFI01 to the policy folders '\VED\Policy\Certificates\Web Team'.
-.EXAMPLE
-Add-TppEngineFolder -EnginePath '\VED\Engines\MYVENAFI01' -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team')
-Add processing engine MYVENAFI01 to the policy folders '\VED\Policy\Certificates\Web Team' and '\VED\Policy\Certificates\Database Team'.
-.EXAMPLE
-$EngineObjects | Add-TppEngineFolder -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team') -Confirm:$false
-Add one or more processing engines via the pipeline to multiple policy folders. Suppress the confirmation prompt.
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppEngineFolder/
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppEngineFolder.ps1
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-ProcessingEngines-Engine-eguid.php
-#>
-function Add-TppEngineFolder
-{
+function Add-VdcEngineFolder {
+    <#
+    .SYNOPSIS
+    Add policy folder assignments to a TPP processing engine
+    .DESCRIPTION
+    Add one or more policy folder assignments to a TPP processing engine.
+    .PARAMETER EnginePath
+    The full DN path to a TPP processing engine.
+    .PARAMETER EngineObject
+    TPPObject belonging to the 'Venafi Platform' class.
+    .PARAMETER FolderPath
+    The full DN path to one or more policy folders (string array).
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+    .INPUTS
+    EnginePath or EngineObject, FolderPath[]
+    .OUTPUTS
+    None
+    .EXAMPLE
+    Add-VdcEngineFolder -EnginePath '\VED\Engines\MYVENAFI01' -FolderPath '\VED\Policy\Certificates\Web Team'
+    Add processing engine MYVENAFI01 to the policy folders '\VED\Policy\Certificates\Web Team'.
+    .EXAMPLE
+    Add-VdcEngineFolder -EnginePath '\VED\Engines\MYVENAFI01' -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team')
+    Add processing engine MYVENAFI01 to the policy folders '\VED\Policy\Certificates\Web Team' and '\VED\Policy\Certificates\Database Team'.
+    .EXAMPLE
+    $EngineObjects | Add-VdcEngineFolder -FolderPath @('\VED\Policy\Certificates\Web Team','\VED\Policy\Certificates\Database Team') -Confirm:$false
+    Add one or more processing engines via the pipeline to multiple policy folders. Suppress the confirmation prompt.
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Add-VdcEngineFolder/
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-VdcEngineFolder.ps1
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-ProcessingEngines-Engine-eguid.php
+    #>
+
     [CmdletBinding(SupportsShouldProcess)]
+    [Alias('Add-TppEngineFolder')]
 
     param (
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
@@ -56,7 +57,7 @@ function Add-TppEngineFolder
         [String[]] $FolderPath,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {

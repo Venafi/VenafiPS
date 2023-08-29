@@ -1,33 +1,34 @@
-<#
-.SYNOPSIS
-Convert DN path to GUID
+function ConvertTo-VdcGuid {
+    <#
+    .SYNOPSIS
+    Convert DN path to GUID
 
-.DESCRIPTION
-Convert DN path to GUID
+    .DESCRIPTION
+    Convert DN path to GUID
 
-.PARAMETER Path
-DN path representing an object
+    .PARAMETER Path
+    DN path representing an object
 
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
-.INPUTS
-Path
+    .INPUTS
+    Path
 
-.OUTPUTS
-Guid
+    .OUTPUTS
+    Guid
 
-.EXAMPLE
-ConvertTo-TppGuid -Path '\ved\policy\convertme'
+    .EXAMPLE
+    ConvertTo-VdcGuid -Path '\ved\policy\convertme'
 
-#>
-function ConvertTo-TppGuid {
+    #>
 
     [CmdletBinding()]
     [OutputType([System.Guid])]
+    [Alias('ConvertTo-VdcGuid')]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -46,11 +47,11 @@ function ConvertTo-TppGuid {
         [switch] $IncludeType,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
-        # Test-VenafiSession -VenafiSession $VenafiSession
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $params = @{
             VenafiSession = $VenafiSession

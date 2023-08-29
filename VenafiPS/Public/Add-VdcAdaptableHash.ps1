@@ -1,4 +1,4 @@
-function Add-TppAdaptableHash {
+function Add-VdcAdaptableHash {
     <#
     .SYNOPSIS
     Adds or updates the hash value for an adaptable script
@@ -34,7 +34,7 @@ function Add-TppAdaptableHash {
     None
 
     .EXAMPLE
-    Add-TppAdaptableHash -Path $Path -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableApp\AppDriver.ps1'
+    Add-VdcAdaptableHash -Path $Path -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableApp\AppDriver.ps1'
 
     Update the hash on an adaptable app object.
 
@@ -42,15 +42,15 @@ function Add-TppAdaptableHash {
     the hash is saved.
 
     .EXAMPLE
-    Add-TppAdaptableHash -Path $Path -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableLog\Generic-LogDriver.ps1'
+    Add-VdcAdaptableHash -Path $Path -FilePath 'C:\Program Files\Venafi\Scripts\AdaptableLog\Generic-LogDriver.ps1'
 
     Update the hash on an adaptable log object.
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Add-TppAdaptableHash/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Add-VdcAdaptableHash/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-TppAdaptableHash.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Add-VdcAdaptableHash.ps1
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-add.php
@@ -63,6 +63,8 @@ function Add-TppAdaptableHash {
     #>
 
     [CmdletBinding(SupportsShouldProcess)]
+    [Alias('Add-TppAdaptableHash')]
+
     param (
         [Parameter(Mandatory)]
         [ValidateNotNullOrEmpty()]
@@ -84,7 +86,7 @@ function Add-TppAdaptableHash {
         [string] $FilePath,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {

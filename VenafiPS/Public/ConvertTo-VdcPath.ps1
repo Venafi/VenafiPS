@@ -1,31 +1,34 @@
-<#
-.SYNOPSIS
-Convert GUID to Path
+function ConvertTo-VdcPath {
+    <#
+    .SYNOPSIS
+    Convert GUID to Path
 
-.DESCRIPTION
-Convert GUID to Path
+    .DESCRIPTION
+    Convert GUID to Path
 
-.PARAMETER Guid
-Guid type, [guid] 'xyxyxyxy-xyxy-xyxy-xyxy-xyxyxyxyxyxy'
+    .PARAMETER Guid
+    Guid type, [guid] 'xyxyxyxy-xyxy-xyxy-xyxy-xyxyxyxyxyxy'
 
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
-.INPUTS
-Guid
+    .INPUTS
+    Guid
 
-.OUTPUTS
-String representing the Path
+    .OUTPUTS
+    String representing the Path
 
-.EXAMPLE
-ConvertTo-TppPath -Guid [guid]'xyxyxyxy-xyxy-xyxy-xyxy-xyxyxyxyxyxy'
+    .EXAMPLE
+    ConvertTo-VdcPath -Guid [guid]'xyxyxyxy-xyxy-xyxy-xyxy-xyxyxyxyxyxy'
 
-#>
-function ConvertTo-TppPath {
+    #>
+
     [CmdletBinding()]
+    [Alias('ConvertTo-VdcPath')]
+
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
@@ -35,7 +38,7 @@ function ConvertTo-TppPath {
         [switch] $IncludeType,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
