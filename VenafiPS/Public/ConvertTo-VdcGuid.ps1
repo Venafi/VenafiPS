@@ -27,8 +27,8 @@ function ConvertTo-VdcGuid {
     #>
 
     [CmdletBinding()]
+    [Alias('ConvertTo-TppGuid')]
     [OutputType([System.Guid])]
-    [Alias('ConvertTo-VdcGuid')]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

@@ -27,7 +27,7 @@ function ConvertTo-VdcPath {
     #>
 
     [CmdletBinding()]
-    [Alias('ConvertTo-VdcPath')]
+    [Alias('ConvertTo-TppPath')]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

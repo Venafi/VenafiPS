@@ -1,11 +1,11 @@
-function Find-TppEngine {
+function Find-VdcEngine {
     <#
     .SYNOPSIS
     Find TPP engines using an optional pattern
 
     .DESCRIPTION
     Find TPP engines using an optional pattern.
-    This function is an engine wrapper for Find-TppObject.
+    This function is an engine wrapper for Find-VdcObject.
 
     .PARAMETER Pattern
     Filter against engine names using asterisk (*) and/or question mark (?) wildcard characters.
@@ -22,25 +22,26 @@ function Find-TppEngine {
     TppObject
 
     .EXAMPLE
-    Find-TppEngine -Pattern '*partialname*'
+    Find-VdcEngine -Pattern '*partialname*'
 
     Get engines whose name matches the supplied pattern
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppEngine/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcEngine/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppEngine.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcEngine.ps1
     #>
 
     [CmdletBinding()]
+    [Alias('Find-TppEngine')]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline)]
         [String] $Pattern,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -55,6 +56,6 @@ function Find-TppEngine {
             Pattern       = $Pattern
         }
 
-        Find-TppObject @params
+        Find-VdcObject @params
     }
 }

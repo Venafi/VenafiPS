@@ -1,43 +1,44 @@
-<#
-.SYNOPSIS
-Find vault IDs in the secret store
+function Find-VdcVaultId {
+    <#
+    .SYNOPSIS
+    Find vault IDs in the secret store
 
-.DESCRIPTION
-Find vault IDs in the secret store by their attributes and associated values
+    .DESCRIPTION
+    Find vault IDs in the secret store by their attributes and associated values
 
-.PARAMETER Attribute
-Name and value to search.
-See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php for more details.
+    .PARAMETER Attribute
+    Name and value to search.
+    See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php for more details.
 
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
-.INPUTS
-Attribute
+    .INPUTS
+    Attribute
 
-.OUTPUTS
-String
+    .OUTPUTS
+    String
 
-.EXAMPLE
-Find-TppVaultId -Attribute @{'Serial'='0812E11D213DE8E07890BCC1234567'}
-Find a vault id
+    .EXAMPLE
+    Find-VdcVaultId -Attribute @{'Serial'='0812E11D213DE8E07890BCC1234567'}
+    Find a vault id
 
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppVaultId/
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcVaultId/
 
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppVaultId.ps1
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcVaultId.ps1
 
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php
 
-#>
-function Find-TppVaultId {
+    #>
 
     [CmdletBinding()]
+    [Alias('Find-TppVaultId')]
 
     param (
 
@@ -45,7 +46,7 @@ function Find-TppVaultId {
         [hashtable] $Attribute,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {

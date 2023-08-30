@@ -1,4 +1,4 @@
-function Find-TppObject {
+function Find-VdcObject {
     <#
     .SYNOPSIS
     Find objects by path, class, or pattern
@@ -41,46 +41,46 @@ function Find-TppObject {
     TppObject
 
     .EXAMPLE
-    Find-TppObject
+    Find-VdcObject
     Get all objects recursively starting from \ved\policy
 
     .EXAMPLE
-    Find-TppObject -Path '\VED\Policy\certificates'
+    Find-VdcObject -Path '\VED\Policy\certificates'
     Get all objects in the root of a specific folder
 
     .EXAMPLE
-    Find-TppObject -Path '\VED\Policy\My Folder' -Recursive
+    Find-VdcObject -Path '\VED\Policy\My Folder' -Recursive
     Get all objects in a folder and subfolders
 
     .EXAMPLE
-    Find-TppObject -Path '\VED\Policy' -Pattern '*test*'
+    Find-VdcObject -Path '\VED\Policy' -Pattern '*test*'
     Get items in a specific folder filtering the path
 
     .EXAMPLE
-    Find-TppObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
+    Find-VdcObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
     Get objects of a specific type
 
     .EXAMPLE
-    Find-TppObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
+    Find-VdcObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
     Get all objects of a specific type where the path is of a specific pattern
 
     .EXAMPLE
-    Find-TppObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
+    Find-VdcObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
     Get objects for multiple types
 
     .EXAMPLE
-    Find-TppObject -Pattern '*f5*'
+    Find-VdcObject -Pattern '*f5*'
     Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
 
     .EXAMPLE
-    Find-TppObject -Pattern 'awesome*' -Attribute 'Description'
+    Find-VdcObject -Pattern 'awesome*' -Attribute 'Description'
     Find objects where the specific attribute matches the pattern
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Find-TppObject/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcObject/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-TppObject.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcObject.ps1
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php
@@ -94,7 +94,7 @@ function Find-TppObject {
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
-    [Alias('fto')]
+    [Alias('fto', 'Find-TppObject')]
 
     param (
         [Parameter(ParameterSetName = 'FindByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -128,7 +128,7 @@ function Find-TppObject {
         [switch] $Recursive,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
