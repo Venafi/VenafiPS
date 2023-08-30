@@ -6,8 +6,10 @@ PowerShell module to access the features of Venafi Trust Protection Platform RES
 Author: Greg Brownstein
 #>
 
-# Force TLS 1.2
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+# Force TLS 1.2 if currently set lower
+if ([Net.ServicePointManager]::SecurityProtocol.value__ -lt 3072) {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+}
 
 $folders = @('Enum', 'Classes', 'Public', 'Private')
 
@@ -35,28 +37,28 @@ $script:functionConfig = ConvertFrom-Json (Get-Content "$PSScriptRoot\config\fun
 $Script:VenafiSession = $null
 Export-ModuleMember -Variable VenafiSession
 
-$aliases = @{
-    'ConvertTo-TppDN'          = 'ConvertTo-TppPath'
-    'Get-TppWorkflowDetail'    = 'Get-TppWorkflowTicket'
-    'Restore-TppCertificate'   = 'Invoke-TppCertificateRenewal'
-    'Get-TppLog'               = 'Read-TppLog'
-    'fto'                      = 'Find-TppObject'
-    'ftc'                      = 'Find-TppCertificate'
-    'itcr'                     = 'Invoke-TppCertificateRenewal'
-    'New-TppSession'           = 'New-VenafiSession'
-    'Invoke-TppRestMethod'     = 'Invoke-VenafiRestMethod'
-    'Get-TppCertificate'       = 'Export-VenafiCertificate'
-    'Get-TppCertificateDetail' = 'Get-VenafiCertificate'
-    'Read-TppLog'              = 'Read-VenafiLog'
-    'Get-TppIdentity'          = 'Get-VenafiIdentity'
-    'Find-TppCertificate'      = 'Find-VenafiCertificate'
-}
-$aliases.GetEnumerator() | ForEach-Object {
-    Set-Alias -Name $_.Key -Value $_.Value
-}
-Export-ModuleMember -Alias *
+# $aliases = @{
+#     'ConvertTo-TppDN'          = 'ConvertTo-VdcPath'
+#     'Get-TppWorkflowDetail'    = 'Get-TppWorkflowTicket'
+#     'Restore-TppCertificate'   = 'Invoke-TppCertificateRenewal'
+#     'Get-TppLog'               = 'Read-TppLog'
+#     'fto'                      = 'Find-VdcObject'
+#     'ftc'                      = 'Find-TppCertificate'
+#     'itcr'                     = 'Invoke-TppCertificateRenewal'
+#     'New-TppSession'           = 'New-VenafiSession'
+#     'Invoke-TppRestMethod'     = 'Invoke-VenafiRestMethod'
+#     'Get-TppCertificate'       = 'Export-VenafiCertificate'
+#     'Get-TppCertificateDetail' = 'Get-VenafiCertificate'
+#     'Read-TppLog'              = 'Read-VenafiLog'
+#     'Get-TppIdentity'          = 'Get-VenafiIdentity'
+#     'Find-TppCertificate'      = 'Find-VenafiCertificate'
+# }
+# $aliases.GetEnumerator() | ForEach-Object {
+#     Set-Alias -Name $_.Key -Value $_.Value
+# }
+# Export-ModuleMember -Alias *
 
-# load sodium needed for vaas encryption
+# load sodium needed for tlspc encryption
 Import-Module "$PSScriptRoot\import\PSSodium\PSSodium.psd1" -Force
 
 # vaas fields to ensure the values are upper case
