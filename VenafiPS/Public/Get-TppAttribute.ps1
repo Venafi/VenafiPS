@@ -267,7 +267,12 @@ function Get-TppAttribute {
                 }
             }
 
+            # disabled is a special kind of attribute which cannot be read with readeffectivepolicy
+            if ( $params.Body.AttributeName -eq 'Disabled' ) {
+                $response = Invoke-VenafiRestMethod @params -UriLeaf 'Config/Read'
+            } else {
             $response = Invoke-VenafiRestMethod @params
+            }
 
             if ( $response.Error ) {
                 if ( $response.Result -in 601, 112) {
