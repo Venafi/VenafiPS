@@ -1,4 +1,4 @@
-function Get-TppAttribute {
+function Get-VdcAttribute {
     <#
     .SYNOPSIS
     Get object attributes as well as policy attributes
@@ -51,7 +51,7 @@ function Get-TppAttribute {
     PSCustomObject
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'State'
+    Get-VdcAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'State'
 
     Name      : test.gdb.com
     Path      : \VED\Policy\Certificates\test.gdb.com
@@ -63,7 +63,7 @@ function Get-TppAttribute {
     Retrieve a single attribute
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'State', 'Driver Name'
+    Get-VdcAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'State', 'Driver Name'
 
     Name        : test.gdb.com
     Path        : \VED\Policy\Certificates\test.gdb.com
@@ -77,7 +77,7 @@ function Get-TppAttribute {
     Retrieve multiple attributes
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'ServiceNow Assignment Group'
+    Get-VdcAttribute -Path '\VED\Policy\certificates\test.gdb.com' -Attribute 'ServiceNow Assignment Group'
 
     Name                        : test.gdb.com
     Path                        : \VED\Policy\Certificates\test.gdb.com
@@ -91,7 +91,7 @@ function Get-TppAttribute {
     You can specify either the guid or custom field label name.
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\mydevice\myapp' -Attribute 'Certificate' -NoLookup
+    Get-VdcAttribute -Path '\VED\Policy\mydevice\myapp' -Attribute 'Certificate' -NoLookup
 
     Name                        : myapp
     Path                        : \VED\Policy\mydevice\myapp
@@ -103,7 +103,7 @@ function Get-TppAttribute {
     Retrieve an attribute value without custom value lookup
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates\test.gdb.com' -All
+    Get-VdcAttribute -Path '\VED\Policy\certificates\test.gdb.com' -All
 
     Name                                  : test.gdb.com
     Path                                  : \VED\Policy\Certificates\test.gdb.com
@@ -124,7 +124,7 @@ function Get-TppAttribute {
     Retrieve all attributes applicable to this object
 
     .EXAMPLE
-    Get-TppAttribute -Path 'Certificates' -Class 'X509 Certificate' -Attribute 'State'
+    Get-VdcAttribute -Path 'Certificates' -Class 'X509 Certificate' -Attribute 'State'
 
     Name      : Certificates
     Path      : \VED\Policy\Certificates
@@ -138,7 +138,7 @@ function Get-TppAttribute {
     \ved\policy will be prepended to the path.
 
     .EXAMPLE
-    Get-TppAttribute -Path '\VED\Policy\certificates' -Class 'X509 Certificate' -All
+    Get-VdcAttribute -Path '\VED\Policy\certificates' -Class 'X509 Certificate' -All
 
     Name                                  : Certificates
     Path                                  : \VED\Policy\Certificates
@@ -159,10 +159,10 @@ function Get-TppAttribute {
     Retrieve all policy attributes for the specified policy folder and class
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppAttribute/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcAttribute/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppAttribute.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcAttribute.ps1
 
     .LINK
     https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findpolicy.php
@@ -172,6 +172,8 @@ function Get-TppAttribute {
 
     #>
     [CmdletBinding(DefaultParameterSetName = 'Attribute')]
+    [Alias('Get-TppAttribute')]
+
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'Attribute', ValueFromPipeline, ValueFromPipelineByPropertyName)]
@@ -194,7 +196,7 @@ function Get-TppAttribute {
         [switch] $NoLookup,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -206,7 +208,7 @@ function Get-TppAttribute {
         $newAttribute = $Attribute
         if ( $All -and $Class ) {
             Write-Verbose "Getting attributes for class $Class"
-            $newAttribute = Get-TppClassAttribute -ClassName $Class -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name -Unique
+            $newAttribute = Get-VdcClassAttribute -ClassName $Class -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name -Unique
         }
 
         $params = @{
@@ -225,7 +227,7 @@ function Get-TppAttribute {
     process {
 
         $newPath = $Path | ConvertTo-TppFullPath
-        $thisObject = Get-TppObject -Path $newPath -VenafiSession $VenafiSession
+        $thisObject = Get-VdcObject -Path $newPath
 
         if ( $PSBoundParameters.ContainsKey('Class') -and $thisObject.TypeName -ne 'Policy' ) {
             Write-Error ('You are attempting to retrieve policy attributes, but {0} is not a policy path' -f $newPath)
@@ -233,9 +235,9 @@ function Get-TppAttribute {
         }
 
         # get all attributes if item is an object other than a policy
-        # Get-TppClassAttribute will return matching names from different classes so ensure the list is unique
+        # Get-VdcClassAttribute will return matching names from different classes so ensure the list is unique
         if ( $All -and -not $PSBoundParameters.ContainsKey('Class') ) {
-            $newAttribute = Get-TppClassAttribute -ClassName $thisObject.TypeName -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name -Unique
+            $newAttribute = Get-VdcClassAttribute -ClassName $thisObject.TypeName | Select-Object -ExpandProperty Name -Unique
         }
 
         $params.Body.ObjectDN = $newPath
@@ -252,8 +254,10 @@ function Get-TppAttribute {
             $return | Add-Member @{ 'ClassName' = $Class }
         }
 
-        $allAttributes = foreach ($thisAttribute in $newAttribute) {
+        $allAttributes = Invoke-VenafiParallel -InputObject $newAttribute -ScriptBlock {
 
+            $thisAttribute = $PSItem
+            $params = ($using:params).Clone()
             Write-Verbose "Processing attribute $thisAttribute"
 
             $params.Body.AttributeName = $thisAttribute
@@ -270,8 +274,9 @@ function Get-TppAttribute {
             # disabled is a special kind of attribute which cannot be read with readeffectivepolicy
             if ( $params.Body.AttributeName -eq 'Disabled' ) {
                 $response = Invoke-VenafiRestMethod @params -UriLeaf 'Config/Read'
-            } else {
-            $response = Invoke-VenafiRestMethod @params
+            }
+            else {
+                $response = Invoke-VenafiRestMethod @params
             }
 
             if ( $response.Error ) {
@@ -321,14 +326,14 @@ function Get-TppAttribute {
                 }
 
                 if ( $valueOut ) {
-                    $return | Add-Member @{ $customField.Label = $valueOut }
+                    $using:return | Add-Member @{ $customField.Label = $valueOut }
                 }
 
             }
             else {
 
                 if ( $valueOut ) {
-                    $return | Add-Member @{ $thisAttribute = $valueOut } -ErrorAction SilentlyContinue
+                    $using:return | Add-Member @{ $thisAttribute = $valueOut } -ErrorAction SilentlyContinue
                 }
 
                 $newProp | Add-Member @{ Name = $thisAttribute }
@@ -347,7 +352,7 @@ function Get-TppAttribute {
 
             $newProp
 
-        }
+        } -ThrottleLimit 20 -ProgressTitle 'Getting attributes'
 
         $return.Attribute = @($allAttributes)
         $return

@@ -1,4 +1,4 @@
-function Get-TppObject {
+function Get-VdcObject {
     <#
     .SYNOPSIS
     Get object information
@@ -26,24 +26,25 @@ function Get-TppObject {
     PSCustomObject
 
     .EXAMPLE
-    Get-TppObject -Path '\VED\Policy\My object'
+    Get-VdcObject -Path '\VED\Policy\My object'
 
     Get an object by path
 
     .EXAMPLE
-    [guid]'dab22152-0a81-4fb8-a8da-8c5e3d07c3f1' | Get-TppObject
+    [guid]'dab22152-0a81-4fb8-a8da-8c5e3d07c3f1' | Get-VdcObject
 
     Get an object by guid
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppObject/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcObject/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppObject.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcObject.ps1
 
     #>
 
     [CmdletBinding()]
+    [Alias('Get-TppObject', 'gvdo')]
 
     param (
         [Parameter(Mandatory, ParameterSetName = 'ByPath', ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0)]
@@ -57,7 +58,7 @@ function Get-TppObject {
         [guid[]] $Guid,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -68,12 +69,12 @@ function Get-TppObject {
 
         if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
             $Path | ConvertTo-TppFullPath | ForEach-Object {
-                ConvertTo-TppObject -Path $_ -VenafiSession $VenafiSession
+                ConvertTo-TppObject -Path $_
             }
         }
         else {
             $Guid | ConvertTo-TppFullPath | ForEach-Object {
-                ConvertTo-TppObject -Guid $_ -VenafiSession $VenafiSession
+                ConvertTo-TppObject -Guid $_
             }
         }
     }

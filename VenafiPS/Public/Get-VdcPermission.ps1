@@ -1,115 +1,117 @@
-﻿<#
-.SYNOPSIS
-Get permissions for TPP objects
+﻿function Get-VdcPermission {
+    <#
+    .SYNOPSIS
+    Get permissions for TPP objects
 
-.DESCRIPTION
-Get permissions for users and groups on any object.
-The effective permissions will be retrieved by default, but inherited/explicit permissions can optionally be retrieved.
-You can retrieve all permissions for an object or for a specific user/group.
+    .DESCRIPTION
+    Get permissions for users and groups on any object.
+    The effective permissions will be retrieved by default, but inherited/explicit permissions can optionally be retrieved.
+    You can retrieve all permissions for an object or for a specific user/group.
 
-.PARAMETER InputObject
-TppObject representing an object in TPP, eg. from Find-TppObject or Get-TppObject
+    .PARAMETER InputObject
+    TppObject representing an object in TPP, eg. from Find-VdcObject or Get-VdcObject
 
-.PARAMETER Path
-Full path to an object
+    .PARAMETER Path
+    Full path to an object
 
-.PARAMETER Guid
-Guid representing a unique object
+    .PARAMETER Guid
+    Guid representing a unique object
 
-.PARAMETER IdentityId
-Specifying this optional parameter will only return objects that have permissions assigned to this id.
-You can use Find-TppIdentity to search for identities.
+    .PARAMETER IdentityId
+    Specifying this optional parameter will only return objects that have permissions assigned to this id.
+    You can use Find-VdcIdentity to search for identities.
 
-.PARAMETER Explicit
-Get explicit (direct) and implicit (inherited) permissions instead of effective.
+    .PARAMETER Explicit
+    Get explicit (direct) and implicit (inherited) permissions instead of effective.
 
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
-.INPUTS
-InputObject, Path, Guid, IdentityId
+    .INPUTS
+    InputObject, Path, Guid, IdentityId
 
-.OUTPUTS
-PSCustomObject with the following properties:
-    Path
-    Guid
-    Name
-    TypeName
-    IdentityId
-    IdentityPath, may be null if the identity has been deleted
-    IdentityName, may be null if the identity has been deleted
-    EffectivePermissions (if Explicit switch is not used)
-    ExplicitPermissions (if Explicit switch is used)
-    ImplicitPermissions (if Explicit switch is used)
+    .OUTPUTS
+    PSCustomObject with the following properties:
+        Path
+        Guid
+        Name
+        TypeName
+        IdentityId
+        IdentityPath, may be null if the identity has been deleted
+        IdentityName, may be null if the identity has been deleted
+        EffectivePermissions (if Explicit switch is not used)
+        ExplicitPermissions (if Explicit switch is used)
+        ImplicitPermissions (if Explicit switch is used)
 
-.EXAMPLE
-Get-TppPermission -Path '\VED\Policy\barron'
+    .EXAMPLE
+    Get-VdcPermission -Path '\VED\Policy\barron'
 
-Path                 : \ved\policy\barron
-Guid                 : 3ba630d8-acf0-4b52-9824-df549cb33b82
-Name                 : barron
-TypeName             : Policy
-IdentityId           : AD+domain:410aaf10ea816c4d823e9e05b1ad055d
-IdentityPath         : CN=Greg Brownstein,OU=Users,OU=Enterprise Administration,DC=domain,DC=net
-IdentityName         : greg
-EffectivePermissions : TppPermission
+    Path                 : \ved\policy\barron
+    Guid                 : 3ba630d8-acf0-4b52-9824-df549cb33b82
+    Name                 : barron
+    TypeName             : Policy
+    IdentityId           : AD+domain:410aaf10ea816c4d823e9e05b1ad055d
+    IdentityPath         : CN=Greg Brownstein,OU=Users,OU=Enterprise Administration,DC=domain,DC=net
+    IdentityName         : greg
+    EffectivePermissions : TppPermission
 
-Get all assigned effective permissions for users/groups on a specific policy folder
+    Get all assigned effective permissions for users/groups on a specific policy folder
 
-.EXAMPLE
-Get-TppObject -Path '\VED\Policy\My folder' | Get-TppPermission
+    .EXAMPLE
+    Get-VdcObject -Path '\VED\Policy\My folder' | Get-VdcPermission
 
-Get all assigned effective permissions for users/groups on a specific policy folder by piping the object
+    Get all assigned effective permissions for users/groups on a specific policy folder by piping the object
 
-.EXAMPLE
-Get-TppObject -Path '\VED\Policy\barron' | Get-TppPermission -Explicit
+    .EXAMPLE
+    Get-VdcObject -Path '\VED\Policy\barron' | Get-VdcPermission -Explicit
 
-Path                : \ved\policy\barron
-Guid                : 3ba630d8-acf0-4b52-9824-df549cb33b82
-Name                : barron
-TypeName            : Policy
-IdentityId          : AD+domain:410aaf10ea816c4d823e9e05b1ad055d
-IdentityPath        : CN=Greg Brownstein,OU=Users,OU=Enterprise Administration,DC=domain,DC=net
-IdentityName        : greg
-ExplicitPermissions : TppPermission
-ImplicitPermissions : TppPermission
+    Path                : \ved\policy\barron
+    Guid                : 3ba630d8-acf0-4b52-9824-df549cb33b82
+    Name                : barron
+    TypeName            : Policy
+    IdentityId          : AD+domain:410aaf10ea816c4d823e9e05b1ad055d
+    IdentityPath        : CN=Greg Brownstein,OU=Users,OU=Enterprise Administration,DC=domain,DC=net
+    IdentityName        : greg
+    ExplicitPermissions : TppPermission
+    ImplicitPermissions : TppPermission
 
-Get explicit and implicit permissions for users/groups on a specific policy folder
+    Get explicit and implicit permissions for users/groups on a specific policy folder
 
-.EXAMPLE
-Find-TppObject -Path '\VED' -Recursive | Get-TppPermission -IdentityId 'AD+myprov:jasdf87s9dfsdfhkashfg78f7'
+    .EXAMPLE
+    Find-VdcObject -Path '\VED' -Recursive | Get-VdcPermission -IdentityId 'AD+myprov:jasdf87s9dfsdfhkashfg78f7'
 
-Find assigned permissions for a specific user across all objects
+    Find assigned permissions for a specific user across all objects
 
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppPermission/
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcPermission/
 
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppPermission.ps1
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcPermission.ps1
 
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppIdentityAttribute.ps1
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcIdentityAttribute.ps1
 
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid.php
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid.php
 
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid-external.php
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid-external.php
 
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid-local.php
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid-local.php
 
-.LINK
-https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid-principal.php
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Permissions-object-guid-principal.php
 
 
-#>
-function Get-TppPermission {
+    #>
 
     [CmdletBinding(DefaultParameterSetName = 'ByObject')]
+    [Alias('Get-TppPermission')]
+
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ByObject', ValueFromPipeline)]
@@ -135,7 +137,7 @@ function Get-TppPermission {
 
         [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateScript( {
-                if ( $_ | Test-TppIdentityFormat ) {
+                if ( $_ | Test-VdcIdentityFormat ) {
                     $true
                 }
                 else {
@@ -150,7 +152,7 @@ function Get-TppPermission {
         [switch] $Explicit,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -273,7 +275,7 @@ function Get-TppPermission {
                         VenafiSession = $VenafiSession
                     }
 
-                    $attribResponse = Get-TppIdentityAttribute @attribParams -ErrorAction SilentlyContinue
+                    $attribResponse = Get-VdcIdentityAttribute @attribParams -ErrorAction SilentlyContinue
 
                     if ( $attribResponse ) {
                         $thisReturnObject.IdentityPath = $attribResponse.Attributes.FullName

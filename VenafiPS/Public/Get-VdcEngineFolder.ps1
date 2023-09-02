@@ -1,4 +1,4 @@
-function Get-TppEngineFolder {
+function Get-VdcEngineFolder {
     <#
     .SYNOPSIS
     Get TPP folder/engine assignments
@@ -26,27 +26,27 @@ function Get-TppEngineFolder {
     PSCustomObject
 
     .EXAMPLE
-    Get-TppEngineFolder -Path '\VED\Engines\MYVENSERVER'
+    Get-VdcEngineFolder -Path '\VED\Engines\MYVENSERVER'
 
     Get an array of policy folders assigned to the TPP processing engine 'MYVENSERVER'.
 
     .EXAMPLE
-    Get-TppEngineFolder -Path '\VED\Policy\Certificates\Web Team'
+    Get-VdcEngineFolder -Path '\VED\Policy\Certificates\Web Team'
 
     Get an array of TPP processing engines assigned to the policy folder '\VED\Policy\Certificates\Web Team'.
 
     .EXAMPLE
-    [guid]'866e1d59-d5d2-482a-b9e6-7bb657e0f416' | Get-TppEngineFolder
+    [guid]'866e1d59-d5d2-482a-b9e6-7bb657e0f416' | Get-VdcEngineFolder
 
     When the GUID is assigned to a TPP processing engine, returns an array of assigned policy folders.
     When the GUID is assigned to a policy folder, returns an array of assigned TPP processing engines.
     Otherwise nothing will be returned.
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppEngineFolder/
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcEngineFolder/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppEngineFolder.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcEngineFolder.ps1
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-ProcessingEngines-Engine-eguid.php
@@ -66,7 +66,7 @@ function Get-TppEngineFolder {
         [switch] $All,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -76,13 +76,13 @@ function Get-TppEngineFolder {
     process {
 
         if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
-            Invoke-VenafiRestMethod -UriLeaf 'ProcessingEngines/' | Select-Object -ExpandProperty Engines | Get-TppEngineFolder
+            Invoke-VenafiRestMethod -UriLeaf 'ProcessingEngines/' | Select-Object -ExpandProperty Engines | Get-VdcEngineFolder
         } else {
 
             if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
-                $thisObject = Get-TppObject -Guid $ID -VenafiSession $VenafiSession
+                $thisObject = Get-VdcObject -Guid $ID -VenafiSession $VenafiSession
             } else {
-                $thisObject = Get-TppObject -Path $ID -VenafiSession $VenafiSession
+                $thisObject = Get-VdcObject -Path $ID -VenafiSession $VenafiSession
             }
 
             $thisObjectGuid = '{{{0}}}' -f $thisObject.Guid

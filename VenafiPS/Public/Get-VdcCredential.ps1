@@ -1,41 +1,43 @@
-<#
-.SYNOPSIS
-Get credential details
+function Get-VdcCredential {
 
-.DESCRIPTION
-Get credential details.
-Object returned will depend on the credential type.
+    <#
+    .SYNOPSIS
+    Get credential details
 
-.PARAMETER Path
-The full path to the credential object
+    .DESCRIPTION
+    Get credential details.
+    Object returned will depend on the credential type.
 
-.PARAMETER VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TPP token or VaaS key can also provided.
-If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    .PARAMETER Path
+    The full path to the credential object
 
-.INPUTS
-Path
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TPP token or VaaS key can also provided.
+    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
-.OUTPUTS
-Password/UsernamePassword Credential - PSCredential
-Certificate Credential - X509Certificate2
+    .INPUTS
+    Path
 
-.EXAMPLE
-Get-TppCredential -Path '\VED\Policy\MySecureCred'
-Get a credential
+    .OUTPUTS
+    Password/UsernamePassword Credential - PSCredential
+    Certificate Credential - X509Certificate2
 
-.LINK
-http://VenafiPS.readthedocs.io/en/latest/functions/Get-TppCredential/
+    .EXAMPLE
+    Get-VdcCredential -Path '\VED\Policy\MySecureCred'
+    Get a credential
 
-.LINK
-https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-TppCredential.ps1
+    .LINK
+    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcCredential/
 
-#>
-function Get-TppCredential {
+    .LINK
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcCredential.ps1
+
+    #>
 
     [CmdletBinding()]
+    [Alias('Get-TppCredential')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Generating cred from api call response data')]
 
     param (
@@ -52,7 +54,7 @@ function Get-TppCredential {
         [String] $Path,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
