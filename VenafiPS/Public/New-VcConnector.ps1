@@ -1,4 +1,4 @@
-function New-VaasConnector {
+function New-VcConnector {
     <#
     .SYNOPSIS
     Create a new connector
@@ -38,41 +38,41 @@ function New-VaasConnector {
     PSCustomObject, if PassThru provided
 
     .EXAMPLE
-    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication'
+    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication'
 
     Create a new connector for one event type
 
     .EXAMPLE
-    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication', 'Certificates', 'Applications'
+    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication', 'Certificates', 'Applications'
 
     Create a new connector with multiple event types
 
     .EXAMPLE
-    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventName 'Certificate Validation Started'
+    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventName 'Certificate Validation Started'
 
     Create a new connector with event names as opposed to event types.
     This will result in fewer messages received as opposed to subscribing at the event type level.
 
     .EXAMPLE
-    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Certificates' -CriticalOnly
+    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Certificates' -CriticalOnly
 
     Subscribe to critical messages only for a specific event type
 
     .EXAMPLE
-    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Secret 'MySecret'
+    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Secret 'MySecret'
 
     Create a new connector with optional secret
 
     .EXAMPLE
-    New-VaasConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -PassThru
+    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -PassThru
 
     Create a new connector returning the newly created object
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/New-VaasConnector/
+    http://VenafiPS.readthedocs.io/en/latest/functions/New-VcConnector/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VaasConnector.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VcConnector.ps1
 
     .LINK
     https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=connectors-service#/Connectors/connectors_create
@@ -80,6 +80,7 @@ function New-VaasConnector {
     #>
 
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'EventName')]
+    [Alias('New-VaasConnector')]
 
     param (
         [Parameter(Mandatory)]
@@ -106,7 +107,7 @@ function New-VaasConnector {
         [switch] $PassThru,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -114,7 +115,7 @@ function New-VaasConnector {
 
         # validate inputs
         $at = Invoke-VenafiRestMethod -UriLeaf 'activitytypes' -VenafiSession $VenafiSession
-     
+
         if ( $PSBoundParameters.ContainsKey('EventType') ) {
             $compare = compare-object -ReferenceObject $EventType -DifferenceObject $at.readablename | Where-Object { $_.SideIndicator -eq '<=' }
             if ( $compare ) {

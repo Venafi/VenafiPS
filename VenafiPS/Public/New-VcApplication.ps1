@@ -1,4 +1,4 @@
-function New-VaasApplication {
+function New-VcApplication {
     <#
     .SYNOPSIS
     Create a new application
@@ -15,10 +15,8 @@ function New-VaasApplication {
     .PARAMETER Description
     Application description
 
-    .PARAMETER CertificateIssuingTemplate
-    Hashtable of issuing templates.
-    For each key/value pair, the key should be the issuing template id and the value should be the alias.
-    Null can be provided for the alias which will use the template name as the alias.
+    .PARAMETER IssuingTemplate
+    1 or more issuing template IDs or names to associate with the new application
 
     .PARAMETER Fqdn
     Fully qualified domain names to assign to the application
@@ -42,62 +40,54 @@ function New-VaasApplication {
     PSCustomObject, if PassThru provided
 
     .EXAMPLE
-    New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d','greg@venafi.com'
+    New-VcApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d','greg@venafi.com'
 
     Create a new application
 
     .EXAMPLE
-    New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d' -CertificateIssuingTemplate @{'9c9618e8-6b4c-4a1c-8c11-902c9b2676d3'=$null} -Description 'this app is awesome' -Fqdn 'me.com' -IPRange '1.2.3.4/24' -Port '443','9443'
+    New-VcApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d' -CertificateIssuingTemplate @{'9c9618e8-6b4c-4a1c-8c11-902c9b2676d3'=$null} -Description 'this app is awesome' -Fqdn 'me.com' -IPRange '1.2.3.4/24' -Port '443','9443'
 
     Create a new application with optional details
 
     .EXAMPLE
-    New-VaasApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d' -PassThru
+    New-VcApplication -Name 'MyNewApp' -Owner '4ba1e64f-12ad-4a34-a0e2-bc4481a56f7d' -PassThru
 
     Create a new application and return the newly created application object
-
-    .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/New-VaasApplication/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VaasApplication.ps1
-
-    .LINK
-    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Applications/applications_create
 
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'NoTarget', SupportsShouldProcess)]
+    [Alias('New-VaasApplication')]
 
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string] $Name,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [string[]] $Owner,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [String] $Description,
 
-        [Parameter()]
+        [Parameter(ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [hashtable] $CertificateIssuingTemplate,
+        [string[]] $IssuingTemplate,
 
-        [Parameter(ParameterSetName = 'Fqdn', Mandatory)]
-        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
+        [Parameter(ParameterSetName = 'Fqdn', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string[]] $Fqdn,
 
-        [Parameter(ParameterSetName = 'IPRange', Mandatory)]
-        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
+        [Parameter(ParameterSetName = 'IPRange', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string[]] $IPRange,
 
-        [Parameter(ParameterSetName = 'Fqdn', Mandatory)]
-        [Parameter(ParameterSetName = 'IPRange', Mandatory)]
-        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory)]
+        [Parameter(ParameterSetName = 'Fqdn', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'IPRange', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(ParameterSetName = 'FqdnIPRange', Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [string[]] $Port,
 
@@ -105,7 +95,7 @@ function New-VaasApplication {
         [switch] $PassThru,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -118,11 +108,13 @@ function New-VaasApplication {
             $team = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
             if ( $team ) {
                 @{ 'ownerId' = $team.teamId; 'ownerType' = 'TEAM' }
-            } else {
+            }
+            else {
                 $user = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
                 if ( $user ) {
                     @{ 'ownerId' = $user.userId; 'ownerType' = 'USER' }
-                } else {
+                }
+                else {
                     Write-Error "Owner $thisOwner not found"
                     Continue
                 }
@@ -130,22 +122,33 @@ function New-VaasApplication {
         }
 
         $templateHash = @{}
-
-        if ( $PSBoundParameters.ContainsKey('CertificateIssuingTemplate') ) {
-            $CertificateIssuingTemplate.GetEnumerator() | ForEach-Object {
-                if ( $_.Value ) {
-                    $templateHash.Add($_.Value, $_.Key)
-                } else {
-                    $thisTemplate = Get-VaasIssuingTemplate -ID $_.Key -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
-                    if ( $thisTemplate ) {
-                        $templateHash.Add($thisTemplate.Name, $_.Key)
-                    } else {
-                        Write-Error ('Template ID {0} not found' -f $_.Key)
-                        Continue
-                    }
-                }
+        foreach ($thisTemplateID in $IssuingTemplate) {
+            $thisTemplate = Get-VcIssuingTemplate -ID $thisTemplateID
+            if ( $thisTemplate ) {
+                $templateHash.Add($thisTemplate.name, $thisTemplate.issuingTemplateId)
+            }
+            else {
+                throw ('Template ID {0} not found' -f $thisTemplateID)
             }
         }
+
+        # if ( $PSBoundParameters.ContainsKey('IssuingTemplate') ) {
+        #     $IssuingTemplate.GetEnumerator() | ForEach-Object {
+        #         if ( $_.Value ) {
+        #             $templateHash.Add($_.Value, $_.Key)
+        #         }
+        #         else {
+        #             $thisTemplate = Get-VcIssuingTemplate -ID $_.Key -ErrorAction SilentlyContinue
+        #             if ( $thisTemplate ) {
+        #                 $templateHash.Add($thisTemplate.Name, $_.Key)
+        #             }
+        #             else {
+        #                 Write-Error ('Template ID {0} not found' -f $_.Key)
+        #                 Continue
+        #             }
+        #         }
+        #     }
+        # }
     }
 
     process {
@@ -209,7 +212,8 @@ function New-VaasApplication {
                         throw $response
                     }
                 }
-            } catch {
+            }
+            catch {
                 $PSCmdlet.ThrowTerminatingError($PSItem)
             }
         }

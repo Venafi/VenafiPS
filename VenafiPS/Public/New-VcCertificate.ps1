@@ -1,4 +1,4 @@
-function New-VaasCertificate {
+function New-VcCertificate {
     <#
     .SYNOPSIS
     Create certificate request
@@ -69,35 +69,35 @@ function New-VaasCertificate {
     pscustomobject, if PassThru is provided
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com'
+    New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com'
 
     Create certificate
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
+    New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
 
     Create certificate with optional SAN data
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -ValidUntil (Get-Date).AddMonths(6)
+    New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -ValidUntil (Get-Date).AddMonths(6)
 
     Create certificate with specific validity
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -PassThru
+    New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -PassThru
 
     Create certificate and return the created object
 
     .EXAMPLE
-    New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
+    New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
 
     Create certificate with a CSR
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/New-VaasCertificate/
+    http://VenafiPS.readthedocs.io/en/latest/functions/New-VcCertificate/
 
     .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VaasCertificate.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VcCertificate.ps1
 
     .LINK
     https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificate%20Request/certificaterequests_create
@@ -105,6 +105,7 @@ function New-VaasCertificate {
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Ask', SupportsShouldProcess)]
+    [Alias('New-VaasCertificate')]
 
     param (
 
@@ -177,7 +178,7 @@ function New-VaasCertificate {
         [switch] $PassThru,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
