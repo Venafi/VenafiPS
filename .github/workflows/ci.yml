@@ -9,6 +9,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
 
+      - name: folder list
+        shell: pwsh
+        run: |
+          pwd
+          gci -recurse
+
       - name: Build psm1
         shell: pwsh
         run: |
