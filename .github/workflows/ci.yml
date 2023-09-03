@@ -24,7 +24,7 @@ jobs:
           Install-Module PowerShellBuild -ErrorAction Stop
           # setting a path other than the current dir for Build-PSBuildModule didn't work
           # cd ${{ github.workspace }}/${{ env.module_name }}
-          Build-PSBuildModule -Path ${{ github.workspace }}/${{ env.module_name }} -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
+          Build-PSBuildModule -Path ./${{ env.module_name }} -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
 
       - name: Upload module artifact
         uses: actions/upload-artifact@v3
