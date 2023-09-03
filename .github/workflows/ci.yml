@@ -12,6 +12,8 @@ jobs:
       - name: Build psm1
         shell: pwsh
         run: |
+          pwd
+          gci
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module PowerShellBuild -ErrorAction Stop
           # setting a path other than the current dir for Build-PSBuildModule didn't work
