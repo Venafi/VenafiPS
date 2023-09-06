@@ -13,7 +13,7 @@ jobs:
         shell: pwsh
         run: |
           pwd
-          gci -recurse
+          gci
 
       - name: Build psm1
         shell: pwsh
