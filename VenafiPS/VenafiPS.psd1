@@ -59,7 +59,7 @@
     # Script files (.ps1) that are run in the caller's environment prior to importing this module.
     ScriptsToProcess  = 'Classes\TppPermission.ps1', 'Classes\VenafiSession.ps1',
     'Enum\TppCertificateStage.ps1',
-     'Enum\TppConfigResult.ps1',
+    'Enum\TppConfigResult.ps1',
     'Enum\TppEventSeverity.ps1', 'Enum\TppIdentityType.ps1',
     'Enum\TppManagementType.ps1', 'Enum\TppMetadataResult.ps1',
     'Enum\TppSecretStoreResult.ps1', 'Enum\TppWorkflowResult.ps1'
@@ -74,42 +74,7 @@
     # NestedModules = @()
 
     # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-    FunctionsToExport = 'Add-VdcCertificateAssociation', 'Convert-VdcObject',
-    'ConvertTo-VdcGuid', 'ConvertTo-VdcPath', 'Export-VcCertificate','Export-VdcCertificate',
-    'Find-VenafiCertificate', 'Find-VdcClient',
-
-     'Find-VdcIdentity', 'Find-VdcObject',
-    'Find-VdcVaultId', 'Get-TppAttribute', 'Get-TppClassAttribute',
-
-     'Get-TppCredential', 'Get-TppCustomField',
-    'Get-VenafiIdentity', 'Get-TppIdentityAttribute', 'Get-TppObject',
-    'Get-TppPermission', 'Get-TppSystemStatus', 'Get-TppVersion',
-    'Get-TppWorkflowTicket',
-    'Get-VenafiCertificate', 'Import-VdcCertificate',
-    'Invoke-VcCertificateAction',
-    'Invoke-VdcCertificateAction', 'Invoke-VenafiRestMethod',
-    'Move-TppObject', 'New-TppCapiApplication', 'New-TppCertificate',
-     'New-TppCustomField', 'New-TppDevice',
-    'New-TppObject', 'New-TppPolicy', 'New-TppToken', 'New-VenafiSession',
-    'Read-VenafiLog', 'Remove-TppCertificate',
-    'Remove-TppCertificateAssociation', 'Remove-TppClient',
-    'Remove-TppPermission', 'Rename-TppObject', 'Revoke-TppCertificate',
-    'Revoke-TppToken', 'Set-TppAttribute',
-    'Set-TppCredential', 'Set-TppPermission',
-    'Set-TppWorkflowTicketStatus', 'Test-ModuleHash', 'Test-VdcIdentity',
-    'Test-VdcObject', 'Test-VdcToken', 'Write-VdcLog', 'Get-VenafiTeam',
-    'Remove-VenafiTeam', 'Add-VenafiTeamMember', 'Add-VenafiTeamOwner',
-    'Remove-VenafiTeamMember', 'Remove-VenafiTeamOwner', 'New-VenafiTeam',
-    'Search-VdcHistory', 'New-VaasApplication',
-    'Import-VcCertificate',
-    'New-VcConnector', 'Find-VdcEngine', 'Get-TppEngineFolder',
-    'Remove-TppEngineFolder', 'Add-VdcEngineFolder', 'Revoke-TppGrant',
-    'Add-VdcAdaptableHash', 'New-VcCertificate', 'Find-VcObject',
-    'Remove-TppObject', 'Set-VcTeam', 'Remove-VaasObject',
-    'Invoke-VcWorkflow',
-    'Set-VaasCertificateAssignment', 'New-VaasMachineCommonKeystore',
-    'New-VaasMachineIis', 'New-VaasMachine',
-    'Export-VdcCertificate', 'Set-VcApplication', 'Remove-VenafiCertificateAssociation', 'Get-VcIssuingTemplate', 'Get-VcConnector', 'Get-VcApplication', 'Get-VcSatellite', 'Get-VcTag', 'Get-VcMachine', 'Get-VcMachineIdentity'
+    FunctionsToExport = '*'
 
     # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
     CmdletsToExport   = @()
@@ -118,13 +83,14 @@
     VariablesToExport = 'VenafiSession'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   = 'fto', 'itcr', 'Find-TppCertificate', 'Get-TppIdentity', 'Read-TppLog',
-    'Invoke-TppRestMethod', 'Get-TppCertificate',
-    'Get-TppCertificateDetail', 'Find-VaasCertificate', 'Remove-TppCertificateAssociation',
-    'Get-VaasApplication', 'Get-VaasMachine', 'Get-VaasIssuingTemplate', 'Get-VaasSatellite', 'Get-VaasConnector', 'New-VaasApplication',
-    'Import-VaasCertificate', 'Import-TppCertificate', 'New-VaasCertificate', 'New-VaasConnector', 'Search-TppHistory', 'Find-TppObject', 'Invoke-VaasWorkflow',
-    'Convert-TppObject', 'Add-TppAdaptableHash', 'Add-TppEngineFolder', 'Add-TppCertificateAssociation', 'ConvertTo-TppGuid', 'ConvertTo-TppPath',
-    'Write-TppLog', 'Test-TppToken', 'Test-TppObject', 'Test-TppIdentity', 'Set-VaasTeam', 'Find-TppVaultId', 'Find-TppIdentity', 'Find-TppEngine', 'Find-TppClient'
+    AliasesToExport   ='*'
+    # AliasesToExport   = 'fto', 'itcr', 'Invoke-TppRestMethod', 'Get-TppCertificate',
+    # 'Get-TppCertificateDetail', 'Find-VaasCertificate', 'Remove-VdcCertificateAssociation',
+    # 'Get-VaasApplication', 'Get-VaasMachine', 'Get-VaasIssuingTemplate', 'Get-VaasSatellite', 'Get-VaasConnector', 'New-VaasApplication',
+    # 'Import-VaasCertificate', 'Import-TppCertificate', 'New-VaasCertificate', 'New-VaasConnector', 'Search-TppHistory', 'Find-TppObject', 'Invoke-VaasWorkflow',
+    # 'Convert-TppObject', 'Add-TppAdaptableHash', 'Add-TppEngineFolder', 'Add-TppCertificateAssociation', 'ConvertTo-TppGuid', 'ConvertTo-TppPath',
+    # 'Write-TppLog', 'Test-TppToken', 'Test-TppObject', 'Test-TppIdentity', 'Set-VaasTeam', 'Find-TppVaultId', 'Find-TppIdentity', 'Find-TppEngine', 'Find-TppClient',
+    # 'Get-TppAttribute', 'Get-TppClassAttribute', 'Get-TppCredential', 'Set-VaasCertificateAssignment'
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()
@@ -141,7 +107,7 @@
         PSData = @{
 
             # Tags applied to this module. These help with module discovery in online galleries.
-            Tags         = 'Venafi', 'TPP', 'TrustProtectionPlatform', 'API', 'devsecops', 'VaaS'
+            Tags         = 'Venafi', 'SSL', 'TLS', 'API', 'devsecops', 'powershell'
 
             # A URL to the license for this module.
             LicenseUri   = 'https://github.com/Venafi/VenafiPS/blob/main/LICENSE'
