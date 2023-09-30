@@ -15,7 +15,7 @@ jobs:
           pwd
           cd ${{ github.workspace }}
           pwd
-          dir
+          (gci | select -exp name) -join ', '
 
       - name: Build psm1
         shell: pwsh
