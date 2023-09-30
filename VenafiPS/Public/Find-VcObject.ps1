@@ -6,7 +6,7 @@ function Find-VcObject {
     .DESCRIPTION
     Find objects of type ActivityLog, Machine, MachineIdentity, CertificateRequest, CertificateInstance on VaaS.
     Supports -First for page size; the max page size is 1000.
-    To find certificate objects, use Find-VenafiCertificate.
+    To find certificate objects, use Find-VcCertificate.
 
     .PARAMETER Type
     Type of object to retrieve, either Certificate, ActivityLog, Machine, MachineIdentity, CertificateRequest, or CertificateInstance.
@@ -175,7 +175,7 @@ function Find-VcObject {
         $queryParams.Filter = @($objectData.$Type.name, 'find', $Name)
     }
 
-    $body = New-VaasSearchQuery @queryParams
+    $body = New-VcSearchQuery @queryParams
 
     $params = @{
         VenafiSession = $VenafiSession

@@ -74,7 +74,7 @@ function Add-VdcEngineFolder {
 
     process {
         if ( -not ($PSBoundParameters.ContainsKey('EngineObject')) ) {
-            $EngineObject = Get-TppObject -Path $EnginePath -VenafiSession $VenafiSession
+            $EngineObject = Get-VdcObject -Path $EnginePath -VenafiSession $VenafiSession
             if ($EngineObject.TypeName -ne 'Venafi Platform') {
                 throw ("DN/Path '$($EngineObject.Path)' is not a processing engine")
             }
@@ -85,7 +85,7 @@ function Add-VdcEngineFolder {
 
         foreach ($path in $FolderPath) {
             try {
-                $folder = Get-TppObject -Path $path -VenafiSession $VenafiSession
+                $folder = Get-VdcObject -Path $path -VenafiSession $VenafiSession
             }
             catch {
                 Write-Warning ("TPP object '$($path)' does not exist")

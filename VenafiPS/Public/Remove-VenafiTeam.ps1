@@ -41,7 +41,7 @@ function Remove-VenafiTeam {
         [string] $ID,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -57,11 +57,11 @@ function Remove-VenafiTeam {
 
         if ( $platform -eq 'VaaS' ) {
 
-            Remove-VaasObject -TeamID $ID -VenafiSession $VenafiSession
+            Remove-VcObject -TeamID $ID -VenafiSession $VenafiSession
         }
         else {
             # check if just a guid or prefixed universal id
-            if ( Test-TppIdentityFormat -ID $ID -Format 'Local' ) {
+            if ( Test-VdcIdentityFormat -ID $ID -Format 'Local' ) {
                 $guid = [guid]($ID.Replace('local:', ''))
             }
             else {

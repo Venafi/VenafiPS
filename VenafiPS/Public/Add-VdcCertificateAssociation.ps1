@@ -23,11 +23,11 @@ function Add-VdcCertificateAssociation {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
+    A TPP token can also provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
-    InputObject, Path
+    Path
 
     .OUTPUTS
     None
@@ -57,14 +57,11 @@ function Add-VdcCertificateAssociation {
     #>
 
     [CmdletBinding(SupportsShouldProcess)]
-    [Alias('Add-VdcCertificateAssociation')]
+    [Alias('Add-TppCertificateAssociation')]
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'AddByObject', ValueFromPipeline)]
-        [pscustomobject] $InputObject,
-
-        [Parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'AddByPath')]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
@@ -73,7 +70,7 @@ function Add-VdcCertificateAssociation {
                     throw "'$_' is not a valid DN path"
                 }
             })]
-        [Alias('DN', 'CertificateDN')]
+        [Alias('DN', 'CertificateDN', 'Path')]
         [String] $CertificatePath,
 
         [ValidateNotNullOrEmpty()]
@@ -113,10 +110,6 @@ function Add-VdcCertificateAssociation {
     }
 
     process {
-
-        if ( $PSBoundParameters.ContainsKey('InputObject') ) {
-            $CertificatePath = $InputObject.Path
-        }
 
         $params.Body.CertificateDN = $CertificatePath
         $params.Body.ApplicationDN = @($ApplicationPath)

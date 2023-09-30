@@ -46,7 +46,7 @@ function Invoke-VenafiRestMethod {
         [Parameter(ParameterSetName = 'Session')]
         [AllowNull()]
         [Alias('Key', 'AccessToken')]
-        [psobject] $VenafiSession = $script:VenafiSession,
+        [psobject] $VenafiSession,
 
         [Parameter(Mandatory, ParameterSetName = 'URL')]
         [ValidateNotNullOrEmpty()]
@@ -87,20 +87,33 @@ function Invoke-VenafiRestMethod {
 
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
 
-        if ( -not $VenafiSession ) {
-            if ( $env:TPP_TOKEN ) {
-                $VenafiSession = $env:TPP_TOKEN
-            }
-            elseif ( $env:VAAS_KEY ) {
-                $VenafiSession = $env:VAAS_KEY
-            }
-            else {
-                throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
-            }
+        # if ( -not $VenafiSession ) {
+        if ( $env:TPP_TOKEN ) {
+            $VenafiSession = $env:TPP_TOKEN
+            Write-Verbose 'Using TPP token environment variable'
         }
+        elseif ( $env:VAAS_KEY ) {
+            $VenafiSession = $env:VAAS_KEY
+            Write-Verbose 'Using VaaS key environment variable'
+        }
+        elseif ( $PSBoundParameters.VenafiSession ) {
+            Write-Verbose 'Using session provided'
+        }
+        elseif ($script:VenafiSessionNested) {
+            $VenafiSession = $script:VenafiSessionNested
+            Write-Verbose 'Using nested session'
+        }
+        elseif ( $script:VenafiSession ) {
+            $VenafiSession = $script:VenafiSession
+            Write-Verbose 'Using script session'
+        }
+        else {
+            throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
+        }
+        # }
 
         switch ($VenafiSession.GetType().Name) {
-            {$_ -in 'VenafiSession', 'PSCustomObject'} {
+            { $_ -in 'VenafiSession', 'PSCustomObject' } {
                 $Server = $VenafiSession.Server
                 if ( $VenafiSession.Platform -eq 'VaaS' ) {
                     $platform = 'VaaS'
@@ -123,8 +136,8 @@ function Invoke-VenafiRestMethod {
 
             'String' {
                 $auth = $VenafiSession
-                $objectGuid = [System.Guid]::empty
-                if ( [System.Guid]::TryParse($VenafiSession, [System.Management.Automation.PSReference]$objectGuid) ) {
+
+                if ( Test-IsGuid($VenafiSession) ) {
                     $Server = $script:CloudUrl
                     $platform = 'VaaS'
                 }
@@ -283,7 +296,7 @@ function Invoke-VenafiRestMethod {
             }
 
             409 {
-                # 409 = item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
+                # 409 = item already exists.  some functions use this for a 'force' option, eg. Set-VdcPermission
                 # treat this as non error/exception if FullResponse provided
                 if ( $FullResponse ) {
                     $response = [pscustomobject] @{

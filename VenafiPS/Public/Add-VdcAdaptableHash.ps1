@@ -97,12 +97,12 @@ function Add-VdcAdaptableHash {
             Method        = 'Post'
         }
 
-        $TypeName = (Get-TppObject -Path $Path -VenafiSession $VenafiSession).TypeName
+        $TypeName = (Get-VdcObject -Path $Path -VenafiSession $VenafiSession).TypeName
 
         if ( $TypeName -eq 'Policy' ) {
-            $retrieveVaultID = ( Get-TppAttribute -Path $Path -Class 'Adaptable App' -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
+            $retrieveVaultID = ( Get-VdcAttribute -Path $Path -Class 'Adaptable App' -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
         } else {
-            $retrieveVaultID = ( Get-TppAttribute -Path $Path -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
+            $retrieveVaultID = ( Get-VdcAttribute -Path $Path -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
         }
 
         $bytes = [Text.Encoding]::UTF32.GetBytes([IO.File]::ReadAllText($FilePath))
@@ -155,9 +155,9 @@ function Add-VdcAdaptableHash {
             }
 
             if ( $TypeName -eq 'Policy' ) {
-                Set-TppAttribute -Path $Path -PolicyClass 'Adaptable App' -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -Lock -VenafiSession $VenafiSession -ErrorAction Stop
+                Set-VdcAttribute -Path $Path -PolicyClass 'Adaptable App' -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -Lock -VenafiSession $VenafiSession -ErrorAction Stop
             } else {
-                Set-TppAttribute -Path $Path -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -VenafiSession $VenafiSession -ErrorAction Stop
+                Set-VdcAttribute -Path $Path -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -VenafiSession $VenafiSession -ErrorAction Stop
             }
             Write-Verbose "PowerShell Script Hash Vault Id for $($Path) set to $($addresponse.VaultID)."
         }

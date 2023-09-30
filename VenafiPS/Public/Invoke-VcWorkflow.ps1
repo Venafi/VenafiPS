@@ -16,7 +16,7 @@ function Invoke-VcWorkflow {
     Valid values are 'Test', 'GetConfig', 'Provision', or 'Discover'.
 
     .PARAMETER ThrottleLimit
-    Limit the number of threads when running in parallel.  Default is 20.
+    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -79,7 +79,7 @@ function Invoke-VcWorkflow {
         [string] $Workflow = 'Test',
 
         [Parameter()]
-        [int] $ThrottleLimit = 20,
+        [int] $ThrottleLimit = 100,
 
         [Parameter()]
         [psobject] $VenafiSession

@@ -16,7 +16,7 @@ function Get-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
+    A TPP token can also provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -68,13 +68,13 @@ function Get-VdcObject {
     process {
 
         if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
-            $Path | ConvertTo-TppFullPath | ForEach-Object {
-                ConvertTo-TppObject -Path $_
+            $Path | ConvertTo-VdcFullPath | ForEach-Object {
+                ConvertTo-VdcObject -Path $_
             }
         }
         else {
-            $Guid | ConvertTo-TppFullPath | ForEach-Object {
-                ConvertTo-TppObject -Guid $_
+            $Guid | ConvertTo-VdcFullPath | ForEach-Object {
+                ConvertTo-VdcObject -Guid $_
             }
         }
     }

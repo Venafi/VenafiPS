@@ -6,7 +6,7 @@ function Convert-VdcObject {
     .DESCRIPTION
     Change the class/object type of an existing object.
     Please note, changing the class does NOT change any attributes and must be done separately.
-    Using -PassThru will allow you to pass the input to other functions including Set-TppAttribute; see the examples.
+    Using -PassThru will allow you to pass the input to other functions including Set-VdcAttribute; see the examples.
 
     .PARAMETER Path
     Path to the object
@@ -20,7 +20,7 @@ function Convert-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
+    A TPP token can also provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -34,11 +34,11 @@ function Convert-VdcObject {
     Convert an object to a different type
 
     .EXAMPLE
-    Convert-VdcObject -Path '\ved\policy\device\app' -Class 'CAPI' -PassThru | Set-TppAttribute -Attribute @{'Driver Name'='appcapi'}
+    Convert-VdcObject -Path '\ved\policy\device\app' -Class 'CAPI' -PassThru | Set-VdcAttribute -Attribute @{'Driver Name'='appcapi'}
     Convert an object to a different type, return the updated object and update attributes
 
     .EXAMPLE
-    Find-VdcObject -Class Basic | Convert-VdcObject -Class 'capi' -PassThru | Set-TppAttribute -Attribute @{'Driver Name'='appcapi'}
+    Find-VdcObject -Class Basic | Convert-VdcObject -Class 'capi' -PassThru | Set-VdcAttribute -Attribute @{'Driver Name'='appcapi'}
     Convert multiple objects to a different type, return the updated objects and update attributes
 
     .LINK
@@ -99,7 +99,7 @@ function Convert-VdcObject {
 
             if ( $response.Result -eq [TppConfigResult]::Success ) {
                 if ( $PassThru ) {
-                    ConvertTo-TppObject -Path $Path -VenafiSession $VenafiSession
+                    ConvertTo-VdcObject -Path $Path -VenafiSession $VenafiSession
                 }
             }
             else {

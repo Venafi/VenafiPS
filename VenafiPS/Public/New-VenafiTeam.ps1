@@ -12,12 +12,12 @@
     .PARAMETER Owner
     1 or more owners for the team
     For VaaS, this is the unique guid obtained from Get-VenafiIdentity.
-    For TPP, this is the identity ID property from Find-TppIdentity or Get-VenafiIdentity.
+    For TPP, this is the identity ID property from Find-VdcIdentity or Get-VenafiIdentity.
 
     .PARAMETER Member
     1 or more members for the team
     For VaaS, this is the unique guid obtained from Get-VenafiIdentity.
-    For TPP, this is the identity ID property from Find-TppIdentity or Get-VenafiIdentity.
+    For TPP, this is the identity ID property from Find-VdcIdentity or Get-VenafiIdentity.
 
     .PARAMETER Role
     Team role, either 'System Admin', 'PKI Admin', 'Resource Owner' or 'Guest'.  VaaS only.
@@ -150,7 +150,7 @@
         [switch] $PassThru,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {

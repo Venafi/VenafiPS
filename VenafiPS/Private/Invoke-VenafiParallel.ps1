@@ -15,7 +15,7 @@ function Invoke-VenafiParallel {
     Scriptblock to execute against the list of items
 
     .PARAMETER ThrottleLimit
-    Max number of threads at once.  The default is 20.
+    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
 
     .PARAMETER ProgressTitle
     Message displayed on the progress bar
@@ -34,12 +34,17 @@ function Invoke-VenafiParallel {
     .EXAMPLE
     Invoke-VenafiParallel -InputObject $myObjects -ScriptBlock { Do-Something $PSItem } -ThrottleLimit 5
 
-    Only run 5 threads at a time instead of the default of 20.
+    Only run 5 threads at a time instead of the default of 100.
 
     .EXAMPLE
     Invoke-VenafiParallel -InputObject $myObjects -ScriptBlock { Do-Something $PSItem } -NoProgress
 
     Execute in parallel with no progress bar.
+
+    .NOTES
+    In your ScriptBlock:
+    - Use either $PSItem or $_ to reference the current input object
+    - Remember hashtables are reference types so be sure to clone if 'using' from parent
 
     #>
 
@@ -47,13 +52,14 @@ function Invoke-VenafiParallel {
     [CmdletBinding()]
     param (
         [Parameter(Mandatory)]
+        [AllowNull()]
         [psobject] $InputObject,
 
         [Parameter(Mandatory)]
         [scriptblock] $ScriptBlock,
 
         [Parameter()]
-        [int] $ThrottleLimit = 20,
+        [int] $ThrottleLimit = 100,
 
         [Parameter()]
         [string] $ProgressTitle = 'Performing action',
@@ -67,6 +73,8 @@ function Invoke-VenafiParallel {
     )
 
     begin {
+
+        if (-not $InputObject) { return }
 
         if ( $PSVersionTable.PSVersion.Major -ge 7 ) {
             if ( -not $NoProgress ) {
@@ -108,6 +116,8 @@ function Invoke-VenafiParallel {
     }
 
     end {
+
+        if (-not $InputObject) { return }
 
         if ( $PSVersionTable.PSVersion.Major -lt 7 ) {
             Write-Warning 'Upgrade to PowerShell Core v7+ to make this function execute in parallel and be much faster!'

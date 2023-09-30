@@ -226,7 +226,7 @@ function Get-VdcAttribute {
 
     process {
 
-        $newPath = $Path | ConvertTo-TppFullPath
+        $newPath = $Path | ConvertTo-VdcFullPath
         $thisObject = Get-VdcObject -Path $newPath
 
         if ( $PSBoundParameters.ContainsKey('Class') -and $thisObject.TypeName -ne 'Policy' ) {

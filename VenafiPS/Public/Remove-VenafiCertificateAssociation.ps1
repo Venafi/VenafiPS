@@ -59,7 +59,7 @@
     Remove a single application association on VaaS
 
     .EXAMPLE
-    Find-VenafiCertificate | Remove-VenafiCertificateAssociation -ApplicationID 'BadApp'
+    Find-VdcCertificate | Remove-VenafiCertificateAssociation -ApplicationID 'BadApp'
 
     Remove all certificate associations with certain applications
 
@@ -81,7 +81,7 @@
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'RemoveOne', SupportsShouldProcess, ConfirmImpact = 'High')]
-    [Alias('Remove-TppCertificateAssociation')]
+    [Alias('Remove-VdcCertificateAssociation')]
 
     param (
 
@@ -111,7 +111,7 @@
         [switch] $All,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -167,7 +167,7 @@
             # foreach ( $Path in $Path ) {
             $shouldProcessAction = "Remove associations"
 
-            if ( -not ($CertificateID | Test-TppObject -ExistOnly -VenafiSession $VenafiSession) ) {
+            if ( -not ($CertificateID | Test-VdcObject -ExistOnly -VenafiSession $VenafiSession) ) {
                 Write-Error ("Certificate path {0} does not exist" -f $CertificateID)
                 Continue
             }
@@ -188,7 +188,7 @@
 
                 'RemoveAll*' {
                     $associatedApps = $CertificateID |
-                    Get-TppAttribute -Attribute "Consumers" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Consumers
+                    Get-VdcAttribute -Attribute "Consumers" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Consumers
 
                     if ( $associatedApps ) {
                         $params.Body.ApplicationDN = @($associatedApps)

@@ -201,7 +201,7 @@ function Read-VenafiLog {
         [psobject[]] $Order,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -261,7 +261,7 @@ function Read-VenafiLog {
     process {
 
         if ( $platform -eq 'VaaS' ) {
-            Find-VaasObject -Type ActivityLog @PSBoundParameters
+            Find-VcObject -Type ActivityLog @PSBoundParameters
         } else {
 
             if ( $PSBoundParameters.ContainsKey('Path') ) {

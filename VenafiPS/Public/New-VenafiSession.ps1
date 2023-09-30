@@ -27,10 +27,8 @@ function New-VenafiSession {
     Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
     For no privilege restriction or read access, use a value of $null.
     For a scope to privilege mapping, see https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
-    Using a scope of {'all'='core'} will set all scopes except for codesignclient and admin.
-    Using a scope of {'all'='core-cs'} will set all scopes inclduing codesignclient except for admin.
+    Using a scope of {'all'='core'} will set all scopes except for admin.
     Using a scope of {'all'='admin'} will set all scopes including admin.
-    Using a scope of {'all'='admin-cs'} will set all scopes including admin.
     Usage of the 'all' scope is not suggested for production.
 
     .PARAMETER State
@@ -348,7 +346,7 @@ function New-VenafiSession {
                 $params.State = $State
             }
 
-            $token = New-TppToken @params -Verbose:$isVerbose
+            $token = New-VdcToken @params -Verbose:$isVerbose
             $newSession.Token = $token
         }
 
@@ -395,7 +393,7 @@ function New-VenafiSession {
                 RefreshToken = $RefreshToken
             }
 
-            $newToken = New-TppToken @params
+            $newToken = New-VdcToken @params
             $newSession.Token = $newToken
             # $newSession.Expires = $newToken.Expires
         }
@@ -422,7 +420,7 @@ function New-VenafiSession {
 
             $params.RefreshToken = $tokenSecret
 
-            $newToken = New-TppToken @params
+            $newToken = New-VdcToken @params
             $newSession.Token = $newToken
             $newSession.Server = $newToken.Server
             $newSession.Token.Scope = $secretInfo.Metadata.Scope | ConvertFrom-Json
@@ -480,8 +478,8 @@ function New-VenafiSession {
     # will fail if user is on an older version.  this isn't required so bypass on failure
     # only applicable to tpp
     if ( $newSession.Platform -eq 'TPP' ) {
-        $newSession | Add-Member @{ Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue) }
-        $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-TppCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
+        $newSession | Add-Member @{ Version = (Get-VdcVersion -VenafiSession $newSession -ErrorAction SilentlyContinue) }
+        $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-VdcCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
         # make sure we remove duplicates
         $newSession | Add-Member @{ CustomField = $certFields.Items | Sort-Object -Property Guid -Unique }
     }
@@ -515,7 +513,7 @@ function New-VenafiSession {
             }
         }
 
-        Register-ArgumentCompleter -CommandName 'New-VaasMachine', 'Find-VaasMachine' -ParameterName 'MachineType' -ScriptBlock $machineTypeArgCompleterSb
+        Register-ArgumentCompleter -CommandName 'New-VcMachine', 'Find-VaasMachine' -ParameterName 'MachineType' -ScriptBlock $machineTypeArgCompleterSb
 
     }
 

@@ -13,7 +13,7 @@ function Test-IsGuid {
     [OutputType([bool])]
     param
     (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0)]
         [AllowEmptyString()]
         [string] $InputObject
     )

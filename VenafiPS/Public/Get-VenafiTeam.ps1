@@ -10,7 +10,7 @@
     .PARAMETER ID
     Team ID.
     For VaaS, this is the team name or guid.
-    For TPP, this is the local prefixed universal ID.  You can find the group ID with Find-TppIdentity.
+    For TPP, this is the local prefixed universal ID.  You can find the group ID with Find-VdcIdentity.
 
     .PARAMETER All
     Provide this switch to get all teams
@@ -43,7 +43,7 @@
     Get info for a TPP team
 
     .EXAMPLE
-    Find-TppIdentity -Name MyTeamName | Get-VenafiTeam
+    Find-VdcIdentity -Name MyTeamName | Get-VenafiTeam
 
     Search for a team and then get details
 
@@ -67,7 +67,7 @@
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
         [Alias('PrefixedUniversal', 'Guid', 'PrefixedName')]
         [string] $ID,
 
@@ -76,7 +76,7 @@
 
         [Parameter()]
         [Alias('Key', 'AccessToken')]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -91,36 +91,18 @@
     process {
 
         if ( $platform -eq 'VaaS' ) {
-
-            if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
-                $params.UriLeaf = 'teams'
+            if ($PsCmdlet.ParameterSetName -eq 'All') {
+                Get-VaasObject -TeamAll
             }
             else {
-                if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
-                    $guid = [guid] $ID
-                    $params.UriLeaf = 'teams/{0}' -f $guid.ToString()
-                }
-                else {
-                    # assume team name
-                    $allTeams = Get-VenafiTeam -All -VenafiSession $VenafiSession
-                    return $allTeams | Where-Object { $_.name -eq $ID }
-                }
-            }
-
-            $response = Invoke-VenafiRestMethod @params
-
-            if ( $response.PSObject.Properties.Name -contains 'teams' ) {
-                $response | Select-Object -ExpandProperty teams | ConvertTo-VaasTeam
-            }
-            else {
-                $response | ConvertTo-VaasTeam
+                Get-VaasObject -TeamID $ID
             }
         }
         else {
             if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
 
                 # no built-in api for this, get group objects and then get details
-                Find-TppObject -Path '\VED\Identity' -Class 'Group' -VenafiSession $VenafiSession | Where-Object { $_.Name -ne 'Everyone' } | Get-VenafiTeam -VenafiSession $VenafiSession
+                Find-VdcObject -Path '\VED\Identity' -Class 'Group' -VenafiSession $VenafiSession | Where-Object { $_.Name -ne 'Everyone' } | Get-VenafiTeam -VenafiSession $VenafiSession
             }
             else {
 
@@ -136,10 +118,10 @@
 
                     $response = Invoke-VenafiRestMethod @params
 
-                    $out = [pscustomobject] ($response.ID | ConvertTo-TppIdentity)
+                    $out = [pscustomobject] ($response.ID | ConvertTo-VdcIdentity)
                     $out | Add-Member @{
-                        Members = $response.Members | ConvertTo-TppIdentity
-                        Owners  = $response.Owners | ConvertTo-TppIdentity
+                        Members = $response.Members | ConvertTo-VdcIdentity
+                        Owners  = $response.Owners | ConvertTo-VdcIdentity
                     }
                     $out
                 }

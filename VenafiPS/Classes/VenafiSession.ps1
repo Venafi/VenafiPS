@@ -101,7 +101,7 @@ class VenafiSession {
                     Write-Verbose ("Refresh token expires: {0}, Current: {1}" -f $this.Token.RefreshExpires, (Get-Date).ToUniversalTime())
                 }
 
-                $newToken = New-TppToken -VenafiSession $this
+                $newToken = New-VdcToken -VenafiSession $this
                 $this.Token = $newToken
             }
         }

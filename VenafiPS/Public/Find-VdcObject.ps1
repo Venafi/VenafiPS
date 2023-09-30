@@ -31,7 +31,7 @@ function Find-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
+    A TPP token can also provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -141,7 +141,7 @@ function Find-VdcObject {
             VenafiSession = $VenafiSession
             Method        = 'Post'
             Body          = @{
-                'ObjectDN' = $Path | ConvertTo-TppFullPath
+                'ObjectDN' = $Path | ConvertTo-VdcFullPath
             }
         }
 
@@ -207,7 +207,7 @@ function Find-VdcObject {
         }
 
         foreach ($object in $objects) {
-            ConvertTo-TppObject -Path $object.DN -Guid $object.Guid -TypeName $object.TypeName
+            ConvertTo-VdcObject -Path $object.DN -Guid $object.Guid -TypeName $object.TypeName
         }
     }
 }

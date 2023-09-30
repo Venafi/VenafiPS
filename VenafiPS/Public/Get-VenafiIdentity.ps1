@@ -9,7 +9,7 @@ function Get-VenafiIdentity {
     For TPP, this returns individual identity, group identity, or distribution groups from a local or non-local provider such as Active Directory.
 
     .PARAMETER ID
-    For TPP this is the guid or prefixed universal id.  To search, use Find-TppIdentity.
+    For TPP this is the guid or prefixed universal id.  To search, use Find-VdcIdentity.
     For VaaS this can either be the user id (guid) or username which is the email address.
 
     .PARAMETER IncludeAssociated
@@ -149,7 +149,7 @@ function Get-VenafiIdentity {
         [Switch] $IncludeMembers,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -207,9 +207,9 @@ function Get-VenafiIdentity {
                     $params.UriLeaf = 'Identity/Validate'
                     $params.Body = @{'ID' = @{ } }
 
-                    if ( Test-TppIdentityFormat -ID $ID -Format 'Universal' ) {
+                    if ( Test-VdcIdentityFormat -ID $ID -Format 'Universal' ) {
                         $params.Body.ID.PrefixedUniversal = $ID
-                    } elseif ( Test-TppIdentityFormat -ID $ID -Format 'Name' ) {
+                    } elseif ( Test-VdcIdentityFormat -ID $ID -Format 'Name' ) {
                         $params.Body.ID.PrefixedName = $ID
                     } elseif ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
                         $guid = [guid] $ID
@@ -226,7 +226,7 @@ function Get-VenafiIdentity {
                         $assocParams.UriLeaf = 'Identity/GetAssociatedEntries'
                         $associated = Invoke-VenafiRestMethod @assocParams
                         $response | Add-Member @{ 'Associated' = $null }
-                        $response.Associated = $associated.Identities | ConvertTo-TppIdentity
+                        $response.Associated = $associated.Identities | ConvertTo-VdcIdentity
                     }
 
                     if ( $IncludeMembers ) {
@@ -236,7 +236,7 @@ function Get-VenafiIdentity {
                             $assocParams.UriLeaf = 'Identity/GetMembers'
                             $assocParams.Body.ResolveNested = "1"
                             $members = Invoke-VenafiRestMethod @assocParams
-                            $response.Members = $members.Identities | ConvertTo-TppIdentity
+                            $response.Members = $members.Identities | ConvertTo-VdcIdentity
                         }
                     }
 
@@ -252,12 +252,12 @@ function Get-VenafiIdentity {
 
                 'All' {
                     # no built-in api for this, get group objects and then get details
-                    Find-TppObject -Path '\VED\Identity' -Class 'User', 'Group' -VenafiSession $VenafiSession | Get-VenafiIdentity -IncludeAssociated:$IncludeAssociated.IsPresent -IncludeMembers:$IncludeMembers.IsPresent -VenafiSession $VenafiSession
+                    Find-VdcObject -Path '\VED\Identity' -Class 'User', 'Group' -VenafiSession $VenafiSession | Get-VenafiIdentity -IncludeAssociated:$IncludeAssociated.IsPresent -IncludeMembers:$IncludeMembers.IsPresent -VenafiSession $VenafiSession
                 }
             }
 
             if ( $idOut ) {
-                $idOut | ConvertTo-TppIdentity
+                $idOut | ConvertTo-VdcIdentity
             }
         }
     }

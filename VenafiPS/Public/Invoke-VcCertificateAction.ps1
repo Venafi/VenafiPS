@@ -94,7 +94,7 @@ function Invoke-VcCertificateAction {
         [hashtable] $AdditionalParameters,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {

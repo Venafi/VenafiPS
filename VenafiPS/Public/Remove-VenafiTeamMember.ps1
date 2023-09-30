@@ -8,12 +8,12 @@ Remove a team member from VaaS or TPP
 .PARAMETER ID
 Team ID
 For VaaS, this is the unique guid obtained from Get-VenafiTeam.
-For TPP, this is the ID property from Find-TppIdentity or Get-VenafiTeam.
+For TPP, this is the ID property from Find-VdcIdentity or Get-VenafiTeam.
 
 .PARAMETER Member
 1 or more members to remove from the team
 For VaaS, this is the unique guid obtained from Get-VenafiIdentity.
-For TPP, this is the identity ID property from Find-TppIdentity or Get-VenafiIdentity.
+For TPP, this is the identity ID property from Find-VdcIdentity or Get-VenafiIdentity.
 
 .PARAMETER VenafiSession
 Authentication for the function.
@@ -59,7 +59,7 @@ function Remove-VenafiTeamMember {
         [string[]] $Member,
 
         [Parameter()]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
