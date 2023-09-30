@@ -25,9 +25,9 @@ jobs:
           # setting a path other than the current dir for Build-PSBuildModule didn't work
           # cd ${{ github.workspace }}/${{ env.module_name }}
           # pwd
-          new-item -path ${{ github.workspace }}/merged -ItemType directory
+          # new-item -path ${{ github.workspace }}/merged -ItemType directory
           # Build-PSBuildModule -Path ./VenafiPS -DestinationPath ./merged -ModuleName VenafiPS -Compile -Verbose
-          Build-PSBuildModule -Path ${{ github.workspace }} -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
+          Build-PSBuildModule -Path ${{ github.workspace }}/VenafiPS -DestinationPath ${{ github.workspace }}/merged -ModuleName VenafiPS -Compile -Verbose
 
       - name: Upload module artifact
         uses: actions/upload-artifact@v3
