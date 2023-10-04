@@ -6,22 +6,9 @@
     .DESCRIPTION
     Get certificate information, either all available to the api key provided or by id or zone.
 
-    .PARAMETER CertificateId
+    .PARAMETER ID
     Certificate identifier.
     For Venafi as a Service, this is the ID or certificate name.
-    For TPP, use the path or guid.  \ved\policy will be automatically applied if a full path isn't provided.
-
-    .PARAMETER IncludeTppPreviousVersions
-    Returns details about previous (historical) versions of a certificate (only from TPP).
-    This option will add a property named PreviousVersions to the returned object.
-
-    .PARAMETER ExcludeExpired
-    Omits expired versions of the previous (historical) versions of a certificate (only from TPP).
-    Can only be used with the IncludePreviousVersions parameter.
-
-    .PARAMETER ExcludeRevoked
-    Omits revoked versions of the previous (historical) versions of a certificate (only from TPP).
-    Can only be used with the IncludePreviousVersions parameter.
 
     .PARAMETER All
     Retrieve all certificates
@@ -72,6 +59,7 @@
     param (
 
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
+        [Alias('CertificateID')]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
@@ -88,7 +76,6 @@
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
-        $certs = [System.Collections.Generic.List[string]]::new()
         $appOwners = [System.Collections.Generic.List[object]]::new()
 
     }
@@ -99,91 +86,103 @@
             return (Find-VcCertificate -IncludeVaasOwner:$IncludeVaasOwner)
         }
 
-        $certs.Add($ID)
-    }
+        $params.UriRoot = 'outagedetection/v1'
+        $params.UriLeaf = "certificates/"
 
-    end {
-
-        Invoke-VenafiParallel -InputObject $certs -ScriptBlock {
-
-            if ( [guid]::TryParse($PSItem, $([ref][guid]::Empty)) ) {
-                $thisGuid = ([guid] $PSItem).ToString()
+        if ( Test-IsGuid($ID) ) {
+            $params.UriLeaf += $ID
+        }
+        else {
+            $findParams = @{
+                Filter           = @('certificateName', 'eq', $ID)
+                IncludeVaasOwner = $IncludeVaasOwner
             }
-            else {
-                # a path was provided
-                $thisGuid = $PSItem | ConvertTo-VdcFullPath | ConvertTo-VdcGuid
+            return (Find-VcCertificate @findParams | Get-VcCertificate)
+        }
+
+        $params.UriLeaf += "?ownershipTree=true"
+
+        $response = Invoke-VenafiRestMethod @params
+
+        if ( $response.PSObject.Properties.Name -contains 'certificates' ) {
+            $certs = $response | Select-Object -ExpandProperty certificates
+        }
+        else {
+            $certs = $response
+        }
+
+        $certs | Select-Object @{
+            'n' = 'certificateId'
+            'e' = {
+                $_.Id
             }
-
-            $params = @{
-                UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
+        },
+        @{
+            'n' = 'application'
+            'e' = {
+                $_.applicationIds | Get-VcApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
             }
+        },
+        @{
+            'n' = 'owner'
+            'e' = {
+                if ( $IncludeVaasOwner ) {
 
-            $response = Invoke-VenafiRestMethod @params
+                    # this scriptblock requires ?ownershipTree=true be part of the url
+                    foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
+                        $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                        if ( -not $thisOwnerDetail ) {
+                            $thisOwnerDetail = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession | Select-Object firstName, lastName, emailAddress,
+                            @{
+                                'n' = 'status'
+                                'e' = { $_.userStatus }
+                            },
+                            @{
+                                'n' = 'role'
+                                'e' = { $_.systemRoles }
+                            },
+                            @{
+                                'n' = 'type'
+                                'e' = { 'USER' }
+                            },
+                            @{
+                                'n' = 'userId'
+                                'e' = { $_.id }
+                            }
 
-            if ( $IncludePreviousVersions ) {
-                $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}/PreviousVersions")
-                $params.Body = @{}
+                            $appOwners.Add($thisOwnerDetail)
 
-                if ( $ExcludeExpired.IsPresent ) {
-                    $params.Body.ExcludeExpired = $ExcludeExpired
-                }
-                if ( $ExcludeRevoked.IsPresent ) {
-                    $params.Body.ExcludeRevoked = $ExcludeRevoked
-                }
+                        }
+                        $thisOwnerDetail
+                    }
 
-                $previous = Invoke-VenafiRestMethod @params
+                    foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
+                        $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                        if ( -not $thisOwnerDetail ) {
+                            $thisOwnerDetail = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession | Select-Object name, role, members,
+                            @{
+                                'n' = 'type'
+                                'e' = { 'TEAM' }
+                            },
+                            @{
+                                'n' = 'teamId'
+                                'e' = { $_.id }
+                            }
 
-                if ( $previous.PreviousVersions ) {
-                    $previous.PreviousVersions.CertificateDetails | ForEach-Object {
-                        $_.StoreAdded = [datetime]$_.StoreAdded
-                        $_.ValidFrom = [datetime]$_.ValidFrom
-                        $_.ValidTo = [datetime]$_.ValidTo
+                            $appOwners.Add($thisOwnerDetail)
+                        }
+                        $thisOwnerDetail
                     }
                 }
-
-                $response | Add-Member @{'PreviousVersions' = $previous.PreviousVersions }
+                else {
+                    $_.ownership.owningContainers | Select-Object owningUsers, owningTeams
+                }
             }
-
-            # object transformations
-            # put in try/catch in case datetime conversion fails
-            try {
-                $response.CertificateDetails.StoreAdded = [datetime]$response.CertificateDetails.StoreAdded
-                $response.CertificateDetails.ValidFrom = [datetime]$response.CertificateDetails.ValidFrom
-                $response.CertificateDetails.ValidTo = [datetime]$response.CertificateDetails.ValidTo
-            }
-            catch {
-
-            }
-
-            $selectProps = @{
-                Property        =
-                @{
-                    n = 'Name'
-                    e = { $_.Name }
-                },
-                @{
-                    n = 'TypeName'
-                    e = { $_.SchemaClass }
-                },
-                @{
-                    n = 'Path'
-                    e = { $_.DN }
-                }, @{
-                    n = 'Guid'
-                    e = { [guid]$_.guid }
-                }, @{
-                    n = 'ParentPath'
-                    e = { $_.ParentDN }
-                }, @{
-                    n = 'CreatedOn'
-                    e = { [datetime]$_.CreatedOn }
-                },
-                '*'
-                ExcludeProperty = 'DN', 'GUID', 'ParentDn', 'SchemaClass', 'Name', 'CreatedOn'
-            }
-
-            $response | Select-Object @selectProps
-
-        }
+        },
+        @{
+            'n' = 'instance'
+            'e' = { $_.instances }
+        },
+        * -ExcludeProperty Id, applicationIds, instances, totalInstanceCount, ownership
     }
 }
