@@ -1,0 +1,13 @@
+include:
+  - project: venafi/ps/gitlab/sharedci
+    file:
+      - /common.gitlab-ci.yml
+
+sign:
+    stage: deploy
+    image: $SIGN_IMAGE
+    tags:
+        - windows
+
+    script:
+      - powershell -Command "gci env:; iwr -uri 'https://github.com/git-for-windows/git/releases/download/v2.42.0.windows.2/MinGit-2.42.0.2-64-bit.zip' -OutFile mingit.zip; Expand-Archive MinGit.zip -DestinationPath ./git"
