@@ -1,4 +1,4 @@
 include:
-  - project: venafi/ps/personal/venafips-ci
+  - project: venafi/ps/internal/venafips-ci
     file:
       - /ci.gitlab-ci.yml
