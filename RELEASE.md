@@ -1,1 +1,2 @@
-- Remove deprecated application server types from `New-VaasCertificate`
+- VenafiPS is now signed
+- `Test-ModuleHash` has been deprecated
