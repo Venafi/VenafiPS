@@ -323,10 +323,6 @@
         "TppVersion": "",
         "TppTokenScope": "approve with any scope"
     },
-    "Test-ModuleHash": {
-        "TppVersion": "",
-        "TppTokenScope": "none"
-    },
     "Test-TppIdentity": {
         "TppVersion": "",
         "TppTokenScope": "configuration:$null"
