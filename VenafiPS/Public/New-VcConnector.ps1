@@ -32,7 +32,7 @@ function New-VcConnector {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .OUTPUTS
     PSCustomObject, if PassThru provided
@@ -114,7 +114,7 @@ function New-VcConnector {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         # validate inputs
-        $at = Invoke-VenafiRestMethod -UriLeaf 'activitytypes' -VenafiSession $VenafiSession
+        $at = Invoke-VenafiRestMethod -UriLeaf 'activitytypes'
 
         if ( $PSBoundParameters.ContainsKey('EventType') ) {
             $compare = compare-object -ReferenceObject $EventType -DifferenceObject $at.readablename | Where-Object { $_.SideIndicator -eq '<=' }

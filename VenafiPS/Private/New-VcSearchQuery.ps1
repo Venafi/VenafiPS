@@ -85,14 +85,11 @@ function New-VcSearchQuery {
                 if ( $thisItem.count -eq 3 -and -not ($thisItem | ForEach-Object { if ($_.GetType().Name -eq 'Object[]') { 'array' } })) {
 
                     # vaas fields are case sensitive, get the proper case if we're aware of the field
-                    $newField = $thisItem[0]
-                    $properCaseField = $vaasFields | Where-Object { $_.ToLower() -eq $newField.ToLower() }
-                    if ( $properCaseField ) {
-                        $newField = $properCaseField
-                    }
+                    $thisField = $thisItem[0]
+                    $thisFieldCased = $vaasFields | Where-Object { $_.ToLower() -eq $thisField.ToLower() }
 
                     $newOperand = @{
-                        'field'    = $newField
+                        'field'    = if ($thisFieldCased) { $thisFieldCased } else { $thisField }
                         'operator' = $thisItem[1].ToUpper()
                     }
 
@@ -152,8 +149,10 @@ function New-VcSearchQuery {
                 $thisOrder = $_
                 switch ($thisOrder.GetType().Name) {
                     'String' {
+                        $thisOrderCased = $vaasFields | Where-Object { $_.ToLower() -eq $thisOrder.ToLower() }
+
                         $query.ordering.orders += @{
-                            'field'     = $thisOrder
+                            'field'     = if ($thisOrderCased) { $thisOrderCased } else { $thisOrder }
                             'direction' = 'ASC'
                         }
                     }
@@ -165,8 +164,10 @@ function New-VcSearchQuery {
                                 throw ('Invalid order direction, {0}.  Provide either ''asc'' or ''desc''' -f $_.Value)
                             }
 
+                            $thisOrderCased = $vaasFields | Where-Object { $_.ToLower() -eq $_.Key.ToLower() }
+
                             $query.ordering.orders += @{
-                                'field'     = $_.Key
+                                'field'     = if ($thisOrderCased) { $thisOrderCased } else { $_.Key }
                                 'direction' = $_.Value.ToUpper()
                             }
                         }

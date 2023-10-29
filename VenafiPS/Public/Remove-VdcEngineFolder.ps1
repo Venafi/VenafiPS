@@ -23,7 +23,7 @@ function Remove-VdcEngineFolder {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+    A TPP token can also be provided, but this requires an environment variable TPP_SERVER to be set.
     .INPUTS
     FolderPath[], EnginePath[]
     .OUTPUTS
@@ -79,7 +79,7 @@ function Remove-VdcEngineFolder {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -Verbose:$false
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Delete'
         }
 
@@ -91,7 +91,7 @@ function Remove-VdcEngineFolder {
             [TppObject[]] $FolderList = @()
             foreach ($path in $FolderPath) {
                 try {
-                    $folder = Get-VdcObject -Path $path -VenafiSession $VenafiSession
+                    $folder = Get-VdcObject -Path $path
                     if ($folder.TypeName -eq 'Policy') {
                         $FolderList += $folder
                     }
@@ -115,7 +115,7 @@ function Remove-VdcEngineFolder {
             [TppObject[]] $EngineList = @()
             foreach ($path in $EnginePath) {
                 try {
-                    $engine = Get-VdcObject -Path $path -VenafiSession $VenafiSession
+                    $engine = Get-VdcObject -Path $path
                     if ($engine.TypeName -eq 'Venafi Platform') {
                         $EngineList += $engine
                     }
@@ -170,7 +170,7 @@ function Remove-VdcEngineFolder {
                     Write-Verbose ("Processing Engine: '$($engine.Path)'")
                     if ($PSCmdlet.ParameterSetName -eq 'AllFolders') {
                         [TppObject[]] $FolderList = @()
-                        $FolderList += ($engine | Get-VdcEngineFolder -VenafiSession $VenafiSession)
+                        $FolderList += ($engine | Get-VdcEngineFolder)
                         Switch ($FolderList.Count) {
                             0 { $countMessage = 'NO folders' }
                             1 { $countMessage = '1 folder' }

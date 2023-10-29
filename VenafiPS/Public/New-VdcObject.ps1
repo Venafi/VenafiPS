@@ -31,7 +31,7 @@ function New-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .EXAMPLE
@@ -115,7 +115,7 @@ function New-VdcObject {
     $newPath = $Path | ConvertTo-VdcFullPath
 
     $params = @{
-        VenafiSession = $VenafiSession
+
         Method        = 'Post'
         UriLeaf       = 'config/create'
         Body          = @{
@@ -163,7 +163,7 @@ function New-VdcObject {
                             for ($i = 3; $i -lt ($pathSplit.Count - 1); $i++) {
                                 if ( -not (Find-VdcObject -Path ($pathSplit[0..($i - 1)] -join '\') -Pattern $pathSplit[$i])) {
                                     Write-Verbose ('Creating missing policy folder {0}' -f ($pathSplit[0..$i] -join '\'))
-                                    New-VdcPolicy -Path ($pathSplit[0..$i] -join '\') -VenafiSession $VenafiSession
+                                    New-VdcPolicy -Path ($pathSplit[0..$i] -join '\')
                                 }
                             }
 
@@ -198,7 +198,7 @@ function New-VdcObject {
                 $associateParams.Add('PushCertificate', $true)
             }
 
-            Add-VdcCertificateAssociation @associateParams -VenafiSession $VenafiSession
+            Add-VdcCertificateAssociation @associateParams
         }
 
         if ( $PassThru ) {

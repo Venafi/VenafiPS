@@ -16,7 +16,7 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -120,7 +120,7 @@
         @{
             'n' = 'application'
             'e' = {
-                $_.applicationIds | Get-VcApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                $_.applicationIds | Get-VcApplication | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
             }
         },
         @{
@@ -132,7 +132,7 @@
                     foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
                         $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
                         if ( -not $thisOwnerDetail ) {
-                            $thisOwnerDetail = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession | Select-Object firstName, lastName, emailAddress,
+                            $thisOwnerDetail = Get-VcIdentity -ID $thisOwner | Select-Object firstName, lastName, emailAddress,
                             @{
                                 'n' = 'status'
                                 'e' = { $_.userStatus }
@@ -159,7 +159,7 @@
                     foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
                         $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
                         if ( -not $thisOwnerDetail ) {
-                            $thisOwnerDetail = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession | Select-Object name, role, members,
+                            $thisOwnerDetail = Get-VcTeam -ID $thisOwner | Select-Object name, role, members,
                             @{
                                 'n' = 'type'
                                 'e' = { 'TEAM' }

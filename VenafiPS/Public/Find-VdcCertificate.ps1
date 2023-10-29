@@ -92,6 +92,12 @@ function Find-VdcCertificate {
     .PARAMETER InError
     Only include certificates in an error state.
 
+    .PARAMETER IsSelfSigned
+    Only include self-signed certificates
+
+    .PARAMETER IsWildcard
+    Only include wilcard certificates
+
     .PARAMETER NetworkValidationEnabled
     Only include certificates with network validation enabled or disabled.
 
@@ -134,7 +140,7 @@ function Find-VdcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -193,12 +199,6 @@ function Find-VdcCertificate {
     Find-VdcCertificate -First 500
 
     Find the first 500 certificates
-
-    .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcCertificate/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcCertificate.ps1
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates.php
@@ -323,7 +323,13 @@ function Find-VdcCertificate {
         [Switch] $Enabled,
 
         [Parameter()]
-        [bool] $InError,
+        [switch] $InError,
+
+        [Parameter()]
+        [switch] $IsSelfSigned,
+
+        [Parameter()]
+        [switch] $IsWildcard,
 
         [Parameter()]
         [bool] $NetworkValidationEnabled,
@@ -379,14 +385,14 @@ function Find-VdcCertificate {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $params = @{
-            VenafiSession = $VenafiSession
-            Method        = 'Get'
-            UriLeaf       = 'certificates/'
-            Body          = @{
-                Limit = 1000
+
+            Method       = 'Get'
+            UriLeaf      = 'certificates/'
+            Body         = @{
+                Limit  = 1000
                 Offset = 0
             }
-            FullResponse  = $true
+            FullResponse = $true
         }
 
         if ($PSCmdlet.PagingParameters.First -ne [uint64]::MaxValue -and $PSCmdlet.PagingParameters.First -le 1000) {
@@ -493,7 +499,13 @@ function Find-VdcCertificate {
                 $params.Body.Add( 'Disabled', [int] (-not $Enabled) )
             }
             'InError' {
-                $params.Body.Add( 'InError', [int] $InError )
+                $params.Body.Add( 'InError', [int]$InError.IsPresent )
+            }
+            'IsSelfSigned' {
+                $params.Body.Add( 'IsSelfSigned', [int] $IsSelfSigned.IsPresent )
+            }
+            'IsWildcard' {
+                $params.Body.Add( 'IsWildcard', [int] $IsWildcard.IsPresent )
             }
             'NetworkValidationEnabled' {
                 $params.Body.Add( 'NetworkValidationDisabled', [int] (-not $NetworkValidationEnabled) )
@@ -530,7 +542,7 @@ function Find-VdcCertificate {
         }
         elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
             # guid provided, get path
-            $thisPath = $Guid | ConvertTo-VdcPath -VenafiSession $VenafiSession
+            $thisPath = $Guid | ConvertTo-VdcPath
         }
 
         if ( $thisPath ) {

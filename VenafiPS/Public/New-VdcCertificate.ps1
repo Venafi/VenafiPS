@@ -78,7 +78,7 @@ function New-VdcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -260,7 +260,7 @@ function New-VdcCertificate {
         }
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Post'
             UriLeaf       = 'certificates/request'
             Body          = @{
@@ -379,7 +379,7 @@ function New-VdcCertificate {
                 Write-Verbose ($response | Out-String)
 
                 if ( $PassThru ) {
-                    $newCert = Get-VdcObject -Path $response.CertificateDN -VenafiSession $VenafiSession
+                    $newCert = Get-VdcObject -Path $response.CertificateDN
                     if ( $Device ) {
                         $newCert | Add-Member @{ 'Device' = @{'Path' = $response.Devices.DN } }
                         if ( $Application ) {

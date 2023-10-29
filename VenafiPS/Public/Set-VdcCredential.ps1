@@ -17,7 +17,7 @@ function Set-VdcCredential {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -71,7 +71,7 @@ function Set-VdcCredential {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Post'
             UriLeaf       = 'Credentials/Update'
             Body          = @{}
@@ -104,7 +104,7 @@ function Set-VdcCredential {
     process {
 
         # lookup path so we know the type of cred we're dealing with
-        $tppObject = Get-VdcObject -Path $Path -VenafiSession $VenafiSession
+        $tppObject = Get-VdcObject -Path $Path
         $thisType = $tppObject.TypeName
         if ( -not $CredTypes[$thisType] ) {
             throw "Credential type '$thisType' is not supported yet.  Submit an enhancement request."

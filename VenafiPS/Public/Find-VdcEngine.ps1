@@ -13,7 +13,7 @@ function Find-VdcEngine {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+    A TPP token can also be provided, but this requires an environment variable TPP_SERVER to be set.
 
     .INPUTS
     Pattern
@@ -50,7 +50,6 @@ function Find-VdcEngine {
 
     process {
         $params = @{
-            VenafiSession = $VenafiSession
             Class         = 'Venafi Platform'
             Path          = '\VED\Engines'
             Pattern       = $Pattern

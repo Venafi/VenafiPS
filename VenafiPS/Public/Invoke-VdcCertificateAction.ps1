@@ -4,8 +4,9 @@ function Invoke-VdcCertificateAction {
     Perform an action against a certificate
 
     .DESCRIPTION
-    One stop shop for basic certificate actions
-    When supported by the platform, you can Retire, Reset, Renew, Push, Validate, Revoke, or Delete.
+    One stop shop for basic certificate actions.
+    You can Retire, Reset, Renew, Push, Validate, Revoke, or Delete.
+    If using PowerShell v7+, this will be run in parallel.
 
     .PARAMETER Path
     Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
@@ -34,7 +35,7 @@ function Invoke-VdcCertificateAction {
 
     .PARAMETER AdditionalParameter
     Additional items specific to the action being taken, if needed.
-    See the api documentation for appropriate items, many are in the links in this help.
+    See the examples for suggestions.
 
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
@@ -42,7 +43,7 @@ function Invoke-VdcCertificateAction {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -50,7 +51,7 @@ function Invoke-VdcCertificateAction {
 
     .OUTPUTS
     PSCustomObject with the following properties:
-        CertificateID - Certificate path (TPP) or Guid (VaaS)
+        CertificateID - Certificate path
         Success - A value of true indicates that the action was successful
         Error - Indicates any errors that occurred. Not returned when Success is true
 
@@ -62,7 +63,7 @@ function Invoke-VdcCertificateAction {
     .EXAMPLE
     Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Delete -Confirm:$false
 
-    Perform an action bypassing the confirmation prompt.  Only applicable to revoke and delete.
+    Perform an action bypassing the confirmation prompt.  Only applicable to revoke, disable, and delete.
 
     .EXAMPLE
     Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Revoke -Confirm:$false | Invoke-VdcCertificateAction -Delete -Confirm:$false
@@ -70,9 +71,20 @@ function Invoke-VdcCertificateAction {
     Chain multiple actions together
 
     .EXAMPLE
-    Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameter @{'Comments'='Key compromised'}
+    Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameter @{'Comments'='Key compromised'; 'Reason'='3'}
 
-    Perform an action sending additional parameters.
+    Perform a revoke sending additional parameters.
+
+    Comments: The details about why the certificate is being revoked. Be sure the comment length does not exceed the limitation from the CA. When accepting a revocation request, they may handle data outside their limits differently. For Entrust CA or EntrustPKI CA, the maximum character limit is 250.
+
+    Values for Reason can be:
+        0: None
+        1: User key compromised
+        2: CA key compromised
+        3: User changed affiliation
+        4: Certificate superseded
+        5: Original use no longer valid
+
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Reset.php

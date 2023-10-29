@@ -51,8 +51,7 @@ function Export-VcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A VaaS key can also provided.
 
     .INPUTS
     ID

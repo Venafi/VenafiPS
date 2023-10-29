@@ -53,7 +53,7 @@ function Import-VdcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .EXAMPLE
@@ -143,7 +143,7 @@ function Import-VdcCertificate {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -AuthType 'token'
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Post'
             UriLeaf       = 'certificates/import'
             Body          = @{
@@ -202,7 +202,7 @@ function Import-VdcCertificate {
                     Write-Verbose ('Successfully imported {0}' -f $response.CertificateDN)
 
                     if ( $PassThru ) {
-                        Get-VdcObject -Guid $response.Guid -VenafiSession $VenafiSession
+                        Get-VdcObject -Guid $response.Guid
                     }
                 } catch {
                     Write-Error $_
@@ -228,7 +228,7 @@ function Import-VdcCertificate {
 
                 $params = $using:params
                 # session was set in params for ps v6, but as we recreated in this thread it needs to be set again
-                $params.VenafiSession = $VenafiSession
+                $params.
                 $params.Body.CertificateData = $thisCertData
 
                 try {

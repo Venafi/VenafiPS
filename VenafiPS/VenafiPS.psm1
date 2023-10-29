@@ -32,14 +32,22 @@ foreach ( $folder in $folders) {
 
 $script:CloudUrl = 'https://api.venafi.cloud'
 $script:ModuleVersion = '((NEW_VERSION))'
-$script:functionConfig = ConvertFrom-Json (Get-Content "$PSScriptRoot\config\functions.json" -Raw)
+$script:functionConfig = ConvertFrom-Json (Get-Content "$PSScriptRoot/config/functions.json" -Raw)
 
 $Script:VenafiSession = $null
 Export-ModuleMember -Variable VenafiSession
 
+# 'fto', 'itcr', 'Invoke-TppRestMethod', 'Get-TppCertificate',
+#     'Get-TppCertificateDetail', 'Find-VaasCertificate', 'Remove-VdcCertificateAssociation',
+#     'Get-VaasApplication', 'Get-VaasMachine', 'Get-VaasIssuingTemplate', 'Get-VaasSatellite', 'Get-VaasConnector', 'New-VaasApplication',
+#     'Import-VaasCertificate', 'Import-TppCertificate', 'New-VaasCertificate', 'New-VaasConnector', 'Search-TppHistory', 'Find-TppObject', 'Invoke-VaasWorkflow',
+#     'Convert-TppObject', 'Add-TppAdaptableHash', 'Add-TppEngineFolder', 'Add-TppCertificateAssociation', 'ConvertTo-TppGuid', 'ConvertTo-TppPath',
+#     'Write-TppLog', 'Test-TppToken', 'Test-TppObject', 'Test-TppIdentity', 'Set-VaasTeam', 'Find-TppVaultId', 'Find-TppIdentity', 'Find-TppEngine', 'Find-TppClient',
+#     'Get-TppAttribute', 'Get-TppClassAttribute', 'Get-TppCredential', 'Set-VaasCertificateAssignment'
+
 # $aliases = @{
 #     'ConvertTo-TppDN'          = 'ConvertTo-VdcPath'
-#     'Get-TppWorkflowDetail'    = 'Get-TppWorkflowTicket'
+#     'Get-TppWorkflowDetail'    = 'Get-VdcWorkflowTicket'
 #     'Restore-TppCertificate'   = 'Invoke-TppCertificateRenewal'
 #     'Get-TppLog'               = 'Read-TppLog'
 #     'fto'                      = 'Find-VdcObject'
@@ -51,15 +59,16 @@ Export-ModuleMember -Variable VenafiSession
 #     'Get-TppCertificateDetail' = 'Get-VenafiCertificate'
 #     'Read-TppLog'              = 'Read-VenafiLog'
 #     'Get-TppIdentity'          = 'Get-VenafiIdentity'
-#     'Find-TppCertificate'      = 'Find-VenafiCertificate'
+#     'Find-TppCertificate'      = 'Find-VdcCertificate'
 # }
 # $aliases.GetEnumerator() | ForEach-Object {
 #     Set-Alias -Name $_.Key -Value $_.Value
 # }
-# Export-ModuleMember -Alias *
+
+Export-ModuleMember -Alias * -Variable VenafiSession
 
 # load sodium needed for tlspc encryption
-Import-Module "$PSScriptRoot\import\PSSodium\PSSodium.psd1" -Force
+# Import-Module "$PSScriptRoot\import\PSSodium\PSSodium.psd1" -Force
 
 # vaas fields to ensure the values are upper case
 $vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'

@@ -35,7 +35,7 @@ function New-VenafiSession {
     A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
     .PARAMETER AccessToken
-    PSCredential object with the access token as the password.
+    PSCredential object with the access token as the password.  The username is not used and can be any value.
 
     .PARAMETER VaultAccessTokenName
     Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
@@ -44,6 +44,7 @@ function New-VenafiSession {
 
     .PARAMETER RefreshToken
     PSCredential object with the refresh token as the password.  An access token will be retrieved and a new session created.
+    The username is not used and can be any value.
 
     .PARAMETER VaultRefreshTokenName
     Name of the SecretManagement vault entry for the refresh token; the name of the vault must be VenafiPS.
@@ -65,14 +66,14 @@ function New-VenafiSession {
     If just the server name is provided, https:// will be appended.
 
     .PARAMETER VaasKey
-    Api key from your Venafi as a Service instance.  The api key can be found under your user profile->preferences.
-    Provide a credential object with the api key as the password.
+    Api key from your TLSPC instance.  The api key can be found under your user profile->preferences.
+    Provide a pscredential object with the api key as the password.  The username is not used and can be any value.
     https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
 
     .PARAMETER VaultVaasKeyName
-    Name of the SecretManagement vault entry for the Venafi as a Service key.
+    Name of the SecretManagement vault entry for the TLSPC key.
     First time use requires it to be provided with -VaasKey to populate the vault.
-    With subsequent uses, it can be provided standalone and the key will be retrieved with the need for -VaasKey.
+    With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VaasKey.
 
     .PARAMETER SkipCertificateCheck
     Bypass certificate validation when connecting to the server.

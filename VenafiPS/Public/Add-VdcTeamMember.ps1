@@ -7,11 +7,11 @@
     Add members to a TPP/TLSPDC team
 
     .PARAMETER ID
-    Team ID from Find-VdcIdentity or Get-VenafiTeam.
+    Team ID from Find-VdcIdentity or Get-VdcTeam.
 
     .PARAMETER Member
     1 or more members to add to the team.
-    The identity ID property from Find-VdcIdentity or Get-VenafiIdentity.
+    The identity ID property from Find-VdcIdentity or Get-VdcIdentity.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -52,10 +52,10 @@
 
     process {
 
-        $teamName = Get-VenafiIdentity -ID $ID | Select-Object -ExpandProperty FullName
+        $teamName = Get-VdcIdentity -ID $ID | Select-Object -ExpandProperty FullName
         $members = foreach ($thisMember in $Member) {
             if ( $thisMember.StartsWith('local') ) {
-                $memberIdentity = Get-VenafiIdentity -ID $thisMember
+                $memberIdentity = Get-VdcIdentity -ID $thisMember
                 @{
                     'PrefixedName'      = $memberIdentity.FullName
                     'PrefixedUniversal' = $memberIdentity.ID
@@ -65,11 +65,14 @@
                 @{'PrefixedUniversal' = $thisMember }
             }
         }
-        $params.Method = 'Put'
-        $params.UriLeaf = 'Teams/AddTeamMembers'
-        $params.Body = @{
-            'Team'    = @{'PrefixedName' = $teamName }
-            'Members' = @($members)
+
+        $params = @{
+            Method  = 'Put'
+            UriLeaf = 'Teams/AddTeamMembers'
+            Body    = @{
+                'Team'    = @{'PrefixedName' = $teamName }
+                'Members' = @($members)
+            }
         }
 
         Invoke-VenafiRestMethod @params | Out-Null

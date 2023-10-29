@@ -19,7 +19,7 @@ function Test-VdcToken {
     Note: '-Server' parameter is required if the vault does not contain saved metadata.
     See New-VenafiSession -VaultMetaData
 
-    .PARAMETER TppToken
+    .PARAMETER VenafiPsToken
     Token object obtained from New-VdcToken
 
     .PARAMETER VenafiSession
@@ -30,7 +30,7 @@ function Test-VdcToken {
     Provides detailed info about the token object from the TPP server response as an output.  Supported on TPP 20.4 and later.
 
     .INPUTS
-    AccessToken, TppToken
+    AccessToken
 
     .OUTPUTS
     Boolean (default)
@@ -47,7 +47,7 @@ function Test-VdcToken {
     Verify that accesstoken stored in $VenafiSession object is valid.
 
     .EXAMPLE
-    $TppToken | Test-VdcToken
+    $VenafiPsToken | Test-VdcToken
     Verify that token object from pipeline is valid. Can be used to validate directly object from New-VdcToken.
 
     .EXAMPLE
@@ -99,8 +99,8 @@ function Test-VdcToken {
         [Parameter(Mandatory, ParameterSetName = 'AccessToken', ValueFromPipeline)]
         [PSCredential] $AccessToken,
 
-        [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipeline)]
-        [pscustomobject] $TppToken,
+        [Parameter(Mandatory, ParameterSetName = 'VenafiPsToken')]
+        [pscustomobject] $VenafiPsToken,
 
         [Parameter(Mandatory, ParameterSetName = 'VaultAccessToken')]
         [string] $VaultAccessTokenName,
@@ -109,7 +109,7 @@ function Test-VdcToken {
         [switch] $GrantDetail,
 
         [Parameter(ParameterSetName = 'Session')]
-        [VenafiSession] $VenafiSession = $script:VenafiSession
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -182,13 +182,13 @@ function Test-VdcToken {
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $tokenSecret.GetNetworkCredential().password }
             }
 
-            'TppToken' {
-                if ( -not $TppToken.Server -or -not $TppToken.AccessToken ) {
-                    throw 'Not a valid TppToken'
+            'VenafiPsToken' {
+                if ( -not $VenafiPsToken.Server -or -not $VenafiPsToken.AccessToken ) {
+                    throw 'Not a valid VenafiPsToken'
                 }
 
-                $params.Server = $TppToken.Server
-                $params.Header = @{'Authorization' = 'Bearer {0}' -f $TppToken.AccessToken.GetNetworkCredential().password }
+                $params.Server = $VenafiPsToken.Server
+                $params.Header = @{'Authorization' = 'Bearer {0}' -f $VenafiPsToken.AccessToken.GetNetworkCredential().password }
             }
 
             Default {

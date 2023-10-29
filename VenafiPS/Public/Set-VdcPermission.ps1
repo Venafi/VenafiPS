@@ -71,7 +71,7 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -240,7 +240,7 @@
         Write-Verbose "Parameterset = $($PSCmdlet.ParameterSetName)"
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Post'
             UriLeaf       = 'placeholder'
             Body          = $null
@@ -248,7 +248,7 @@
         }
 
         if ( $Path ) {
-            $thisGuid = $Path | ConvertTo-VdcGuid -VenafiSession $VenafiSession
+            $thisGuid = $Path | ConvertTo-VdcGuid
         }
         else {
             $thisGuid = $Guid
@@ -272,7 +272,7 @@
         }
         else {
             Write-Verbose "Getting existing permissions for $IdentityId"
-            $thisPerm = $thisGuid | Get-VdcPermission -IdentityId $IdentityId -Explicit -VenafiSession $VenafiSession | Select-Object -ExpandProperty ExplicitPermissions
+            $thisPerm = $thisGuid | Get-VdcPermission -IdentityId $IdentityId -Explicit | Select-Object -ExpandProperty ExplicitPermissions
 
             if ( $thisPerm ) {
                 Write-Verbose 'Existing identity found will be updated'

@@ -16,7 +16,7 @@ function Get-VdcIdentityAttribute {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -34,12 +34,6 @@ function Get-VdcIdentityAttribute {
     Get-VdcIdentityAttribute -IdentityId 'AD+blah:{1234567890olikujyhtgrfedwsqa}' -Attribute 'Surname'
 
     Get specific attribute for user
-
-    .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcIdentityAttribute/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcIdentityAttribute.ps1
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Validate.php
@@ -66,10 +60,9 @@ function Get-VdcIdentityAttribute {
     )
 
     begin {
-        # Test-VenafiSession -VenafiSession $VenafiSession
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method     = 'Post'
             UriLeaf    = 'Identity/Validate'
             Body       = @{

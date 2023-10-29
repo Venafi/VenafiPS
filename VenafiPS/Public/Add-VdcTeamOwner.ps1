@@ -7,16 +7,16 @@
     Add owners to a TPP/TLSPC team
 
     .PARAMETER ID
-    Team ID, this is the ID property from Find-VdcIdentity or Get-VenafiTeam.
+    Team ID, this is the ID property from Find-VdcIdentity or Get-VdcTeam.
 
     .PARAMETER Owner
     1 or more owners to add to the team
-    This is the identity ID property from Find-VdcIdentity or Get-VenafiIdentity.
+    This is the identity ID property from Find-VdcIdentity or Get-VdcIdentity.
 
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -51,10 +51,10 @@
 
     process {
 
-        $teamName = Get-VenafiIdentity -ID $ID | Select-Object -ExpandProperty FullName
+        $teamName = Get-VdcIdentity -ID $ID | Select-Object -ExpandProperty FullName
         $owners = foreach ($thisOwner in $Owner) {
             if ( $thisOwner.StartsWith('local') ) {
-                $ownerIdentity = Get-VenafiIdentity -ID $thisOwner
+                $ownerIdentity = Get-VdcIdentity -ID $thisOwner
                 @{
                     'PrefixedName'      = $ownerIdentity.FullName
                     'PrefixedUniversal' = $ownerIdentity.ID
@@ -64,11 +64,14 @@
                 @{'PrefixedUniversal' = $thisOwner }
             }
         }
-        $params.Method = 'Put'
-        $params.UriLeaf = 'Teams/AddTeamOwners'
-        $params.Body = @{
-            'Team'   = @{'PrefixedName' = $teamName }
-            'Owners' = @($owners)
+
+        $params = @{
+            Method  = 'Put'
+            UriLeaf = 'Teams/AddTeamOwners'
+            Body    = @{
+                'Team'   = @{'PrefixedName' = $teamName }
+                'Owners' = @($owners)
+            }
         }
 
         $null = Invoke-VenafiRestMethod @params

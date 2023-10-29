@@ -16,7 +16,7 @@ function Move-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -87,7 +87,7 @@ function Move-VdcObject {
         # determine if target is a policy or other object
         # if policy, we'll need to append the object name in the process block when moving
         try {
-            $targetObject = Get-VdcObject -Path $TargetPath -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
+            $targetObject = Get-VdcObject -Path $TargetPath -ErrorAction SilentlyContinue
         }
         catch {
             # expected if target is a new object name and not policy
@@ -98,7 +98,6 @@ function Move-VdcObject {
     process {
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
             UriLeaf       = 'config/RenameObject'
             Body          = @{

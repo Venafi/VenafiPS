@@ -27,40 +27,40 @@ nav:
   - Home: index.md
   - Changelog: changelog.md
   - Functions:
-    - Add-TppAdaptableHash: functions/Add-TppAdaptableHash.md
-    - Add-TppCertificateAssociation: functions/Add-TppCertificateAssociation.md
-    - Add-TppEngineFolder: functions/Add-TppEngineFolder.md
-    - Add-VenafiTeamMember: functions/Add-VenafiTeamMember.md
-    - Add-VenafiTeamOwner: functions/Add-VenafiTeamOwner.md
-    - Convert-TppObject: functions/Convert-TppObject.md
-    - ConvertTo-TppGuid: functions/ConvertTo-TppGuid.md
-    - ConvertTo-TppPath: functions/ConvertTo-TppPath.md
+    - Add-VdcAdaptableHash: functions/Add-VdcAdaptableHash.md
+    - Add-VdcCertificateAssociation: functions/Add-VdcCertificateAssociation.md
+    - Add-VdcEngineFolder: functions/Add-VdcEngineFolder.md
+    - Add-VdcTeamMember: functions/Add-VdcTeamMember.md
+    - Add-VdcTeamOwner: functions/Add-VdcTeamOwner.md
+    - Convert-VdcObject: functions/Convert-VdcObject.md
+    - ConvertTo-VdcGuid: functions/ConvertTo-VdcGuid.md
+    - ConvertTo-VdcPath: functions/ConvertTo-VdcPath.md
     - Export-VenafiCertificate: functions/Export-VenafiCertificate.md
-    - Find-TppClient: functions/Find-TppClient.md
+    - Find-VdcClient: functions/Find-VdcClient.md
     - Find-TppCodeSignEnvironment: functions/Find-TppCodeSignEnvironment.md
     - Find-TppCodeSignProject: functions/Find-TppCodeSignProject.md
     - Find-TppCodeSignTemplate: functions/Find-TppCodeSignTemplate.md
-    - Find-TppEngine: functions/Find-TppEngine.md
-    - Find-TppIdentity: functions/Find-TppIdentity.md
-    - Find-TppObject: functions/Find-TppObject.md
-    - Find-TppVaultId: functions/Find-TppVaultId.md
+    - Find-VdcEngine: functions/Find-VdcEngine.md
+    - Find-VdcIdentity: functions/Find-VdcIdentity.md
+    - Find-VdcObject: functions/Find-VdcObject.md
+    - Find-VdcVaultId: functions/Find-VdcVaultId.md
     - Find-VaasMachine: functions/Find-VaasMachine.md
-    - Find-VaasObject: functions/Find-VaasObject.md
-    - Find-VenafiCertificate: functions/Find-VenafiCertificate.md
-    - Get-TppAttribute: functions/Get-TppAttribute.md
-    - Get-TppClassAttribute: functions/Get-TppClassAttribute.md
+    - Find-VcObject: functions/Find-VcObject.md
+    - Find-VdcCertificate: functions/Find-VdcCertificate.md
+    - Get-VdcAttribute: functions/Get-VdcAttribute.md
+    - Get-VdcClassAttribute: functions/Get-VdcClassAttribute.md
     - Get-TppCodeSignConfig: functions/Get-TppCodeSignConfig.md
     - Get-TppCodeSignEnvironment: functions/Get-TppCodeSignEnvironment.md
     - Get-TppCodeSignProject: functions/Get-TppCodeSignProject.md
-    - Get-TppCredential: functions/Get-TppCredential.md
-    - Get-TppCustomField: functions/Get-TppCustomField.md
-    - Get-TppEngineFolder: functions/Get-TppEngineFolder.md
-    - Get-TppIdentityAttribute: functions/Get-TppIdentityAttribute.md
-    - Get-TppObject: functions/Get-TppObject.md
-    - Get-TppPermission: functions/Get-TppPermission.md
-    - Get-TppSystemStatus: functions/Get-TppSystemStatus.md
-    - Get-TppVersion: functions/Get-TppVersion.md
-    - Get-TppWorkflowTicket: functions/Get-TppWorkflowTicket.md
+    - Get-VdcCredential: functions/Get-VdcCredential.md
+    - Get-VdcCustomField: functions/Get-VdcCustomField.md
+    - Get-VdcEngineFolder: functions/Get-VdcEngineFolder.md
+    - Get-VdcIdentityAttribute: functions/Get-VdcIdentityAttribute.md
+    - Get-VdcObject: functions/Get-VdcObject.md
+    - Get-VdcPermission: functions/Get-VdcPermission.md
+    - Get-VdcSystemStatus: functions/Get-VdcSystemStatus.md
+    - Get-VdcVersion: functions/Get-VdcVersion.md
+    - Get-VdcWorkflowTicket: functions/Get-VdcWorkflowTicket.md
     - Get-VaasApplication: functions/Get-VaasApplication.md
     - Get-VaasConnector: functions/Get-VaasConnector.md
     - Get-VaasIssuingTemplate: functions/Get-VaasIssuingTemplate.md
@@ -69,12 +69,12 @@ nav:
     - Get-VenafiCertificate: functions/Get-VenafiCertificate.md
     - Get-VenafiIdentity: functions/Get-VenafiIdentity.md
     - Get-VenafiTeam: functions/Get-VenafiTeam.md
-    - Import-TppCertificate: functions/Import-TppCertificate.md
-    - Import-VaasCertificate: functions/Import-VaasCertificate.md
+    - Import-VdcCertificate: functions/Import-VdcCertificate.md
+    - Import-VcCertificate: functions/Import-VcCertificate.md
     - Invoke-TppCertificatePush: functions/Invoke-TppCertificatePush.md
     - Invoke-TppCertificateRenewal: functions/Invoke-TppCertificateRenewal.md
-    - Invoke-VaasWorkflow: functions/Invoke-VaasWorkflow.md
-    - Invoke-VenafiCertificateAction: functions/Invoke-VenafiCertificateAction.md
+    - Invoke-VcWorkflow: functions/Invoke-VcWorkflow.md
+    - Invoke-VdcCertificateAction: functions/Invoke-VdcCertificateAction.md
     - Invoke-VenafiRestMethod: functions/Invoke-VenafiRestMethod.md
     - Move-TppObject: functions/Move-TppObject.md
     - New-TppCapiApplication: functions/New-TppCapiApplication.md
@@ -86,8 +86,8 @@ nav:
     - New-TppPolicy: functions/New-TppPolicy.md
     - New-TppToken: functions/New-TppToken.md
     - New-VaasApplication: functions/New-VaasApplication.md
-    - New-VaasCertificate: functions/New-VaasCertificate.md
-    - New-VaasConnector: functions/New-VaasConnector.md
+    - New-VcCertificate: functions/New-VcCertificate.md
+    - New-VcConnector: functions/New-VcConnector.md
     - New-VaasMachine: functions/New-VaasMachine.md
     - New-VaasMachineCommonKeystore: functions/New-VaasMachineCommonKeystore.md
     - New-VaasMachineIis: functions/New-VaasMachineIis.md
@@ -111,17 +111,17 @@ nav:
     - Revoke-TppCertificate: functions/Revoke-TppCertificate.md
     - Revoke-TppGrant: functions/Revoke-TppGrant.md
     - Revoke-TppToken: functions/Revoke-TppToken.md
-    - Search-TppHistory: functions/Search-TppHistory.md
+    - Search-VdcHistory: functions/Search-VdcHistory.md
     - Set-TppAttribute: functions/Set-TppAttribute.md
     - Set-TppCodeSignProjectStatus: functions/Set-TppCodeSignProjectStatus.md
     - Set-TppCredential: functions/Set-TppCredential.md
     - Set-TppPermission: functions/Set-TppPermission.md
     - Set-TppWorkflowTicketStatus: functions/Set-TppWorkflowTicketStatus.md
     - Set-VaasCertificateAssignment: functions/Set-VaasCertificateAssignment.md
-    - Set-VaasTeam: functions/Set-VaasTeam.md
+    - Set-VcTeam: functions/Set-VcTeam.md
     - Test-ModuleHash: functions/Test-ModuleHash.md
-    - Test-TppIdentity: functions/Test-TppIdentity.md
-    - Test-TppObject: functions/Test-TppObject.md
-    - Test-TppToken: functions/Test-TppToken.md
-    - Write-TppLog: functions/Write-TppLog.md
+    - Test-VdcIdentity: functions/Test-VdcIdentity.md
+    - Test-VdcObject: functions/Test-VdcObject.md
+    - Test-VdcToken: functions/Test-VdcToken.md
+    - Write-VdcLog: functions/Write-VdcLog.md
 

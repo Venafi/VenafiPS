@@ -22,7 +22,7 @@ function Import-VcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .EXAMPLE
     Import-VcCertificate -CertificatePath c:\www.VenafiPS.com.cer
@@ -40,13 +40,13 @@ function Import-VcCertificate {
     Import multiple certificates
 
     .EXAMPLE
-    Export-VenafiCertificate -CertificateId '\ved\policy\my.cert.com' -Format Base64 | Import-VcCertificate -VenafiSession $vaas_key
+    Export-VdcCertificate -CertificateId '\ved\policy\my.cert.com' -Format Base64 | Import-VcCertificate -VenafiSession $vaas_key
 
     Export from TPP and import into VaaS.
     As $VenafiSession can only point to one platform at a time, in this case TPP, the session needs to be overridden for the import.
 
     .EXAMPLE
-    Find-TppCertificate -Path '\ved\policy\certs' -Recursive | Export-VenafiCertificate -Format Base64 | Import-VcCertificate -VenafiSession $vaas_key
+    Find-VdcCertificate -Path '\ved\policy\certs' -Recursive | Export-VdcCertificate -Format Base64 | Import-VcCertificate -VenafiSession $vaas_key
 
     Bulk export from TPP and import into VaaS.
     As $VenafiSession can only point to one platform at a time, in this case TPP, the session needs to be overridden for the import.
@@ -97,7 +97,7 @@ function Import-VcCertificate {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Post'
             UriRoot       = 'outagedetection/v1'
             UriLeaf       = 'certificates'
@@ -107,7 +107,7 @@ function Import-VcCertificate {
         }
 
         if ( $PSBoundParameters.ContainsKey('Application') ) {
-            $allApps = Get-VaasApplication -All -VenafiSession $VenafiSession
+            $allApps = Get-VcApplication -All
             $appsForImport = foreach ($thisApplication in $Application) {
                 $appFound = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
                 switch (@($appFound).Count) {
@@ -171,7 +171,7 @@ function Import-VcCertificate {
         Write-Verbose $response.statistics
 
         if ( $PassThru ) {
-            $response.certificateInformations | Get-VenafiCertificate -VenafiSession $VenafiSession
+            $response.certificateInformations | Get-VcCertificate
         }
     }
 }

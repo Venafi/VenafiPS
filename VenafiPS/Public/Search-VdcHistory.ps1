@@ -2,7 +2,7 @@ function Search-VdcHistory {
 
     <#
     .SYNOPSIS
-    Search TPP/TLSPC history for items with specific attributes
+    Search TLSPDC history for items with specific attributes
 
     .DESCRIPTION
     Items in the secret store matching the key/value provided will be found and their details returned with their associated 'current' item.
@@ -22,7 +22,7 @@ function Search-VdcHistory {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -74,7 +74,7 @@ function Search-VdcHistory {
 
     Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -AuthType 'Token'
 
-    $activeVaultId = Find-VdcVaultId -Attribute $Attribute -VenafiSession $VenafiSession
+    $activeVaultId = Find-VdcVaultId -Attribute $Attribute
     if ( -not $activeVaultId ) {
         return
     }
@@ -84,7 +84,7 @@ function Search-VdcHistory {
     # we have vault ids, now get path to current item
     $owners = if ($PSVersionTable.PSVersion.Major -lt 6) {
         $activeVaultId | ForEach-Object {
-            Invoke-VenafiRestMethod -UriLeaf "secretstore/ownerlookup" -Body @{'Namespace' = 'config'; 'VaultID' = $_ } -Method Post -VenafiSession $VenafiSession
+            Invoke-VenafiRestMethod -UriLeaf "secretstore/ownerlookup" -Body @{'Namespace' = 'config'; 'VaultID' = $_ } -Method Post
         }
     } else {
         $activeVaultId | ForEach-Object -ThrottleLimit 100 -Parallel {
@@ -102,7 +102,7 @@ function Search-VdcHistory {
     # scriptblock which will be used for PS v5 and core
     $sbGeneric = {
 
-        $thisDetailedCert = Get-VdcCertificate -Path $_ -IncludePreviousVersions -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
+        $thisDetailedCert = Get-VdcCertificate -Path $_ -IncludePreviousVersions -ErrorAction SilentlyContinue
         if ( -not $thisDetailedCert ) { return }
 
         $history = $thisDetailedCert.PreviousVersions | Where-Object { $_.VaultId -in $activeVaultId } | Select-Object -ExpandProperty CertificateDetails

@@ -12,7 +12,7 @@
     RootModule        = 'VenafiPS.psm1'
 
     # Version number of this module.
-    ModuleVersion     = '5.8.0'
+    ModuleVersion     = '6.0'
 
     # Supported PSEditions
     # CompatiblePSEditions = @()
@@ -83,14 +83,13 @@
     VariablesToExport = 'VenafiSession'
 
     # Aliases to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no aliases to export.
-    AliasesToExport   ='*'
-    # AliasesToExport   = 'fto', 'itcr', 'Invoke-TppRestMethod', 'Get-TppCertificate',
-    # 'Get-TppCertificateDetail', 'Find-VaasCertificate', 'Remove-VdcCertificateAssociation',
-    # 'Get-VaasApplication', 'Get-VaasMachine', 'Get-VaasIssuingTemplate', 'Get-VaasSatellite', 'Get-VaasConnector', 'New-VaasApplication',
-    # 'Import-VaasCertificate', 'Import-TppCertificate', 'New-VaasCertificate', 'New-VaasConnector', 'Search-TppHistory', 'Find-TppObject', 'Invoke-VaasWorkflow',
-    # 'Convert-TppObject', 'Add-TppAdaptableHash', 'Add-TppEngineFolder', 'Add-TppCertificateAssociation', 'ConvertTo-TppGuid', 'ConvertTo-TppPath',
-    # 'Write-TppLog', 'Test-TppToken', 'Test-TppObject', 'Test-TppIdentity', 'Set-VaasTeam', 'Find-TppVaultId', 'Find-TppIdentity', 'Find-TppEngine', 'Find-TppClient',
-    # 'Get-TppAttribute', 'Get-TppClassAttribute', 'Get-TppCredential', 'Set-VaasCertificateAssignment'
+    # alises must be listed out for PS core, https://github.com/PowerShell/PowerShell/issues/19099
+    AliasesToExport   =@('Set-VaasCertificateAssignment', 'Add-TppAdaptableHash', 'Add-TppCertificateAssociation', 'Add-TppEngineFolder', 'Convert-TppObject', 'ConvertTo-TppGuid', 'ConvertTo-TppPath', 'Find-TppClient', 'Find-TppEngine', 'Find-TppIdentity', 'fto', 'Find-TppObject',
+    'Find-TppVaultId', 'Get-VaasApplication', 'Get-VaasConnector', 'Get-TppIdentity', 'Get-VaasIssuingTemplate', 'Get-VaasMachine', 'Get-VaasSatellite', 'Get-TppAttribute', 'Get-TppClassAttribute', 'Get-TppCredential', 'Get-TppCustomField', 'Get-TppIdentity',
+    'Get-TppIdentityAttribute', 'Get-TppObject', 'gvdo', 'Get-TppPermission', 'Get-TppSystemStatus', 'Get-TppTeam', 'Get-TppVersion', 'Get-TppWorkflowTicket', 'Import-VaasCertificate', 'Import-TppCertificate', 'Invoke-VaasWorkflow','Invoke-TppRestMethod',
+    'Move-TppObject','New-VaasApplication', 'New-VaasCertificate', 'New-VaasConnector', 'New-VaasMachine', 'New-VaasMachineCommonKeystore', 'New-VaasMachineIis', 'New-TppCapiApplication', 'New-TppCertificate', 'New-TppCustomField', 'New-TppObject', 'New-TppPolicy', 'New-TppToken',
+    'Remove-TppCertificate', 'Remove-TppClient', 'Remove-TppEngineFolder', 'Remove-TppObject', 'Remove-TppPermission', 'Rename-TppObject', 'Revoke-TppGrant', 'Revoke-TppToken', 'Search-TppHistory', 'Set-VaasTeam', 'Set-TppAttribute', 'Set-TppCredential', 'Set-TppPermission', 'Set-TppWorkflowTicketStatus', 'Test-TppIdentity',
+    'Test-TppObject', 'Test-TppToken', 'Write-TppLog')
 
     # DSC resources to export from this module
     # DscResourcesToExport = @()

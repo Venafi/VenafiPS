@@ -17,7 +17,7 @@ function Get-VdcEngineFolder {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+    A TPP token can also be provided, but this requires an environment variable TPP_SERVER to be set.
 
     .INPUTS
     ID
@@ -80,9 +80,9 @@ function Get-VdcEngineFolder {
         } else {
 
             if ( [guid]::TryParse($ID, $([ref][guid]::Empty)) ) {
-                $thisObject = Get-VdcObject -Guid $ID -VenafiSession $VenafiSession
+                $thisObject = Get-VdcObject -Guid $ID
             } else {
-                $thisObject = Get-VdcObject -Path $ID -VenafiSession $VenafiSession
+                $thisObject = Get-VdcObject -Path $ID
             }
 
             $thisObjectGuid = '{{{0}}}' -f $thisObject.Guid
@@ -91,7 +91,7 @@ function Get-VdcEngineFolder {
 
                 # engine
 
-                $response = Invoke-VenafiRestMethod -UriLeaf "ProcessingEngines/Engine/$thisObjectGuid" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Folders
+                $response = Invoke-VenafiRestMethod -UriLeaf "ProcessingEngines/Engine/$thisObjectGuid" | Select-Object -ExpandProperty Folders
 
                 $response | Where-Object { $_.FolderGuid -ne $thisObjectGuid } | Select-Object FolderName,
                 @{ 'n' = 'FolderPath'; 'e' = { $_.FolderDN } },
@@ -104,7 +104,7 @@ function Get-VdcEngineFolder {
 
                 # policy folder
 
-                $response = Invoke-VenafiRestMethod -UriLeaf "ProcessingEngines/Folder/$thisObjectGuid" -VenafiSession $VenafiSession | Select-Object -ExpandProperty Engines
+                $response = Invoke-VenafiRestMethod -UriLeaf "ProcessingEngines/Folder/$thisObjectGuid" | Select-Object -ExpandProperty Engines
 
                 $response | Select-Object EngineName,
                 @{ 'n' = 'EnginePath'; 'e' = { $_.EngineDN } },

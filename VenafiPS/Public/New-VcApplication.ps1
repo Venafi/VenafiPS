@@ -34,7 +34,7 @@ function New-VcApplication {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .OUTPUTS
     PSCustomObject, if PassThru provided
@@ -105,12 +105,12 @@ function New-VcApplication {
         # determine if user or team and build the payload
         $ownerHash = foreach ($thisOwner in $Owner) {
 
-            $team = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
+            $team = Get-VcTeam -ID $thisOwner -ErrorAction SilentlyContinue
             if ( $team ) {
                 @{ 'ownerId' = $team.teamId; 'ownerType' = 'TEAM' }
             }
             else {
-                $user = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession -ErrorAction SilentlyContinue
+                $user = Get-VcIdentity -ID $thisOwner -ErrorAction SilentlyContinue
                 if ( $user ) {
                     @{ 'ownerId' = $user.userId; 'ownerType' = 'USER' }
                 }

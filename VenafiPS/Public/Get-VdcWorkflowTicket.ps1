@@ -18,7 +18,7 @@ function Get-VdcWorkflowTicket {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -92,7 +92,7 @@ function Get-VdcWorkflowTicket {
         $ticketGuid = foreach ($thisDn in $Path) {
 
             $params = @{
-                VenafiSession = $VenafiSession
+
                 Method     = 'Post'
                 UriLeaf    = 'Workflow/Ticket/Enumerate'
                 Body       = @{
@@ -110,7 +110,7 @@ function Get-VdcWorkflowTicket {
 
         foreach ($thisGuid in $ticketGuid) {
             $params = @{
-                VenafiSession = $VenafiSession
+
                 Method     = 'Post'
                 UriLeaf    = 'Workflow/Ticket/Details'
                 Body       = @{

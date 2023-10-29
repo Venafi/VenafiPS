@@ -13,7 +13,7 @@ function Revoke-VdcToken {
     .PARAMETER AccessToken
     Access token to be revoked.  Provide a credential object with the access token as the password.
 
-    .PARAMETER TppToken
+    .PARAMETER VenafiPsToken
     Token object obtained from New-VdcToken
 
     .PARAMETER Force
@@ -22,11 +22,11 @@ function Revoke-VdcToken {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
-    TppToken
+    VenafiPsToken
 
     .OUTPUTS
     none
@@ -73,8 +73,8 @@ function Revoke-VdcToken {
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [PSCredential] $AccessToken,
 
-        [Parameter(Mandatory, ParameterSetName = 'TppToken', ValueFromPipeline)]
-        [pscustomobject] $TppToken,
+        [Parameter(Mandatory, ParameterSetName = 'VenafiPsToken', ValueFromPipeline)]
+        [pscustomobject] $VenafiPsToken,
 
         [Parameter()]
         [switch] $Force,
@@ -112,13 +112,13 @@ function Revoke-VdcToken {
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().Password }
             }
 
-            'TppToken' {
-                if ( -not $TppToken.Server -or -not $TppToken.AccessToken ) {
-                    throw 'Not a valid TppToken'
+            'VenafiPsToken' {
+                if ( -not $VenafiPsToken.Server -or -not $VenafiPsToken.AccessToken ) {
+                    throw 'Not a valid VenafiPsToken'
                 }
 
-                $params.Server = $target = $TppToken.Server
-                $params.Header = @{'Authorization' = 'Bearer {0}' -f $TppToken.AccessToken.GetNetworkCredential().password }
+                $params.Server = $target = $VenafiPsToken.Server
+                $params.Header = @{'Authorization' = 'Bearer {0}' -f $VenafiPsToken.AccessToken.GetNetworkCredential().password }
             }
 
             Default {

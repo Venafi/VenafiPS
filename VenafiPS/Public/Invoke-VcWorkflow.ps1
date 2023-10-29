@@ -21,7 +21,7 @@ function Invoke-VcWorkflow {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .EXAMPLE
     Invoke-VcWorkflow -ID '1345baf1-fc56-49b7-aa03-78e35bfe0a1a' -Workflow 'Provision'
@@ -150,7 +150,7 @@ function Invoke-VcWorkflow {
                         }
                         'workflowName'  = 'testConnection'
                     }
-                    VenafiSession = $VenafiSession
+
                 }
 
                 switch ($Workflow) {

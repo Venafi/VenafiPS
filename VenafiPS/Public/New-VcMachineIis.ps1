@@ -66,7 +66,7 @@ function New-VcMachineIis {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .EXAMPLE
     $params = @{
@@ -167,7 +167,7 @@ function New-VcMachineIis {
 
         # need vsat to get dek for encrypting username/password
         if ( -not $allVsat ) {
-            $allVsat = Get-VaasSatellite -All -IncludeKey -VenafiSession $VenafiSession
+            $allVsat = Get-VcSatellite -All -IncludeKey
         }
         if ( $VSatellite ) {
             $thisVsat = $allVsat | Where-Object { $VSatellite -eq $_.vsatelliteId -or $VSatellite -eq $_.name }
@@ -244,7 +244,7 @@ function New-VcMachineIis {
     end {
 
         $newParams = @{
-            VenafiSession = $VenafiSession
+
             NoVerify      = $NoVerify
             ThrottleLimit = $ThrottleLimit
             PassThru      = $true

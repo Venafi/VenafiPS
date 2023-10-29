@@ -60,7 +60,7 @@ function New-VcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided directly.
+    A TLSPC key can also provided directly.
 
     .INPUTS
     CommonName
@@ -186,8 +186,8 @@ function New-VcCertificate {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
         # validation
-        $allApps = Get-VaasApplication -All -VenafiSession $VenafiSession
-        $allServerTypes = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'applicationservertypes' -VenafiSession $VenafiSession | Select-Object -ExpandProperty applicationservertypes
+        $allApps = Get-VcApplication -All
+        $allServerTypes = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'applicationservertypes' | Select-Object -ExpandProperty applicationservertypes
 
         $thisApp = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
         switch (@($thisApp).Count) {
@@ -241,7 +241,7 @@ function New-VcCertificate {
         $validity = 'P{0}DT{1}H' -f $span.Days, $span.Hours
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Post'
             UriRoot       = 'outagedetection/v1'
             UriLeaf       = 'certificaterequests'
@@ -319,7 +319,7 @@ function New-VcCertificate {
                     $certRequest = $response | Select-Object -ExpandProperty certificateRequests
 
                     if ( $certRequest.certificateIds ) {
-                        $actualCert = Get-VenafiCertificate -CertificateId $certRequest.certificateIds[0]
+                        $actualCert = Get-VcCertificate -CertificateId $certRequest.certificateIds[0]
                         $certRequest | Add-Member @{ 'certificate' = $actualCert }
                     }
 

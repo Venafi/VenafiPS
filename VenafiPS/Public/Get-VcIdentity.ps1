@@ -1,4 +1,4 @@
-function Get-VenafiIdentity {
+function Get-VcIdentity {
     <#
     .SYNOPSIS
     Get user and group details
@@ -27,8 +27,7 @@ function Get-VenafiIdentity {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token or VaaS key can also provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A VaaS key can also provided.
 
     .INPUTS
     ID
@@ -62,37 +61,37 @@ function Get-VenafiIdentity {
         memberedTeams
 
     .EXAMPLE
-    Get-VenafiIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7'
+    Get-VcIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7'
 
     Get TPP identity details from an id
 
     .EXAMPLE
-    Get-VenafiIdentity -ID 9e9db8d6-234a-409c-8299-e3b81ce2f916
+    Get-VcIdentity -ID 9e9db8d6-234a-409c-8299-e3b81ce2f916
 
     Get VaaS identity details from an id
 
     .EXAMPLE
-    Get-VenafiIdentity -ID me@x.com
+    Get-VcIdentity -ID me@x.com
 
     Get VaaS identity details from a username
 
     .EXAMPLE
-    Get-VenafiIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeMembers
+    Get-VcIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeMembers
 
     Get TPP identity details.  If the identity is a group it will also return the members
 
     .EXAMPLE
-    Get-VenafiIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeAssociated
+    Get-VcIdentity -ID 'AD+myprov:asdfgadsf9g87df98g7d9f8g7' -IncludeAssociated
 
     Get TPP identity details from an id and include associated groups/folders
 
     .EXAMPLE
-    Get-VenafiIdentity -Me
+    Get-VcIdentity -Me
 
     Get identity details for authenticated/current user, TPP or VaaS
 
     .EXAMPLE
-    Get-VenafiIdentity -All
+    Get-VcIdentity -All
 
     Get all users (VaaS) or all users/groups (TPP)
 
@@ -158,7 +157,7 @@ function Get-VenafiIdentity {
         Write-Verbose ('{0} : {1} : Parameterset {2}' -f $PsCmdlet.MyInvocation.MyCommand, $platform, $PsCmdlet.ParameterSetName)
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Get'
         }
 
@@ -252,7 +251,7 @@ function Get-VenafiIdentity {
 
                 'All' {
                     # no built-in api for this, get group objects and then get details
-                    Find-VdcObject -Path '\VED\Identity' -Class 'User', 'Group' -VenafiSession $VenafiSession | Get-VenafiIdentity -IncludeAssociated:$IncludeAssociated.IsPresent -IncludeMembers:$IncludeMembers.IsPresent -VenafiSession $VenafiSession
+                    Find-VdcObject -Path '\VED\Identity' -Class 'User', 'Group' | Get-VcIdentity -IncludeAssociated:$IncludeAssociated.IsPresent -IncludeMembers:$IncludeMembers.IsPresent
                 }
             }
 

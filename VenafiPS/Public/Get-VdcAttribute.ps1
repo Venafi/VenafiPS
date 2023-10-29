@@ -208,11 +208,11 @@ function Get-VdcAttribute {
         $newAttribute = $Attribute
         if ( $All -and $Class ) {
             Write-Verbose "Getting attributes for class $Class"
-            $newAttribute = Get-VdcClassAttribute -ClassName $Class -VenafiSession $VenafiSession | Select-Object -ExpandProperty Name -Unique
+            $newAttribute = Get-VdcClassAttribute -ClassName $Class | Select-Object -ExpandProperty Name -Unique
         }
 
         $params = @{
-            VenafiSession = $VenafiSession
+
             Method        = 'Post'
             Body          = @{}
             UriLeaf       = 'config/ReadEffectivePolicy'

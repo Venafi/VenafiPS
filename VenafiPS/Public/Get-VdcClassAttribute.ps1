@@ -45,7 +45,7 @@ function Get-VdcClassAttribute {
         $classDetails = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty 'ClassDefinition'
 
         if ($ClassName -ne 'Top') {
-            $recurseAttribs = $classDetails.SuperClassNames | Get-VdcClassAttribute -VenafiSession $VenafiSession
+            $recurseAttribs = $classDetails.SuperClassNames | Get-VdcClassAttribute
             foreach ($item in $recurseAttribs) {
                 $allAttributes.Add($item)
             }

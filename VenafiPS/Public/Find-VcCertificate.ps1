@@ -20,6 +20,12 @@ function Find-VcCertificate {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
+    .PARAMETER SavedSearchName
+    Find certificates based on a saved search, see https://docs.venafi.cloud/vaas/certificates/saving-certificate-filters
+
+    .PARAMETER First
+    Only retrieve this many records
+
     .PARAMETER IncludeVaasOwner
     Retrieve detailed user/team owner info.
     This will cause additional api calls to be made and take longer.
@@ -27,7 +33,7 @@ function Find-VcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .INPUTS
     None
@@ -160,7 +166,7 @@ function Find-VcCertificate {
                     foreach ($thisAppId in $_.applicationIds) {
                         $thisApp = $apps | Where-Object { $_.applicationId -eq $thisAppId }
                         if ( -not $thisApp ) {
-                            $thisApp = $thisAppId | Get-VaasApplication -VenafiSession $VenafiSession | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                            $thisApp = $thisAppId | Get-VcApplication | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
                             $apps.Add($thisApp)
                         }
                         $thisApp
@@ -176,7 +182,7 @@ function Find-VcCertificate {
                         foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
                             $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
                             if ( -not $thisOwnerDetail ) {
-                                $thisOwnerDetail = Get-VenafiIdentity -ID $thisOwner -VenafiSession $VenafiSession | Select-Object firstName, lastName, emailAddress,
+                                $thisOwnerDetail = Get-VcIdentity -ID $thisOwner | Select-Object firstName, lastName, emailAddress,
                                 @{
                                     'n' = 'status'
                                     'e' = { $_.userStatus }
@@ -203,7 +209,7 @@ function Find-VcCertificate {
                         foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
                             $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
                             if ( -not $thisOwnerDetail ) {
-                                $thisOwnerDetail = Get-VenafiTeam -ID $thisOwner -VenafiSession $VenafiSession | Select-Object name, role, members,
+                                $thisOwnerDetail = Get-VcTeam -ID $thisOwner | Select-Object name, role, members,
                                 @{
                                     'n' = 'type'
                                     'e' = { 'TEAM' }

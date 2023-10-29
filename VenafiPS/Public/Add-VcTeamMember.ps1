@@ -11,12 +11,12 @@
 
     .PARAMETER Member
     1 or more members to add to the team.
-    This is the unique guid obtained from Get-VenafiIdentity.
+    This is the unique guid obtained from Get-VcIdentity.
 
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .INPUTS
     ID

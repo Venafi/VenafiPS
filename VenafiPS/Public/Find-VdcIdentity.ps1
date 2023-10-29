@@ -22,13 +22,10 @@ function Find-VdcIdentity {
     .PARAMETER IncludeDistributionGroups
     Include distribution group identity type in search
 
-    .PARAMETER Me
-    Returns the identity of the authenticated user and all associated identities.  Will be deprecated in a future release, use Get-TppIdentity -Me instead.
-
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -49,24 +46,18 @@ function Find-VdcIdentity {
     Find all identity types with the name greg and brownstein
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcIdentity/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcIdentity.ps1
-
-    .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'Find')]
+    [CmdletBinding()]
     [Alias('Find-TppIdentity')]
 
     param (
-        [Parameter(Mandatory, ParameterSetName = 'Find', ValueFromPipeline)]
+        [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
         [String[]] $Name,
 
-        [Parameter(ParameterSetName = 'Find')]
+        [Parameter()]
         [Alias('Limit')]
         [int] $First = 500,
 
@@ -78,9 +69,6 @@ function Find-VdcIdentity {
 
         [Parameter(ParameterSetName = 'Find')]
         [Switch] $IncludeDistributionGroups,
-
-        [Parameter(Mandatory, ParameterSetName = 'Me')]
-        [Switch] $Me,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -106,48 +94,25 @@ function Find-VdcIdentity {
             $identityType = [TppIdentityType]::User + [TppIdentityType]::SecurityGroups + [TppIdentityType]::DistributionGroups
         }
 
-        Switch ($PsCmdlet.ParameterSetName)	{
-            'Find' {
-                $params = @{
-                    VenafiSession = $VenafiSession
-                    Method     = 'Post'
-                    UriLeaf    = 'Identity/Browse'
-                    Body       = @{
-                        Filter       = 'placeholder'
-                        Limit        = $First
-                        IdentityType = $identityType
-                    }
-                }
-            }
-
-            'Me' {
-                Write-Warning 'The -Me parameter will be deprecated in a future release.  Please update your code to use Get-TppIdentity -Me.'
-                $params = @{
-                    VenafiSession = $VenafiSession
-                    Method     = 'Get'
-                    UriLeaf    = 'Identity/Self'
-                }
+        $params = @{
+            Method  = 'Post'
+            UriLeaf = 'Identity/Browse'
+            Body    = @{
+                Filter       = 'placeholder'
+                Limit        = $First
+                IdentityType = $identityType
             }
         }
     }
 
     process {
 
-        Switch ($PsCmdlet.ParameterSetName)	{
-            'Find' {
-                $response = $Name.ForEach{
-                    $params.Body.Filter = $_
-                    Invoke-VenafiRestMethod @params
-                }
-                $ids = $response.Identities
-            }
-
-            'Me' {
-                $response = Invoke-VenafiRestMethod @params
-
-                $ids = $response.Identities | Select-Object -First 1
-            }
+        $response = $Name.ForEach{
+            $params.Body.Filter = $_
+            Invoke-VenafiRestMethod @params
         }
+
+        $ids = $response.Identities
 
         if ( $ids ) {
             $ids | ConvertTo-VdcIdentity

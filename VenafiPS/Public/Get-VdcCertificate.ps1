@@ -6,10 +6,9 @@
     .DESCRIPTION
     Get certificate information, either all available to the api key provided or by id or zone.
 
-    .PARAMETER CertificateId
-    Certificate identifier.
-    For Venafi as a Service, this is the ID or certificate name.
-    For TPP, use the path or guid.  \ved\policy will be automatically applied if a full path isn't provided.
+    .PARAMETER ID
+    Certificate identifier by either path or guid.
+    \ved\policy will be automatically applied if a full path isn't provided.
 
     .PARAMETER IncludeTppPreviousVersions
     Returns details about previous (historical) versions of a certificate (only from TPP).
@@ -32,7 +31,7 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS

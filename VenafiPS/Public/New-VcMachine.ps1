@@ -65,7 +65,7 @@ function New-VcMachine {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .EXAMPLE
     $params = @{
@@ -162,15 +162,19 @@ function New-VcMachine {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
 
+        if ( -not (Get-Module -Name PSSodium)) {
+            Import-Module "$PSScriptRoot/../import/PSSodium/PSSodium.psd1" -Force
+        }
+
         $allMachines = [System.Collections.Generic.List[hashtable]]::new()
 
-        $allTeam = Get-VenafiTeam -All -VenafiSession $VenafiSession
+        $allTeam = Get-VcTeam -All
         if ( $VenafiSession.MachineType ) {
             $machineTypes = $VenafiSession.MachineType
         }
         else {
             # session is just key, get machine types
-            $machineTypes = Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $VenafiSession | Select-Object -ExpandProperty machineTypes
+            $machineTypes = Invoke-VenafiRestMethod -UriLeaf 'machinetypes' | Select-Object -ExpandProperty machineTypes
         }
 
         if ( $Credential ) {
@@ -200,7 +204,7 @@ function New-VcMachine {
         }
         else {
             if ( -not $allVsat ) {
-                $allVsat = Get-VaasSatellite -All -IncludeKey -VenafiSession $VenafiSession
+                $allVsat = Get-VcSatellite -All -IncludeKey
             }
             if ( $VSatellite ) {
                 $thisVsat = $allVsat | Where-Object { $VSatellite -eq $_.vsatelliteId -or $VSatellite -eq $_.name }

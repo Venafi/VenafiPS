@@ -24,7 +24,7 @@ function Add-VdcAdaptableHash {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -93,11 +93,10 @@ function Add-VdcAdaptableHash {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
         }
 
-        $TypeName = (Get-VdcObject -Path $Path -VenafiSession $VenafiSession).TypeName
+        $TypeName = (Get-VdcObject -Path $Path).TypeName
 
         if ( $TypeName -eq 'Policy' ) {
             $retrieveVaultID = ( Get-VdcAttribute -Path $Path -Class 'Adaptable App' -Attribute 'PowerShell Script Hash Vault Id' ).'PowerShell Script Hash Vault Id'
@@ -155,9 +154,9 @@ function Add-VdcAdaptableHash {
             }
 
             if ( $TypeName -eq 'Policy' ) {
-                Set-VdcAttribute -Path $Path -PolicyClass 'Adaptable App' -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -Lock -VenafiSession $VenafiSession -ErrorAction Stop
+                Set-VdcAttribute -Path $Path -PolicyClass 'Adaptable App' -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -Lock -ErrorAction Stop
             } else {
-                Set-VdcAttribute -Path $Path -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -VenafiSession $VenafiSession -ErrorAction Stop
+                Set-VdcAttribute -Path $Path -Attribute @{ 'PowerShell Script Hash Vault Id' = [string]$addresponse.VaultID } -ErrorAction Stop
             }
             Write-Verbose "PowerShell Script Hash Vault Id for $($Path) set to $($addresponse.VaultID)."
         }

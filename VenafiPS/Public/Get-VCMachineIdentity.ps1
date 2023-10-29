@@ -15,7 +15,7 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .INPUTS
     ID
@@ -102,7 +102,7 @@
                 $response | Select-Object @{ 'n' = 'machineIdentityId'; 'e' = { $_.Id } },
                 @{
                     'n'='certificateValidityEnd'
-                    'e'={ Get-VenafiCertificate -CertificateID $_.certificateId | Select-Object -ExpandProperty validityEnd }
+                    'e'={ Get-VcCertificate -CertificateID $_.certificateId | Select-Object -ExpandProperty validityEnd }
                 }, * -ExcludeProperty Id
             }
         }

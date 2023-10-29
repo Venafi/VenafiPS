@@ -13,7 +13,7 @@ function Add-VdcEngineFolder {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided, but this requires an environment variable TPP_SERVER to be set.
+    A TPP token can also be provided, but this requires an environment variable TPP_SERVER to be set.
     .INPUTS
     EnginePath or EngineObject, FolderPath[]
     .OUTPUTS
@@ -64,7 +64,6 @@ function Add-VdcEngineFolder {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
             Body       = @{
                 FolderGuids = ''
@@ -74,7 +73,7 @@ function Add-VdcEngineFolder {
 
     process {
         if ( -not ($PSBoundParameters.ContainsKey('EngineObject')) ) {
-            $EngineObject = Get-VdcObject -Path $EnginePath -VenafiSession $VenafiSession
+            $EngineObject = Get-VdcObject -Path $EnginePath
             if ($EngineObject.TypeName -ne 'Venafi Platform') {
                 throw ("DN/Path '$($EngineObject.Path)' is not a processing engine")
             }
@@ -85,7 +84,7 @@ function Add-VdcEngineFolder {
 
         foreach ($path in $FolderPath) {
             try {
-                $folder = Get-VdcObject -Path $path -VenafiSession $VenafiSession
+                $folder = Get-VdcObject -Path $path
             }
             catch {
                 Write-Warning ("TPP object '$($path)' does not exist")

@@ -59,7 +59,7 @@ function New-VdcCapiApplication {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
+    A TPP token can also be provided.
     If providing a TPP token, an environment variable named TPP_SERVER must also be set.
 
     .INPUTS
@@ -212,7 +212,7 @@ function New-VdcCapiApplication {
                 $certName = $CertificatePath.Split('\')[-1]
                 $certPath = $CertificatePath -replace ('\\+{0}' -f $certName), ''
 
-                $certObject = Find-TppCertificate -Path $certPath -VenafiSession $VenafiSession
+                $certObject = Find-VdcCertificate -Path $certPath
 
                 if ( -not $certObject -or ($certName -notin $certObject.Name) ) {
                     throw ('A certificate object could not be found at ''{0}''' -f $CertificatePath)
@@ -222,7 +222,7 @@ function New-VdcCapiApplication {
             # ensure the credential exists and is actually of type credential
             if ( $PSBoundParameters.ContainsKey('CredentialPath') ) {
 
-                $credObject = Get-VdcObject -Path $CredentialPath -VenafiSession $VenafiSession
+                $credObject = Get-VdcObject -Path $CredentialPath
 
                 if ( -not $credObject -or $credObject.TypeName -notlike '*credential*' ) {
                     throw ('A credential object could not be found at ''{0}''' -f $CredentialPath)
@@ -237,7 +237,7 @@ function New-VdcCapiApplication {
                 'Driver Name' = 'appcapi'
             }
             PassThru      = $true
-            VenafiSession = $VenafiSession
+
         }
 
         if ( $PSBoundParameters.ContainsKey('FriendlyName') ) {
@@ -294,7 +294,7 @@ function New-VdcCapiApplication {
                 $devicePath = $Path -replace ('\\+{0}' -f $deviceName), ''
             }
 
-            $device = Get-VdcObject -Path $devicePath -VenafiSession $VenafiSession
+            $device = Get-VdcObject -Path $devicePath
 
             if ( $device ) {
                 if ( $device.TypeName -ne 'Device' ) {

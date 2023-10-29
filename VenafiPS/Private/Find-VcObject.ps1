@@ -32,7 +32,7 @@ function Find-VcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .OUTPUTS
     PSCustomObject
@@ -178,7 +178,6 @@ function Find-VcObject {
     $body = New-VcSearchQuery @queryParams
 
     $params = @{
-        VenafiSession = $VenafiSession
         Method        = 'Post'
         Body          = $body
         Header        = @{'Accept' = 'application/json' }

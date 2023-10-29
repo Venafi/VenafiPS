@@ -35,7 +35,7 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .INPUTS
     ID
@@ -69,7 +69,7 @@
     Rename an existing team and return the updated team object
 
     .EXAMPLE
-    Get-VenafiTeam -All | Where-Object {$_.name -like '*shouldnt be sysadmin*'} | Set-VcTeam -NewRole 'PKI Admin'
+    Get-VcTeam -All | Where-Object {$_.name -like '*shouldnt be sysadmin*'} | Set-VcTeam -NewRole 'PKI Admin'
 
     Update many teams
     #>
@@ -134,7 +134,7 @@
         }
         else {
             if ( -not $allTeams ) {
-                $allTeams = Get-VenafiTeam -All
+                $allTeams = Get-VcTeam -All
             }
             $allTeams | Where-Object { $_.name -ieq $ID } | Select-Object -ExpandProperty teamId
         }
@@ -167,7 +167,7 @@
             if ( $NoOverwrite ) {
                 # get existing rules so we can append to the new ones
                 if ( -not $allTeams ) {
-                    $allTeams = Get-VenafiTeam -All
+                    $allTeams = Get-VcTeam -All
                 }
                 $params.Body.userMatchingRules += $allTeams | Where-Object { $_.name -eq $ID } | Select-Object -ExpandProperty userMatchingRules
             }
