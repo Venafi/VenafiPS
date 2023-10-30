@@ -255,10 +255,6 @@
         "TppVersion": "",
         "TppTokenScope": "approve with any scope"
     },
-    "Test-VenafiModuleHash": {
-        "TppVersion": "",
-        "TppTokenScope": "none"
-    },
     "Test-VdcIdentity": {
         "TppVersion": "",
         "TppTokenScope": "configuration:$null"
