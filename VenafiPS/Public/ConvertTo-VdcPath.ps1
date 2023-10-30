@@ -12,8 +12,8 @@ function ConvertTo-VdcPath {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Guid
@@ -43,7 +43,7 @@ function ConvertTo-VdcPath {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $params = @{
 

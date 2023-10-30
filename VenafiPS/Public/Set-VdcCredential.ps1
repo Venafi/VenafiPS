@@ -4,7 +4,7 @@ function Set-VdcCredential {
     Update credential values
 
     .DESCRIPTION
-    Update values for credential objects in TPP.
+    Update values for credential objects in TLSPDC.
     The values allowed to be updated are specific to the object type.
     See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Credentials-FriendlyName.php for details.
 
@@ -17,8 +17,8 @@ function Set-VdcCredential {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -68,7 +68,7 @@ function Set-VdcCredential {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $params = @{
 

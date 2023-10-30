@@ -1,10 +1,10 @@
 function Get-VdcIdentityAttribute {
     <#
     .SYNOPSIS
-    Get attribute values for TPP identity objects
+    Get attribute values for TLSPDC identity objects
 
     .DESCRIPTION
-    Get attribute values for TPP identity objects.
+    Get attribute values for TLSPDC identity objects.
 
     .PARAMETER ID
     The id that represents the user or group.  Use Find-VdcIdentity to get the id.
@@ -16,8 +16,8 @@ function Get-VdcIdentityAttribute {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     ID
@@ -60,7 +60,7 @@ function Get-VdcIdentityAttribute {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $params = @{
             Method     = 'Post'

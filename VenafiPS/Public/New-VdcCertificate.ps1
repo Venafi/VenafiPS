@@ -5,7 +5,7 @@ function New-VdcCertificate {
 
     .DESCRIPTION
     Enrolls or provisions a new certificate.
-    Prior to TPP 22.1, this function is asynchronous and will always return success.
+    Prior to TLSPDC 22.1, this function is asynchronous and will always return success.
     Beginning with 22.1, you can control this behavior.
     See https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-Certificates-API-settings.php.
 
@@ -78,8 +78,8 @@ function New-VdcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     None
@@ -207,7 +207,7 @@ function New-VdcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         if ( $PSBoundParameters.ContainsKey('SubjectAltName') ) {
 
@@ -309,7 +309,7 @@ function New-VdcCertificate {
 
         if ( $PSBoundParameters.ContainsKey('WorkToDoTimeout') ) {
             if ( $VenafiSession.Version -and $VenafiSession.Version -lt [Version]::new('22', '1')) {
-                Write-Warning '-WorkToDoTimeout is available beginning with TPP v22.1'
+                Write-Warning '-WorkToDoTimeout is available beginning with TLSPDC v22.1'
             } else {
                 $params.Body.Add('WorkToDoTimeout', $WorkToDoTimeout)
             }

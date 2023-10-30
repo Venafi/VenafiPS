@@ -179,7 +179,7 @@ function New-VcMachineCommonKeystore {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
 
         $allMachines = [System.Collections.Generic.List[pscustomobject]]::new()
         $machineTypeId = '575389b0-e6be-11ec-9172-d3c56ea8bcf6'

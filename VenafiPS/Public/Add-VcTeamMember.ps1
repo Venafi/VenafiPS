@@ -24,12 +24,12 @@
     .EXAMPLE
     Add-VcTeamMember -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Member @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
 
-    Add members to a VaaS team
+    Add members to a TLSPC team
 
     .EXAMPLE
     Add-VcTeamMember -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}'
 
-    Add members to a TPP team
+    Add members to a TLSPDC team
 
     .LINK
     https://api.venafi.cloud/webjars/swagger-ui/index.html#/Teams/addMember
@@ -50,7 +50,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
     }
 
     process {

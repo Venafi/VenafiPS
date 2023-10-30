@@ -15,8 +15,8 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     ID
@@ -27,7 +27,7 @@
     .EXAMPLE
     Get-VdcTeam -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}'
 
-    Get info for a TPP team
+    Get info for a TLSPDC team
 
     .EXAMPLE
     Find-VdcIdentity -Name MyTeamName | Get-VdcTeam
@@ -60,7 +60,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
     }
 
     process {

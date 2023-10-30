@@ -8,7 +8,7 @@ function Revoke-VdcGrant {
     Revoke all grants for a specific user.
     You must either be an administrator or oauth administrator to perform this action.
     Also, your token must have the admin:delete scope.
-    Available in TPP v22.3 and later.
+    Available in TLSPDC v22.3 and later.
 
     .PARAMETER ID
     Prefixed universal id for the user.  To search, use Find-VdcIdentity.
@@ -16,8 +16,8 @@ function Revoke-VdcGrant {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     ID
@@ -64,10 +64,10 @@ function Revoke-VdcGrant {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -AuthType 'token'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC' -AuthType 'token'
 
         if ( $VenafiSession.Version -lt [Version]::new('22', '3', '0') ) {
-            throw 'Revoke-VdcGrant is available on TPP v22.3 and greater'
+            throw 'Revoke-VdcGrant is available on TLSPDC v22.3 and greater'
         }
 
         $params = @{

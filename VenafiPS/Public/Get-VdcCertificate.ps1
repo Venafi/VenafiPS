@@ -10,16 +10,16 @@
     Certificate identifier by either path or guid.
     \ved\policy will be automatically applied if a full path isn't provided.
 
-    .PARAMETER IncludeTppPreviousVersions
-    Returns details about previous (historical) versions of a certificate (only from TPP).
+    .PARAMETER IncludePreviousVersions
+    Returns details about previous (historical) versions of a certificate.
     This option will add a property named PreviousVersions to the returned object.
 
     .PARAMETER ExcludeExpired
-    Omits expired versions of the previous (historical) versions of a certificate (only from TPP).
+    Omits expired versions of the previous (historical) versions of a certificate.
     Can only be used with the IncludePreviousVersions parameter.
 
     .PARAMETER ExcludeRevoked
-    Omits revoked versions of the previous (historical) versions of a certificate (only from TPP).
+    Omits revoked versions of the previous (historical) versions of a certificate.
     Can only be used with the IncludePreviousVersions parameter.
 
     .PARAMETER All
@@ -31,8 +31,8 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     CertificateId
@@ -41,14 +41,9 @@
     PSCustomObject
 
     .EXAMPLE
-    Get-VdcCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
-
-    Get certificate info for a specific cert on Venafi as a Serivce
-
-    .EXAMPLE
     Get-VdcCertificate -CertificateId '\ved\policy\mycert.com'
 
-    Get certificate info for a specific cert on TPP
+    Get certificate info for a specific cert
 
     .EXAMPLE
     Get-VdcCertificate -All
@@ -58,12 +53,12 @@
     .EXAMPLE
     Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions
 
-    Get certificate info for a specific cert on TPP, including historical versions of the certificate.
+    Get certificate info for a specific cert, including historical versions of the certificate.
 
     .EXAMPLE
     Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions -ExcludeRevoked -ExcludeExpired
 
-    Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
+    Get certificate info for a specific cert, including historical versions of the certificate that are not revoked or expired.
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php
@@ -103,7 +98,7 @@
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $certs = [System.Collections.Generic.List[string]]::new()
 

@@ -1,7 +1,7 @@
 function Export-VcCertificate {
     <#
     .SYNOPSIS
-    Expoort certificate data from VaaS/TLSPC
+    Expoort certificate data from TLSPC
 
     .DESCRIPTION
     Export certificate data
@@ -20,30 +20,7 @@ function Export-VcCertificate {
     Include the certificate chain with the exported certificate.  Not supported with DER format.
 
     .PARAMETER RootFirst
-    Use with -IncludeChain for VaaS to return the root first instead of the end entity first
-
-    .PARAMETER FriendlyName
-    Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when exporting JKS.  TPP Only.
-
-    .PARAMETER PrivateKeyPassword
-    Password required to include the private key.  Not supported with DER or PKCS #7 formats.  TPP Only.
-    You must adhere to the following rules:
-    - Password is at least 12 characters.
-    - Comprised of at least three of the following:
-        - Uppercase alphabetic letters
-        - Lowercase alphabetic letters
-        - Numeric characters
-        - Special characters
-
-    .PARAMETER KeystorePassword
-    Password required to retrieve the certificate in JKS format.  TPP Only.
-    You must adhere to the following rules:
-    - Password is at least 12 characters.
-    - Comprised of at least three of the following:
-        - Uppercase alphabetic letters
-        - Lowercase alphabetic letters
-        - Numeric characters
-        - Special characters
+    Use with -IncludeChain for TLSPC to return the root first instead of the end entity first
 
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
@@ -51,7 +28,7 @@ function Export-VcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A VaaS key can also provided.
+    A TLSPC key can also provided.
 
     .INPUTS
     ID
@@ -61,31 +38,21 @@ function Export-VcCertificate {
 
     .EXAMPLE
     $certId | Export-VdcCertificate -VaasFormat PEM
+
     Get certificate data from Venafi as a Service
 
     .EXAMPLE
     $cert | Export-VdcCertificate -TppFormat 'PKCS #7' -OutPath 'c:\temp'
+
     Get certificate data and save to a file
 
     .EXAMPLE
-    $cert | Export-VdcCertificate -TppFormat 'PKCS #7' -IncludeChain
-    Get one or more certificates with the certificate chain included, TPP
-
-    .EXAMPLE
     $cert | Export-VdcCertificate -VaasFormat PEM -IncludeChain -RootFirst
-    Get one or more certificates with the certificate chain included and the root first in the chain, VaaS
 
-    .EXAMPLE
-    $cert | Export-VdcCertificate -TppFormat 'PKCS #12' -PrivateKeyPassword $cred.password
-    Get one or more certificates with private key included, TPP
-
-    .EXAMPLE
-    $cert | Export-VdcCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
-    Get certificates in JKS format, TPP.  -TppFormat not needed since we know its JKS via -KeystorePassword.
-
+    Get one or more certificates with the certificate chain included and the root first in the chain
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Vaas')]
 
     param (
 
@@ -126,7 +93,7 @@ function Export-VcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
 

@@ -86,7 +86,7 @@ function Invoke-VcWorkflow {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
         $allIDs = [System.Collections.Generic.List[string]]::new()
     }
 

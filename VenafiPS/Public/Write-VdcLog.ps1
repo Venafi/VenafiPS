@@ -1,7 +1,7 @@
 function Write-VdcLog {
     <#
     .SYNOPSIS
-    Write entries to the TPP/TLSPDC log
+    Write entries to the TLSPDC log
 
     .DESCRIPTION
     Write entries to the log for custom event groups.
@@ -45,8 +45,8 @@ function Write-VdcLog {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     none
@@ -136,7 +136,7 @@ function Write-VdcLog {
         throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.  -EventGroup will be deprecated in a future release.'
     }
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
     # the event id is the group id coupled with the event id
     $fullEventId = "$CustomEventGroup$EventId"
@@ -191,7 +191,7 @@ function Write-VdcLog {
         $response = Invoke-VenafiRestMethod @params
 
         if ( $response.LogResult -eq 1 ) {
-            throw "Writing to the TPP log failed.  Ensure you have View permission and Read permission to the default SQL channel object."
+            throw "Writing to the TLSPDC log failed.  Ensure you have View permission and Read permission to the default SQL channel object."
         }
     }
 }

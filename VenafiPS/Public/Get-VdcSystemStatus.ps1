@@ -1,7 +1,7 @@
 function Get-VdcSystemStatus {
     <#
     .SYNOPSIS
-    Get the TPP system status
+    Get the TLSPDC system status
 
     .DESCRIPTION
     Returns service module statuses for Trust Protection Platform, Log Server, and Trust Protection Platform services that run on Microsoft Internet Information Services (IIS)
@@ -9,8 +9,8 @@ function Get-VdcSystemStatus {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     none
@@ -40,9 +40,9 @@ function Get-VdcSystemStatus {
         [psobject] $VenafiSession
     )
 
-    Write-Warning "Possible bug with Venafi TPP API causing this to fail"
+    Write-Warning "Possible bug with Venafi TLSPDC API causing this to fail"
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
     $params = @{
 

@@ -16,8 +16,8 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     ID
@@ -47,7 +47,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
     }
 
     process {
@@ -83,7 +83,7 @@
         }
 
         if ( $PSCmdlet.ShouldProcess($ID, "Delete team owners") ) {
-            Invoke-VenafiRestMethod @params | Out-Null
+            $null = Invoke-VenafiRestMethod @params
 
             # we've only demoted the owners to members.  now remove them
             Remove-VdcTeamMember -ID $ID -Member $Owner

@@ -4,7 +4,7 @@
     Add members to a team
 
     .DESCRIPTION
-    Add members to a TPP/TLSPDC team
+    Add members to a TLSPDC team
 
     .PARAMETER ID
     Team ID from Find-VdcIdentity or Get-VdcTeam.
@@ -16,8 +16,8 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     ID
@@ -25,7 +25,7 @@
     .EXAMPLE
     Add-VdcTeamMember -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}'
 
-    Add members to a TPP team
+    Add members to a TLSPDC team
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-PUT-Teams-AddTeamMembers.php
@@ -47,7 +47,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
     }
 
     process {
@@ -75,6 +75,6 @@
             }
         }
 
-        Invoke-VenafiRestMethod @params | Out-Null
+        $null = Invoke-VenafiRestMethod @params
     }
 }

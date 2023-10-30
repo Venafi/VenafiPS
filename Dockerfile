@@ -2,9 +2,9 @@ FROM mcr.microsoft.com/powershell:lts-alpine-3.14
 
 RUN pwsh -Command 'Set-PSRepository PSGallery -InstallationPolicy Trusted; Install-Module VenafiPS -ErrorAction Stop'
 
-ENV TPP_SERVER=${TPP_SERVER}
-ENV TPP_TOKEN=${TPP_TOKEN}
-ENV VAAS_KEY=${VAAS_KEY}
+ENV TLSPDC_SERVER=${TLSPDC_SERVER}
+ENV TLSPDC_TOKEN=${TLSPDC_TOKEN}
+ENV TLSPC_KEY=${TLSPC_KEY}
 ENV POWERSHELL_TELEMETRY_OPTOUT=1
 
 SHELL ["pwsh"]

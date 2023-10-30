@@ -1,7 +1,7 @@
 function Find-VdcCertificate {
     <#
     .SYNOPSIS
-    Find certificates in TPP/TLSPDC based on various attributes
+    Find certificates in TLSPDC based on various attributes
 
     .DESCRIPTION
     Find certificates based on various attributes.
@@ -140,8 +140,8 @@ function Find-VdcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -168,7 +168,7 @@ function Find-VdcCertificate {
     Find-VdcCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 
     Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
-    Skip is only supported on TPP.
+    Skip is only supported on TLSPDC.
 
     .EXAMPLE
     Find-VdcCertificate -Path '\VED\Policy\My Policy'
@@ -382,7 +382,7 @@ function Find-VdcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $params = @{
 

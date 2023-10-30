@@ -1,7 +1,7 @@
 function Export-VdcCertificate {
     <#
     .SYNOPSIS
-    Expoort certificate data from TPP/TLSPDC
+    Expoort certificate data from TLSPDC
 
     .DESCRIPTION
     Export certificate data
@@ -20,13 +20,13 @@ function Export-VdcCertificate {
     Include the certificate chain with the exported certificate.  Not supported with DER format.
 
     .PARAMETER RootFirst
-    Use with -IncludeChain for VaaS to return the root first instead of the end entity first
+    Use with -IncludeChain for TLSPC to return the root first instead of the end entity first
 
     .PARAMETER FriendlyName
-    Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when exporting JKS.  TPP Only.
+    Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when exporting JKS.
 
     .PARAMETER PrivateKeyPassword
-    Password required to include the private key.  Not supported with DER or PKCS #7 formats.  TPP Only.
+    Password required to include the private key.  Not supported with DER or PKCS #7 formats.
     You must adhere to the following rules:
     - Password is at least 12 characters.
     - Comprised of at least three of the following:
@@ -36,7 +36,7 @@ function Export-VdcCertificate {
         - Special characters
 
     .PARAMETER KeystorePassword
-    Password required to retrieve the certificate in JKS format.  TPP Only.
+    Password required to retrieve the certificate in JKS format.
     You must adhere to the following rules:
     - Password is at least 12 characters.
     - Comprised of at least three of the following:
@@ -51,8 +51,8 @@ function Export-VdcCertificate {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -62,27 +62,28 @@ function Export-VdcCertificate {
 
     .EXAMPLE
     Export-VdcCertificate -Path '\ved\policy\mycert.com'
+
     Get certificate data
 
     .EXAMPLE
     $cert | Export-VdcCertificate -TppFormat 'PKCS #7' -OutPath 'c:\temp'
+
     Get certificate data and save to a file
 
     .EXAMPLE
     $cert | Export-VdcCertificate -TppFormat 'PKCS #7' -IncludeChain
-    Get one or more certificates with the certificate chain included, TPP
 
-    .EXAMPLE
-    $cert | Export-VdcCertificate -VaasFormat PEM -IncludeChain -RootFirst
-    Get one or more certificates with the certificate chain included and the root first in the chain, VaaS
+    Get one or more certificates with the certificate chain included
 
     .EXAMPLE
     $cert | Export-VdcCertificate -TppFormat 'PKCS #12' -PrivateKeyPassword $cred.password
-    Get one or more certificates with private key included, TPP
+
+    Get one or more certificates with private key included
 
     .EXAMPLE
     $cert | Export-VdcCertificate -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
-    Get certificates in JKS format, TPP.  -TppFormat not needed since we know its JKS via -KeystorePassword.
+
+    Get certificates in JKS format.  -TppFormat not needed since we know its JKS via -KeystorePassword.
 
     #>
 
@@ -135,7 +136,7 @@ function Export-VdcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
 

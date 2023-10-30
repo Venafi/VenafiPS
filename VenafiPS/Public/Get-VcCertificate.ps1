@@ -7,17 +7,18 @@
     Get certificate information, either all available to the api key provided or by id or zone.
 
     .PARAMETER ID
-    Certificate identifier.
-    For Venafi as a Service, this is the ID or certificate name.
+    Certificate identifier, the ID or certificate name.
 
     .PARAMETER All
     Retrieve all certificates
 
+    .PARAMETER IncludeVaasOwner
+    Retrieve extended application owner info
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPC key can also be provided.
 
     .INPUTS
     CertificateId
@@ -28,30 +29,12 @@
     .EXAMPLE
     Get-VdcCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
-    Get certificate info for a specific cert on Venafi as a Serivce
-
-    .EXAMPLE
-    Get-VdcCertificate -CertificateId '\ved\policy\mycert.com'
-
-    Get certificate info for a specific cert on TPP
+    Get certificate info for a specific cert
 
     .EXAMPLE
     Get-VdcCertificate -All
 
     Get certificate info for all certs
-
-    .EXAMPLE
-    Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions
-
-    Get certificate info for a specific cert on TPP, including historical versions of the certificate.
-
-    .EXAMPLE
-    Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions -ExcludeRevoked -ExcludeExpired
-
-    Get certificate info for a specific cert on TPP, including historical versions of the certificate that are not revoked or expired.
-
-    .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Certificates-guid.php
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Id')]
@@ -59,7 +42,7 @@
     param (
 
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('CertificateID')]
+        [Alias('certificateID')]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
@@ -74,7 +57,7 @@
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
 
         $appOwners = [System.Collections.Generic.List[object]]::new()
 

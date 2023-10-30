@@ -1,11 +1,11 @@
 function Add-VdcEngineFolder {
     <#
     .SYNOPSIS
-    Add policy folder assignments to a TPP processing engine
+    Add policy folder assignments to a TLSPDC processing engine
     .DESCRIPTION
-    Add one or more policy folder assignments to a TPP processing engine.
+    Add one or more policy folder assignments to a TLSPDC processing engine.
     .PARAMETER EnginePath
-    The full DN path to a TPP processing engine.
+    The full DN path to a TLSPDC processing engine.
     .PARAMETER EngineObject
     TPPObject belonging to the 'Venafi Platform' class.
     .PARAMETER FolderPath
@@ -13,7 +13,7 @@ function Add-VdcEngineFolder {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided, but this requires an environment variable TPP_SERVER to be set.
+    A TLSPDC token can also be provided, but this requires an environment variable TLSPDC_SERVER to be set.
     .INPUTS
     EnginePath or EngineObject, FolderPath[]
     .OUTPUTS
@@ -61,7 +61,7 @@ function Add-VdcEngineFolder {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $params = @{
             Method        = 'Post'
@@ -87,11 +87,11 @@ function Add-VdcEngineFolder {
                 $folder = Get-VdcObject -Path $path
             }
             catch {
-                Write-Warning ("TPP object '$($path)' does not exist")
+                Write-Warning ("TLSPDC object '$($path)' does not exist")
                 Continue
             }
             if ($folder.TypeName -ne 'Policy') {
-                Write-Warning ("TPP object '$($folder.Path)' is not a policy folder")
+                Write-Warning ("TLSPDC object '$($folder.Path)' is not a policy folder")
                 Continue
             }
             $lastFolder = $folder.Path

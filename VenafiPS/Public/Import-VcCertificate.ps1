@@ -42,14 +42,14 @@ function Import-VcCertificate {
     .EXAMPLE
     Export-VdcCertificate -CertificateId '\ved\policy\my.cert.com' -Format Base64 | Import-VcCertificate -VenafiSession $vaas_key
 
-    Export from TPP and import into VaaS.
-    As $VenafiSession can only point to one platform at a time, in this case TPP, the session needs to be overridden for the import.
+    Export from TLSPDC and import into TLSPC.
+    As $VenafiSession can only point to one platform at a time, in this case TLSPDC, the session needs to be overridden for the import.
 
     .EXAMPLE
     Find-VdcCertificate -Path '\ved\policy\certs' -Recursive | Export-VdcCertificate -Format Base64 | Import-VcCertificate -VenafiSession $vaas_key
 
-    Bulk export from TPP and import into VaaS.
-    As $VenafiSession can only point to one platform at a time, in this case TPP, the session needs to be overridden for the import.
+    Bulk export from TLSPDC and import into TLSPC.
+    As $VenafiSession can only point to one platform at a time, in this case TLSPDC, the session needs to be overridden for the import.
 
     .INPUTS
     CertificatePath, CertificateData
@@ -94,7 +94,7 @@ function Import-VcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
 
         $params = @{
 

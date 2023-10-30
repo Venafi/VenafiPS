@@ -23,7 +23,7 @@ function Get-VdcAttribute {
     .PARAMETER Class
     Get policy attributes instead of object attributes.
     Provide the class name to retrieve the value for.
-    If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
+    If unsure of the class name, add the value through the TLSPDC UI and go to Support->Policy Attributes to find it.
     The Attribute property will contain the path where the policy was applied.
 
     .PARAMETER All
@@ -41,8 +41,8 @@ function Get-VdcAttribute {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can be provided directly.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can be provided directly.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -203,7 +203,7 @@ function Get-VdcAttribute {
 
         Write-Debug $PSCmdlet.ParameterSetName
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $newAttribute = $Attribute
         if ( $All -and $Class ) {

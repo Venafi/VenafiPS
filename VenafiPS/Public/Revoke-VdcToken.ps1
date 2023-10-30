@@ -22,8 +22,8 @@ function Revoke-VdcToken {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     VenafiPsToken
@@ -41,7 +41,7 @@ function Revoke-VdcToken {
 
     .EXAMPLE
     Revoke-VdcToken -AuthServer venafi.company.com -AccessToken $cred
-    Revoke a token obtained from TPP, not necessarily via VenafiPS
+    Revoke a token obtained from TLSPDC, not necessarily via VenafiPS
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Revoke-VdcToken/

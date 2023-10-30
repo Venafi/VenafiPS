@@ -1,10 +1,10 @@
 function Find-VdcEngine {
     <#
     .SYNOPSIS
-    Find TPP engines using an optional pattern
+    Find TLSPDC engines using an optional pattern
 
     .DESCRIPTION
-    Find TPP engines using an optional pattern.
+    Find TLSPDC engines using an optional pattern.
     This function is an engine wrapper for Find-VdcObject.
 
     .PARAMETER Pattern
@@ -13,7 +13,7 @@ function Find-VdcEngine {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided, but this requires an environment variable TPP_SERVER to be set.
+    A TLSPDC token can also be provided, but this requires an environment variable TLSPDC_SERVER to be set.
 
     .INPUTS
     Pattern
@@ -45,7 +45,7 @@ function Find-VdcEngine {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
     }
 
     process {

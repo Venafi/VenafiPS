@@ -1,12 +1,12 @@
 function Remove-VdcEngineFolder {
     <#
     .SYNOPSIS
-    Remove TPP processing engine assignment(s) from policy folder(s)
+    Remove TLSPDC processing engine assignment(s) from policy folder(s)
 
     .DESCRIPTION
-    Remove TPP processing engine assignment(s) from policy folder(s).
+    Remove TLSPDC processing engine assignment(s) from policy folder(s).
 
-    If you do not supply a list of TPP processing engines, then all processing engines will be removed from the supplied list of policy folders.
+    If you do not supply a list of TLSPDC processing engines, then all processing engines will be removed from the supplied list of policy folders.
 
     If you do not supply a list of policy folders, then all policy folder assignments will be removed from the supplied list of processing engines.
 
@@ -17,13 +17,13 @@ function Remove-VdcEngineFolder {
     .PARAMETER FolderPath
     The full DN path to one or more policy folders (string array).
     .PARAMETER EnginePath
-    The full DN path to one or more TPP processing engines (string array).
+    The full DN path to one or more TLSPDC processing engines (string array).
     .PARAMETER Force
     Suppress the confirmation prompt before removing engine/folder assignments.
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided, but this requires an environment variable TPP_SERVER to be set.
+    A TLSPDC token can also be provided, but this requires an environment variable TLSPDC_SERVER to be set.
     .INPUTS
     FolderPath[], EnginePath[]
     .OUTPUTS
@@ -76,7 +76,7 @@ function Remove-VdcEngineFolder {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP' -Verbose:$false
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC' -Verbose:$false
 
         $params = @{
 
@@ -96,12 +96,12 @@ function Remove-VdcEngineFolder {
                         $FolderList += $folder
                     }
                     else {
-                        Write-Warning ("TPP object '$($path)' is not a policy ($($folder.TypeName))")
+                        Write-Warning ("TLSPDC object '$($path)' is not a policy ($($folder.TypeName))")
                         Continue
                     }
                 }
                 catch {
-                    Write-Warning ("TPP object '$($path)' does not exist")
+                    Write-Warning ("TLSPDC object '$($path)' does not exist")
                     Continue
                 }
             }
@@ -120,12 +120,12 @@ function Remove-VdcEngineFolder {
                         $EngineList += $engine
                     }
                     else {
-                        Write-Warning ("TPP object '$($path)' is not an engine ($($engine.TypeName))")
+                        Write-Warning ("TLSPDC object '$($path)' is not an engine ($($engine.TypeName))")
                         Continue
                     }
                 }
                 catch {
-                    Write-Warning ("TPP object '$($path)' does not exist")
+                    Write-Warning ("TLSPDC object '$($path)' does not exist")
                     Continue
                 }
             }
@@ -143,7 +143,7 @@ function Remove-VdcEngineFolder {
                 foreach ($folder in $FolderList) {
                     $uriLeaf = "$($apiCall)/{$($folder.Guid)}"
                     try {
-                        Invoke-VenafiRestMethod @params -UriLeaf $uriLeaf | Out-Null
+                        $null = Invoke-VenafiRestMethod @params -UriLeaf $uriLeaf
                     }
                     catch {
                         $myError = $_.ToString() | ConvertFrom-Json
@@ -181,7 +181,7 @@ function Remove-VdcEngineFolder {
                     foreach ($folder in $FolderList) {
                         $uriLeaf = "$($apiCall)/{$($folder.Guid)}/{$($engine.Guid)}"
                         try {
-                            Invoke-VenafiRestMethod @params -UriLeaf $uriLeaf | Out-Null
+                            $null = Invoke-VenafiRestMethod @params -UriLeaf $uriLeaf
                         }
                         catch {
                             $myError = $_.ToString() | ConvertFrom-Json

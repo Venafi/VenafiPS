@@ -25,7 +25,7 @@ function Get-VdcClassAttribute {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $allAttributes = [System.Collections.Generic.List[object]]::new()
     }

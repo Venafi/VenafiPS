@@ -9,7 +9,7 @@ function Invoke-VdcCertificateAction {
     If using PowerShell v7+, this will be run in parallel.
 
     .PARAMETER Path
-    Certificate identifier.  For Venafi as a Service, this is the unique guid.  For TPP, use the full path.
+    Full path to the certificate
 
     .PARAMETER Disable
     Disable a certificate
@@ -43,8 +43,8 @@ function Invoke-VdcCertificateAction {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -145,7 +145,7 @@ function Invoke-VdcCertificateAction {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
     }

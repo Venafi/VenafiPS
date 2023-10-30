@@ -1,10 +1,10 @@
 ﻿function Set-VdcPermission {
     <#
     .SYNOPSIS
-    Set explicit permissions for TPP objects
+    Set explicit permissions for TLSPDC objects
 
     .DESCRIPTION
-    Adds, modifies, or removes explicit permissions on TPP objects.
+    Adds, modifies, or removes explicit permissions on TLSPDC objects.
     You can provide a complete permission object or modify individual permissions.
 
     .PARAMETER Path
@@ -71,8 +71,8 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Guid, IdentityId, Permission
@@ -232,7 +232,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
     }
 

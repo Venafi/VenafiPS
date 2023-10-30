@@ -4,7 +4,7 @@ function Find-VcObject {
     Find different objects on TLSPC
 
     .DESCRIPTION
-    Find objects of type ActivityLog, Machine, MachineIdentity, CertificateRequest, CertificateInstance on VaaS.
+    Find objects of type ActivityLog, Machine, MachineIdentity, CertificateRequest, CertificateInstance on TLSPC.
     Supports -First for page size; the max page size is 1000.
     To find certificate objects, use Find-VcCertificate.
 
@@ -103,7 +103,7 @@ function Find-VcObject {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
 
     $queryParams = @{
         Filter = $Filter

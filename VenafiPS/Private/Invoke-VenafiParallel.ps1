@@ -81,11 +81,11 @@ function Invoke-VenafiParallel {
                 Write-Progress -Activity $ProgressTitle -Status "Initializing..."
             }
 
-            if ( $env:TPP_TOKEN ) {
-                $VenafiSession = $env:TPP_TOKEN
+            if ( $env:TLSPDC_TOKEN ) {
+                $VenafiSession = $env:TLSPDC_TOKEN
             }
-            elseif ( $env:VAAS_KEY ) {
-                $VenafiSession = $env:VAAS_KEY
+            elseif ( $env:TLSPC_KEY ) {
+                $VenafiSession = $env:TLSPC_KEY
             }
             elseif ($script:VenafiSessionNested) {
                 $VenafiSession = $script:VenafiSessionNested
@@ -94,7 +94,7 @@ function Invoke-VenafiParallel {
                 $VenafiSession = $script:VenafiSession
             }
             else {
-                throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
+                throw 'Please run New-VenafiSession or provide a TLSPC key or TLSPDC token.'
             }
 
             # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801

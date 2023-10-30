@@ -17,7 +17,7 @@ function Set-VdcAttribute {
 
     .PARAMETER Class
     Required when setting policy attributes.  Provide the class name to set the value for.
-    If unsure of the class name, add the value through the TPP UI and go to Support->Policy Attributes to find it.
+    If unsure of the class name, add the value through the TLSPDC UI and go to Support->Policy Attributes to find it.
 
     .PARAMETER Lock
     Lock the value on the policy.  Only applicable to setting policies.
@@ -33,8 +33,8 @@ function Set-VdcAttribute {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -136,7 +136,7 @@ function Set-VdcAttribute {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $params = @{
 

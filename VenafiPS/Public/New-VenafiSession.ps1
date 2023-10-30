@@ -1,13 +1,13 @@
 function New-VenafiSession {
     <#
     .SYNOPSIS
-    Create a new Venafi TPP or Venafi as a Service session
+    Create a new Venafi TLSPDC or Venafi as a Service session
 
     .DESCRIPTION
     Authenticate a user and create a new session with which future calls can be made.
     Key based username/password and windows integrated are supported as well as token-based integrated, oauth, and certificate.
     By default, a session variable will be created and automatically used with other functions unless -PassThru is used.
-    Tokens and VaaS keys can be saved in a vault for future calls.
+    Tokens and TLSPC keys can be saved in a vault for future calls.
 
     .PARAMETER Server
     Server or url to access vedsdk, venafi.company.com or https://venafi.company.com.
@@ -54,7 +54,7 @@ function New-VenafiSession {
 
     .PARAMETER Jwt
     JSON web token.
-    Available in TPP v22.4 and later.
+    Available in TLSPDC v22.4 and later.
     Ensure jwt mapping has been configured in VCC, Access Management->JWT Mappings.
 
     .PARAMETER Certificate
@@ -478,7 +478,7 @@ function New-VenafiSession {
 
     # will fail if user is on an older version.  this isn't required so bypass on failure
     # only applicable to tpp
-    if ( $newSession.Platform -eq 'TPP' ) {
+    if ( $newSession.Platform -eq 'TLSPDC' ) {
         $newSession | Add-Member @{ Version = (Get-VdcVersion -VenafiSession $newSession -ErrorAction SilentlyContinue) }
         $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-VdcCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
         # make sure we remove duplicates

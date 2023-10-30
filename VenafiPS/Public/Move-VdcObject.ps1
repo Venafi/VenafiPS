@@ -8,7 +8,7 @@ function Move-VdcObject {
     A rename can be done at the same time as the move by providing a full target path including the new object name.
 
     .PARAMETER SourcePath
-    Full path to an existing object in TPP
+    Full path to an existing object in TLSPDC
 
     .PARAMETER TargetPath
     New path.  This can either be an existing policy and the existing object name will be kept or a full path including a new object name.
@@ -16,8 +16,8 @@ function Move-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     SourcePath (Path)
@@ -82,7 +82,7 @@ function Move-VdcObject {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         # determine if target is a policy or other object
         # if policy, we'll need to append the object name in the process block when moving

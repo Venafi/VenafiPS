@@ -1,10 +1,10 @@
 function Test-VdcToken {
     <#
     .SYNOPSIS
-    Test if a TPP/TLSPDC token is valid
+    Test if a TLSPDC token is valid
 
     .DESCRIPTION
-    Use the TPP API call 'Authorize/Verify' to test if the current token is valid.
+    Use the TLSPDC API call 'Authorize/Verify' to test if the current token is valid.
 
     .PARAMETER AuthServer
     Auth server or url, venafi.company.com or https://venafi.company.com.
@@ -27,7 +27,7 @@ function Test-VdcToken {
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
 
     .PARAMETER GrantDetail
-    Provides detailed info about the token object from the TPP server response as an output.  Supported on TPP 20.4 and later.
+    Provides detailed info about the token object from the TLSPDC server response as an output.  Supported on TLSPDC 20.4 and later.
 
     .INPUTS
     AccessToken

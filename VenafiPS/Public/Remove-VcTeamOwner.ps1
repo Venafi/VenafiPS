@@ -51,7 +51,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
     }
 
     process {
@@ -72,7 +72,7 @@
         }
 
         if ( $PSCmdlet.ShouldProcess($ID, "Delete team owners") ) {
-            Invoke-VenafiRestMethod @params | Out-Null
+            $null = Invoke-VenafiRestMethod @params
         }
     }
 }

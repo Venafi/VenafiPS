@@ -82,14 +82,14 @@ function Find-VcCertificate {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'VaaS')]
+    [CmdletBinding(DefaultParameterSetName = 'TLSPC')]
 
     param (
 
-        [Parameter(ParameterSetName = 'VaaS')]
+        [Parameter(ParameterSetName = 'TLSPC')]
         [System.Collections.ArrayList] $Filter,
 
-        [parameter(ParameterSetName = 'VaaS')]
+        [parameter(ParameterSetName = 'TLSPC')]
         [psobject[]] $Order,
 
         [parameter(Mandatory, ParameterSetName = 'VaasSavedSearch')]
@@ -106,7 +106,7 @@ function Find-VcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VaaS'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
 
         $toRetrieveCount = if ($PSBoundParameters.ContainsKey('First') ) {
             $First

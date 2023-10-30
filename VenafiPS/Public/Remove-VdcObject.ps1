@@ -1,10 +1,10 @@
 function Remove-VdcObject {
     <#
     .SYNOPSIS
-    Remove TPP objects
+    Remove TLSPDC objects
 
     .DESCRIPTION
-    Remove a TPP object and optionally perform a recursive removal.
+    Remove a TLSPDC object and optionally perform a recursive removal.
     This process can be very destructive as it will remove anything you send it!!!
 
     .PARAMETER Path
@@ -16,8 +16,8 @@ function Remove-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -69,7 +69,7 @@ function Remove-VdcObject {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         Write-Warning 'This operation is potentially very destructive.  Ensure you want to perform this action before continuing.'
 

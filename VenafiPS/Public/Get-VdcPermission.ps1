@@ -1,7 +1,7 @@
 ﻿function Get-VdcPermission {
     <#
     .SYNOPSIS
-    Get permissions for TPP objects
+    Get permissions for TLSPDC objects
 
     .DESCRIPTION
     Get permissions for users and groups on any object.
@@ -9,7 +9,7 @@
     You can retrieve all permissions for an object or for a specific user/group.
 
     .PARAMETER InputObject
-    TppObject representing an object in TPP, eg. from Find-VdcObject or Get-VdcObject
+    TppObject representing an object in TLSPDC, eg. from Find-VdcObject or Get-VdcObject
 
     .PARAMETER Path
     Full path to an object
@@ -27,8 +27,8 @@
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TPP token can also be provided.
-    If providing a TPP token, an environment variable named TPP_SERVER must also be set.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
 
     .INPUTS
     InputObject, Path, Guid, IdentityId
@@ -156,7 +156,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TPP'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
 
         $params = @{
 
