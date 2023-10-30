@@ -1,4 +1,4 @@
-﻿function Remove-VcApplicaton {
+﻿function Remove-VcApplication {
     <#
     .SYNOPSIS
     Remove a application
