@@ -30,7 +30,7 @@
     Copyright         = '(c) Venafi. All rights reserved.'
 
     # Description of the functionality provided by this module
-    Description       = 'Automate your Venafi Trust Protection Platform and TLSPC platforms!'
+    Description       = 'Automate your Venafi TLS Protect Datacenter and Cloud platforms!'
 
     # Minimum version of the PowerShell engine required by this module
     PowerShellVersion = '5.1'
