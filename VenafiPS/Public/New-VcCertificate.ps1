@@ -13,9 +13,6 @@ function New-VcCertificate {
     Issuing template name (wildcards supported) or id to use.
     The template must be available with the selected Application.
 
-    .PARAMETER ServerType
-    Server type name (wildcards supported) or id to associate
-
     .PARAMETER Csr
     CSR in PKCS#10 format which conforms to the rules of the issuing template
 
@@ -94,12 +91,6 @@ function New-VcCertificate {
     Create certificate with a CSR
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/New-VcCertificate/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VcCertificate.ps1
-
-    .LINK
     https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificate%20Request/certificaterequests_create
 
     #>
@@ -114,9 +105,6 @@ function New-VcCertificate {
 
         [Parameter(Mandatory)]
         [String] $IssuingTemplate,
-
-        [Parameter(Mandatory)]
-        [String] $ServerType,
 
         [Parameter(ParameterSetName = 'Csr', Mandatory)]
         [string] $Csr,
@@ -187,7 +175,6 @@ function New-VcCertificate {
 
         # validation
         $allApps = Get-VcApplication -All
-        $allServerTypes = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'applicationservertypes' | Select-Object -ExpandProperty applicationservertypes
 
         $thisApp = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
         switch (@($thisApp).Count) {
@@ -221,22 +208,6 @@ function New-VcCertificate {
             }
         }
 
-        $thisServerType = $allServerTypes | Where-Object { $_.applicationServerType -like $ServerType -or $_.id -eq $ServerType }
-        switch (@($thisServerType).Count) {
-            0 {
-                throw ('Server type not found.  Valid types are {0}' -f ($allServerTypes.name -join ', '))
-            }
-
-            1 {
-                Write-Verbose ('Found server type {0}, ID: {1}' -f $thisServerType.applicationServerType, $thisServerType.id)
-                $thisServerTypeID = $thisServerType.id
-            }
-
-            Default {
-                throw ('More than 1 server type found that matches {0}: {1}' -f $ServerType, ($thisServerType.name -join ', '))
-            }
-        }
-
         $span = New-TimeSpan -Start (Get-Date) -End $ValidUntil
         $validity = 'P{0}DT{1}H' -f $span.Days, $span.Hours
 
@@ -249,7 +220,6 @@ function New-VcCertificate {
                 isVaaSGenerated              = $true
                 applicationId                = $thisAppID
                 certificateIssuingTemplateId = $thisTemplateID
-                applicationServerTypeId      = $thisServerTypeID
                 validityPeriod               = $validity
             }
         }

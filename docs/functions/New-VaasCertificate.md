@@ -7,7 +7,7 @@ Create certificate request
 
 ### Ask (Default)
 ```
-New-VaasCertificate -Application <String> -IssuingTemplate <String> -ServerType <String> -CommonName <String>
+New-VaasCertificate -Application <String> -IssuingTemplate <String> -CommonName <String>
  [-Organization <String>] [-OrganizationalUnit <String[]>] [-City <String>] [-State <String>]
  [-Country <String>] [-SanDns <String[]>] [-SanIP <String[]>] [-SanUri <String[]>] [-SanEmail <String[]>]
  [-ValidUntil <DateTime>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
@@ -15,9 +15,9 @@ New-VaasCertificate -Application <String> -IssuingTemplate <String> -ServerType 
 
 ### Csr
 ```
-New-VaasCertificate -Application <String> -IssuingTemplate <String> -ServerType <String> -Csr <String>
- [-SanDns <String[]>] [-SanIP <String[]>] [-SanUri <String[]>] [-SanEmail <String[]>] [-ValidUntil <DateTime>]
- [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VaasCertificate -Application <String> -IssuingTemplate <String> -Csr <String> [-SanDns <String[]>]
+ [-SanIP <String[]>] [-SanUri <String[]>] [-SanEmail <String[]>] [-ValidUntil <DateTime>] [-PassThru]
+ [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -27,35 +27,35 @@ Create certificate request from automated secure keypair details or CSR
 
 ### EXAMPLE 1
 ```
-New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com'
+New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com'
 ```
 
 Create certificate
 
 ### EXAMPLE 2
 ```
-New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
+New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
 ```
 
 Create certificate with optional SAN data
 
 ### EXAMPLE 3
 ```
-New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -ValidUntil (Get-Date).AddMonths(6)
+New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -ValidUntil (Get-Date).AddMonths(6)
 ```
 
 Create certificate with specific validity
 
 ### EXAMPLE 4
 ```
-New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -CommonName 'app.mycert.com' -PassThru
+New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -PassThru
 ```
 
 Create certificate and return the created object
 
 ### EXAMPLE 5
 ```
-New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -ServerType 'F5' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
+New-VaasCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
 ```
 
 Create certificate with a CSR
@@ -80,21 +80,6 @@ Accept wildcard characters: False
 ### -IssuingTemplate
 Issuing template name (wildcards supported) or id to use.
 The template must be available with the selected Application.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -ServerType
-Server type name (wildcards supported) or id to associate
 
 ```yaml
 Type: String
