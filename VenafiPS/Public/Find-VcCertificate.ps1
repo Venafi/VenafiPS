@@ -106,7 +106,7 @@ function Find-VcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         $toRetrieveCount = if ($PSBoundParameters.ContainsKey('First') ) {
             $First

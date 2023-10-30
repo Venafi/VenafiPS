@@ -50,7 +50,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
         $allObjects = [System.Collections.Generic.List[object]]::new()
     }
 

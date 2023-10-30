@@ -30,16 +30,16 @@ class VenafiSession {
 
         if ( -not $this.Key -and -not $this.Token ) {
             switch ($Platform) {
-                'TLSPC' {
-                    throw "You must first connect to Venafi as a Service with New-VenafiSession -VaasKey"
+                'VC' {
+                    throw "You must first connect to TLSPC with New-VenafiSession -VcKey"
                 }
 
-                'TLSPDC' {
+                'VDC' {
                     throw "You must first connect to a TLSPDC server with New-VenafiSession"
                 }
 
                 Default {
-                    throw "You must first connect to either Venafi as a Service or a TLSPDC server with New-VenafiSession"
+                    throw "You must first connect to either TLSPC or a TLSPDC server with New-VenafiSession"
                 }
             }
         }
@@ -56,7 +56,7 @@ class VenafiSession {
         }
 
         # expired, perform refresh
-        if ( $this.Platform -eq 'TLSPDC' ) {
+        if ( $this.Platform -eq 'VDC' ) {
 
             Write-Verbose ("Key/Token expires: {0}, Current (+2s): {1}" -f $this.Expires, (Get-Date).ToUniversalTime().AddSeconds(2))
 
@@ -159,10 +159,10 @@ class VenafiSession {
 
         $this | Add-Member -MemberType ScriptProperty -Name Platform -Value {
             if ( $this.Server -eq 'https://api.venafi.cloud' ) {
-                'TLSPC'
+                'VC'
             }
             else {
-                'TLSPDC'
+                'VDC'
             }
         }
 

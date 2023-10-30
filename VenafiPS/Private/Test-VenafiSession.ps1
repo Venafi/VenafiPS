@@ -10,7 +10,7 @@ function Test-VenafiSession {
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPDC token or TLSPC key can also provided.
-    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
+    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .PARAMETER Platform
     Platform, either TLSPDC or Vaas, to validate VenafiSession against.
@@ -78,11 +78,11 @@ function Test-VenafiSession {
         }
 
         if ( -not $VenafiSession ) {
-            if ( $env:TLSPDC_TOKEN ) {
-                $VenafiSession = $env:TLSPDC_TOKEN
+            if ( $env:VDC_TOKEN ) {
+                $VenafiSession = $env:VDC_TOKEN
             }
-            elseif ( $env:TLSPC_KEY ) {
-                $VenafiSession = $env:TLSPC_KEY
+            elseif ( $env:VC_KEY ) {
+                $VenafiSession = $env:VC_KEY
             }
             elseif ( $script:VenafiSession ) {
                 $VenafiSession = $script:VenafiSession
@@ -150,8 +150,8 @@ function Test-VenafiSession {
                         throw "This function or parameter set is only accessible for $Platform"
                     }
                     # get server from environment variable
-                    if ( -not $env:TLSPDC_SERVER ) {
-                        throw 'TLSPDC token provided, but TLSPDC_SERVER environment variable was not found'
+                    if ( -not $env:VDC_SERVER ) {
+                        throw 'TLSPDC token provided, but VDC_SERVER environment variable was not found'
                     }
 
                     $platformOut = 'TLSPDC'

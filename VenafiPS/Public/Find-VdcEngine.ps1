@@ -13,7 +13,7 @@ function Find-VdcEngine {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token can also be provided, but this requires an environment variable TLSPDC_SERVER to be set.
+    A TLSPDC token can also be provided, but this requires an environment variable VDC_SERVER to be set.
 
     .INPUTS
     Pattern
@@ -45,7 +45,7 @@ function Find-VdcEngine {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
     }
 
     process {

@@ -81,11 +81,11 @@ function Invoke-VenafiParallel {
                 Write-Progress -Activity $ProgressTitle -Status "Initializing..."
             }
 
-            if ( $env:TLSPDC_TOKEN ) {
-                $VenafiSession = $env:TLSPDC_TOKEN
+            if ( $env:VDC_TOKEN ) {
+                $VenafiSession = $env:VDC_TOKEN
             }
-            elseif ( $env:TLSPC_KEY ) {
-                $VenafiSession = $env:TLSPC_KEY
+            elseif ( $env:VC_KEY ) {
+                $VenafiSession = $env:VC_KEY
             }
             elseif ($script:VenafiSessionNested) {
                 $VenafiSession = $script:VenafiSessionNested

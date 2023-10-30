@@ -46,7 +46,7 @@ function Write-VdcLog {
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
+    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     none
@@ -136,7 +136,7 @@ function Write-VdcLog {
         throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.  -EventGroup will be deprecated in a future release.'
     }
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
 
     # the event id is the group id coupled with the event id
     $fullEventId = "$CustomEventGroup$EventId"

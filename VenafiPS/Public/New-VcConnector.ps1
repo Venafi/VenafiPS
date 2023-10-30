@@ -111,7 +111,7 @@ function New-VcConnector {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         # validate inputs
         $at = Invoke-VenafiRestMethod -UriLeaf 'activitytypes'

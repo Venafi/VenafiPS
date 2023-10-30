@@ -74,7 +74,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         $params = @{
 

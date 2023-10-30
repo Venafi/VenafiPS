@@ -57,7 +57,7 @@
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         $appOwners = [System.Collections.Generic.List[object]]::new()
 

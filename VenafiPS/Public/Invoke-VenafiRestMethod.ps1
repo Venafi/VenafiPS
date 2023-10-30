@@ -88,12 +88,12 @@ function Invoke-VenafiRestMethod {
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
 
         # if ( -not $VenafiSession ) {
-        if ( $env:TLSPDC_TOKEN ) {
-            $VenafiSession = $env:TLSPDC_TOKEN
+        if ( $env:VDC_TOKEN ) {
+            $VenafiSession = $env:VDC_TOKEN
             Write-Verbose 'Using TLSPDC token environment variable'
         }
-        elseif ( $env:TLSPC_KEY ) {
-            $VenafiSession = $env:TLSPC_KEY
+        elseif ( $env:VC_KEY ) {
+            $VenafiSession = $env:VC_KEY
             Write-Verbose 'Using TLSPC key environment variable'
         }
         elseif ( $PSBoundParameters.VenafiSession ) {
@@ -144,10 +144,10 @@ function Invoke-VenafiRestMethod {
                 else {
                     # TLSPDC access token
                     # get server from environment variable
-                    if ( -not $env:TLSPDC_SERVER ) {
-                        throw 'TLSPDC_SERVER environment variable was not found'
+                    if ( -not $env:VDC_SERVER ) {
+                        throw 'VDC_SERVER environment variable was not found'
                     }
-                    $Server = $env:TLSPDC_SERVER
+                    $Server = $env:VDC_SERVER
                     if ( $Server -notlike 'https://*') {
                         $Server = 'https://{0}' -f $Server
                     }

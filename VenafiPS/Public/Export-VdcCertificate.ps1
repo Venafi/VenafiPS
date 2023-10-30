@@ -52,7 +52,7 @@ function Export-VdcCertificate {
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
+    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -87,12 +87,11 @@ function Export-VdcCertificate {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'Tpp')]
 
     param (
 
-        [Parameter(ParameterSetName = 'Tpp', Mandatory, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'TppJks', Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Alias('id')]
         [string] $Path,
 
@@ -112,16 +111,14 @@ function Export-VdcCertificate {
             })]
         [String] $OutPath,
 
-        [Parameter(ParameterSetName = 'Tpp')]
-        [Parameter(ParameterSetName = 'TppJks')]
+        [Parameter()]
         [switch] $IncludeChain,
 
         [Parameter(ParameterSetName = 'Tpp')]
         [Parameter(Mandatory, ParameterSetName = 'TppJks')]
         [string] $FriendlyName,
 
-        [Parameter(ParameterSetName = 'Tpp')]
-        [Parameter(ParameterSetName = 'TppJks')]
+        [Parameter()]
         [Alias('SecurePassword')]
         [Security.SecureString] $PrivateKeyPassword,
 
@@ -136,7 +133,7 @@ function Export-VdcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
 

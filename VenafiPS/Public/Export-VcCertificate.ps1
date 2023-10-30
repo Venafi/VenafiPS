@@ -39,7 +39,7 @@ function Export-VcCertificate {
     .EXAMPLE
     $certId | Export-VdcCertificate -VaasFormat PEM
 
-    Get certificate data from Venafi as a Service
+    Get certificate data from TLSPC
 
     .EXAMPLE
     $cert | Export-VdcCertificate -TppFormat 'PKCS #7' -OutPath 'c:\temp'
@@ -93,7 +93,7 @@ function Export-VcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
 

@@ -21,7 +21,7 @@ function Convert-VdcObject {
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
+    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -77,7 +77,7 @@ function Convert-VdcObject {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
 
         $params = @{
             Method        = 'Post'

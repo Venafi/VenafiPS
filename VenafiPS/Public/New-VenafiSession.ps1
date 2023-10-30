@@ -1,7 +1,7 @@
 function New-VenafiSession {
     <#
     .SYNOPSIS
-    Create a new Venafi TLSPDC or Venafi as a Service session
+    Create a new Venafi TLSPDC or TLSPC session
 
     .DESCRIPTION
     Authenticate a user and create a new session with which future calls can be made.
@@ -65,15 +65,15 @@ function New-VenafiSession {
     If AuthServer is not provided, the value provided for Server will be used.
     If just the server name is provided, https:// will be appended.
 
-    .PARAMETER VaasKey
+    .PARAMETER VcKey
     Api key from your TLSPC instance.  The api key can be found under your user profile->preferences.
     Provide a pscredential object with the api key as the password.  The username is not used and can be any value.
     https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
 
-    .PARAMETER VaultVaasKeyName
+    .PARAMETER VaultVcKeyName
     Name of the SecretManagement vault entry for the TLSPC key.
-    First time use requires it to be provided with -VaasKey to populate the vault.
-    With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VaasKey.
+    First time use requires it to be provided with -VcKey to populate the vault.
+    With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VcKey.
 
     .PARAMETER SkipCertificateCheck
     Bypass certificate validation when connecting to the server.
@@ -126,12 +126,12 @@ function New-VenafiSession {
     Create session using a refresh token and store the newly created refresh token in the vault
 
     .EXAMPLE
-    New-VenafiSession -VaasKey $cred
-    Create session against Venafi as a Service
+    New-VenafiSession -VcKey $cred
+    Create session against TLSPC
 
     .EXAMPLE
-    New-VenafiSession -VaultVaasKeyName vaas-key
-    Create session against Venafi as a Service with a key stored in a vault
+    New-VenafiSession -VaultVcKeyName vaas-key
+    Create session against TLSPC with a key stored in a vault
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
@@ -253,15 +253,17 @@ function New-VenafiSession {
                     $true
                 }
                 catch {
-                    throw 'The value for -VaasKey is invalid and should be of the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
+                    throw 'The value for -VcKey is invalid and should be of the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
                 }
             }
         )]
-        [PSCredential] $VaasKey,
+        [Alias('VaasKey')]
+        [PSCredential] $VcKey,
 
         [Parameter(ParameterSetName = 'Vaas')]
-        [Parameter(Mandatory, ParameterSetName = 'VaultVaasKey')]
-        [string] $VaultVaasKeyName,
+        [Parameter(Mandatory, ParameterSetName = 'VaultVcKey')]
+        [Alias('VaultVaasKeyName')]
+        [string] $VaultVcKeyName,
 
         [Parameter()]
         [switch] $PassThru,
@@ -430,18 +432,18 @@ function New-VenafiSession {
 
         'Vaas' {
             $newSession.Server = $script:CloudUrl
-            $newSession.Key = $VaasKey
+            $newSession.Key = $VcKey
 
-            if ( $VaultVaasKeyName ) {
-                Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
+            if ( $VaultVcKeyName ) {
+                Set-Secret -Name $VaultVcKeyName -Secret $newSession.Key -Vault 'VenafiPS'
             }
         }
 
-        'VaultVaasKey' {
+        'VaultVcKey' {
             $newSession.Server = $script:CloudUrl
-            $keySecret = Get-Secret -Name $VaultVaasKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+            $keySecret = Get-Secret -Name $VaultVcKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
             if ( -not $keySecret ) {
-                throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
+                throw "'$VaultVcKeyName' secret not found in vault VenafiPS."
             }
             $newSession.Key = $keySecret
         }
@@ -478,7 +480,7 @@ function New-VenafiSession {
 
     # will fail if user is on an older version.  this isn't required so bypass on failure
     # only applicable to tpp
-    if ( $newSession.Platform -eq 'TLSPDC' ) {
+    if ( $newSession.Platform -eq 'VDC' ) {
         $newSession | Add-Member @{ Version = (Get-VdcVersion -VenafiSession $newSession -ErrorAction SilentlyContinue) }
         $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-VdcCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
         # make sure we remove duplicates

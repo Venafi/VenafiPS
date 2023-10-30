@@ -103,7 +103,7 @@ function Find-VcObject {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
     $queryParams = @{
         Filter = $Filter

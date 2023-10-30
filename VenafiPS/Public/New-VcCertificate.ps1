@@ -183,7 +183,7 @@ function New-VcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         # validation
         $allApps = Get-VcApplication -All

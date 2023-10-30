@@ -17,7 +17,7 @@ function Revoke-VdcGrant {
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
+    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     ID
@@ -64,7 +64,7 @@ function Revoke-VdcGrant {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC' -AuthType 'token'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC' -AuthType 'token'
 
         if ( $VenafiSession.Version -lt [Version]::new('22', '3', '0') ) {
             throw 'Revoke-VdcGrant is available on TLSPDC v22.3 and greater'

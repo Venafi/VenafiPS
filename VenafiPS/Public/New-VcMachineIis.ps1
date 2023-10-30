@@ -156,7 +156,7 @@ function New-VcMachineIis {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         $allMachines = [System.Collections.Generic.List[pscustomobject]]::new()
         $machineTypeId = 'c1521d80-db7a-11ec-b79a-f3ded6c9808c'

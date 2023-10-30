@@ -23,7 +23,7 @@ function Remove-VdcEngineFolder {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token can also be provided, but this requires an environment variable TLSPDC_SERVER to be set.
+    A TLSPDC token can also be provided, but this requires an environment variable VDC_SERVER to be set.
     .INPUTS
     FolderPath[], EnginePath[]
     .OUTPUTS
@@ -76,7 +76,7 @@ function Remove-VdcEngineFolder {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC' -Verbose:$false
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC' -Verbose:$false
 
         $params = @{
 

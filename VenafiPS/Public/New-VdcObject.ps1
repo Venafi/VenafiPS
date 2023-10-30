@@ -32,7 +32,7 @@ function New-VdcObject {
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named TLSPDC_SERVER must also be set.
+    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .EXAMPLE
     New-VdcObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}
@@ -106,7 +106,7 @@ function New-VdcObject {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPDC'
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
 
     if ( $PushCertificate -and (-not $Attribute.Certificate) ) {
         Write-Warning 'A ''Certificate'' key containing the certificate path must be provided for Attribute when using PushCertificate, eg. -Attribute @{''Certificate''=''\Ved\Policy\mycert.com''}.  Certificate provisioning will not take place.'

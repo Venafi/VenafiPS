@@ -160,7 +160,7 @@ function New-VcMachine {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'TLSPC'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         if ( -not (Get-Module -Name PSSodium)) {
             Import-Module "$PSScriptRoot/../import/PSSodium/PSSodium.psd1" -Force
