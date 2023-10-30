@@ -100,7 +100,7 @@ function Export-VdcCertificate {
         [ValidateSet("Base64", "Base64 (PKCS #8)", "DER", "PKCS #7", "PKCS #12")]
         [string] $Format = 'Base64',
 
-        [Parameter(ParameterSetName = 'Tpp')]
+        [Parameter()]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if (Test-Path $_ -PathType Container) {
