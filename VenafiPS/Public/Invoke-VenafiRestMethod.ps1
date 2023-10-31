@@ -115,8 +115,8 @@ function Invoke-VenafiRestMethod {
         switch ($VenafiSession.GetType().Name) {
             { $_ -in 'VenafiSession', 'PSCustomObject' } {
                 $Server = $VenafiSession.Server
-                if ( $VenafiSession.Platform -eq 'TLSPC' ) {
-                    $platform = 'TLSPC'
+                if ( $VenafiSession.Platform -eq 'VC' ) {
+                    $platform = 'VC'
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
                 }
                 else {
@@ -139,7 +139,7 @@ function Invoke-VenafiRestMethod {
 
                 if ( Test-IsGuid($VenafiSession) ) {
                     $Server = $script:CloudUrl
-                    $platform = 'TLSPC'
+                    $platform = 'VC'
                 }
                 else {
                     # TLSPDC access token
@@ -160,8 +160,9 @@ function Invoke-VenafiRestMethod {
             }
         }
 
+        # set auth
         switch ($platform) {
-            'TLSPC' {
+            'VC' {
                 $allHeaders = @{
                     "tppl-api-key" = $auth
                 }
