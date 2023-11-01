@@ -17,6 +17,15 @@ function Find-VcMachine {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
+    .PARAMETER Name
+    Machine name to find via regex match
+
+    .PARAMETER Type
+    Machine type.  You can use tab-ahead autocompletion for this field if you created a session with New-VenafiSession and the list of machine types are pre-populated.
+
+    .PARAMETER Status
+    Machine status, either DRAFT, VERIFIED, OR UNVERIFIED.
+
     .PARAMETER First
     Only retrieve this many records
 
@@ -29,15 +38,25 @@ function Find-VcMachine {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
 
     param (
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Name,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Type,
+
+        [Parameter(ParameterSetName = 'All')]
+        [ValidateSet('DRAFT', 'VERIFIED', 'UNVERIFIED')]
+        [string] $Status,
 
         [Parameter()]
         [int] $First,
@@ -46,5 +65,27 @@ function Find-VcMachine {
         [psobject] $VenafiSession
     )
 
-    Find-VcObject -Type Machine @PSBoundParameters
+    $params = @{
+        Type = 'Machine'
+        First = $First
+    }
+
+    if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
+        $params.Filter = $Filter
+        if ( $Order ) { $params.Order = $Order }
+    }
+    else {
+        $newFilter = [System.Collections.ArrayList]@('AND')
+
+        switch ($PSBoundParameters.Keys) {
+            'Name' { $null = $newFilter.Add(@('machineName', 'FIND', $Name)) }
+            'Type' { $null = $newFilter.Add(@('machineType', 'EQ', $Type)) }
+            'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }
+        }
+
+        if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
+    }
+
+    Find-VcObject @params
+
 }

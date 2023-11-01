@@ -17,6 +17,12 @@ function Find-VcCertificateRequest {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
+    .PARAMETER Status
+    Request status, either ISSUED or FAILED
+
+    .PARAMETER KeyLength
+    Certificate key length
+
     .PARAMETER First
     Only retrieve this many records
 
@@ -29,15 +35,22 @@ function Find-VcCertificateRequest {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
 
     param (
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
+
+        [Parameter(ParameterSetName = 'All')]
+        [ValidateSet('ISSUED', 'FAILED')]
+        [string] $Status,
+
+        [Parameter(ParameterSetName = 'All')]
+        [int] $KeyLength,
 
         [Parameter()]
         [int] $First,
@@ -46,5 +59,26 @@ function Find-VcCertificateRequest {
         [psobject] $VenafiSession
     )
 
-    Find-VcObject -Type CertificateRequest @PSBoundParameters
+    $params = @{
+        Type = 'CertificateRequest'
+        First = $First
+    }
+
+    if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
+        $params.Filter = $Filter
+        if ( $Order ) { $params.Order = $Order }
+    }
+    else {
+        $newFilter = [System.Collections.ArrayList]@('AND')
+
+        switch ($PSBoundParameters.Keys) {
+            'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }
+            'KeyLength' { $null = $newFilter.Add(@('keyLength', 'EQ', $KeyLength.ToString())) }
+        }
+
+        if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
+    }
+
+    Find-VcObject @params
+
 }

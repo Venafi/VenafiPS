@@ -17,6 +17,15 @@ function Find-VcLog {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
+    .PARAMETER Name
+    Activity name to find via regex match
+
+    .PARAMETER Type
+    Activity type
+
+    .PARAMETER Message
+    Look anywhere in the message for the string provided
+
     .PARAMETER First
     Only retrieve this many records
 
@@ -42,9 +51,9 @@ function Find-VcLog {
     Get the most recent 10 log items
 
     .EXAMPLE
-    Find-VcLog -Filter @('activityType', 'eq', 'Authentication')
+    Find-VcLog -Type 'Authentication'
 
-    Filter log results
+    Filter log results by specific value
 
     .EXAMPLE
     Find-VcLog -Filter @('and', @('activityDate', 'gt', (get-date).AddMonths(-1)), @('or', @('message', 'find', 'greg@venafi.com'), @('message', 'find', 'bob@venafi.com')), @('activityType','eq','Authentication'))
@@ -53,18 +62,18 @@ function Find-VcLog {
     This filter will find authentication log entries by 1 of 2 people within the last month.
 
     .EXAMPLE
-    Find-VcLog -Filter @('activityType', 'eq', 'Authentication') -Order 'activityDate'
+    Find-VcLog -Type 'Authentication' -Order 'activityDate'
 
     Filter log results and order them.
     By default, order will be ascending.
 
     .EXAMPLE
-    Find-VcLog -Filter @('activityType', 'eq', 'Authentication') -Order @{'activityDate'='desc'}
+    Find-VcLog -Type 'Authentication' -Order @{'activityDate'='desc'}
 
     Filter log results and order them descending
 
     .EXAMPLE
-    Find-VcLog -Filter @('activityType', 'eq', 'Authentication') -Order @{'activityDate'='desc'}, 'criticality'
+    Find-VcLog -Type 'Authentication' -Order @{'activityDate'='desc'}, 'criticality'
 
     Filter log results and order them by multiple fields
 
@@ -73,15 +82,24 @@ function Find-VcLog {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
 
     param (
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Name,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Type,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Message,
 
         [Parameter()]
         [int] $First,
@@ -90,5 +108,26 @@ function Find-VcLog {
         [psobject] $VenafiSession
     )
 
-    Find-VcObject -Type ActivityLog @PSBoundParameters
+    $params = @{
+        Type  = 'ActivityLog'
+        First = $First
+    }
+
+    if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
+        $params.Filter = $Filter
+        if ( $Order ) { $params.Order = $Order }
+    }
+    else {
+        $newFilter = [System.Collections.ArrayList]@('AND')
+
+        switch ($PSBoundParameters.Keys) {
+            'Name' { $null = $newFilter.Add(@('activityName', 'FIND', $Name)) }
+            'Type' { $null = $newFilter.Add(@('activityType', 'EQ', $Type)) }
+            'Message' { $null = $newFilter.Add(@('message', 'FIND', $Message)) }
+        }
+
+        if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
+    }
+
+    Find-VcObject @params
 }

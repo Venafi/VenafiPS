@@ -18,6 +18,18 @@ function Find-VcCertificateInstance {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
+    .PARAMETER HostName
+    Hostname to find via regex match
+
+    .PARAMETER IpAddress
+    Machine IP Address
+
+    .PARAMETER Port
+    Machine port
+
+    .PARAMETER Status
+    Instance status, either IN_USE or SUPERSEDED
+
     .PARAMETER First
     Only retrieve this many records
 
@@ -44,20 +56,14 @@ function Find-VcCertificateInstance {
         [string] $HostName,
 
         [Parameter(ParameterSetName = 'All')]
-        [ValidateScript({
-                try {
-                    [ipaddress] $_
-                    $true
-                }
-                catch {
-                    $false
-                }
-            })
-        ]
-        [string] $IpAddress,
+        [ipaddress] $IpAddress,
 
         [Parameter(ParameterSetName = 'All')]
         [int] $Port,
+
+        [Parameter(ParameterSetName = 'All')]
+        [ValidateSet('IN_USE', 'SUPERSEDED')]
+        [string] $Status,
 
         [Parameter()]
         [int] $First,
@@ -68,6 +74,7 @@ function Find-VcCertificateInstance {
 
     $params = @{
         Type = 'CertificateInstance'
+        First = $First
     }
 
     if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
@@ -78,9 +85,10 @@ function Find-VcCertificateInstance {
         $newFilter = [System.Collections.ArrayList]@('AND')
 
         switch ($PSBoundParameters.Keys) {
-            'HostName' { $null = $newFilter.Add(@('hostname', 'EQ', $HostName)) }
-            'IpAddress' { $null = $newFilter.Add(@('ipAddress', 'EQ', $IpAddress)) }
+            'HostName' { $null = $newFilter.Add(@('hostname', 'FIND', $HostName)) }
+            'IpAddress' { $null = $newFilter.Add(@('ipAddress', 'EQ', $IpAddress.IPAddressToString)) }
             'Port' { $null = $newFilter.Add(@('port', 'EQ', $Port.ToString())) }
+            'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }
         }
 
         if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }

@@ -516,7 +516,7 @@ function New-VenafiSession {
             }
         }
 
-        Register-ArgumentCompleter -CommandName 'New-VcMachine', 'Find-VaasMachine' -ParameterName 'MachineType' -ScriptBlock $machineTypeArgCompleterSb
+        Register-ArgumentCompleter -CommandName 'New-VcMachine', 'Find-VcMachine' -ParameterName 'Type' -ScriptBlock $machineTypeArgCompleterSb
 
     }
 

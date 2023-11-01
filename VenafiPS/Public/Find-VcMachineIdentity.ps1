@@ -17,6 +17,9 @@ function Find-VcMachineIdentity {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
+    .PARAMETER Status
+    Either DISCOVERED, VALIDATED, or INSTALLED
+
     .PARAMETER First
     Only retrieve this many records
 
@@ -29,15 +32,19 @@ function Find-VcMachineIdentity {
 
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
 
     param (
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
+
+        [Parameter(ParameterSetName = 'All')]
+        [ValidateSet('DISCOVERED', 'VALIDATED', 'INSTALLED')]
+        [string] $Status,
 
         [Parameter()]
         [int] $First,
@@ -46,5 +53,24 @@ function Find-VcMachineIdentity {
         [psobject] $VenafiSession
     )
 
-    Find-VcObject -Type MachineIdentity @PSBoundParameters
+    $params = @{
+        Type  = 'MachineIdentity'
+        First = $First
+    }
+
+    if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
+        $params.Filter = $Filter
+        if ( $Order ) { $params.Order = $Order }
+    }
+    else {
+        $newFilter = [System.Collections.ArrayList]@('AND')
+
+        switch ($PSBoundParameters.Keys) {
+            'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }
+        }
+
+        if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
+    }
+
+    Find-VcObject @params
 }
