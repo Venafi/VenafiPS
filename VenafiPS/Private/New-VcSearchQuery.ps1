@@ -145,8 +145,9 @@ function New-VcSearchQuery {
         if ( $Order ) {
             $query.ordering.Add('orders', @())
 
-            @($Order) | ForEach-Object {
-                $thisOrder = $_
+            # @($Order) | ForEach-Object {
+            foreach ($thisOrder in $Order) {
+                # $thisOrder = $_
                 switch ($thisOrder.GetType().Name) {
                     'String' {
                         $thisOrderCased = $vaasFields | Where-Object { $_.ToLower() -eq $thisOrder.ToLower() }
@@ -158,18 +159,15 @@ function New-VcSearchQuery {
                     }
 
                     'HashTable' {
-                        $thisOrder.GetEnumerator() | ForEach-Object {
+                        if ( $thisOrder.Values[0] -notin 'asc', 'desc' ) {
+                            throw ('Invalid order direction, {0}.  Provide either ''asc'' or ''desc''' -f $thisOrder.Values[0])
+                        }
 
-                            if ( $_.Value -notin 'asc', 'desc' ) {
-                                throw ('Invalid order direction, {0}.  Provide either ''asc'' or ''desc''' -f $_.Value)
-                            }
+                        $thisOrderCased = $vaasFields | Where-Object { $_.ToLower() -eq $thisOrder.Keys[0].ToLower() }
 
-                            $thisOrderCased = $vaasFields | Where-Object { $_.ToLower() -eq $_.Key.ToLower() }
-
-                            $query.ordering.orders += @{
-                                'field'     = if ($thisOrderCased) { $thisOrderCased } else { $_.Key }
-                                'direction' = $_.Value.ToUpper()
-                            }
+                        $query.ordering.orders += @{
+                            'field'     = if ($thisOrderCased) { $thisOrderCased } else { $thisOrder.Keys[0] }
+                            'direction' = $thisOrder.Values[0].ToUpper()
                         }
                     }
 

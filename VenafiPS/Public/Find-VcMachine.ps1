@@ -45,7 +45,7 @@ function Find-VcMachine {
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
-        [parameter()]
+        [Parameter()]
         [psobject[]] $Order,
 
         [Parameter(ParameterSetName = 'All')]
@@ -65,14 +65,17 @@ function Find-VcMachine {
         [psobject] $VenafiSession
     )
 
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+
     $params = @{
         Type = 'Machine'
         First = $First
     }
 
+    if ( $Order ) { $params.Order = $Order }
+
     if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
         $params.Filter = $Filter
-        if ( $Order ) { $params.Order = $Order }
     }
     else {
         $newFilter = [System.Collections.ArrayList]@('AND')

@@ -79,7 +79,7 @@ function Find-VcObject {
     https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VcObject.ps1
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
 
     param (
 
@@ -87,14 +87,18 @@ function Find-VcObject {
         [ValidateSet('Certificate', 'ActivityLog', 'Machine', 'MachineIdentity', 'CertificateRequest', 'CertificateInstance')]
         [string] $Type,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'All')]
         [string] $Name,
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
-        [parameter()]
+        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'Filter')]
         [psobject[]] $Order,
+
+        [parameter(Mandatory, ParameterSetName = 'SavedSearch')]
+        [string] $SavedSearchName,
 
         [Parameter()]
         [int] $First,
@@ -104,12 +108,6 @@ function Find-VcObject {
     )
 
     Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
-
-    $queryParams = @{
-        Filter = $Filter
-        Order  = $Order
-        First  = $First
-    }
 
     $objectData = @{
         'Certificate'         = @{
@@ -171,16 +169,34 @@ function Find-VcObject {
         }
     }
 
+    $queryParams = @{
+        Filter = $Filter
+        Order  = $Order
+        First  = $First
+    }
+
     if ($Name) {
-        $queryParams.Filter = @($objectData.$Type.name, 'find', $Name)
+        $queryParams.Filter = @($objectData.$Type.name, 'FIND', $Name)
     }
 
     $body = New-VcSearchQuery @queryParams
 
+    if ( $PSBoundParameters.ContainsKey('SavedSearchName') ) {
+        # get saved search data and update payload
+        $thisSavedSearch = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'savedsearches' | Select-Object -ExpandProperty savedSearchInfo | Where-Object { $_.name -eq $SavedSearchName }
+        if ( $thisSavedSearch ) {
+            $body.expression = $thisSavedSearch.searchDetails.expression
+            $body.ordering = $thisSavedSearch.searchDetails.ordering
+        }
+        else {
+            throw "The saved search name $SavedSearchName could not be found"
+        }
+    }
+
     $params = @{
-        Method        = 'Post'
-        Body          = $body
-        Header        = @{'Accept' = 'application/json' }
+        Method = 'Post'
+        Body   = $body
+        Header = @{'Accept' = 'application/json' }
     }
 
     $params.UriRoot = $objectData.$Type.uriroot

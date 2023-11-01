@@ -5,7 +5,6 @@ function Find-VcCertificate {
 
     .DESCRIPTION
     Find certificates based on various attributes.
-    If -First not provided, the default return is 1000 records.
 
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
@@ -47,24 +46,24 @@ function Find-VcCertificate {
     Find first 1000 certificates
 
     .EXAMPLE
-    Find-VcCertificate | Get-VcCertificate
-
-    Get detailed certificate info
-
-    .EXAMPLE
     Find-VcCertificate -First 500
 
     Find the first 500 certificates
 
     .EXAMPLE
+    Find-VcCertificate -Name 'mycert.company.com'
+
+    Find certificates matching all of part of the name
+
+    .EXAMPLE
     Find-VcCertificate -Filter @('fingerprint', 'EQ', '075C43428E70BCF941039F54B8ED78DE4FACA87F')
 
-    Find TLSPC certificates matching a single value
+    Find certificates matching a single value
 
     .EXAMPLE
     Find-VcCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('validityEnd','LTE',(get-date).AddDays(30)))
 
-    Find TLSPC certificates matching multiple values.  In this case, find all certificates expiring in the next 30 days.
+    Find certificates matching multiple values.  In this case, find all certificates expiring in the next 30 days.
 
     .EXAMPLE
     Find-VcCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('validityEnd','LTE',(get-date).AddDays(30))) | Invoke-VcCertificateAction -Renew
@@ -72,9 +71,15 @@ function Find-VcCertificate {
     Find all certificates expiring in the next 30 days and renew them
 
     .EXAMPLE
-    Find-VcCertificate -IncludeVaasOwner
+    Find-VcCertificate -ApplicatonDetail
 
-    Include user/team owner information.
+    Include application details, not just the ID.
+    This will make additional api calls and will increase the response time.
+
+    .EXAMPLE
+    Find-VcCertificate -OwnerDetail
+
+    Include user/team owner details, not just the ID.
     This will make additional api calls and will increase the response time.
 
     .LINK
@@ -82,21 +87,28 @@ function Find-VcCertificate {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'TLSPC')]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
 
     param (
 
-        [Parameter(ParameterSetName = 'TLSPC')]
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
-        [parameter(ParameterSetName = 'TLSPC')]
+        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'Filter')]
         [psobject[]] $Order,
 
-        [parameter(Mandatory, ParameterSetName = 'VaasSavedSearch')]
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Name,
+
+        [parameter(Mandatory, ParameterSetName = 'SavedSearch')]
         [string] $SavedSearchName,
 
         [Parameter()]
-        [switch] $IncludeVaasOwner,
+        [switch] $ApplicationDetail,
+
+        [Parameter()]
+        [switch] $OwnerDetail,
 
         [Parameter()]
         [int] $First,
@@ -105,155 +117,118 @@ function Find-VcCertificate {
         [psobject] $VenafiSession
     )
 
-    begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
-        $toRetrieveCount = if ($PSBoundParameters.ContainsKey('First') ) {
-            $First
+    $apps = [System.Collections.Generic.List[object]]::new()
+    $appOwners = [System.Collections.Generic.List[object]]::new()
+
+    $params = @{
+        Type  = 'Certificate'
+        First = $First
+    }
+
+    if ( $Order ) { $params.Order = $Order }
+
+    switch ($PSCmdlet.ParameterSetName) {
+        'Filter' {
+            $params.Filter = $Filter
         }
-        else {
-            1000 # default to max page size allowed
+
+        'All' {
+            $newFilter = [System.Collections.ArrayList]@('AND')
+
+            switch ($PSBoundParameters.Keys) {
+                'Name' { $null = $newFilter.Add(@('certificateName', 'FIND', $Name)) }
+                'Status' { $null = $newFilter.Add(@('certificateStatus', 'EQ', $Status.ToUpper())) }
+            }
+
+            if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
         }
 
-        $queryParams = @{
-            Filter = $Filter
-            Order  = $Order
-            First  = $toRetrieveCount
+        'SavedSearch' {
+            $params.SavedSearchName = $SavedSearchName
         }
+    }
 
-        $body = New-VcSearchQuery @queryParams
+    $response = Find-VcObject @params
 
-        if ( $PSBoundParameters.ContainsKey('SavedSearchName') ) {
-            # get saved search data and update payload
-            $thisSavedSearch = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'savedsearches' | Select-Object -ExpandProperty savedSearchInfo | Where-Object { $_.name -eq $SavedSearchName }
-            if ( $thisSavedSearch ) {
-                $body.expression = $thisSavedSearch.searchDetails.expression
-                $body.ordering = $thisSavedSearch.searchDetails.ordering
+    $response | Select-Object *,
+    @{
+        'n' = 'application'
+        'e' = {
+            if ( $ApplicationDetail ) {
+                foreach ($thisAppId in $_.applicationIds) {
+                    $thisApp = $apps | Where-Object { $_.applicationId -eq $thisAppId }
+                    if ( -not $thisApp ) {
+                        $thisApp = Get-VcApplication -ID $thisAppId | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                        $apps.Add($thisApp)
+                    }
+                    $thisApp
+                }
             }
             else {
-                throw "The saved search name $SavedSearchName does not exist"
+                $_.applicationIds
             }
         }
+    },
+    @{
+        'n' = 'owner'
+        'e' = {
+            if ( $OwnerDetail ) {
 
-        $params = @{
-            Method  = 'Post'
-            UriRoot = 'outagedetection/v1'
-            UriLeaf = 'certificatesearch?ownershipTree=true'
-            Body    = $body
-            # ensure we get json back otherwise we might get csv
-            Header  = @{'Accept' = 'application/json' }
+                # this scriptblock requires ?ownershipTree=true be part of the url
+                foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
+                    $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                    if ( -not $thisOwnerDetail ) {
+                        $thisOwnerDetail = Get-VcIdentity -ID $thisOwner | Select-Object firstName, lastName, emailAddress,
+                        @{
+                            'n' = 'status'
+                            'e' = { $_.userStatus }
+                        },
+                        @{
+                            'n' = 'role'
+                            'e' = { $_.systemRoles }
+                        },
+                        @{
+                            'n' = 'type'
+                            'e' = { 'USER' }
+                        },
+                        @{
+                            'n' = 'userId'
+                            'e' = { $_.id }
+                        }
+
+                        $appOwners.Add($thisOwnerDetail)
+
+                    }
+                    $thisOwnerDetail
+                }
+
+                foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
+                    $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                    if ( -not $thisOwnerDetail ) {
+                        $thisOwnerDetail = Get-VcTeam -ID $thisOwner | Select-Object name, role, members,
+                        @{
+                            'n' = 'type'
+                            'e' = { 'TEAM' }
+                        },
+                        @{
+                            'n' = 'teamId'
+                            'e' = { $_.id }
+                        }
+
+                        $appOwners.Add($thisOwnerDetail)
+                    }
+                    $thisOwnerDetail
+                }
+            }
+            else {
+                $_.ownership.owningContainers | Select-Object owningUsers, owningTeams
+            }
         }
-
-        $apps = [System.Collections.Generic.List[object]]::new()
-        $appOwners = [System.Collections.Generic.List[object]]::new()
-
-    }
-
-    process {
-
-        do {
-
-            $response = Invoke-VenafiRestMethod @params
-            $response.certificates | Select-Object @{
-                'n' = 'certificateId'
-                'e' = {
-                    $_.Id
-                }
-            },
-            @{
-                'n' = 'application'
-                'e' = {
-                    foreach ($thisAppId in $_.applicationIds) {
-                        $thisApp = $apps | Where-Object { $_.applicationId -eq $thisAppId }
-                        if ( -not $thisApp ) {
-                            $thisApp = $thisAppId | Get-VcApplication | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
-                            $apps.Add($thisApp)
-                        }
-                        $thisApp
-                    }
-                }
-            },
-            @{
-                'n' = 'owner'
-                'e' = {
-                    if ( $IncludeVaasOwner ) {
-
-                        # this scriptblock requires ?ownershipTree=true be part of the url
-                        foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
-                            $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
-                            if ( -not $thisOwnerDetail ) {
-                                $thisOwnerDetail = Get-VcIdentity -ID $thisOwner | Select-Object firstName, lastName, emailAddress,
-                                @{
-                                    'n' = 'status'
-                                    'e' = { $_.userStatus }
-                                },
-                                @{
-                                    'n' = 'role'
-                                    'e' = { $_.systemRoles }
-                                },
-                                @{
-                                    'n' = 'type'
-                                    'e' = { 'USER' }
-                                },
-                                @{
-                                    'n' = 'userId'
-                                    'e' = { $_.id }
-                                }
-
-                                $appOwners.Add($thisOwnerDetail)
-
-                            }
-                            $thisOwnerDetail
-                        }
-
-                        foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
-                            $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
-                            if ( -not $thisOwnerDetail ) {
-                                $thisOwnerDetail = Get-VcTeam -ID $thisOwner | Select-Object name, role, members,
-                                @{
-                                    'n' = 'type'
-                                    'e' = { 'TEAM' }
-                                },
-                                @{
-                                    'n' = 'teamId'
-                                    'e' = { $_.id }
-                                }
-
-                                $appOwners.Add($thisOwnerDetail)
-                            }
-                            $thisOwnerDetail
-                        }
-                    }
-                    else {
-                        $_.ownership.owningContainers | Select-Object owningUsers, owningTeams
-                    }
-                }
-            },
-            @{
-                'n' = 'instance'
-                'e' = { $_.instances }
-            },
-            * -ExcludeProperty Id, applicationIds, instances, totalInstanceCount, ownership
-
-            $body.paging.pageNumber += 1
-
-            # if ( -not $PSCmdlet.PagingParameters.IncludeTotalCount ) {
-            $toRetrieveCount -= $response.'count'
-
-            if ( $toRetrieveCount -le 0 ) {
-                break
-            }
-
-            if ( $toRetrieveCount -lt $body.paging.pageSize ) {
-                # if what's left to retrieve is less than the page size
-                # adjust to just retrieve the remaining amount
-                $body.paging.pageSize = $toRetrieveCount
-            }
-            # }
-
-        } until (
-            $response.'count' -eq 0 -or $response.'count' -lt $body.paging.pageSize
-        )
-
-    }
+    },
+    @{
+        'n' = 'instance'
+        'e' = { $_.instances }
+    } -ExcludeProperty applicationIds, instances, totalInstanceCount, ownership
 }

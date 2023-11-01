@@ -59,14 +59,17 @@ function Find-VcCertificateRequest {
         [psobject] $VenafiSession
     )
 
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+
     $params = @{
         Type = 'CertificateRequest'
         First = $First
     }
 
+    if ( $Order ) { $params.Order = $Order }
+
     if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
         $params.Filter = $Filter
-        if ( $Order ) { $params.Order = $Order }
     }
     else {
         $newFilter = [System.Collections.ArrayList]@('AND')
