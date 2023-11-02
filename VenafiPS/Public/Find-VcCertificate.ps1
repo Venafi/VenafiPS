@@ -22,6 +22,18 @@ function Find-VcCertificate {
     .PARAMETER Name
     Certificate name to find via regex match
 
+    .PARAMETER KeyLength
+    Certificate key length
+
+    .PARAMETER Serial
+    Serial number
+
+    .PARAMETER Fingerprint
+    Fingerprint
+
+    .PARAMETER IsSelfSigned
+    Only find self signed certificates
+
     .PARAMETER SavedSearchName
     Find certificates based on a saved search, see https://docs.venafi.cloud/vaas/certificates/saving-certificate-filters
 
@@ -108,6 +120,18 @@ function Find-VcCertificate {
         [Parameter(ParameterSetName = 'All')]
         [string] $Name,
 
+        [Parameter(ParameterSetName = 'All')]
+        [int] $KeyLength,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Serial,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Fingerprint,
+
+        [Parameter(ParameterSetName = 'All')]
+        [switch] $IsSelfSigned,
+
         [parameter(Mandatory, ParameterSetName = 'SavedSearch')]
         [string] $SavedSearchName,
 
@@ -148,6 +172,10 @@ function Find-VcCertificate {
             switch ($PSBoundParameters.Keys) {
                 'Name' { $null = $newFilter.Add(@('certificateName', 'FIND', $Name)) }
                 'Status' { $null = $newFilter.Add(@('certificateStatus', 'EQ', $Status.ToUpper())) }
+                'KeyLength' { $null = $newFilter.Add(@('keyStrength', 'EQ', $KeyLength.ToString())) }
+                'Serial' { $null = $newFilter.Add(@('serialNumber', 'EQ', $Serial)) }
+                'Fingerprint' { $null = $newFilter.Add(@('fingerprint', 'EQ', $Fingerprint)) }
+                'IsSelfSigned' { $null = $newFilter.Add(@('selfSigned', 'EQ', $IsSelfSigned.IsPresent.ToString())) }
             }
 
             if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
