@@ -19,13 +19,20 @@ function Find-VcCertificate {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
+    .PARAMETER Name
+    Certificate name to find via regex match
+
     .PARAMETER SavedSearchName
     Find certificates based on a saved search, see https://docs.venafi.cloud/vaas/certificates/saving-certificate-filters
 
     .PARAMETER First
     Only retrieve this many records
 
-    .PARAMETER IncludeVaasOwner
+    .PARAMETER ApplicationDetail
+    Retrieve detailed application info.
+    This will cause additional api calls to be made and take longer.
+
+    .PARAMETER OwnerDetail
     Retrieve detailed user/team owner info.
     This will cause additional api calls to be made and take longer.
 
@@ -108,6 +115,7 @@ function Find-VcCertificate {
         [switch] $ApplicationDetail,
 
         [Parameter()]
+        [Alias('IncludeVaasOwner')]
         [switch] $OwnerDetail,
 
         [Parameter()]
