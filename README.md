@@ -2,7 +2,7 @@
   <img src="images/full_venafi_logo.png" alt="Venafi"/>
 </p>
 
-# VenafiPS - Automate your Venafi Trust Protection Platform and Venafi as a Service platforms!
+# VenafiPS - Automate your Venafi TLS Protect Datacenter and Cloud platforms!
 
 [![Testing](https://github.com/Venafi/VenafiPS/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Venafi/VenafiPS/actions/workflows/ci.yml)
 [![Deployment](https://github.com/Venafi/VenafiPS/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/Venafi/VenafiPS/actions/workflows/cd.yml)
@@ -10,7 +10,7 @@
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
-Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi Trust Protection Platform and Venafi as a Service.  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue](https://github.com/Venafi/VenafiPS/issues).
+Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi TLS Protect Datacenter (TLSPDC) formerly known as Trust Protection Platform and TLS Protect Cloud (TLSPC).  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue](https://github.com/Venafi/VenafiPS/issues).
 
 ## Documentation
 
@@ -22,68 +22,84 @@ VenafiPS works on PowerShell v5.1 as well as cross-platform Core on Windows, Lin
 
 ## Install Module
 
-VenafiPS is published to the PowerShell Gallery.  The most recent version is listed in the badge 'powershell gallery' above and can be viewed by clicking on it.  To install the module, you need to have PowerShell installed first.  On Windows, PowerShell will already be installed.  For [Linux](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) or [macOS](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7), you will need to install PowerShell Core; follow those links for guidance.  Once PowerShell is installed, start a PowerShell prompt and execute `Install-Module -Name VenafiPS` which will install from the gallery.
+VenafiPS is published to the PowerShell Gallery.  The most recent version is listed in the badge 'powershell gallery' above and can be viewed by clicking on it.  To install the module, you need to have PowerShell installed first.  On Windows, Windows PowerShell (v5.x) will already be installed, but is recommended to install PowerShell Core.  For [Linux](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) or [macOS](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7), you will need to install PowerShell Core; follow those links for guidance.  Once PowerShell is installed, start a PowerShell prompt and execute `Install-Module -Name VenafiPS` which will install from the gallery.
 
-> :warning: If using an older operating system, eg. Windows Server 2016, and you receive errors downloading/installing nuget when attempting to install VenafiPS, your SSL/TLS version is most likely at the default and will not work.  Execute the following before installing the module, `[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12`.
+> :warning: If using an older operating system, eg. Windows Server 2016, and you receive errors downloading/installing nuget when attempting to install VenafiPS, your SSL/TLS version is most likely at the default and will not work.  Execute the following before installing the module,
+``` powershell
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+```
 
 ## Usage
 
-As the module supports both TPP and Venafi as a Service, you will note different names for the functions.  Functions with `-Tpp` are for TPP only, `-Vaas` are for Venafi as a Service only, and `-Venafi` are for both.
+As the module supports both TLSPDC and TLSPC, you will note different names for the functions.  Functions with `-Vdc` are for TLSPDC only, `-Vc` are for TLSPC only, and `-Venafi` are for both.  You can easily see the available commands for each platform with
+``` powershell
+Get-Command -Module VenafiPS -Name '*-Vdc*' # for TLSPDC functions
+Get-Command -Module VenafiPS -Name '*-Vc*' # for TLSPC functions
+```
 
-For TPP, [token based authentication](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php) must be setup and configured.
+For TLSPDC, [token based authentication](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php) must be setup and configured.
 
 ### Interactive Session
 
 For an interactive session, we want to create a Venafi session which will hold the details needed for future operations.  Start a new PowerShell prompt (even if you have one from the install-module step) and create a new VenafiPS session with:
 
 ```powershell
+# username/password for TLSPDC.  TLSPC uses any value for username and your api key for the password
 $cred = Get-Credential
 
-# create a session for TPP
+# create a session for TLSPDC
 New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'}
 
-# create a session for VaaS (your API key can be found in your user profile -> preferences)
-New-VenafiSession -VaasKey $cred
+# create a session for TLSPC (your API key can be found in your user profile -> preferences)
+New-VenafiSession -VcKey $cred
 ```
 
 The above will create a session variable named $VenafiSession which will be used by default in other functions.
 
-View the help on all the ways you can create a new Venafi session with `help New-VenafiSession -full`.  To utilize the SecretManagement vault functionality, ensure you [complete the setup below](https://github.com/Venafi/VenafiPS#tokenkey-secret-storage).
+View the help on all the ways you can create a new Venafi session with
+``` powershell
+help New-VenafiSession -full
+```
+To utilize the SecretManagement vault functionality, ensure you [complete the setup below](https://github.com/Venafi/VenafiPS#tokenkey-secret-storage).
 
 ### Automated Scenarios
 
-For non-interactive usage including ci/cd, the module can be used without creating a session.  For all functions you can substitute a VenafiSession object with either a TPP token or VaaS key, eg. `-VenafiSession $tpp_token`.  You can also provide these as environment variables, TPP_TOKEN or VAAS_KEY.  If providing a TPP token, either as the value for VenafiSession or as an environment variable, a server environment variable, TPP_SERVER, must also be set.
+For non-interactive usage including ci/cd, the module can be used without creating a session.  For all functions, you can substitute a VenafiSession object with either a TLSPDC token or TLSPC key, eg. `-VenafiSession 'e9fe8860-a4c5-427f-bece-18204b04ac85'`.  You can also provide these as environment variables, VDC_TOKEN or VC_KEY.  If providing a TLSPDC token, either as the value for -VenafiSession or as an environment variable, a server environment variable, VDC_SERVER, must also be set.
 
-A [docker image](https://hub.docker.com/repository/docker/venafi/venafips-module) is also available with Microsoft's PowerShell base image and the VenafiPS module preinstalled. The same environment variables as stated above should be used.
+## TLSPDC Examples
 
-### Examples
-
-One of the easiest ways to get started is to use `Find-TppObject`:
+One of the easiest ways to get started is to use `Find-VdcObject`:
 
 ```powershell
-$allPolicy = Find-TppObject -Path '\ved\policy' -Recursive
+$allPolicy = Find-VdcObject -Path '\ved\policy' -Recursive
 ```
 
 This will return all objects in the Policy folder.  You can also search from the root folder, \ved.
 
 To find a certificate object, not retrieve an actual certificate, use:
 ```powershell
-$cert = Find-VenafiCertificate -Limit 1
+$cert = Find-VdcCertificate -First 1
 ```
 
-Check out the parameters for `Find-TppCertificate` as there's an extensive list to search on.
+Check out the parameters for `Find-VdcCertificate` as there's an extensive list to search on.
 
-Now you can take that certificate 'TppObject' and find all log entries associated with it:
+Now you can take that certificate object and find all log entries associated with it:
 
 ```powershell
-$cert | Read-VenafiLog
+$cert | Read-VdcLog
 ```
 
-To perform many of the core certificate actions, we will use `Invoke-VenafiCertificateAction`.  For example, to create a new session and renew a certificate, use the following:
+To perform many of the core certificate actions, we will use `Invoke-VdcCertificateAction`.  For example, to create a new session and renew a certificate, use the following:
 
 ```powershell
 New-VenafiSession -Server 'venafi.mycompany.com' -Credential $cred -ClientId 'MyApp' -Scope @{'certificate'='manage'}
-Invoke-VenafiCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Renew
+Invoke-VdcCertificateAction -CertificateId '\VED\Policy\My folder\app.mycompany.com' -Renew
+```
+
+You can also find and perform an action on mutliple objects.  In this example we find all certificates expriring in the next 30 days and renew them
+
+``` powershell
+Find-VdcCertificate -ExpireBefore (Get-Date).AddDays(30) -ExpireAfter (Get-Date) | Invoke-VdcCertificateAction -Renew
 ```
 
 You can also have multiple sessions at once, either to the same server with different credentials or different servers.
@@ -98,13 +114,17 @@ $user2Cred = Get-Credential # specify credentials for a different/limited user
 $user2Session = New-VenafiSession -ServerUrl 'https://venafi.mycompany.com' -Credential $user2Cred -PassThru
 
 # get all objects in the Policy folder for the first user
-$all = Find-TppObject -Path '\ved\policy' -Recursive
+$all = Find-VdcObject -Path '\ved\policy' -Recursive
 
 # get all objects in the Policy folder for user2
-$all2 = Find-TppObject -Path '\ved\policy' -Recursive -VenafiSession $user2Session
+$all2 = Find-VdcObject -Path '\ved\policy' -Recursive -VenafiSession $user2Session
 
 Compare-Object -ReferenceObject $all -DifferenceObject $all2 -Property Path
 ```
+
+## TLSPC Examples
+
+Most of the same functionality from the above examples exist for TLSPC as well.  Simply replace `-Vdc` with `-Vc`.
 
 ## Token/Key Secret Storage
 
@@ -121,4 +141,4 @@ Note, extension vaults are registered to the current logged in user context, and
 
 ## Contributing
 
-Please feel free to log an issue for any new features you would like, bugs you come across, or just simply a question.  I am happy to have people contribute to the codebase as well.
+Please feel free to log an issue for any new features you would like, bugs you come across, or just simply a question.  We are happy to have people contribute to the codebase as well.

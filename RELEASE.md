@@ -1,1 +1,21 @@
-- Remove deprecated application server types from `New-VaasCertificate`
+This is a major release.  Although every attempt has been made to be backwards compatible, a **existing scripts will likely require some updates**.  Please read the full release notes.
+
+- TPP is now TLS Protect Datacenter (TLSPDC) and VaaS is now TLS Protect Cloud (TLSPC).  All functions have been renamed to prefix with `-Vdc` (Venafi Datacenter) or `-Vc` (Venafi Cloud).  Combined platform functions, those prefixed with `-Venafi`, have all been updated to dedicated platform functions.  The desire to add additional functionality for each platform and reduce parameter set complexity drove this decision.  The only exception to this rule are the functions related to the session.  Aliases have been added where applicable.
+- VenafiPS is now signed.  `Test-ModuleHash` has been deprecated.
+- VenafiSession is stored for nested operations each time a function is called directly.  This has 2 main benefits:
+   - Performance enhancement bypassing `Test-VenafiSession` in nested functions
+   - No longer need to pass VenafiSession to each function when sending function output down the pipeline
+ - Parallel functionality added for many functions, notably export and import certificates.  Ensure you are using PowerShell v7!
+ - `Find-VaasObject` has been replaced with dedicated functions `Find-VcCertificateRequest`, `Find-VcLog`, `Find-VcMachine`, and `Find-VcMachineIdentity`.  These functions have property filters specific to their types making it super easy to search.
+ - Environment variable names updated:
+  - TPP_SERVER -> VDC_SERVER
+  - TPP_TOKEN -> VDC_TOKEN
+  - VAAS_KEY -> VC_KEY
+ - Update `Invoke-VenafiParallel` to be version aware.  Parallel on PowerShell v7+, synchronous otherwise
+ - Update TLSPC searching to make -Order case insensitive
+ - Fix #221
+ - Fix #225
+ - `Revoke-TppCertificate` deprecated, use `Invoke-VdcCertificateAction -Revoke`
+ - Dedicated removal functions created for TLSPC
+ - Add filters `-IsSelfSigned` and `-IsWildcard` to `Find-VdcCertificate`
+ - CodeSign Protect functions have been deprecated
