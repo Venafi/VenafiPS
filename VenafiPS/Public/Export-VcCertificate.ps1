@@ -4,23 +4,19 @@ function Export-VcCertificate {
     Expoort certificate data from TLSPC
 
     .DESCRIPTION
-    Export certificate data
+    Export certificate data in PEM format
 
     .PARAMETER ID
     Full path to the certificate
-
-    .PARAMETER Format
-    Certificate format, either Base64, Base64 (PKCS#8), DER, PKCS #7, or PKCS #12.
-    Defaults to Base64.
 
     .PARAMETER OutPath
     Folder path to save the certificate to.  The name of the file will be determined automatically.
 
     .PARAMETER IncludeChain
-    Include the certificate chain with the exported certificate.  Not supported with DER format.
+    Include the certificate chain with the exported certificate.
 
     .PARAMETER RootFirst
-    Use with -IncludeChain for TLSPC to return the root first instead of the end entity first
+    Use with -IncludeChain for TLSPC to return the root first instead of the end entity first which is the default
 
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
@@ -37,19 +33,19 @@ function Export-VcCertificate {
     PSCustomObject
 
     .EXAMPLE
-    $certId | Export-VdcCertificate -VaasFormat PEM
+    $certId | Export-VcCertificate
 
-    Get certificate data from TLSPC
+    Export certificate data from TLSPC
 
     .EXAMPLE
-    $cert | Export-VdcCertificate -TppFormat 'PKCS #7' -OutPath 'c:\temp'
+    $cert | Export-VcCertificate -OutPath '~/temp'
 
     Get certificate data and save to a file
 
     .EXAMPLE
-    $cert | Export-VdcCertificate -VaasFormat PEM -IncludeChain -RootFirst
+    $cert | Export-VcCertificate -IncludeChain -RootFirst
 
-    Get one or more certificates with the certificate chain included and the root first in the chain
+    Get certificate data with the certificate chain included and the root first in the chain
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Vaas')]
@@ -60,11 +56,6 @@ function Export-VcCertificate {
         [Parameter(ParameterSetName = 'VaasChain', Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('certificateId')]
         [string] $ID,
-
-        [Parameter(ParameterSetName = 'Vaas')]
-        [Parameter(ParameterSetName = 'VaasChain')]
-        [ValidateSet("DER", "PEM")]
-        [string] $Format = 'PEM',
 
         [Parameter(ParameterSetName = 'VaasChain', Mandatory)]
         [switch] $IncludeChain,
@@ -105,10 +96,6 @@ function Export-VcCertificate {
         }
 
         if ( $IncludeChain ) {
-            if ( $Format -in @('DER') ) {
-                throw "-IncludeChain is not supported with the DER Format"
-            }
-
             $params.Body.chainOrder = 'EE_FIRST'
             if ( $RootFirst ) {
                 $params.Body.chainOrder = 'ROOT_FIRST'
@@ -120,7 +107,6 @@ function Export-VcCertificate {
     }
 
     process {
-
         $allCerts.Add($ID)
     }
 
