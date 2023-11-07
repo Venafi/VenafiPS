@@ -100,7 +100,7 @@ function Invoke-VenafiParallel {
             # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
             # so can't pass VenafiSession as is unless it's an token/key string
             # pscustomobject are safe so convert to that
-            $vs = if ( $VenafiSession.GetType().Name -eq 'VenafiSession' ) {
+            $vs = if ( $VenafiSession -is 'VenafiSession' ) {
                 $vsTemp = [pscustomobject]@{}
                 $VenafiSession.psobject.properties | ForEach-Object { $vsTemp | Add-Member @{$_.name = $_.value } }
                 $vsTemp
@@ -164,5 +164,8 @@ function Invoke-VenafiParallel {
 
             } while ($completedJobsCount -lt $job.ChildJobs.Count)
         }
+
+        # close the progress bar
+        Write-Progress -Completed -Activity 'done'
     }
 }

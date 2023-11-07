@@ -9,13 +9,25 @@ function Find-VcCertificate {
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @(field, comparison operator, value).
-    To combine filters use the format @('operator', @(field, comparison operator, value), @(field2, comparison operator2, value2)).
+    To combine filters, use the format @('operator', @(field, comparison operator, value), @(field2, comparison operator2, value2)).
     Nested filters are supported.
     Field names and values are case sensitive.
-    For a complete list of comparison operators, see https://docs.venafi.cloud/api/about-api-search-operators/.
+
+    Operator    |	Name                    |	Description and Usage
+    -----------------------------------------------------------------
+    EQ              Equal operator              The search result is equal to the specified value. Valid for numeric or Boolean fields.
+    FIND            Find operator               The search result is based on the value of all or part of one or more strings. You can also use Regular Expressions (regex).
+    GT              Greater than                The search result has a higher numeric value than the specified value.
+    GTE             Greater than or equal to    The search result is equal or has a higher numeric value than the specified value.
+    IN              In clause                   The search result matches one of the values in an array.
+    LT              Less Than                   The search result has a lower value than the specified value.
+    LTE             Less than or equal to       The search result is equal or less than the specified value.
+    MATCH           Match operator              The search result includes a string value from the supplied list. You can also use regex for your search.
+
+    For more info comparison operators, see https://docs.venafi.cloud/api/about-api-search-operators/.
 
     .PARAMETER Order
-    Array of fields to order on.
+    1 or more fields to order on.
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
@@ -62,7 +74,7 @@ function Find-VcCertificate {
     .EXAMPLE
     Find-VcCertificate
 
-    Find first 1000 certificates
+    Find all certificates
 
     .EXAMPLE
     Find-VcCertificate -First 500

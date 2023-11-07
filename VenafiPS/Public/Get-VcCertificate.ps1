@@ -69,8 +69,10 @@
             return (Find-VcCertificate -IncludeVaasOwner:$IncludeVaasOwner)
         }
 
-        $params.UriRoot = 'outagedetection/v1'
-        $params.UriLeaf = "certificates/"
+        $params = @{
+            UriRoot = 'outagedetection/v1'
+            UriLeaf = "certificates/"
+        }
 
         if ( Test-IsGuid($ID) ) {
             $params.UriLeaf += $ID
