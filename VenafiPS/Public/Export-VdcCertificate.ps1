@@ -9,18 +9,30 @@ function Export-VdcCertificate {
     .PARAMETER Path
     Full path to the certificate
 
-    .PARAMETER Format
-    Certificate format, either Base64, Base64 (PKCS#8), DER, PKCS #7, or PKCS #12.
-    Defaults to Base64.
+    .PARAMETER Base64
+    Provide output in Base64 format.  This is the default if no format is provided.
+
+    .PARAMETER Pkcs7
+    Provide output in PKCS #7 format
+
+    .PARAMETER Pkcs8
+    Provide output in PKCS #8 format
+
+    .PARAMETER Der
+    Provide output in DER format
+
+    .PARAMETER Pkcs12
+    Provide output in PKCS #12 format.  Requires a value for PrivateKeyPassword.
+
+    .PARAMETER Jks
+    Provide output in JKS format.  Requires a value for FriendlyName.
 
     .PARAMETER OutPath
-    Folder path to save the certificate to.  The name of the file will be determined automatically.
+    Folder path to save the certificate/key to.  The name of the file will be determined automatically.
 
     .PARAMETER IncludeChain
-    Include the certificate chain with the exported certificate.  Not supported with DER format.
-
-    .PARAMETER RootFirst
-    Use with -IncludeChain for TLSPC to return the root first instead of the end entity first
+    Include the certificate chain with the exported certificate.
+    The end entity will be first and the root last.
 
     .PARAMETER FriendlyName
     Label or alias to use.  Permitted with Base64 and PKCS #12 formats.  Required when exporting JKS.
@@ -65,12 +77,12 @@ function Export-VdcCertificate {
     .EXAMPLE
     Export-VdcCertificate -Path '\ved\policy\mycert.com'
 
-    Get certificate data
+    Get certificate data in Base64 format, the default
 
     .EXAMPLE
     $cert | Export-VdcCertificate -'PKCS7' -OutPath 'c:\temp'
 
-    Get certificate data and save to a file
+    Get certificate data in a specific format and save to a file
 
     .EXAMPLE
     $cert | Export-VdcCertificate -'PKCS7' -IncludeChain
@@ -81,6 +93,11 @@ function Export-VdcCertificate {
     $cert | Export-VdcCertificate -'PKCS12' -PrivateKeyPassword 'mySecretPassword!'
 
     Get one or more certificates with private key included
+
+    .EXAMPLE
+    $cert | Export-VdcCertificate -'PKCS8' -PrivateKeyPassword 'mySecretPassword!' -OutPath '~/temp'
+
+    Save certificate info to a file.  PKCS8 with private key will save 3 files, .pem (cert+key), .pem.cer (cert only), and .pem.key (key only)
 
     .EXAMPLE
     $cert | Export-VdcCertificate -Jks -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
@@ -116,7 +133,7 @@ function Export-VdcCertificate {
         [switch] $Jks,
 
         [Parameter(ParameterSetName = 'Pkcs8')]
-        [Parameter(ParameterSetName = 'Pkcs12')]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12')]
         [Parameter(ParameterSetName = 'Jks')]
         [Alias('SecurePassword')]
         [psobject] $PrivateKeyPassword,
@@ -233,27 +250,57 @@ function Export-VdcCertificate {
 
             if ( $innerResponse.CertificateData ) {
 
-                $splitData = Split-CertificateData -CertificateData $innerResponse.CertificateData
+                if ( $thisBody.Format -in 'Base64', 'Base64 (PKCS#8)' ) {
+                    $splitData = Split-CertificateData -CertificateData $innerResponse.CertificateData
+                }
 
                 if ( $using:OutPath ) {
-                    if ( $innerResponse.PSobject.Properties.name -contains "CertificateData" ) {
-                        $outFile = Join-Path -Path $using:OutPath -ChildPath ($innerResponse.FileName.Trim('"'))
-                        $bytes = [Convert]::FromBase64String($innerResponse.CertificateData)
-                        [IO.File]::WriteAllBytes($outFile, $bytes)
-                        Write-Verbose "Saved $outFile"
-                        $out | Add-Member @{'OutPath' = $outFile }
+                    # write the file with the filename provided
+                    $outFile = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ($innerResponse.FileName.Trim('"'))
+                    $bytes = [Convert]::FromBase64String($innerResponse.CertificateData)
+                    [IO.File]::WriteAllBytes($outFile, $bytes)
+
+                    Write-Verbose "Saved $outFile"
+
+                    $out | Add-Member @{'OutPath' = $outFile }
+
+                    if ( $thisBody.Format -in 'Base64 (PKCS#8)' -and $thisBody.IncludePrivateKey) {
+                        # outFile will be .pem with cert and key
+                        # write out the individual files as well
+                        try {
+                            $sw = [IO.StreamWriter]::new("$outFile.cer", $false, [Text.Encoding]::ASCII)
+                            $sw.WriteLine($splitData.CertPem)
+                            Write-Verbose "Saved $outFile.pem"
+                        }
+                        finally {
+                            if ($null -ne $sw) { $sw.Close() }
+                        }
+
+                        if ( $thisBody.IncludePrivateKey ) {
+                            try {
+                                $sw = [IO.StreamWriter]::new("$outFile.key", $false, [Text.Encoding]::ASCII)
+                                $sw.WriteLine($splitData.KeyPem)
+                                Write-Verbose "Saved $outFile.key"
+                            }
+                            finally {
+                                if ($null -ne $sw) { $sw.Close() }
+                            }
+                        }
                     }
                 }
                 else {
                     $out | Add-Member @{'CertificateData' = $innerResponse.CertificateData }
-                    $out | Add-Member @{'CertPem' = $splitData.CertPem }
+                    if ( $thisBody.Format -in 'Base64', 'Base64 (PKCS#8)' ) {
 
-                    if ( $thisBody.IncludePrivateKey ) {
-                        $out | Add-Member @{'KeyPem' = $splitData.KeyPem }
-                    }
+                        $out | Add-Member @{'CertPem' = $splitData.CertPem }
 
-                    if ( $thisBody.IncludeChain -and $certPem.Count -gt 1 ) {
-                        $out | Add-Member @{'ChainPem' = $splitData.CertPem[1..($splitData.CertPem.Count - 1)] }
+                        if ( $thisBody.IncludePrivateKey ) {
+                            $out | Add-Member @{'KeyPem' = $splitData.KeyPem }
+                        }
+
+                        if ( $thisBody.IncludeChain -and $splitData.ChainPem ) {
+                            $out | Add-Member @{'ChainPem' = $splitData.ChainPem }
+                        }
                     }
                 }
             }
