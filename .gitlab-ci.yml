@@ -1,0 +1,4 @@
+include:
+  - project: venafi/ps/gitlab/sharedci
+    file:
+      - /common.gitlab-ci.yml
