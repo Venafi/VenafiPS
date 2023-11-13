@@ -268,9 +268,9 @@ function Export-VdcCertificate {
                         # outFile will be .pem with cert and key
                         # write out the individual files as well
                         try {
-                            $sw = [IO.StreamWriter]::new("$outFile.cer", $false, [Text.Encoding]::ASCII)
+                            $sw = [IO.StreamWriter]::new($outFile.Replace('.pem', '.crt'), $false, [Text.Encoding]::ASCII)
                             $sw.WriteLine($splitData.CertPem)
-                            Write-Verbose "Saved $outFile.pem"
+                            Write-Verbose ('Saved {0}' -f $outFile.Replace('.pem', '.crt'))
                         }
                         finally {
                             if ($null -ne $sw) { $sw.Close() }
@@ -278,9 +278,9 @@ function Export-VdcCertificate {
 
                         if ( $thisBody.IncludePrivateKey ) {
                             try {
-                                $sw = [IO.StreamWriter]::new("$outFile.key", $false, [Text.Encoding]::ASCII)
+                                $sw = [IO.StreamWriter]::new($outFile.Replace('.pem', '.key'), $false, [Text.Encoding]::ASCII)
                                 $sw.WriteLine($splitData.KeyPem)
-                                Write-Verbose "Saved $outFile.key"
+                                Write-Verbose ('Saved {0}' -f $outFile.Replace('.pem', '.key'))
                             }
                             finally {
                                 if ($null -ne $sw) { $sw.Close() }
