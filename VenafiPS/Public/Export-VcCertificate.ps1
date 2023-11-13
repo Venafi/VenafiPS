@@ -193,20 +193,21 @@ function Export-VcCertificate {
 
                 $zipFile = New-TemporaryFile
                 $unzipPath = Join-Path -Path (Split-Path -Path $zipFile -Parent) -ChildPath $PSItem.ID
-                if ( $using:OutPath ) {
-                    $outPath = Resolve-Path -Path $using:OutPath
-                }
 
                 try {
-                    # always save the zip file then decide to copy to the final destination or display
+                    # always save the zip file then decide to copy to the final destination or return contents
                     [IO.File]::WriteAllBytes($zipFile, $innerResponse.Content)
 
                     $unzipFiles = Expand-Archive -Path $zipFile -DestinationPath $unzipPath -PassThru
 
-                    $out.error = if ($innerResponse.StatusCode -notin 200, 201, 202) { $innerResponse.StatusDescription }
+                    if ($innerResponse.StatusCode -notin 200, 201, 202) {
+                        $out.error = $innerResponse.StatusDescription
+                        return $out
+                    }
 
-                    if ( $outPath ) {
+                    if ( $using:outPath ) {
                         # copy files to final desination
+                        $outPath = Resolve-Path -Path $using:OutPath
                         $unzipFiles | Copy-Item -Destination $outPath -Force
                         $out | Add-Member @{'outPath' = $outPath }
                     }
@@ -238,7 +239,6 @@ function Export-VcCertificate {
                             }
                         }
                     }
-
                     $out
                 }
                 finally {
@@ -279,9 +279,7 @@ function Export-VcCertificate {
                         $out | Add-Member @{'certificateData' = $certificateData }
                     }
                 }
-
                 $out
-
             }
         }
 
