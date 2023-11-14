@@ -51,8 +51,8 @@
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('teamID')]
-        [string] $ID,
+        [Alias('teamID', 'owningTeam', 'owningTeams', 'owningTeamId', 'ownedTeams')]
+        [string[]] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
@@ -72,13 +72,22 @@
             $uriLeaf = 'teams'
         }
         else {
-            if ( Test-IsGuid($ID) ) {
-                $guid = [guid] $ID
+            if ( $ID.Count -gt 1 ) {
+                foreach ($teamId in $ID) {
+                    Get-VcTeam -ID $teamId
+                }
+            }
+            else {
+                $thisID = $ID[0]
+            }
+
+            if ( Test-IsGuid -InputObject $thisID ) {
+                $guid = [guid] $thisID
                 $uriLeaf = 'teams/{0}' -f $guid.ToString()
             }
             else {
                 # assume team name
-                return Get-VcTeam -All | Where-Object { $_.name -eq $ID }
+                return Get-VcTeam -All | Where-Object { $_.name -eq $thisID }
             }
         }
 

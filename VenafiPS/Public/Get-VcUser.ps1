@@ -1,16 +1,16 @@
-function Get-VcIdentity {
+function Get-VcUser {
     <#
     .SYNOPSIS
-    Get user and group details
+    Get user details
 
     .DESCRIPTION
-    Returns user/group information for TLSPC.
+    Returns user information for TLSPC.
 
     .PARAMETER ID
     Either be the user id (guid) or username which is the email address.
 
     .PARAMETER Me
-    Returns the identity of the authenticated/current user
+    Returns details of the authenticated/current user
 
     .PARAMETER All
     Return a complete list of local users.
@@ -44,22 +44,22 @@ function Get-VcIdentity {
         memberedTeams
 
     .EXAMPLE
-    Get-VcIdentity -ID 9e9db8d6-234a-409c-8299-e3b81ce2f916
+    Get-VcUser -ID 9e9db8d6-234a-409c-8299-e3b81ce2f916
 
-    Get identity details from an id
-
-    .EXAMPLE
-    Get-VcIdentity -ID me@x.com
-
-    Get identity details from a username
+    Get user details from an id
 
     .EXAMPLE
-    Get-VcIdentity -Me
+    Get-VcUser -ID 'greg.brownstein@venafi.com'
 
-    Get identity details for authenticated/current user
+    Get user details from a username
 
     .EXAMPLE
-    Get-VcIdentity -All
+    Get-VcUser -Me
+
+    Get user details for authenticated/current user
+
+    .EXAMPLE
+    Get-VcUser -All
 
     Get all users
 
@@ -73,8 +73,8 @@ function Get-VcIdentity {
     param (
         [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [Alias('Guid', 'FullName')]
-        [String] $ID,
+        [Alias('userId', 'owningUser', 'owningUsers', 'owningUserId')]
+        [String[]] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'Me')]
         [Switch] $Me,
@@ -94,28 +94,35 @@ function Get-VcIdentity {
 
         Switch ($PsCmdlet.ParameterSetName)	{
             'Id' {
+                if ( $ID.Count -gt 1 ) {
+                    foreach ($teamId in $ID) {
+                        Get-VcUser -ID $teamId
+                    }
+                }
+                else {
+                    $thisID = $ID[0]
+                }
+
                 # can search by user id (guid) or username
                 try {
-                    $guid = [guid] $ID
-                    $params.UriLeaf = 'users/{0}' -f $guid.ToString()
-                    $response = Invoke-VenafiRestMethod @params
+                    $guid = [guid] $thisID
+                    $response = Invoke-VenafiRestMethod -UriLeaf ('users/{0}' -f $guid.ToString())
                 }
                 catch {
-                    $params.UriLeaf = 'users/username/{0}' -f $ID
-                    $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty users
+                    $response = Invoke-VenafiRestMethod -UriLeaf "users/username/$thisID" | Select-Object -ExpandProperty users
                 }
 
             }
 
             'Me' {
-                $params.UriLeaf = 'useraccounts'
-                $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty user
+                $response = Invoke-VenafiRestMethod -UriLeaf 'useraccounts' | Select-Object -ExpandProperty user
             }
 
             'All' {
-                $params.UriLeaf = 'users'
-                $response = Invoke-VenafiRestMethod @params | Select-Object -ExpandProperty users
+                $response = Invoke-VenafiRestMethod -UriLeaf 'users' | Select-Object -ExpandProperty users
             }
         }
+
+        $response | Select-Object @{'n' = 'userId'; 'e' = { $_.id } }, * -ExcludeProperty id
     }
 }
