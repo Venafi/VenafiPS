@@ -186,9 +186,9 @@ function Export-VdcCertificate {
             'Jks' { $body.Format = 'JKS' }
         }
 
-        if ( $PSBoundParameters.ContainsKey('PrivateKeyPassword') ) {
+        $body.IncludePrivateKey = $PSBoundParameters.ContainsKey('PrivateKeyPassword')
 
-            $body.IncludePrivateKey = $true
+        if ( $body.IncludePrivateKey ) {
 
             $body.Password = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
             elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
