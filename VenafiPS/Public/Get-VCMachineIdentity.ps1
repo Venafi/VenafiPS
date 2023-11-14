@@ -74,12 +74,7 @@
             $params = @{
                 InputObject = Find-VcObject -Type MachineIdentity
                 ScriptBlock = {
-                    $thisItem = $PSItem
-                    $thisItem | Get-VcMachineIdentity | Select-Object *,
-                    @{
-                        'n' = 'certificateValidityEnd'
-                        'e' = { $thisItem.certificateValidityEnd }
-                    }
+                    $PSItem | Get-VcMachineIdentity
                 }
             }
             Invoke-VenafiParallel @params
