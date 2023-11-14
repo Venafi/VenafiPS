@@ -126,13 +126,13 @@
             }
 
             $params = @{
-                UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}")
+                UriLeaf = [System.Web.HttpUtility]::UrlEncode("certificates/{$thisGuid}")
             }
 
             $response = Invoke-VenafiRestMethod @params
 
             if ( $IncludePreviousVersions ) {
-                $params.UriLeaf = [System.Web.HttpUtility]::HtmlEncode("certificates/{$thisGuid}/PreviousVersions")
+                $params.UriLeaf = [System.Web.HttpUtility]::UrlEncode("certificates/{$thisGuid}/PreviousVersions")
                 $params.Body = @{}
 
                 if ( $ExcludeExpired.IsPresent ) {
