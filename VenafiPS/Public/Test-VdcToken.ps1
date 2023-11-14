@@ -12,7 +12,9 @@ function Test-VdcToken {
     If just the server name is provided, https:// will be appended.
 
     .PARAMETER AccessToken
-    Access token retrieved outside this module.  Provide a credential object with the access token as the password.
+    Access token retrieved outside this module.
+    You can either provide a String, SecureString, or PSCredential.
+    If providing a credential, the username is not used.
 
     .PARAMETER VaultAccessTokenName
     Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
@@ -97,9 +99,15 @@ function Test-VdcToken {
         [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'AccessToken', ValueFromPipeline)]
-        [PSCredential] $AccessToken,
+        [psobject] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'VenafiPsToken')]
+        [ValidateSet({
+                if ( -not $_.Server -or -not $_.AccessToken ) {
+                    throw 'Not a valid VenafiPsToken'
+                }
+                $true
+            })]
         [pscustomobject] $VenafiPsToken,
 
         [Parameter(Mandatory, ParameterSetName = 'VaultAccessToken')]
@@ -147,7 +155,13 @@ function Test-VdcToken {
 
             'AccessToken' {
                 $params.Server = $serverUrl
-                $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().password }
+
+                $accessTokenString = if ( $AccessToken -is [string] ) { $AccessToken }
+                elseif ($AccessToken -is [securestring]) { ConvertFrom-SecureString -SecureString $AccessToken -AsPlainText }
+                elseif ($AccessToken -is [pscredential]) { $AccessToken.GetNetworkCredential().Password }
+                else { throw 'Unsupported type for -AccessToken.  Provide either a String, SecureString, or PSCredential.' }
+
+                $params.Header = @{'Authorization' = 'Bearer {0}' -f $accessTokenString }
             }
 
             'VaultAccessToken' {

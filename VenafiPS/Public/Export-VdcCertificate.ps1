@@ -190,22 +190,19 @@ function Export-VdcCertificate {
 
             $body.IncludePrivateKey = $true
 
-            switch ($PrivateKeyPassword.GetType().Name) {
-                'String' { $body.Password = $PrivateKeyPassword }
-                'SecureString' { $body.Password = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($PrivateKeyPassword)) }
-                'PSCredential' { $body.Password = $PrivateKeyPassword.GetNetworkCredential().Password }
-                Default { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
-            }
+            $body.Password = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
+            elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
+            elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().Password }
+            else { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
+
         }
 
         if ( $PSBoundParameters.ContainsKey('KeystorePassword') ) {
             $body.Format = 'JKS'
-            switch ($KeystorePassword.GetType().Name) {
-                'String' { $body.Password = $KeystorePassword }
-                'SecureString' { $body.Password = [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($KeystorePassword)) }
-                'PSCredential' { $body.Password = $KeystorePassword.GetNetworkCredential().Password }
-                Default { throw 'Unsupported type for -KeystorePassword.  Provide either a String, SecureString, or PSCredential.' }
-            }
+            $body.KeystorePassword = if ( $KeystorePassword -is [string] ) { $KeystorePassword }
+            elseif ($KeystorePassword -is [securestring]) { ConvertFrom-SecureString -SecureString $KeystorePassword -AsPlainText }
+            elseif ($KeystorePassword -is [pscredential]) { $KeystorePassword.GetNetworkCredential().Password }
+            else { throw 'Unsupported type for -KeystorePassword.  Provide either a String, SecureString, or PSCredential.' }
         }
 
         if ( $PSBoundParameters.ContainsKey('FriendlyName') ) {

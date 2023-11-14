@@ -40,7 +40,9 @@ function New-VdcToken {
     Certificate used to request API token.  Certificate authentication must be configured for remote web sdk clients, https://docs.venafi.com/Docs/current/TopNav/Content/CA/t-CA-ConfiguringInTPPandIIS-tpp.php.
 
     .PARAMETER RefreshToken
-    Provide RefreshToken along with ClientId to obtain a new access and refresh token.  Format should be a pscredential where the password is the refresh token.
+    Provide -RefreshToken along with -ClientId to obtain a new access and refresh token.
+    You can either provide a String, SecureString, or PSCredential.
+    If providing a credential, the username is not used.
 
     .PARAMETER VenafiSession
     VenafiSession object created from New-VenafiSession method.
@@ -132,7 +134,7 @@ function New-VdcToken {
         [X509Certificate] $Certificate,
 
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
-        [pscredential] $RefreshToken,
+        [psobject] $RefreshToken,
 
         [Parameter()]
         [switch] $SkipCertificateCheck,
@@ -186,8 +188,11 @@ function New-VdcToken {
             $params.UriLeaf = 'authorize/token'
             $params.Body = @{
                 client_id     = $ClientId
-                refresh_token = $RefreshToken.GetNetworkCredential().Password
             }
+            $params.Body.refresh_token = if ( $RefreshToken -is [string] ) { $RefreshToken }
+            elseif ($RefreshToken -is [securestring]) { ConvertFrom-SecureString -SecureString $RefreshToken -AsPlainText }
+            elseif ($RefreshToken -is [pscredential]) { $RefreshToken.GetNetworkCredential().Password }
+            else { throw 'Unsupported type for -RefreshToken.  Provide either a String, SecureString, or PSCredential.' }
         }
         else {
             # obtain new token

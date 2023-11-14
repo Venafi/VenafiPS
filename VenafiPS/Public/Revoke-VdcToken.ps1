@@ -11,7 +11,9 @@ function Revoke-VdcToken {
     Server name or URL for the vedauth service
 
     .PARAMETER AccessToken
-    Access token to be revoked.  Provide a credential object with the access token as the password.
+    Provide an existing access token to revoke.
+    You can either provide a String, SecureString, or PSCredential.
+    If providing a credential, the username is not used.
 
     .PARAMETER VenafiPsToken
     Token object obtained from New-VdcToken
@@ -71,7 +73,7 @@ function Revoke-VdcToken {
         [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
-        [PSCredential] $AccessToken,
+        [psobject] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'VenafiPsToken', ValueFromPipeline)]
         [pscustomobject] $VenafiPsToken,
@@ -109,7 +111,13 @@ function Revoke-VdcToken {
                 }
 
                 $params.Server = $target = $AuthUrl
-                $params.Header = @{'Authorization' = 'Bearer {0}' -f $AccessToken.GetNetworkCredential().Password }
+
+                $accessTokenString = if ( $AccessToken -is [string] ) { $AccessToken }
+                elseif ($AccessToken -is [securestring]) { ConvertFrom-SecureString -SecureString $AccessToken -AsPlainText }
+                elseif ($AccessToken -is [pscredential]) { $AccessToken.GetNetworkCredential().Password }
+                else { throw 'Unsupported type for -AccessToken.  Provide either a String, SecureString, or PSCredential.' }
+
+                $params.Header = @{'Authorization' = 'Bearer {0}' -f $accessTokenString }
             }
 
             'VenafiPsToken' {

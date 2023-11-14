@@ -106,18 +106,10 @@ function Export-VcCertificate {
                 FullResponse = $true
             }
 
-            $pkPassString = if ( $PrivateKeyPassword -is [string] ) {
-                $PrivateKeyPassword
-            }
-            elseif ($PrivateKeyPassword -is [securestring]) {
-                [System.Runtime.InteropServices.Marshal]::PtrToStringUni([System.Runtime.InteropServices.Marshal]::SecureStringToCoTaskMemUnicode($PrivateKeyPassword))
-            }
-            elseif ($PrivateKeyPassword -is [pscredential]) {
-                $PrivateKeyPassword.GetNetworkCredential().Password
-            }
-            else {
-                throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.'
-            }
+            $pkPassString = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
+            elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
+            elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().Password }
+            else { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
         }
         else {
             # no need to get the entire keystore if just getting cert/chain
