@@ -67,12 +67,12 @@ function New-VdcCertificate {
     The key needs to be 'DeviceName' and the value is the ObjectName from the device.
     See the example.
 
-    .PARAMETER WorkToDoTimeout
+    .PARAMETER TimeoutSec
     Introduced in 22.1, this controls the wait time, in seconds, for a CA to issue/renew a certificate.
-    Providing this will override the global setting.
+    The default is 60 seconds.
 
     .PARAMETER PassThru
-    Return a TppObject representing the newly created certificate.
+    Return an object representing the newly created certificate.
     If devices and/or applications were created, a 'Device' property will be available as well.
 
     .PARAMETER VenafiSession
@@ -137,7 +137,8 @@ function New-VdcCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -165,7 +166,8 @@ function New-VdcCertificate {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -196,7 +198,8 @@ function New-VdcCertificate {
         [hashtable[]] $Application,
 
         [Parameter()]
-        [int] $WorkToDoTimeout,
+        [Alias('WorkToDoTimeout')]
+        [int32] $TimeoutSec = 60,
 
         [Parameter()]
         [switch] $PassThru,
@@ -225,7 +228,8 @@ function New-VdcCertificate {
                         'Email' {
                             try {
                                 $null = [mailaddress]$thisValue
-                            } catch {
+                            }
+                            catch {
                                 ('''{0}'' is not a valid email' -f $thisValue)
                             }
                         }
@@ -241,7 +245,8 @@ function New-VdcCertificate {
                         'IPAddress' {
                             try {
                                 $null = [ipaddress]$thisValue
-                            } catch {
+                            }
+                            catch {
                                 ('''{0}'' is not a valid IP Address' -f $thisValue)
                             }
                         }
@@ -261,9 +266,9 @@ function New-VdcCertificate {
 
         $params = @{
 
-            Method        = 'Post'
-            UriLeaf       = 'certificates/request'
-            Body          = @{
+            Method  = 'Post'
+            UriLeaf = 'certificates/request'
+            Body    = @{
                 PolicyDN             = $Path
                 Origin               = 'VenafiPS'
                 CASpecificAttributes = @(
@@ -307,13 +312,7 @@ function New-VdcCertificate {
             $params.Body.Add('ManagementType', [enum]::GetName([TppManagementType], $ManagementType))
         }
 
-        if ( $PSBoundParameters.ContainsKey('WorkToDoTimeout') ) {
-            if ( $VenafiSession.Version -and $VenafiSession.Version -lt [Version]::new('22', '1')) {
-                Write-Warning '-WorkToDoTimeout is available beginning with TLSPDC v22.1'
-            } else {
-                $params.Body.Add('WorkToDoTimeout', $WorkToDoTimeout)
-            }
-        }
+        $params.Body.Add('WorkToDoTimeout', $TimeoutSec)
 
         if ( $PSBoundParameters.ContainsKey('SubjectAltName') ) {
             $newSan = @($SubjectAltName | ForEach-Object {
@@ -388,7 +387,8 @@ function New-VdcCertificate {
                     }
                     $newCert
                 }
-            } catch {
+            }
+            catch {
                 Write-Error $_
                 continue
             }
