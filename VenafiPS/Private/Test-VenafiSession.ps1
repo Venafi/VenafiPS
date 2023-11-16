@@ -61,19 +61,13 @@ function Test-VenafiSession {
 
         [Parameter(Mandatory, ParameterSetName = 'AuthType')]
         [ValidateSet('Key', 'Token')]
-        [string] $AuthType,
-
-        [Parameter()]
-        [switch] $PassThru
+        [string] $AuthType
     )
 
     process {
         if ( (Get-PSCallStack).Count -gt 3 -and -not $VenafiSession ) {
 
             # nested function, no need to continue testing session since it was already done
-            if ( $PassThru ) {
-                return $script:PlatformNested
-            }
             return
         }
 
@@ -97,7 +91,7 @@ function Test-VenafiSession {
 
                 if ( $PSBoundParameters.ContainsKey('Platform') ) {
                     $newPlatform = $Platform
-                    if ( $Platform -match '^(tlspc|tlspdc)' ) {
+                    if ( $Platform -match '^(vc|vdc)$' ) {
                         $newPlatform = $matches[1]
                     }
                 }
@@ -111,7 +105,6 @@ function Test-VenafiSession {
                     $VenafiSession.Validate()
                 }
 
-                $platformOut = $VenafiSession.Platform
                 break
             }
 
@@ -119,14 +112,13 @@ function Test-VenafiSession {
 
                 if ( $PSBoundParameters.ContainsKey('Platform') ) {
                     $newPlatform = $Platform
-                    if ( $Platform -match '^(tlspc|tlspdc)' ) {
+                    if ( $Platform -match '^(vc|vdc)$' ) {
                         $newPlatform = $matches[1]
                     }
                 }
                 # don't perform .Validate as we do above since this
                 # isn't the class, it's a converted pscustomobject
                 # for Invoke-VenafiParallel usage
-                $platformOut = $VenafiSession.Platform
                 break
             }
 
@@ -134,27 +126,23 @@ function Test-VenafiSession {
 
                 if ( Test-IsGuid($VenafiSession) ) {
 
-                    Write-Verbose 'Session is TLSPC key'
+                    Write-Verbose 'Session is VC key'
 
-                    if ( $Platform -and $Platform -notmatch '^TLSPC' ) {
+                    if ( $Platform -and $Platform -notmatch '^VC$' ) {
                         throw "This function or parameter set is only accessible for $Platform"
                     }
-
-                    $platformOut = 'TLSPC'
                 }
                 else {
 
                     # TLSPDC access token
-                    Write-Verbose 'Session is TLSPDC token'
-                    if ( $Platform -and $Platform -notmatch '^TLSPDC' ) {
+                    Write-Verbose 'Session is VDC token'
+                    if ( $Platform -and $Platform -notmatch '^VDC' ) {
                         throw "This function or parameter set is only accessible for $Platform"
                     }
                     # get server from environment variable
                     if ( -not $env:VDC_SERVER ) {
                         throw 'TLSPDC token provided, but VDC_SERVER environment variable was not found'
                     }
-
-                    $platformOut = 'TLSPDC'
                 }
             }
 
@@ -164,13 +152,16 @@ function Test-VenafiSession {
         }
 
         # at entry function call, not nested, set the temp variables
-        # if ( (Get-PSCallStack).Count -eq 3 ) {
-            $script:VenafiSessionNested = $VenafiSession
-            $script:PlatformNested = $Platform
+        # if ( $script:VenafiSessionNested ) {
+        #     # append/update existing
+        #     ($script:VenafiSessionNested).$($VenafiSession.Platform) = $VenafiSession
         # }
-
-        if ( $PassThru ) {
-            $platformOut
-        }
+        # else {
+        #     $script:VenafiSessionNested = @{
+        #         $($VenafiSession.Platform) = $VenafiSession
+        #     }
+        # }
+        $script:VenafiSessionNested = $VenafiSession
+        $script:PlatformNested = $Platform
     }
 }
