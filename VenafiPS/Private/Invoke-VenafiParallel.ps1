@@ -136,6 +136,8 @@ function Invoke-VenafiParallel {
                 Import-Module (Join-Path -Path (Split-Path $using:thisDir -Parent) -ChildPath 'VenafiPS.psd1') -Force
                 $script:VenafiSession = $using:vs
 
+                # bring in verbose preference from calling function
+                $VerbosePreference = $using:VerbosePreference
             }
 
             $newSb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
