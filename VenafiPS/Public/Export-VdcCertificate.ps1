@@ -220,9 +220,10 @@ function Export-VdcCertificate {
 
     process {
         $body.CertificateDN = ($Path | ConvertTo-VdcFullPath)
+
         $allCerts.Add(
             @{
-                Body                         = $body
+                Body                         = $body.Clone()
                 SplitCertificateDataFunction = $splitCertificateDataFunction
             }
         )
@@ -234,7 +235,17 @@ function Export-VdcCertificate {
             . ([scriptblock]::Create($PSItem.SplitCertificateDataFunction))
 
             $thisBody = $PSItem.Body
-            $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+
+            try {
+                $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+            }
+            catch {
+                return [pscustomobject]@{
+                    'Path'            = $thisBody.CertificateDN
+                    'Error'           = $_
+                    'CertificateData' = $null
+                }
+            }
 
             $out = $innerResponse | Select-Object Filename, Format, @{
                 n = 'Path'
@@ -243,7 +254,7 @@ function Export-VdcCertificate {
             @{
                 n = 'Error'
                 e = { $_.Status }
-            }
+            }, CertificateData
 
             if ( $innerResponse.CertificateData ) {
 
@@ -286,7 +297,6 @@ function Export-VdcCertificate {
                     }
                 }
                 else {
-                    $out | Add-Member @{'CertificateData' = $innerResponse.CertificateData }
                     if ( $thisBody.Format -in 'Base64', 'Base64 (PKCS#8)' ) {
 
                         $out | Add-Member @{'CertPem' = $splitData.CertPem }

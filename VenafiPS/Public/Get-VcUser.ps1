@@ -68,6 +68,7 @@ function Get-VcUser {
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Id')]
+    [Alias('Get-VcIdentity')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSReviewUnusedParameter', '', Justification = "Parameter is used")]
 
     param (

@@ -107,9 +107,7 @@ function Get-VdcIdentity {
     )
 
     begin {
-        $platform = Test-VenafiSession -VenafiSession $VenafiSession -PassThru
-
-        Write-Verbose ('{0} : {1} : Parameterset {2}' -f $PsCmdlet.MyInvocation.MyCommand, $platform, $PsCmdlet.ParameterSetName)
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
     }
 
     process {
