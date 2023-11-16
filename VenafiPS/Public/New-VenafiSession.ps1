@@ -1,13 +1,13 @@
 function New-VenafiSession {
     <#
     .SYNOPSIS
-    Create a new Venafi TPP or Venafi as a Service session
+    Create a new Venafi TLSPDC or TLSPC session
 
     .DESCRIPTION
     Authenticate a user and create a new session with which future calls can be made.
     Key based username/password and windows integrated are supported as well as token-based integrated, oauth, and certificate.
     By default, a session variable will be created and automatically used with other functions unless -PassThru is used.
-    Tokens and VaaS keys can be saved in a vault for future calls.
+    Tokens and TLSPC keys can be saved in a vault for future calls.
 
     .PARAMETER Server
     Server or url to access vedsdk, venafi.company.com or https://venafi.company.com.
@@ -18,7 +18,8 @@ function New-VenafiSession {
     Username and password used for key and token-based authentication.  Not required for integrated authentication.
 
     .PARAMETER ClientId
-    Applcation Id configured in Venafi for token-based authentication
+    Application/integration ID configured in Venafi for token-based authentication.
+    Case sensitive.
 
     .PARAMETER Scope
     Hashtable with Scopes and privilege restrictions.
@@ -26,17 +27,17 @@ function New-VenafiSession {
     Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
     For no privilege restriction or read access, use a value of $null.
     For a scope to privilege mapping, see https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
-    Using a scope of {'all'='core'} will set all scopes except for codesignclient and admin.
-    Using a scope of {'all'='core-cs'} will set all scopes inclduing codesignclient except for admin.
+    Using a scope of {'all'='core'} will set all scopes except for admin.
     Using a scope of {'all'='admin'} will set all scopes including admin.
-    Using a scope of {'all'='admin-cs'} will set all scopes including admin.
     Usage of the 'all' scope is not suggested for production.
 
     .PARAMETER State
     A session state, redirect URL, or random string to prevent Cross-Site Request Forgery (CSRF) attacks
 
     .PARAMETER AccessToken
-    PSCredential object with the access token as the password.
+    Provide an existing access token to create a session.
+    You can either provide a String, SecureString, or PSCredential.
+    If providing a credential, the username is not used.
 
     .PARAMETER VaultAccessTokenName
     Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
@@ -44,7 +45,9 @@ function New-VenafiSession {
     With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
 
     .PARAMETER RefreshToken
-    PSCredential object with the refresh token as the password.  An access token will be retrieved and a new session created.
+    Provide an existing refresh token to create a session.
+    You can either provide a String, SecureString, or PSCredential.
+    If providing a credential, the username is not used.
 
     .PARAMETER VaultRefreshTokenName
     Name of the SecretManagement vault entry for the refresh token; the name of the vault must be VenafiPS.
@@ -54,7 +57,7 @@ function New-VenafiSession {
 
     .PARAMETER Jwt
     JSON web token.
-    Available in TPP v22.4 and later.
+    Available in TLSPDC v22.4 and later.
     Ensure jwt mapping has been configured in VCC, Access Management->JWT Mappings.
 
     .PARAMETER Certificate
@@ -65,15 +68,15 @@ function New-VenafiSession {
     If AuthServer is not provided, the value provided for Server will be used.
     If just the server name is provided, https:// will be appended.
 
-    .PARAMETER VaasKey
-    Api key from your Venafi as a Service instance.  The api key can be found under your user profile->preferences.
-    Provide a credential object with the api key as the password.
-    https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
+    .PARAMETER VcKey
+    Api key from your TLSPC instance.  The api key can be found under your user profile->preferences.
+    You can either provide a String, SecureString, or PSCredential.
+    If providing a credential, the username is not used.
 
-    .PARAMETER VaultVaasKeyName
-    Name of the SecretManagement vault entry for the Venafi as a Service key.
-    First time use requires it to be provided with -VaasKey to populate the vault.
-    With subsequent uses, it can be provided standalone and the key will be retrieved with the need for -VaasKey.
+    .PARAMETER VaultVcKeyName
+    Name of the SecretManagement vault entry for the TLSPC key.
+    First time use requires it to be provided with -VcKey to populate the vault.
+    With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VcKey.
 
     .PARAMETER SkipCertificateCheck
     Bypass certificate validation when connecting to the server.
@@ -126,12 +129,12 @@ function New-VenafiSession {
     Create session using a refresh token and store the newly created refresh token in the vault
 
     .EXAMPLE
-    New-VenafiSession -VaasKey $cred
-    Create session against Venafi as a Service
+    New-VenafiSession -VcKey $cred
+    Create session against TLSPC
 
     .EXAMPLE
-    New-VenafiSession -VaultVaasKeyName vaas-key
-    Create session against Venafi as a Service with a key stored in a vault
+    New-VenafiSession -VaultVcKeyName vaas-key
+    Create session against TLSPC with a key stored in a vault
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/New-VenafiSession/
@@ -206,10 +209,10 @@ function New-VenafiSession {
         [string] $State,
 
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
-        [PSCredential] $AccessToken,
+        [psobject] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'RefreshToken')]
-        [PSCredential] $RefreshToken,
+        [psobject] $RefreshToken,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenJwt')]
         [string] $Jwt,
@@ -231,15 +234,6 @@ function New-VenafiSession {
         [Parameter(ParameterSetName = 'TokenCertificate')]
         [string] $VaultRefreshTokenName,
 
-        [Parameter(ParameterSetName = 'TokenIntegrated')]
-        [Parameter(ParameterSetName = 'TokenOAuth')]
-        [Parameter(ParameterSetName = 'TokenCertificate')]
-        [Parameter(ParameterSetName = 'AccessToken')]
-        [Parameter(ParameterSetName = 'RefreshToken')]
-        [Parameter(ParameterSetName = 'VaultAccessToken')]
-        [Parameter(ParameterSetName = 'VaultRefreshToken')]
-        [switch] $VaultMetadata,
-
         [Parameter(ParameterSetName = 'TokenOAuth')]
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenCertificate')]
@@ -256,21 +250,13 @@ function New-VenafiSession {
         [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'Vaas')]
-        [ValidateScript( {
-                try {
-                    [guid] $_.GetNetworkCredential().password
-                    $true
-                }
-                catch {
-                    throw 'The value for -VaasKey is invalid and should be of the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx'
-                }
-            }
-        )]
-        [PSCredential] $VaasKey,
+        [Alias('VaasKey')]
+        [psobject] $VcKey,
 
         [Parameter(ParameterSetName = 'Vaas')]
-        [Parameter(Mandatory, ParameterSetName = 'VaultVaasKey')]
-        [string] $VaultVaasKeyName,
+        [Parameter(Mandatory, ParameterSetName = 'VaultVcKey')]
+        [Alias('VaultVaasKeyName')]
+        [string] $VaultVcKeyName,
 
         [Parameter()]
         [switch] $PassThru,
@@ -280,9 +266,6 @@ function New-VenafiSession {
     )
 
     $isVerbose = if ($PSBoundParameters.Verbose -eq $true) { $true } else { $false }
-    if ( $VaultMetadata ) {
-        Write-Warning '-VaultMetadata is now deprecated.  Metadata will be vaulted by default.'
-    }
 
     $serverUrl = $Server
     # add prefix if just server url was provided
@@ -359,18 +342,22 @@ function New-VenafiSession {
                 $params.State = $State
             }
 
-            $token = New-TppToken @params -Verbose:$isVerbose
+            $token = New-VdcToken @params -Verbose:$isVerbose
             $newSession.Token = $token
         }
 
         'AccessToken' {
             $newSession.Token = [PSCustomObject]@{
                 Server      = $authServerUrl
-                AccessToken = $AccessToken
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
                 Expires     = (Get-Date).AddMonths(12)
             }
+            $newSession.Token.AccessToken = if ( $AccessToken -is [string] ) { $AccessToken }
+            elseif ($AccessToken -is [securestring]) { ConvertFrom-SecureString -SecureString $AccessToken -AsPlainText }
+            elseif ($AccessToken -is [pscredential]) { $AccessToken.GetNetworkCredential().Password }
+            else { throw 'Unsupported type for -AccessToken.  Provide either a String, SecureString, or PSCredential.' }
+
         }
 
         'VaultAccessToken' {
@@ -403,10 +390,13 @@ function New-VenafiSession {
             $params = @{
                 AuthServer   = $authServerUrl
                 ClientId     = $ClientId
-                RefreshToken = $RefreshToken
             }
+            $params.RefreshToken = if ( $RefreshToken -is [string] ) { $RefreshToken }
+            elseif ($RefreshToken -is [securestring]) { ConvertFrom-SecureString -SecureString $RefreshToken -AsPlainText }
+            elseif ($RefreshToken -is [pscredential]) { $RefreshToken.GetNetworkCredential().Password }
+            else { throw 'Unsupported type for -RefreshToken.  Provide either a String, SecureString, or PSCredential.' }
 
-            $newToken = New-TppToken @params
+            $newToken = New-VdcToken @params
             $newSession.Token = $newToken
             # $newSession.Expires = $newToken.Expires
         }
@@ -422,8 +412,9 @@ function New-VenafiSession {
 
             if ( $secretInfo.Metadata.Count -gt 0 ) {
                 $params = @{
-                    AuthServer = $secretInfo.Metadata.AuthServer
-                    ClientId   = $secretInfo.Metadata.ClientId
+                    AuthServer           = $secretInfo.Metadata.AuthServer
+                    ClientId             = $secretInfo.Metadata.ClientId
+                    SkipCertificateCheck = [bool] $secretInfo.Metadata.SkipCertificateCheck
                 }
             }
             else {
@@ -432,7 +423,7 @@ function New-VenafiSession {
 
             $params.RefreshToken = $tokenSecret
 
-            $newToken = New-TppToken @params
+            $newToken = New-VdcToken @params
             $newSession.Token = $newToken
             $newSession.Server = $newToken.Server
             $newSession.Token.Scope = $secretInfo.Metadata.Scope | ConvertFrom-Json
@@ -441,18 +432,21 @@ function New-VenafiSession {
 
         'Vaas' {
             $newSession.Server = $script:CloudUrl
-            $newSession.Key = $VaasKey
+            $newSession.Key = if ( $VcKey -is [string] ) { $VcKey }
+            elseif ($VcKey -is [securestring]) { ConvertFrom-SecureString -SecureString $VcKey -AsPlainText }
+            elseif ($VcKey -is [pscredential]) { $VcKey.GetNetworkCredential().Password }
+            else { throw 'Unsupported type for -VcKey.  Provide either a String, SecureString, or PSCredential.' }
 
-            if ( $VaultVaasKeyName ) {
-                Set-Secret -Name $VaultVaasKeyName -Secret $newSession.Key -Vault 'VenafiPS'
+            if ( $VaultVcKeyName ) {
+                Set-Secret -Name $VaultVcKeyName -Secret $newSession.Key -Vault 'VenafiPS'
             }
         }
 
-        'VaultVaasKey' {
+        'VaultVcKey' {
             $newSession.Server = $script:CloudUrl
-            $keySecret = Get-Secret -Name $VaultVaasKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+            $keySecret = Get-Secret -Name $VaultVcKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
             if ( -not $keySecret ) {
-                throw "'$VaultVaasKeyName' secret not found in vault VenafiPS."
+                throw "'$VaultVcKeyName' secret not found in vault VenafiPS."
             }
             $newSession.Key = $keySecret
         }
@@ -489,9 +483,9 @@ function New-VenafiSession {
 
     # will fail if user is on an older version.  this isn't required so bypass on failure
     # only applicable to tpp
-    if ( $newSession.Platform -eq 'TPP' ) {
-        $newSession | Add-Member @{ Version = (Get-TppVersion -VenafiSession $newSession -ErrorAction SilentlyContinue) }
-        $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-TppCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
+    if ( $newSession.Platform -eq 'VDC' ) {
+        $newSession | Add-Member @{ Version = (Get-VdcVersion -VenafiSession $newSession -ErrorAction SilentlyContinue) }
+        $certFields = 'X509 Certificate', 'Device', 'Application Base' | Get-VdcCustomField -VenafiSession $newSession -ErrorAction SilentlyContinue
         # make sure we remove duplicates
         $newSession | Add-Member @{ CustomField = $certFields.Items | Sort-Object -Property Guid -Unique }
     }
@@ -525,7 +519,7 @@ function New-VenafiSession {
             }
         }
 
-        Register-ArgumentCompleter -CommandName 'New-VaasMachine', 'Find-VaasMachine' -ParameterName 'MachineType' -ScriptBlock $machineTypeArgCompleterSb
+        Register-ArgumentCompleter -CommandName 'New-VcMachine', 'Find-VcMachine' -ParameterName 'Type' -ScriptBlock $machineTypeArgCompleterSb
 
     }
 
