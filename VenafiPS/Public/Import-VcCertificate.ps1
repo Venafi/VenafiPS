@@ -4,20 +4,16 @@ function Import-VcCertificate {
     Import one or more certificates
 
     .DESCRIPTION
-    Import one or more certificates.
-    The blocklist will be overridden.
+    Import one or more certificates and their private keys.  Currently PKCS12 (.pfx or .p12) is supported.
 
-    .PARAMETER CertificatePath
-    Path to a certificate file.  Provide either this or CertificateData.
+    .PARAMETER Path
+    Path to a certificate file.  Provide either this or -Data.
 
-    .PARAMETER CertificateData
-    Contents of a certificate to import.  Provide either this or CertificatePath.
+    .PARAMETER Data
+    Contents of a certificate/key to import.  Provide either this or -Path.
 
-    .PARAMETER Application
-    Application name (wildcards supported) or id to associate this certificate.
-
-    .PARAMETER PassThru
-    Return imported certificate details
+    .PARAMETER ThrottleLimit
+    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -25,40 +21,29 @@ function Import-VcCertificate {
     A TLSPC key can also provided.
 
     .EXAMPLE
-    Import-VcCertificate -CertificatePath c:\www.VenafiPS.com.cer
+    Import-VcCertificate -CertificatePath c:\www.VenafiPS.com.pfx
 
-    Import a certificate
-
-    .EXAMPLE
-    Import-VcCertificate -CertificatePath c:\www.VenafiPS.com.cer -Application MyApp
-
-    Import a certificate and assign an application
+    Import a certificate/key
 
     .EXAMPLE
-    Import-VcCertificate -CertificatePath (gci c:\certs).FullName
-
-    Import multiple certificates
-
-    .EXAMPLE
-    Export-VdcCertificate -CertificateId '\ved\policy\my.cert.com' -Format Base64 | Import-VcCertificate -VenafiSession $vaas_key
+    $p12 = Export-VdcCertificate -Path '\ved\policy\my.cert.com' -Pkcs12 -PrivateKeyPassword 'myPassw0rd!'
+    $p12 | Import-VcCertificate -Pkcs12 -PrivateKeyPassword 'myPassw0rd!' -VenafiSession $vaas_key
 
     Export from TLSPDC and import into TLSPC.
     As $VenafiSession can only point to one platform at a time, in this case TLSPDC, the session needs to be overridden for the import.
 
     .EXAMPLE
-    Find-VdcCertificate -Path '\ved\policy\certs' -Recursive | Export-VdcCertificate -Format Base64 | Import-VcCertificate -VenafiSession $vaas_key
+    $p12 = Find-VdcCertificate -Path '\ved\policy\certs' -Recursive | Export-VdcCertificate -Pkcs12 -PrivateKeyPassword 'myPassw0rd!'
+    $p12 | Import-VcCertificate -Pkcs12 -PrivateKeyPassword 'myPassw0rd!' -VenafiSession $vaas_key
 
     Bulk export from TLSPDC and import into TLSPC.
     As $VenafiSession can only point to one platform at a time, in this case TLSPDC, the session needs to be overridden for the import.
 
     .INPUTS
-    CertificatePath, CertificateData
-
-    .OUTPUTS
-    PSCustomObject, if PassThru provided
+    Path, Data
 
     .LINK
-    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificateimports_create
+    https://developer.venafi.com/tlsprotectcloud/reference/certificates_import
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ByFile')]
@@ -69,24 +54,33 @@ function Import-VcCertificate {
         [Parameter(Mandatory, ParameterSetName = 'ByFile', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
-                if ( $_ | Test-Path ) {
-                    $true
-                } else {
-                    throw "'$_' is not a valid path"
+                if ( -not (Test-Path -Path (Resolve-Path -Path $_) -PathType Leaf) ) {
+                    throw "'$_' is not a valid file path"
                 }
+
+                if ((Split-Path -Path (Resolve-Path -Path $_) -Extension) -notin '.pfx', '.p12') {
+                    throw "$_ is not a .p12 or .pfx file"
+                }
+
+                $true
             })]
-        [Alias('FullName')]
-        [String[]] $CertificatePath,
+        [Alias('FullName', 'CertificatePath')]
+        [String] $Path,
 
-        [Parameter(Mandatory, ParameterSetName = 'ByData', ValueFromPipelineByPropertyName)]
-        [ValidateNotNullOrEmpty()]
-        [String[]] $CertificateData,
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12', ValueFromPipelineByPropertyName)]
+        [AllowNull()]
+        [AllowEmptyString()]
+        [Alias('CertificateData')]
+        [String] $Data,
+
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12')]
+        [switch] $Pkcs12,
+
+        [Parameter(Mandatory)]
+        [psobject] $PrivateKeyPassword,
 
         [Parameter()]
-        [String[]] $Application,
-
-        [Parameter()]
-        [switch] $PassThru,
+        [int32] $ThrottleLimit = 100,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -96,82 +90,112 @@ function Import-VcCertificate {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
-        $params = @{
-
-            Method        = 'Post'
-            UriRoot       = 'outagedetection/v1'
-            UriLeaf       = 'certificates'
-            Body          = @{
-                'overrideBlocklist' = 'true'
-            }
+        if ( -not (Get-Module -Name PSSodium)) {
+            Import-Module "$PSScriptRoot/../import/PSSodium/PSSodium.psd1" -Force
         }
 
-        if ( $PSBoundParameters.ContainsKey('Application') ) {
-            $allApps = Get-VcApplication -All
-            $appsForImport = foreach ($thisApplication in $Application) {
-                $appFound = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
-                switch (@($appFound).Count) {
-                    0 {
-                        throw ('Application not found.  Valid applications are {0}.' -f ($allApps.name -join ', '))
-                    }
+        $vSat = Get-VcSatellite -All | Select-Object -First 1
 
-                    1 {
-                        Write-Verbose ('Found application {0}, ID: {1}' -f $appFound.name, $appFound.applicationId)
-                        $appFound.applicationId
-                    }
+        $pkPassString = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
+        elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
+        elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().Password }
+        else { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
 
-                    Default {
-                        throw ('More than 1 application found that matches {0}: {1}' -f $Application, ($thisApp.name -join ', '))
-                    }
-                }
-            }
-        }
+        $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 
-        $allCerts = [System.Collections.Generic.List[object]]::new()
     }
 
     process {
 
-        if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
-            foreach ($thisCertPath in $CertificatePath) {
+        if ( $PSBoundParameters.ContainsKey('Path') ) {
+            $thisCertPath = Resolve-Path -Path $Path
 
-                if ($PSVersionTable.PSVersion.Major -lt 6) {
-                    $cert = Get-Content $thisCertPath -Encoding Byte
-                } else {
-                    $cert = Get-Content $thisCertPath -AsByteStream
-                }
-
-                $newCert = @{
-                    'certificate' = [System.Convert]::ToBase64String($cert)
-                }
-                if ( $appsForImport ) {
-                    $newCert.applicationIds = @($appsForImport)
-                }
-                $allCerts.Add($newCert)
+            switch (Split-Path -Path $thisCertPath -Extension) {
+                { $_ -in '.pfx', '.p12' } { $format = 'Pkcs12' }
             }
-        } else {
-            foreach ($thisCertData in $CertificateData) {
-                $newCert = @{
-                    'certificate' = $thisCertData -replace "`r|`n|-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----"
+
+            if ($PSVersionTable.PSVersion.Major -lt 6) {
+                $cert = Get-Content $thisCertPath -Encoding Byte
+            }
+            else {
+                $cert = Get-Content $thisCertPath -AsByteStream
+            }
+
+            $allCerts.Add(@{
+                    'CertData' = [System.Convert]::ToBase64String($cert)
+                    'Format'   = $format
                 }
-                if ( $appsForImport ) {
-                    $newCert.applicationIds = @($appsForImport)
-                }
-                $allCerts.Add($newCert)
+            )
+        }
+        else {
+            if ( $Data ) {
+                $allCerts.Add(@{
+                        'CertData' = $Data -replace "`r|`n|-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----"
+                        'Format'   = $PSCmdlet.ParameterSetName
+                    }
+                )
             }
         }
 
     }
 
     end {
-        $params.Body.certificates = $allCerts
+        $importList = [System.Collections.Generic.List[hashtable]]::new()
 
-        $response = Invoke-VenafiRestMethod @params
+        $dekEncryptedPassword = ConvertTo-SodiumEncryptedString -Text $pkPassString -PublicKey $vSat.encryptionKey
 
-        Write-Verbose $response.statistics
+        # rebuild invoke params as the payload can contain multiple keys at once
+        # max 100 keys at a time
+        for ($i = 0; $i -lt $allCerts.Count; $i += 100) {
 
-        if ( $PassThru ) {
-            $response.certificateInformations | Get-VcCertificate
+            $params = @{
+                Method  = 'post'
+                UriRoot = 'outagedetection/v1'
+                UriLeaf = 'certificates/imports'
+                Body    = @{
+                    'edgeInstanceId'  = $vSat.vsatelliteId
+                    'encryptionKeyId' = $vSat.encryptionKeyId
+                }
+                VenafiSession = $VenafiSession
+            }
+
+            switch ($allCerts[$i].Format) {
+                'Pkcs12' {
+                    $keystores = $allCerts[$i..($i + 99)] | ForEach-Object {
+                        @{
+                            'pkcs12Keystore'       = $_.CertData
+                            'dekEncryptedPassword' = $dekEncryptedPassword
+                        }
+                    }
+                }
+            }
+
+            $params.Body.importInformation = @($keystores)
+            $importList.Add($params)
         }
+
+        $sb = {
+            $params = $PSItem
+
+            $requestResponse = Invoke-VenafiRestMethod @params
+            do {
+                Write-Verbose "checking job status for id $($requestResponse.id)"
+                $jobResponse = invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificates/imports/$($requestResponse.id)"
+                Start-Sleep 2
+            } until (
+                $jobResponse.status -eq 'COMPLETED'
+            )
+            $jobResponse.results
+        }
+
+        $invokeParams = @{
+            InputObject   = $importList
+            ScriptBlock   = $sb
+            ThrottleLimit = $ThrottleLimit
+            ProgressTitle = 'Importing certificates'
+        }
+        $invokeResponse = Invoke-VenafiParallel @invokeParams
+
+        $invokeResponse | Select-Object -Property fingerprint, status, reason
     }
 }

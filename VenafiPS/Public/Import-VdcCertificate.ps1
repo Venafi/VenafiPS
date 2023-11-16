@@ -7,15 +7,15 @@ function Import-VdcCertificate {
     Import one or more certificates with or without private key.
     PowerShell v5 will execute sequentially and v7 will run in parallel.
 
+    .PARAMETER Path
+    Path to a certificate file.  Provide either this or -Data.
+
+    .PARAMETER Data
+    Contents of a certificate to import.  Provide either this or -Path.
+
     .PARAMETER PolicyPath
     Policy path to import the certificate to.
     \ved\policy is prepended if not provided.
-
-    .PARAMETER CertificatePath
-    Path to a certificate file.  Provide either this or CertificateData.
-
-    .PARAMETER CertificateData
-    Contents of a certificate to import.  Provide either this or CertificatePath.
 
     .PARAMETER EnrollmentAttribute
     A hashtable providing any CA attributes to store with the Certificate object, and then submit to the CA during enrollment
@@ -29,12 +29,13 @@ function Import-VdcCertificate {
     Finally, if none of the above are found, the serial number is used.
 
     .PARAMETER PrivateKey
-    Private key data; requires a value for Password.
+    Private key data; requires a value for PrivateKeyPassword.
     For a PEM certificate, the private key is in either the RSA or PKCS#8 format.
     Do not provide for a PKCS#12 certificate as the private key is already included.
 
-    .PARAMETER Password
-    Password required if the certificate has a private key.
+    .PARAMETER PrivateKeyPassword
+    Password required if providing a private key.
+    You can either provide a String, SecureString, or PSCredential.
 
     .PARAMETER Reconcile
     Controls certificate and corresponding private key replacement.
@@ -57,7 +58,7 @@ function Import-VdcCertificate {
     If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .EXAMPLE
-    Import-VdcCertificate -PolicyPath \ved\policy\mycerts -CertificatePath c:\www.VenafiPS.com.cer
+    Import-VdcCertificate -PolicyPath \ved\policy\mycerts -Path c:\www.VenafiPS.com.cer
     Import a certificate
 
     .EXAMPLE
@@ -65,11 +66,11 @@ function Import-VdcCertificate {
     Import multiple certificates
 
     .EXAMPLE
-    Import-VdcCertificate -PolicyPath mycerts -CertificatePath (gci c:\certs).FullName
+    Import-VdcCertificate -PolicyPath mycerts -Path (gci c:\certs).FullName
     Import multiple certificates in parallel on PS v6+.  \ved\policy will be appended to the policy path.
 
     .INPUTS
-    CertificatePath, CertificateData
+    Path, Data
 
     .OUTPUTS
     TppObject, if PassThru provided
@@ -93,17 +94,18 @@ function Import-VdcCertificate {
         [ValidateScript( {
                 if ( $_ | Test-Path ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid path"
                 }
             })]
         [Alias('FullName')]
-        [String[]] $CertificatePath,
+        [String[]] $Path,
 
         [Parameter(Mandatory, ParameterSetName = 'ByData', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [String[]] $CertificateData,
+        [String[]] $Data,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -123,7 +125,7 @@ function Import-VdcCertificate {
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
         [ValidateNotNullOrEmpty()]
-        [SecureString] $Password,
+        [psobject] $PrivateKeyPassword,
 
         [Parameter()]
         [switch] $Reconcile,
@@ -144,9 +146,9 @@ function Import-VdcCertificate {
 
         $params = @{
 
-            Method        = 'Post'
-            UriLeaf       = 'certificates/import'
-            Body          = @{
+            Method  = 'Post'
+            UriLeaf = 'certificates/import'
+            Body    = @{
                 PolicyDN = $PolicyPath | ConvertTo-VdcFullPath
             }
         }
@@ -164,8 +166,11 @@ function Import-VdcCertificate {
             $params.Body.ObjectName = $Name
         }
 
-        if ( $PSBoundParameters.ContainsKey('Password') ) {
-            $params.Body.Password = [Runtime.InteropServices.Marshal]::PtrToStringAuto([Runtime.InteropServices.Marshal]::SecureStringToBSTR($Password))
+        if ( $PSBoundParameters.ContainsKey('PrivateKeyPassword') ) {
+            $params.Body.PrivateKeyPassword = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
+            elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
+            elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().PrivateKeyPassword }
+            else { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
         }
 
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
@@ -178,9 +183,10 @@ function Import-VdcCertificate {
         Write-Verbose $PSCmdlet.ParameterSetName
 
         $certInfo = if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
-            $CertificatePath
-        } else {
-            $CertificateData
+            $Path
+        }
+        else {
+            $Data
         }
 
         if ($PSVersionTable.PSVersion.Major -lt 6) {
@@ -190,7 +196,8 @@ function Import-VdcCertificate {
                 $thisCertData = if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
                     $cert = Get-Content $thisCertInfo -Encoding Byte
                     [System.Convert]::ToBase64String($cert)
-                } else {
+                }
+                else {
                     $thisCertInfo
                 }
 
@@ -204,11 +211,13 @@ function Import-VdcCertificate {
                     if ( $PassThru ) {
                         Get-VdcObject -Guid $response.Guid
                     }
-                } catch {
+                }
+                catch {
                     Write-Error $_
                 }
             }
-        } else {
+        }
+        else {
 
             $certInfo | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
 
@@ -222,7 +231,8 @@ function Import-VdcCertificate {
                 $thisCertData = if ( Test-Path -Path $thisCertInfo ) {
                     $cert = Get-Content $thisCertInfo -AsByteStream
                     [System.Convert]::ToBase64String($cert)
-                } else {
+                }
+                else {
                     $thisCertInfo
                 }
 
@@ -237,7 +247,8 @@ function Import-VdcCertificate {
                     if ( $using:PassThru ) {
                         Get-VdcObject -Guid $response.Guid
                     }
-                } catch {
+                }
+                catch {
                     Write-Error $_
                 }
             }
