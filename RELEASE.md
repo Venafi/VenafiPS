@@ -6,15 +6,16 @@ This is a major release.  Although every attempt has been made to be backwards c
    - Performance enhancement bypassing `Test-VenafiSession` in nested functions
    - No longer need to pass VenafiSession to each function when sending function output down the pipeline
  - Parallel functionality added for many functions, notably export and import certificates.  Ensure you are using PowerShell v7!
- - Add Certificate, Key, and Chain PEM to `Export-VdcCertificate` and `Export-VcCertificate` output
+ - Add Certificate, Key, and Chain PEM to `Export-VdcCertificate` and `Export-VcCertificate` Base64 output
  - For PSCredential objects which only required a password and not username, add the ability to provide either a password String, SecureString, or PSCredential.
  - `Find-VaasObject` has been replaced with dedicated functions `Find-VcCertificateRequest`, `Find-VcLog`, `Find-VcMachine`, and `Find-VcMachineIdentity`.  These functions have property filters specific to their types making it super easy to search.
  - Environment variable names updated:
   - TPP_SERVER -> VDC_SERVER
   - TPP_TOKEN -> VDC_TOKEN
   - VAAS_KEY -> VC_KEY
+ - Add keystore/private key import to `Import-VcCertificate`
  - Update `Invoke-VenafiParallel` to be version aware.  Parallel on PowerShell v7+, synchronous otherwise
- - Add Certificate, Key, and Chain PEM to Export functions, [#226](https://github.com/Venafi/VenafiPS/issues/226)
+ - Add option to save .crt/.key with `Export-VdcCertificate` , [#226](https://github.com/Venafi/VenafiPS/issues/226)
  - Update TLSPC searching to make -Order case insensitive
  - Fix `Get-TppAttribute -Disabled` not working, [#221](https://github.com/Venafi/VenafiPS/issues/221)
  - Fix exporting JKS to a file, [#225](https://github.com/Venafi/VenafiPS/issues/225)
