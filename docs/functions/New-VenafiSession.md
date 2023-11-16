@@ -1,7 +1,7 @@
 # New-VenafiSession
 
 ## SYNOPSIS
-Create a new Venafi TPP or Venafi as a Service session
+Create a new Venafi TLSPDC or TLSPC session
 
 ## SYNTAX
 
@@ -13,26 +13,26 @@ New-VenafiSession -Server <String> [-PassThru] [-SkipCertificateCheck] [<CommonP
 ### VaultRefreshToken
 ```
 New-VenafiSession [-Server <String>] [-ClientId <String>] [-Scope <Hashtable>] -VaultRefreshTokenName <String>
- [-VaultMetadata] [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+ [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### VaultAccessToken
 ```
-New-VenafiSession [-Server <String>] [-Scope <Hashtable>] -VaultAccessTokenName <String> [-VaultMetadata]
- [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+New-VenafiSession [-Server <String>] [-Scope <Hashtable>] -VaultAccessTokenName <String> [-PassThru]
+ [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### RefreshToken
 ```
-New-VenafiSession -Server <String> -ClientId <String> -RefreshToken <PSCredential>
- [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>] [-PassThru] [-SkipCertificateCheck]
+New-VenafiSession -Server <String> -ClientId <String> -RefreshToken <PSObject>
+ [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru] [-SkipCertificateCheck]
  [<CommonParameters>]
 ```
 
 ### AccessToken
 ```
-New-VenafiSession -Server <String> -AccessToken <PSCredential> [-VaultAccessTokenName <String>]
- [-VaultMetadata] [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+New-VenafiSession -Server <String> -AccessToken <PSObject> [-VaultAccessTokenName <String>] [-PassThru]
+ [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### TokenJwt
@@ -44,22 +44,22 @@ New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Jwt <S
 ### TokenCertificate
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
- [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>]
- [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+ [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru]
+ [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### TokenIntegrated
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>]
- [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata] [-AuthServer <String>]
- [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+ [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru]
+ [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### TokenOAuth
 ```
 New-VenafiSession -Server <String> -Credential <PSCredential> -ClientId <String> -Scope <Hashtable>
- [-State <String>] [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-VaultMetadata]
- [-AuthServer <String>] [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+ [-State <String>] [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>]
+ [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ### KeyCredential
@@ -70,20 +70,20 @@ New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [-Skip
 
 ### Vaas
 ```
-New-VenafiSession -VaasKey <PSCredential> [-VaultVaasKeyName <String>] [-PassThru] [-SkipCertificateCheck]
+New-VenafiSession -VcKey <PSObject> [-VaultVcKeyName <String>] [-PassThru] [-SkipCertificateCheck]
  [<CommonParameters>]
 ```
 
-### VaultVaasKey
+### VaultVcKey
 ```
-New-VenafiSession -VaultVaasKeyName <String> [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+New-VenafiSession -VaultVcKeyName <String> [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Authenticate a user and create a new session with which future calls can be made.
 Key based username/password and windows integrated are supported as well as token-based integrated, oauth, and certificate.
 By default, a session variable will be created and automatically used with other functions unless -PassThru is used.
-Tokens and VaaS keys can be saved in a vault for future calls.
+Tokens and TLSPC keys can be saved in a vault for future calls.
 
 ## EXAMPLES
 
@@ -149,14 +149,14 @@ Create session using a refresh token and store the newly created refresh token i
 
 ### EXAMPLE 11
 ```
-New-VenafiSession -VaasKey $cred
-Create session against Venafi as a Service
+New-VenafiSession -VcKey $cred
+Create session against TLSPC
 ```
 
 ### EXAMPLE 12
 ```
-New-VenafiSession -VaultVaasKeyName vaas-key
-Create session against Venafi as a Service with a key stored in a vault
+New-VenafiSession -VaultVcKeyName vaas-key
+Create session against TLSPC with a key stored in a vault
 ```
 
 ## PARAMETERS
@@ -207,7 +207,8 @@ Accept wildcard characters: False
 ```
 
 ### -ClientId
-Applcation Id configured in Venafi for token-based authentication
+Application/integration ID configured in Venafi for token-based authentication.
+Case sensitive.
 
 ```yaml
 Type: String
@@ -239,10 +240,8 @@ The key is the scope and the value is one or more privilege restrictions separat
 Scopes include Agent, Certificate, Code Signing, Configuration, Restricted, Security, SSH, and statistics.
 For no privilege restriction or read access, use a value of $null.
 For a scope to privilege mapping, see https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/r-SDKa-OAuthScopePrivilegeMapping.php
-Using a scope of {'all'='core'} will set all scopes except for codesignclient and admin.
-Using a scope of {'all'='core-cs'} will set all scopes inclduing codesignclient except for admin.
+Using a scope of {'all'='core'} will set all scopes except for admin.
 Using a scope of {'all'='admin'} will set all scopes including admin.
-Using a scope of {'all'='admin-cs'} will set all scopes including admin.
 Usage of the 'all' scope is not suggested for production.
 
 ```yaml
@@ -285,10 +284,12 @@ Accept wildcard characters: False
 ```
 
 ### -AccessToken
-PSCredential object with the access token as the password.
+Provide an existing access token to create a session.
+You can either provide a String, SecureString, or PSCredential.
+If providing a credential, the username is not used.
 
 ```yaml
-Type: PSCredential
+Type: PSObject
 Parameter Sets: AccessToken
 Aliases:
 
@@ -300,11 +301,12 @@ Accept wildcard characters: False
 ```
 
 ### -RefreshToken
-PSCredential object with the refresh token as the password. 
-An access token will be retrieved and a new session created.
+Provide an existing refresh token to create a session.
+You can either provide a String, SecureString, or PSCredential.
+If providing a credential, the username is not used.
 
 ```yaml
-Type: PSCredential
+Type: PSObject
 Parameter Sets: RefreshToken
 Aliases:
 
@@ -317,7 +319,7 @@ Accept wildcard characters: False
 
 ### -Jwt
 JSON web token.
-Available in TPP v22.4 and later.
+Available in TLSPDC v22.4 and later.
 Ensure jwt mapping has been configured in VCC, Access Management-\>JWT Mappings.
 
 ```yaml
@@ -408,21 +410,6 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -VaultMetadata
-{{ Fill VaultMetadata Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: VaultRefreshToken, VaultAccessToken, RefreshToken, AccessToken, TokenCertificate, TokenIntegrated, TokenOAuth
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -AuthServer
 If you host your authentication service, vedauth, is on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
 If AuthServer is not provided, the value provided for Server will be used.
@@ -440,16 +427,16 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -VaasKey
-Api key from your Venafi as a Service instance. 
+### -VcKey
+Api key from your TLSPC instance. 
 The api key can be found under your user profile-\>preferences.
-Provide a credential object with the api key as the password.
-https://docs.venafi.cloud/DevOpsACCELERATE/API/t-cloud-api-key/
+You can either provide a String, SecureString, or PSCredential.
+If providing a credential, the username is not used.
 
 ```yaml
-Type: PSCredential
+Type: PSObject
 Parameter Sets: Vaas
-Aliases:
+Aliases: VaasKey
 
 Required: True
 Position: Named
@@ -458,15 +445,15 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -VaultVaasKeyName
-Name of the SecretManagement vault entry for the Venafi as a Service key.
-First time use requires it to be provided with -VaasKey to populate the vault.
-With subsequent uses, it can be provided standalone and the key will be retrieved with the need for -VaasKey.
+### -VaultVcKeyName
+Name of the SecretManagement vault entry for the TLSPC key.
+First time use requires it to be provided with -VcKey to populate the vault.
+With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VcKey.
 
 ```yaml
 Type: String
 Parameter Sets: Vaas
-Aliases:
+Aliases: VaultVaasKeyName
 
 Required: False
 Position: Named
@@ -477,8 +464,8 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String
-Parameter Sets: VaultVaasKey
-Aliases:
+Parameter Sets: VaultVcKey
+Aliases: VaultVaasKeyName
 
 Required: True
 Position: Named

@@ -1,0 +1,313 @@
+# Find-VcCertificate
+
+## SYNOPSIS
+Find certificates in TLSPC
+
+## SYNTAX
+
+### All (Default)
+```
+Find-VcCertificate [-Order <PSObject[]>] [-Name <String>] [-KeyLength <Int32>] [-Serial <String>]
+ [-Fingerprint <String>] [-IsSelfSigned] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
+```
+
+### Filter
+```
+Find-VcCertificate -Filter <ArrayList> [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail]
+ [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+```
+
+### SavedSearch
+```
+Find-VcCertificate -SavedSearchName <String> [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
+```
+
+## DESCRIPTION
+Find certificates based on various attributes.
+
+## EXAMPLES
+
+### EXAMPLE 1
+```
+Find-VcCertificate
+```
+
+Find all certificates
+
+### EXAMPLE 2
+```
+Find-VcCertificate -First 500
+```
+
+Find the first 500 certificates
+
+### EXAMPLE 3
+```
+Find-VcCertificate -Name 'mycert.company.com'
+```
+
+Find certificates matching all of part of the name
+
+### EXAMPLE 4
+```
+Find-VcCertificate -Filter @('fingerprint', 'EQ', '075C43428E70BCF941039F54B8ED78DE4FACA87F')
+```
+
+Find certificates matching a single value
+
+### EXAMPLE 5
+```
+Find-VcCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('validityEnd','LTE',(get-date).AddDays(30)))
+```
+
+Find certificates matching multiple values. 
+In this case, find all certificates expiring in the next 30 days.
+
+### EXAMPLE 6
+```
+Find-VcCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('validityEnd','LTE',(get-date).AddDays(30))) | Invoke-VcCertificateAction -Renew
+```
+
+Find all certificates expiring in the next 30 days and renew them
+
+### EXAMPLE 7
+```
+Find-VcCertificate -ApplicatonDetail
+```
+
+Include application details, not just the ID.
+This will make additional api calls and will increase the response time.
+
+### EXAMPLE 8
+```
+Find-VcCertificate -OwnerDetail
+```
+
+Include user/team owner details, not just the ID.
+This will make additional api calls and will increase the response time.
+
+## PARAMETERS
+
+### -Filter
+Array or multidimensional array of fields and values to filter on.
+Each array should be of the format @(field, comparison operator, value).
+To combine filters, use the format @('operator', @(field, comparison operator, value), @(field2, comparison operator2, value2)).
+Nested filters are supported.
+Field names and values are case sensitive.
+
+Operator    |	Name                    |	Description and Usage
+-----------------------------------------------------------------
+EQ              Equal operator              The search result is equal to the specified value.
+Valid for numeric or Boolean fields.
+FIND            Find operator               The search result is based on the value of all or part of one or more strings.
+You can also use Regular Expressions (regex).
+GT              Greater than                The search result has a higher numeric value than the specified value.
+GTE             Greater than or equal to    The search result is equal or has a higher numeric value than the specified value.
+IN              In clause                   The search result matches one of the values in an array.
+LT              Less Than                   The search result has a lower value than the specified value.
+LTE             Less than or equal to       The search result is equal or less than the specified value.
+MATCH           Match operator              The search result includes a string value from the supplied list.
+You can also use regex for your search.
+
+For more info comparison operators, see https://docs.venafi.cloud/api/about-api-search-operators/.
+
+```yaml
+Type: ArrayList
+Parameter Sets: Filter
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Order
+1 or more fields to order on.
+For each item in the array, you can provide a field name by itself; this will default to ascending.
+You can also provide a hashtable with the field name as the key and either asc or desc as the value.
+
+```yaml
+Type: PSObject[]
+Parameter Sets: All, Filter
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Name
+Certificate name to find via regex match
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -KeyLength
+Certificate key length
+
+```yaml
+Type: Int32
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Serial
+Serial number
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Fingerprint
+Fingerprint
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsSelfSigned
+Only find self signed certificates
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SavedSearchName
+Find certificates based on a saved search, see https://docs.venafi.cloud/vaas/certificates/saving-certificate-filters
+
+```yaml
+Type: String
+Parameter Sets: SavedSearch
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ApplicationDetail
+Retrieve detailed application info.
+This will cause additional api calls to be made and take longer.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -OwnerDetail
+Retrieve detailed user/team owner info.
+This will cause additional api calls to be made and take longer.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: IncludeVaasOwner
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -First
+Only retrieve this many records
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -VenafiSession
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TLSPC key can also provided.
+
+```yaml
+Type: PSObject
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### CommonParameters
+This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
+
+## INPUTS
+
+### None
+## OUTPUTS
+
+### PSCustomObject
+## NOTES
+
+## RELATED LINKS
+
+[https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificates_search_getByExpressionAsCsv](https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificates_search_getByExpressionAsCsv)
+
