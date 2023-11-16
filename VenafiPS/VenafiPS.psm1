@@ -6,8 +6,10 @@ PowerShell module to access the features of Venafi Trust Protection Platform RES
 Author: Greg Brownstein
 #>
 
-# Force TLS 1.2
-[Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+# Force TLS 1.2 if currently set lower
+if ([Net.ServicePointManager]::SecurityProtocol.value__ -lt 3072) {
+    [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+}
 
 $folders = @('Enum', 'Classes', 'Public', 'Private')
 
@@ -30,39 +32,17 @@ foreach ( $folder in $folders) {
 
 $script:CloudUrl = 'https://api.venafi.cloud'
 $script:ModuleVersion = '((NEW_VERSION))'
-$script:functionConfig = ConvertFrom-Json (Get-Content "$PSScriptRoot\config\functions.json" -Raw)
+$script:functionConfig = ConvertFrom-Json (Get-Content "$PSScriptRoot/config/functions.json" -Raw)
 
 $Script:VenafiSession = $null
 Export-ModuleMember -Variable VenafiSession
 
-$aliases = @{
-    'ConvertTo-TppDN'          = 'ConvertTo-TppPath'
-    'Get-TppWorkflowDetail'    = 'Get-TppWorkflowTicket'
-    'Restore-TppCertificate'   = 'Invoke-TppCertificateRenewal'
-    'Get-TppLog'               = 'Read-TppLog'
-    'fto'                      = 'Find-TppObject'
-    'ftc'                      = 'Find-TppCertificate'
-    'itcr'                     = 'Invoke-TppCertificateRenewal'
-    'New-TppSession'           = 'New-VenafiSession'
-    'Invoke-TppRestMethod'     = 'Invoke-VenafiRestMethod'
-    'Get-TppCertificate'       = 'Export-VenafiCertificate'
-    'Get-TppCertificateDetail' = 'Get-VenafiCertificate'
-    'Read-TppLog'              = 'Read-VenafiLog'
-    'Get-TppIdentity'          = 'Get-VenafiIdentity'
-    'Find-TppCertificate'      = 'Find-VenafiCertificate'
-}
-$aliases.GetEnumerator() | ForEach-Object {
-    Set-Alias -Name $_.Key -Value $_.Value
-}
-Export-ModuleMember -Alias *
-
-# load sodium needed for vaas encryption
-Import-Module "$PSScriptRoot\import\PSSodium\PSSodium.psd1" -Force
+Export-ModuleMember -Alias * -Variable VenafiSession
 
 # vaas fields to ensure the values are upper case
-$vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
+$script:vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
 # vaas fields proper case
-$vaasFields = @(
+$script:vaasFields = @(
     'certificateId',
     'applicationIds',
     'companyId',

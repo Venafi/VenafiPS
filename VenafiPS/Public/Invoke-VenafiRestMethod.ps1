@@ -46,7 +46,7 @@ function Invoke-VenafiRestMethod {
         [Parameter(ParameterSetName = 'Session')]
         [AllowNull()]
         [Alias('Key', 'AccessToken')]
-        [psobject] $VenafiSession = $script:VenafiSession,
+        [psobject] $VenafiSession,
 
         [Parameter(Mandatory, ParameterSetName = 'URL')]
         [ValidateNotNullOrEmpty()]
@@ -87,27 +87,40 @@ function Invoke-VenafiRestMethod {
 
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
 
-        if ( -not $VenafiSession ) {
-            if ( $env:TPP_TOKEN ) {
-                $VenafiSession = $env:TPP_TOKEN
-            }
-            elseif ( $env:VAAS_KEY ) {
-                $VenafiSession = $env:VAAS_KEY
-            }
-            else {
-                throw 'Please run New-VenafiSession or provide a VaaS key or TPP token.'
-            }
+        # if ( -not $VenafiSession ) {
+        if ( $env:VDC_TOKEN ) {
+            $VenafiSession = $env:VDC_TOKEN
+            Write-Verbose 'Using TLSPDC token environment variable'
         }
+        elseif ( $env:VC_KEY ) {
+            $VenafiSession = $env:VC_KEY
+            Write-Verbose 'Using TLSPC key environment variable'
+        }
+        elseif ( $PSBoundParameters.VenafiSession ) {
+            Write-Verbose 'Using session provided'
+        }
+        elseif ($script:VenafiSessionNested) {
+            $VenafiSession = $script:VenafiSessionNested
+            Write-Verbose 'Using nested session'
+        }
+        elseif ( $script:VenafiSession ) {
+            $VenafiSession = $script:VenafiSession
+            Write-Verbose 'Using script session'
+        }
+        else {
+            throw 'Please run New-VenafiSession or provide a TLSPC key or TLSPDC token.'
+        }
+        # }
 
         switch ($VenafiSession.GetType().Name) {
-            'VenafiSession' {
+            { $_ -in 'VenafiSession', 'PSCustomObject' } {
                 $Server = $VenafiSession.Server
-                if ( $VenafiSession.Platform -eq 'VaaS' ) {
-                    $platform = 'VaaS'
+                if ( $VenafiSession.Platform -eq 'VC' ) {
+                    $platform = 'VC'
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
                 }
                 else {
-                    # TPP
+                    # TLSPDC
                     if ( $VenafiSession.AuthType -eq 'Token' ) {
                         $platform = 'TppToken'
                         $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
@@ -123,18 +136,18 @@ function Invoke-VenafiRestMethod {
 
             'String' {
                 $auth = $VenafiSession
-                $objectGuid = [System.Guid]::empty
-                if ( [System.Guid]::TryParse($VenafiSession, [System.Management.Automation.PSReference]$objectGuid) ) {
+
+                if ( Test-IsGuid($VenafiSession) ) {
                     $Server = $script:CloudUrl
-                    $platform = 'VaaS'
+                    $platform = 'VC'
                 }
                 else {
-                    # TPP access token
+                    # TLSPDC access token
                     # get server from environment variable
-                    if ( -not $env:TPP_SERVER ) {
-                        throw 'TPP_SERVER environment variable was not found'
+                    if ( -not $env:VDC_SERVER ) {
+                        throw 'VDC_SERVER environment variable was not found'
                     }
-                    $Server = $env:TPP_SERVER
+                    $Server = $env:VDC_SERVER
                     if ( $Server -notlike 'https://*') {
                         $Server = 'https://{0}' -f $Server
                     }
@@ -143,12 +156,13 @@ function Invoke-VenafiRestMethod {
             }
 
             Default {
-                throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a VaaS key or TPP token."
+                throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a TLSPC key or TLSPDC token."
             }
         }
 
+        # set auth
         switch ($platform) {
-            'VaaS' {
+            'VC' {
                 $allHeaders = @{
                     "tppl-api-key" = $auth
                 }
@@ -268,7 +282,7 @@ function Invoke-VenafiRestMethod {
                 $permMsg = ''
 
                 # get scope details for tpp
-                if ( $platform -ne 'VaaS' ) {
+                if ( $platform -ne 'TLSPC' ) {
                     $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
                     $callingFunctionScope = ($script:functionConfig).$callingFunction.TppTokenScope
                     if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of $callingFunctionScope." }
@@ -283,7 +297,7 @@ function Invoke-VenafiRestMethod {
             }
 
             409 {
-                # 409 = item already exists.  some functions use this for a 'force' option, eg. Set-TppPermission
+                # 409 = item already exists.  some functions use this for a 'force' option, eg. Set-VdcPermission
                 # treat this as non error/exception if FullResponse provided
                 if ( $FullResponse ) {
                     $response = [pscustomobject] @{

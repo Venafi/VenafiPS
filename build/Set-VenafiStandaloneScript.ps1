@@ -224,14 +224,14 @@ process {
     # build the full function string and write to new script
     foreach ($functionToAdd in $functionsToAdd) {
         $fullFunction = "`r`n{0} {1} {{`r`n# v{2}{3}`r`n}}`r`n`r`n" -f $functionToAdd.CommandType, $functionToAdd.Name, $functionToAdd.Version, $functionToAdd.Definition
-        $newScript.Insert($addOffset, $fullFunction) | Out-Null
+        $null = $newScript.Insert($addOffset, $fullFunction)
         $addOffset += $fullFunction.Length
     }
 
     # add enums into script
     foreach ($thisEnum in $enumsToAdd) {
         $fullEnum = "`r`n{0}`r`n`r`n" -f (Get-Content $thisEnum.FullName -Raw)
-        $newScript.Insert($addOffset, $fullEnum) | Out-Null
+        $null = $newScript.Insert($addOffset, $fullEnum)
         $addOffset += $fullEnum.Length
     }
 
@@ -239,7 +239,7 @@ process {
     # currently all are being added
     foreach ($thisClass in $classFiles) {
         $fullClass = "`r`n{0}`r`n`r`n" -f (Get-Content $thisClass.FullName -Raw)
-        $newScript.Insert($addOffset, $fullClass) | Out-Null
+        $null = $newScript.Insert($addOffset, $fullClass)
         $addOffset += $fullClass.Length
     }
 
