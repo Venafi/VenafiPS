@@ -290,7 +290,7 @@ function Export-VdcCertificate {
 
                     Write-Verbose "Saved $outFile"
 
-                    $out | Add-Member @{'OutPath' = @($outFile) }
+                    $out | Add-Member @{'OutFile' = @($outFile) }
 
                     if ( $thisBody.Format -in 'Base64 (PKCS#8)' -and $thisBody.IncludePrivateKey) {
                         # outFile will be .pem with cert and key
@@ -302,7 +302,7 @@ function Export-VdcCertificate {
                             $sw.WriteLine($splitData.CertPem)
                             Write-Verbose "Saved $crtFile"
 
-                            $out.OutPath += $crtFile
+                            $out.OutFile += $crtFile
                         }
                         finally {
                             if ($null -ne $sw) { $sw.Close() }
@@ -316,7 +316,7 @@ function Export-VdcCertificate {
                                 $sw.WriteLine($splitData.KeyPem)
                                 Write-Verbose "Saved $keyFile"
 
-                                $out.OutPath += $keyFile
+                                $out.OutFile += $keyFile
                             }
                             finally {
                                 if ($null -ne $sw) { $sw.Close() }
