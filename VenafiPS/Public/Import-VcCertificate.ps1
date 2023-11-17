@@ -4,7 +4,7 @@ function Import-VcCertificate {
     Import one or more certificates
 
     .DESCRIPTION
-    Import one or more certificates and their private keys.  Currently PKCS12 (.pfx or .p12) is supported.
+    Import one or more certificates and their private keys.  Currently PKCS #8 and PKCS #12 (.pfx or .p12) are supported.
 
     .PARAMETER Path
     Path to a certificate file.  Provide either this or -Data.
@@ -12,8 +12,18 @@ function Import-VcCertificate {
     .PARAMETER Data
     Contents of a certificate/key to import.  Provide either this or -Path.
 
+    .PARAMETER Pkcs8
+    Provided -Data is in PKCS #8 format
+
+    .PARAMETER Pkcs12
+    Provided -Data is in PKCS #12 format
+
+    .PARAMETER PrivateKeyPassword
+    Password the private key was encrypted with
+
     .PARAMETER ThrottleLimit
-    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
+    Limit the number of threads when running in parallel; the default is 10.  Applicable to PS v7+ only.
+    100 keystores will be imported at a time so it's less important to have a very high throttle limit.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -68,6 +78,7 @@ function Import-VcCertificate {
         [String] $Path,
 
         [Parameter(Mandatory, ParameterSetName = 'Pkcs12', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs8', ValueFromPipelineByPropertyName)]
         [AllowNull()]
         [AllowEmptyString()]
         [Alias('CertificateData')]
@@ -76,11 +87,14 @@ function Import-VcCertificate {
         [Parameter(Mandatory, ParameterSetName = 'Pkcs12')]
         [switch] $Pkcs12,
 
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs8')]
+        [switch] $Pkcs8,
+
         [Parameter(Mandatory)]
         [psobject] $PrivateKeyPassword,
 
         [Parameter()]
-        [int32] $ThrottleLimit = 100,
+        [int32] $ThrottleLimit = 10,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -94,7 +108,7 @@ function Import-VcCertificate {
             Import-Module "$PSScriptRoot/../import/PSSodium/PSSodium.psd1" -Force
         }
 
-        $vSat = Get-VcSatellite -All | Select-Object -First 1
+        $vSat = Get-VcSatellite -All | Where-Object { $_.edgeStatus -eq 'ACTIVE' } | Select-Object -First 1
 
         $pkPassString = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
         elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
@@ -128,12 +142,26 @@ function Import-VcCertificate {
             )
         }
         else {
+            # check if Data exists since we allow null/empty in case piping from another function and data is not there
             if ( $Data ) {
-                $allCerts.Add(@{
-                        'CertData' = $Data -replace "`r|`n|-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----"
-                        'Format'   = $PSCmdlet.ParameterSetName
+
+                $addMe = @{
+                    'Format' = $PSCmdlet.ParameterSetName
+                }
+
+                switch ($PSCmdlet.ParameterSetName) {
+                    'Pkcs12' {
+                        $addMe.'CertData' = $Data -replace "`r|`n|-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----"
                     }
-                )
+
+                    'Pkcs8' {
+                        $splitData = Split-CertificateData -CertificateData $Data
+                        $addMe.CertPem = $splitData.CertPem
+                        if ( $splitData.KeyPem ) { $addMe.KeyPem = $splitData.KeyPem }
+                    }
+                }
+
+                $allCerts.Add($addMe)
             }
         }
 
@@ -149,23 +177,32 @@ function Import-VcCertificate {
         for ($i = 0; $i -lt $allCerts.Count; $i += 100) {
 
             $params = @{
-                Method  = 'post'
-                UriRoot = 'outagedetection/v1'
-                UriLeaf = 'certificates/imports'
-                Body    = @{
+                Method        = 'post'
+                UriRoot       = 'outagedetection/v1'
+                UriLeaf       = 'certificates/imports'
+                Body          = @{
                     'edgeInstanceId'  = $vSat.vsatelliteId
                     'encryptionKeyId' = $vSat.encryptionKeyId
                 }
                 VenafiSession = $VenafiSession
             }
 
-            switch ($allCerts[$i].Format) {
-                'Pkcs12' {
-                    $keystores = $allCerts[$i..($i + 99)] | ForEach-Object {
+            $keystores = foreach ($thisCert in $allCerts[$i..($i + 99)]) {
+                switch ($allCerts[$i].Format) {
+                    'Pkcs12' {
                         @{
-                            'pkcs12Keystore'       = $_.CertData
+                            'pkcs12Keystore'       = $thisCert.CertData
                             'dekEncryptedPassword' = $dekEncryptedPassword
                         }
+                    }
+
+                    'Pkcs8' {
+                        $thisKeystore = @{
+                            'certificate'          = $thisCert.CertPem
+                            'dekEncryptedPassword' = $dekEncryptedPassword
+                        }
+                        if ( $thisCert.KeyPem ) { $thisKeystore.passwordEncryptedPrivateKey = $thisCert.KeyPem }
+                        $thisKeystore
                     }
                 }
             }
@@ -183,9 +220,16 @@ function Import-VcCertificate {
                 $jobResponse = invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificates/imports/$($requestResponse.id)"
                 Start-Sleep 2
             } until (
-                $jobResponse.status -eq 'COMPLETED'
+                $jobResponse.status -in 'COMPLETED', 'FAILED'
             )
-            $jobResponse.results
+
+            if ( $jobResponse.status -eq 'COMPLETED' ) {
+                $jobResponse.results
+            }
+            else {
+                # importing only 1 keycert that fails does not give us any results to return to the user :(
+                throw 'Import failed'
+            }
         }
 
         $invokeParams = @{
