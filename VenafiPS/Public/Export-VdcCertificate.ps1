@@ -215,6 +215,7 @@ function Export-VdcCertificate {
 
         $body | Write-VerboseWithSecret
 
+        # function not available in parallel jobs, use this workaround to pass it in via InputObject
         $splitCertificateDataFunction = 'function Split-CertificateData {{ {0} }}' -f (Get-Command Split-CertificateData | Select-Object -ExpandProperty Definition)
     }
 
@@ -240,10 +241,26 @@ function Export-VdcCertificate {
                 $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
             }
             catch {
-                return [pscustomobject]@{
-                    'Path'            = $thisBody.CertificateDN
-                    'Error'           = $_
-                    'CertificateData' = $null
+                try {
+                    # key not available, get just the cert
+                    if ( $_.ToString() -like '*failed to lookup private key*') {
+
+                        # we can't have a p12 without a private key
+                        if ( $thisBody.Format -eq 'PKCS #12' ) {
+                            throw $_
+                        }
+
+                        $thisBody.IncludePrivateKey = $false
+                        $thisBody.Password = $null
+                        $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+                    }
+                }
+                catch {
+                    return [pscustomobject]@{
+                        'Path'            = $thisBody.CertificateDN
+                        'Error'           = $_
+                        'CertificateData' = $null
+                    }
                 }
             }
 
@@ -263,6 +280,9 @@ function Export-VdcCertificate {
                 }
 
                 if ( $using:OutPath ) {
+
+                    $out = $out | Select-Object -Property * -ExcludeProperty CertificateData
+
                     # write the file with the filename provided
                     $outFile = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ($innerResponse.FileName.Trim('"'))
                     $bytes = [Convert]::FromBase64String($innerResponse.CertificateData)
@@ -270,15 +290,19 @@ function Export-VdcCertificate {
 
                     Write-Verbose "Saved $outFile"
 
-                    $out | Add-Member @{'OutPath' = $outFile }
+                    $out | Add-Member @{'OutPath' = @($outFile) }
 
                     if ( $thisBody.Format -in 'Base64 (PKCS#8)' -and $thisBody.IncludePrivateKey) {
                         # outFile will be .pem with cert and key
                         # write out the individual files as well
                         try {
-                            $sw = [IO.StreamWriter]::new($outFile.Replace('.pem', '.crt'), $false, [Text.Encoding]::ASCII)
+                            $crtFile = $outFile.Replace('.pem', '.crt')
+
+                            $sw = [IO.StreamWriter]::new($crtFile, $false, [Text.Encoding]::ASCII)
                             $sw.WriteLine($splitData.CertPem)
-                            Write-Verbose ('Saved {0}' -f $outFile.Replace('.pem', '.crt'))
+                            Write-Verbose "Saved $crtFile"
+
+                            $out.OutPath += $crtFile
                         }
                         finally {
                             if ($null -ne $sw) { $sw.Close() }
@@ -286,9 +310,13 @@ function Export-VdcCertificate {
 
                         if ( $thisBody.IncludePrivateKey ) {
                             try {
-                                $sw = [IO.StreamWriter]::new($outFile.Replace('.pem', '.key'), $false, [Text.Encoding]::ASCII)
+                                $keyFile = $outFile.Replace('.pem', '.key')
+
+                                $sw = [IO.StreamWriter]::new($keyFile, $false, [Text.Encoding]::ASCII)
                                 $sw.WriteLine($splitData.KeyPem)
-                                Write-Verbose ('Saved {0}' -f $outFile.Replace('.pem', '.key'))
+                                Write-Verbose "Saved $keyFile"
+
+                                $out.OutPath += $keyFile
                             }
                             finally {
                                 if ($null -ne $sw) { $sw.Close() }

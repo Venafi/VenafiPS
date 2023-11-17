@@ -23,10 +23,10 @@ function Split-CertificateData {
             if ($pemLines[$i].Contains('-----END')) {
                 $thisPemLines = $pemLines[$iStart..$i]
                 if ( $pemLines[$i].Contains('KEY-----')) {
-                    $keyPem = $thisPemLines | Join-String
+                    $keyPem = ($thisPemLines | Join-String -Separator "`n") -replace "`r"
                 }
                 else {
-                    $certPem += $thisPemLines | Join-String
+                    $certPem += ($thisPemLines | Join-String -Separator "`n") -replace "`r"
                 }
                 continue
             }
