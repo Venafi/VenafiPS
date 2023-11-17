@@ -1,3 +1,8 @@
+## 6.0.1
+- Update `Export-VdcCertificate` to return just certificate if private key isn't available for supporting formats
+- Add support for PKCS #8 in `Import-VcCertificate -Data`, by file will come in a future release
+
+
 ## 6.0.0
 This is a major release.  Although every attempt has been made to be backwards compatible, **existing scripts will likely require some updates**.  Please read the full release notes.
 
@@ -562,6 +567,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

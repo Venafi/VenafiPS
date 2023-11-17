@@ -11,6 +11,12 @@ Import-VcCertificate -Path <String> -PrivateKeyPassword <PSObject> [-ThrottleLim
  [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
+### Pkcs8
+```
+Import-VcCertificate -Data <String> [-Pkcs8] -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>]
+ [-VenafiSession <PSObject>] [<CommonParameters>]
+```
+
 ### Pkcs12
 ```
 Import-VcCertificate -Data <String> [-Pkcs12] -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>]
@@ -19,7 +25,7 @@ Import-VcCertificate -Data <String> [-Pkcs12] -PrivateKeyPassword <PSObject> [-T
 
 ## DESCRIPTION
 Import one or more certificates and their private keys. 
-Currently PKCS12 (.pfx or .p12) is supported.
+Currently PKCS #8 and PKCS #12 (.pfx or .p12) are supported.
 
 ## EXAMPLES
 
@@ -72,7 +78,7 @@ Provide either this or -Path.
 
 ```yaml
 Type: String
-Parameter Sets: Pkcs12
+Parameter Sets: Pkcs8, Pkcs12
 Aliases: CertificateData
 
 Required: True
@@ -83,7 +89,7 @@ Accept wildcard characters: False
 ```
 
 ### -Pkcs12
-{{ Fill Pkcs12 Description }}
+Provided -Data is in PKCS #12 format
 
 ```yaml
 Type: SwitchParameter
@@ -97,8 +103,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Pkcs8
+Provided -Data is in PKCS #8 format
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Pkcs8
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -PrivateKeyPassword
-{{ Fill PrivateKeyPassword Description }}
+Password the private key was encrypted with
 
 ```yaml
 Type: PSObject
@@ -113,8 +134,9 @@ Accept wildcard characters: False
 ```
 
 ### -ThrottleLimit
-Limit the number of threads when running in parallel; the default is 100. 
+Limit the number of threads when running in parallel; the default is 10. 
 Applicable to PS v7+ only.
+100 keystores will be imported at a time so it's less important to have a very high throttle limit.
 
 ```yaml
 Type: Int32
@@ -123,7 +145,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: 100
+Default value: 10
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
