@@ -33,7 +33,7 @@ function New-VcSearchQuery {
     param(
 
         [parameter()]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
@@ -66,7 +66,7 @@ function New-VcSearchQuery {
             [CmdletBinding()]
             param (
                 [parameter()]
-                [psobject] $Filter
+                [System.Collections.Generic.List[object]] $Filter
             )
 
             $loopFilter = $Filter
@@ -80,9 +80,13 @@ function New-VcSearchQuery {
                 $loopFilter = @(, $loopFilter)
             }
 
-            $operands = $loopFilter | ForEach-Object {
-                $thisItem = $_
-                if ( $thisItem.count -eq 3 -and -not ($thisItem | ForEach-Object { if ($_.GetType().Name -eq 'Object[]') { 'array' } })) {
+            $operands = foreach ($thisItem in $loopFilter) {
+                if ( $thisItem.count -eq 3 ) {
+
+                    # handle nested expressions
+                    if ( $thisItem[2] -is 'Object[]' -and $thisItem[2][1] -in $operators ) {
+                        New-VaasExpression -Filter $thisItem
+                    }
 
                     # vaas fields are case sensitive, get the proper case if we're aware of the field
                     $thisField = $thisItem[0]
@@ -137,7 +141,11 @@ function New-VcSearchQuery {
     process {
 
         if ( $Filter ) {
-            $thisFilter = @(, $Filter)
+            $thisFilter = $Filter
+            # if we have a basic filter of field, operator, value, force it to be a 1 item array intead of 3 items
+            if ( $Filter.Count -eq 3 -and -not ($Filter | Where-Object { $_ -isnot [string] })) {
+                $thisFilter = @(, $Filter)
+            }
             $query.expression = New-VaasExpression -Filter $thisFilter
         }
 

@@ -86,12 +86,6 @@ function Find-VcLog {
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
-
-        [parameter()]
-        [psobject[]] $Order,
-
         [Parameter(ParameterSetName = 'All')]
         [string] $Name,
 
@@ -100,6 +94,12 @@ function Find-VcLog {
 
         [Parameter(ParameterSetName = 'All')]
         [string] $Message,
+
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
+        [System.Collections.ArrayList] $Filter,
+
+        [parameter()]
+        [psobject[]] $Order,
 
         [Parameter()]
         [int] $First,
@@ -121,7 +121,8 @@ function Find-VcLog {
         $params.Filter = $Filter
     }
     else {
-        $newFilter = [System.Collections.ArrayList]@('AND')
+        $newFilter = [System.Collections.Generic.List[object]]::new()
+        $newFilter.Add('AND')
 
         switch ($PSBoundParameters.Keys) {
             'Name' { $null = $newFilter.Add(@('activityName', 'FIND', $Name)) }

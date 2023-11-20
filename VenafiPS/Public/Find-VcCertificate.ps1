@@ -6,15 +6,49 @@ function Find-VcCertificate {
     .DESCRIPTION
     Find certificates based on various attributes.
 
+    .PARAMETER Name
+    Search for certificates with the name matching part or all of the value
+
+    .PARAMETER KeyLength
+    Search by certificate key length
+
+    .PARAMETER Serial
+    Search by serial number
+
+    .PARAMETER Fingerprint
+    Search by fingerprint
+
+    .PARAMETER IsSelfSigned
+    Search for only self signed certificates
+
+    .PARAMETER Status
+    Search by one or more certificate statuses.  Valid values include ACTIVE, RETIRED, and DELETED.
+
+    .PARAMETER ExpireBefore
+    Search for certificates expiring before a certain date.
+    Use with -ExpireAfter for a defined start and end.
+
+    .PARAMETER ExpireAfter
+    Search for certificates expiring after a certain date.
+    Use with -ExpireBefore for a defined start and end.
+
+    .PARAMETER Version
+    Search by version type.  Valid values include CURRENT and OLD.
+
+    .PARAMETER SanDns
+    Search for certificates with SAN DNS matching part or all of the value
+
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @(field, comparison operator, value).
     To combine filters, use the format @('operator', @(field, comparison operator, value), @(field2, comparison operator2, value2)).
     Nested filters are supported.
-    Field names and values are case sensitive.
+    Field names and values are case sensitive, but VenafiPS will try and convert to the proper case if able.
+
+    Available operators are:
 
     Operator    |	Name                    |	Description and Usage
-    -----------------------------------------------------------------
+    -----------------------------------------------------------------------------------
     EQ              Equal operator              The search result is equal to the specified value. Valid for numeric or Boolean fields.
     FIND            Find operator               The search result is based on the value of all or part of one or more strings. You can also use Regular Expressions (regex).
     GT              Greater than                The search result has a higher numeric value than the specified value.
@@ -30,21 +64,6 @@ function Find-VcCertificate {
     1 or more fields to order on.
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
-
-    .PARAMETER Name
-    Certificate name to find via regex match
-
-    .PARAMETER KeyLength
-    Certificate key length
-
-    .PARAMETER Serial
-    Serial number
-
-    .PARAMETER Fingerprint
-    Fingerprint
-
-    .PARAMETER IsSelfSigned
-    Only find self signed certificates
 
     .PARAMETER SavedSearchName
     Find certificates based on a saved search, see https://docs.venafi.cloud/vaas/certificates/saving-certificate-filters
@@ -87,19 +106,24 @@ function Find-VcCertificate {
     Find certificates matching all of part of the name
 
     .EXAMPLE
-    Find-VcCertificate -Filter @('fingerprint', 'EQ', '075C43428E70BCF941039F54B8ED78DE4FACA87F')
+    Find-VcCertificate -Fingerprint '075C43428E70BCF941039F54B8ED78DE4FACA87F'
 
     Find certificates matching a single value
 
     .EXAMPLE
-    Find-VcCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('validityEnd','LTE',(get-date).AddDays(30)))
+    Find-VcCertificate -ExpireAfter (get-date) -ExpireBefore (get-date).AddDays(30)
 
     Find certificates matching multiple values.  In this case, find all certificates expiring in the next 30 days.
 
     .EXAMPLE
-    Find-VcCertificate -Filter ('and', @('validityEnd','GTE',(get-date)), @('validityEnd','LTE',(get-date).AddDays(30))) | Invoke-VcCertificateAction -Renew
+    Find-VcCertificate -ExpireAfter (get-date) -ExpireBefore (get-date).AddDays(30)| Invoke-VcCertificateAction -Renew
 
     Find all certificates expiring in the next 30 days and renew them
+
+    .EXAMPLE
+    Find-VcCertificate -Filter @('subjectDN', 'FIND', 'www.barron.com')
+
+    Find via a filter instead of using built-in function properties
 
     .EXAMPLE
     Find-VcCertificate -ApplicatonDetail
@@ -112,28 +136,17 @@ function Find-VcCertificate {
 
     Include user/team owner details, not just the ID.
     This will make additional api calls and will increase the response time.
-
-    .LINK
-    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificates_search_getByExpressionAsCsv
-
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
-
-        [Parameter(ParameterSetName = 'All')]
-        [Parameter(ParameterSetName = 'Filter')]
-        [psobject[]] $Order,
-
         [Parameter(ParameterSetName = 'All')]
         [string] $Name,
 
         [Parameter(ParameterSetName = 'All')]
-        [int] $KeyLength,
+        [int32] $KeyLength,
 
         [Parameter(ParameterSetName = 'All')]
         [string] $Serial,
@@ -143,6 +156,30 @@ function Find-VcCertificate {
 
         [Parameter(ParameterSetName = 'All')]
         [switch] $IsSelfSigned,
+
+        [Parameter(ParameterSetName = 'All')]
+        [ValidateSet('ACTIVE', 'RETIRED', 'DELETED')]
+        [string[]] $Status,
+
+        [Parameter(ParameterSetName = 'All')]
+        [datetime] $ExpireBefore,
+
+        [Parameter(ParameterSetName = 'All')]
+        [datetime] $ExpireAfter,
+
+        [Parameter(ParameterSetName = 'All')]
+        [ValidateSet('CURRENT', 'OLD')]
+        [string] $Version,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $SanDns,
+
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
+        [System.Collections.ArrayList] $Filter,
+
+        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'Filter')]
+        [psobject[]] $Order,
 
         [parameter(Mandatory, ParameterSetName = 'SavedSearch')]
         [string] $SavedSearchName,
@@ -179,15 +216,22 @@ function Find-VcCertificate {
         }
 
         'All' {
-            $newFilter = [System.Collections.ArrayList]@('AND')
+            $newFilter = [System.Collections.Generic.List[object]]::new()
+            $newFilter.Add('AND')
 
             switch ($PSBoundParameters.Keys) {
                 'Name' { $null = $newFilter.Add(@('certificateName', 'FIND', $Name)) }
-                'Status' { $null = $newFilter.Add(@('certificateStatus', 'EQ', $Status.ToUpper())) }
                 'KeyLength' { $null = $newFilter.Add(@('keyStrength', 'EQ', $KeyLength.ToString())) }
                 'Serial' { $null = $newFilter.Add(@('serialNumber', 'EQ', $Serial)) }
                 'Fingerprint' { $null = $newFilter.Add(@('fingerprint', 'EQ', $Fingerprint)) }
                 'IsSelfSigned' { $null = $newFilter.Add(@('selfSigned', 'EQ', $IsSelfSigned.IsPresent.ToString())) }
+                'Version' { $null = $newFilter.Add(@('versionType', 'EQ', $Version)) }
+                'Status' {
+                    $null = $newFilter.Add(@('certificateStatus', 'MATCH', $Status.ToUpper()))
+                }
+                'ExpireBefore' { $null = $newFilter.Add(@('validityEnd', 'LTE', $ExpireBefore)) }
+                'ExpireAfter' { $null = $newFilter.Add(@('validityEnd', 'GTE', $ExpireAfter)) }
+                'SanDns' { $null = $newFilter.Add(@('subjectAlternativeNameDns', 'FIND', $SanDns)) }
             }
 
             if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
