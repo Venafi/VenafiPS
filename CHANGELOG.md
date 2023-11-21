@@ -1,6 +1,6 @@
 ## 6.0.2
-- Update `Export-VdcCertificate` to return just certificate if private key isn't available for supporting formats
-- Add support for PKCS #8 in `Import-VcCertificate -Data`, by file will come in a future release
+- Add search properties Status, ExpireBefore, ExpireAfter, Version, and SanDns to `Find-VcCertificate`
+- Add `Remove-VdcCertificateAssociation`
 
 
 ## 6.0.1
