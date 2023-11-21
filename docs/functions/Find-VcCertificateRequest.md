@@ -7,7 +7,7 @@ Find certificate requests
 
 ### All (Default)
 ```
-Find-VcCertificateRequest [-Order <PSObject[]>] [-Status <String>] [-KeyLength <Int32>] [-First <Int32>]
+Find-VcCertificateRequest [-Status <String>] [-KeyLength <Int32>] [-Order <PSObject[]>] [-First <Int32>]
  [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
@@ -30,6 +30,36 @@ PS C:\> {{ Add example code here }}
 {{ Add example description here }}
 
 ## PARAMETERS
+
+### -Status
+Request status, either ISSUED or FAILED
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -KeyLength
+Certificate key length
+
+```yaml
+Type: Int32
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -Filter
 Array or multidimensional array of fields and values to filter on.
@@ -62,36 +92,6 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Status
-Request status, either ISSUED or FAILED
-
-```yaml
-Type: String
-Parameter Sets: All
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -KeyLength
-Certificate key length
-
-```yaml
-Type: Int32
-Parameter Sets: All
-Aliases:
-
-Required: False
-Position: Named
-Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
