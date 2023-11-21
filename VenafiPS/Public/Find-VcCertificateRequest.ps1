@@ -39,18 +39,18 @@ function Find-VcCertificateRequest {
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
-
-        [parameter()]
-        [psobject[]] $Order,
-
         [Parameter(ParameterSetName = 'All')]
         [ValidateSet('ISSUED', 'FAILED')]
         [string] $Status,
 
         [Parameter(ParameterSetName = 'All')]
         [int] $KeyLength,
+
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
+        [System.Collections.ArrayList] $Filter,
+
+        [parameter()]
+        [psobject[]] $Order,
 
         [Parameter()]
         [int] $First,
@@ -72,7 +72,8 @@ function Find-VcCertificateRequest {
         $params.Filter = $Filter
     }
     else {
-        $newFilter = [System.Collections.ArrayList]@('AND')
+        $newFilter = [System.Collections.Generic.List[object]]::new()
+        $newFilter.Add('AND')
 
         switch ($PSBoundParameters.Keys) {
             'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }

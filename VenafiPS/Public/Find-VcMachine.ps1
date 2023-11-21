@@ -42,12 +42,6 @@ function Find-VcMachine {
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
-
-        [Parameter()]
-        [psobject[]] $Order,
-
         [Parameter(ParameterSetName = 'All')]
         [string] $Name,
 
@@ -57,6 +51,12 @@ function Find-VcMachine {
         [Parameter(ParameterSetName = 'All')]
         [ValidateSet('DRAFT', 'VERIFIED', 'UNVERIFIED')]
         [string] $Status,
+
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
+        [System.Collections.ArrayList] $Filter,
+
+        [Parameter()]
+        [psobject[]] $Order,
 
         [Parameter()]
         [int] $First,
@@ -78,7 +78,8 @@ function Find-VcMachine {
         $params.Filter = $Filter
     }
     else {
-        $newFilter = [System.Collections.ArrayList]@('AND')
+        $newFilter = [System.Collections.Generic.List[object]]::new()
+        $newFilter.Add('AND')
 
         switch ($PSBoundParameters.Keys) {
             'Name' { $null = $newFilter.Add(@('machineName', 'FIND', $Name)) }

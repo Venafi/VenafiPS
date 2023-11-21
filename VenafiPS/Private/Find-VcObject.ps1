@@ -91,7 +91,8 @@ function Find-VcObject {
         [string] $Name,
 
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
+        # [System.Collections.ArrayList] $Filter,
 
         [Parameter(ParameterSetName = 'All')]
         [Parameter(ParameterSetName = 'Filter')]
