@@ -6,6 +6,9 @@ function Find-VcMachineIdentity {
     .DESCRIPTION
     Find machine identities
 
+    .PARAMETER Status
+    Search by one or more statuses.  Valid values are DISCOVERED, VALIDATED, and INSTALLED
+
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @('operator', @(field, comparison operator, value), @(field2, comparison operator2, value2)).
@@ -17,9 +20,6 @@ function Find-VcMachineIdentity {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
-    .PARAMETER Status
-    Either DISCOVERED, VALIDATED, or INSTALLED
-
     .PARAMETER First
     Only retrieve this many records
 
@@ -29,22 +29,22 @@ function Find-VcMachineIdentity {
     A TLSPC key can also provided.
 
     .OUTPUTS
-
+    pscustomobject
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
 
     param (
 
+        [Parameter(ParameterSetName = 'All')]
+        [ValidateSet('DISCOVERED', 'VALIDATED', 'INSTALLED')]
+        [string[]] $Status,
+
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
-
-        [Parameter(ParameterSetName = 'All')]
-        [ValidateSet('DISCOVERED', 'VALIDATED', 'INSTALLED')]
-        [string] $Status,
 
         [Parameter()]
         [int] $First,
@@ -66,10 +66,12 @@ function Find-VcMachineIdentity {
         $params.Filter = $Filter
     }
     else {
-        $newFilter = [System.Collections.ArrayList]@('AND')
+        $newFilter = [System.Collections.Generic.List[object]]::new()
+        $newFilter.Add('AND')
 
         switch ($PSBoundParameters.Keys) {
-            'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }
+            'Status' { $newFilter.Add(@('status', 'MATCH', $Status.ToUpper())) }
+
         }
 
         if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }

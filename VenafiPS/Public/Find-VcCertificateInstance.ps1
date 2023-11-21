@@ -46,12 +46,6 @@ function Find-VcCertificateInstance {
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
-
-        [parameter()]
-        [psobject[]] $Order,
-
         [Parameter(ParameterSetName = 'All')]
         [string] $HostName,
 
@@ -64,6 +58,12 @@ function Find-VcCertificateInstance {
         [Parameter(ParameterSetName = 'All')]
         [ValidateSet('IN_USE', 'SUPERSEDED')]
         [string] $Status,
+
+        [Parameter(Mandatory, ParameterSetName = 'Filter')]
+        [System.Collections.ArrayList] $Filter,
+
+        [parameter()]
+        [psobject[]] $Order,
 
         [Parameter()]
         [int] $First,
@@ -85,13 +85,14 @@ function Find-VcCertificateInstance {
         $params.Filter = $Filter
     }
     else {
-        $newFilter = [System.Collections.ArrayList]@('AND')
+        $newFilter = [System.Collections.Generic.List[object]]::new()
+        $newFilter.Add('AND')
 
         switch ($PSBoundParameters.Keys) {
             'HostName' { $null = $newFilter.Add(@('hostname', 'FIND', $HostName)) }
             'IpAddress' { $null = $newFilter.Add(@('ipAddress', 'EQ', $IpAddress.IPAddressToString)) }
             'Port' { $null = $newFilter.Add(@('port', 'EQ', $Port.ToString())) }
-            'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }
+            'Status' { $null = $newFilter.Add(@('deploymentStatus', 'EQ', $Status.ToUpper())) }
         }
 
         if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
