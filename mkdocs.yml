@@ -111,6 +111,7 @@ nav:
     - Remove-VcTeamMember: functions/Remove-VcTeamMember.md
     - Remove-VcTeamOwner: functions/Remove-VcTeamOwner.md
     - Remove-VdcCertificate: functions/Remove-VdcCertificate.md
+    - Remove-VdcCertificateAssociation: functions/Remove-VdcCertificateAssociation.md
     - Remove-VdcClient: functions/Remove-VdcClient.md
     - Remove-VdcEngineFolder: functions/Remove-VdcEngineFolder.md
     - Remove-VdcObject: functions/Remove-VdcObject.md

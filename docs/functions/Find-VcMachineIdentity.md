@@ -7,7 +7,7 @@ Find machine identities
 
 ### All (Default)
 ```
-Find-VcMachineIdentity [-Order <PSObject[]>] [-Status <String>] [-First <Int32>] [-VenafiSession <PSObject>]
+Find-VcMachineIdentity [-Status <String[]>] [-Order <PSObject[]>] [-First <Int32>] [-VenafiSession <PSObject>]
  [<CommonParameters>]
 ```
 
@@ -30,6 +30,22 @@ PS C:\> {{ Add example code here }}
 {{ Add example description here }}
 
 ## PARAMETERS
+
+### -Status
+Search by one or more statuses. 
+Valid values are DISCOVERED, VALIDATED, and INSTALLED
+
+```yaml
+Type: String[]
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ### -Filter
 Array or multidimensional array of fields and values to filter on.
@@ -57,21 +73,6 @@ You can also provide a hashtable with the field name as the key and either asc o
 ```yaml
 Type: PSObject[]
 Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -Status
-Either DISCOVERED, VALIDATED, or INSTALLED
-
-```yaml
-Type: String
-Parameter Sets: All
 Aliases:
 
 Required: False
@@ -120,6 +121,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## OUTPUTS
 
+### pscustomobject
 ## NOTES
 
 ## RELATED LINKS
