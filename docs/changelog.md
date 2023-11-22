@@ -1,6 +1,10 @@
+## 6.0.3
+- Fix `New-VenafiSession -VcKey` not storing key as credential and causing Invoke-VenafiRestMethod to fail
+
+
 ## 6.0.2
-- Update `Export-VdcCertificate` to return just certificate if private key isn't available for supporting formats
-- Add support for PKCS #8 in `Import-VcCertificate -Data`, by file will come in a future release
+- Add search properties Status, ExpireBefore, ExpireAfter, Version, and SanDns to `Find-VcCertificate`
+- Add `Remove-VdcCertificateAssociation`
 
 
 ## 6.0.1
@@ -572,6 +576,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
