@@ -1,2 +1,1 @@
-- Update `Export-VdcCertificate` to return just certificate if private key isn't available for supporting formats
-- Add support for PKCS #8 in `Import-VcCertificate -Data`, by file will come in a future release
+- Fix `New-VenafiSession -VcKey` not storing key as credential and causing Invoke-VenafiRestMethod to fail
