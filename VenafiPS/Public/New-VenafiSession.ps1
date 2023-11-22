@@ -432,9 +432,9 @@ function New-VenafiSession {
 
         'Vaas' {
             $newSession.Server = $script:CloudUrl
-            $newSession.Key = if ( $VcKey -is [string] ) { $VcKey }
-            elseif ($VcKey -is [securestring]) { ConvertFrom-SecureString -SecureString $VcKey -AsPlainText }
-            elseif ($VcKey -is [pscredential]) { $VcKey.GetNetworkCredential().Password }
+            $newSession.Key = if ( $VcKey -is [string] ) { New-Object System.Management.Automation.PSCredential('VcKey', ($VcKey | ConvertTo-SecureString -AsPlainText -Force)) }
+            elseif ($VcKey -is [pscredential]) { $VcKey }
+            elseif ($VcKey -is [securestring]) { New-Object System.Management.Automation.PSCredential('VcKey', $VcKey) }
             else { throw 'Unsupported type for -VcKey.  Provide either a String, SecureString, or PSCredential.' }
 
             if ( $VaultVcKeyName ) {
