@@ -102,6 +102,10 @@ function New-VcMachine {
 
     Use pipeline data to create a machine.
     More than 1 machine can be sent thru the pipeline and they will be created in parallel.
+
+    .NOTES
+    To see a full list of tab-completion options, be sure to set the Tab option, Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete.
+
     #>
 
 
@@ -169,13 +173,6 @@ function New-VcMachine {
         $allMachines = [System.Collections.Generic.List[hashtable]]::new()
 
         $allTeam = Get-VcTeam -All
-        if ( $VenafiSession.MachineType ) {
-            $machineTypes = $VenafiSession.MachineType
-        }
-        else {
-            # session is just key, get machine types
-            $machineTypes = Invoke-VenafiRestMethod -UriLeaf 'machinetypes' | Select-Object -ExpandProperty machineTypes
-        }
 
         if ( $Credential ) {
             if ( $MachineType -in 'c1521d80-db7a-11ec-b79a-f3ded6c9808c', 'Microsoft IIS' ) { throw 'To create IIS machines, please use New-VcMachineIis' }
@@ -187,7 +184,7 @@ function New-VcMachine {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        $thisMachineType = $machineTypes | Where-Object { $_.machineTypeId -eq $MachineType -or $_.machineType -eq $MachineType }
+        $thisMachineType = Get-VcData -ID $MachineType -Type 'MachineType' -OutType 'Object' -FailOnMultiple
         if ( -not $thisMachineType ) {
             throw "$MachineType is not a valid machine type id or name"
         }
@@ -203,18 +200,18 @@ function New-VcMachine {
             $thisConnectionDetail = $ConnectionDetail
         }
         else {
-            if ( -not $allVsat ) {
-                $allVsat = Get-VcSatellite -All -IncludeKey
-            }
+            # ensure vsats get loaded into $script:vcSatellite
+            $null = Get-VcData -ID '' -Type 'VSatellite'
+
             if ( $VSatellite ) {
-                $thisVsat = $allVsat | Where-Object { $VSatellite -eq $_.vsatelliteId -or $VSatellite -eq $_.name }
+                $thisVsat = Get-VcData -ID $VSatellite -Type 'VSatellite' -OutType 'Object'
                 if ( -not $thisVsat ) {
                     throw "$VSatellite is not a valid VSatellite id or name"
                 }
             }
             else {
                 # choose the first vsat
-                $thisVsat = $allVsat | Select-Object -First 1
+                $thisVsat = $script:vcSatellite | Select-Object -First 1
             }
 
             $thisEdgeInstanceId = $thisVsat.vsatelliteId

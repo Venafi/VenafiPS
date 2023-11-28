@@ -169,6 +169,7 @@ function New-VenafiSession {
 
     [CmdletBinding(DefaultParameterSetName = 'KeyIntegrated')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSUseShouldProcessForStateChangingFunctions', '', Justification = 'Not needed')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Converting secret to credential')]
 
     param(
         [Parameter(Mandatory, ParameterSetName = 'KeyCredential')]
@@ -348,14 +349,14 @@ function New-VenafiSession {
 
         'AccessToken' {
             $newSession.Token = [PSCustomObject]@{
-                Server      = $authServerUrl
+                Server  = $authServerUrl
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
-                Expires     = (Get-Date).AddMonths(12)
+                Expires = (Get-Date).AddMonths(12)
             }
-            $newSession.Token.AccessToken = if ( $AccessToken -is [string] ) { $AccessToken }
-            elseif ($AccessToken -is [securestring]) { ConvertFrom-SecureString -SecureString $AccessToken -AsPlainText }
-            elseif ($AccessToken -is [pscredential]) { $AccessToken.GetNetworkCredential().Password }
+            $newSession.Token.AccessToken = if ( $AccessToken -is [string] ) { New-Object System.Management.Automation.PSCredential('AccessToken', ($AccessToken | ConvertTo-SecureString -AsPlainText -Force)) }
+            elseif ($AccessToken -is [pscredential]) { $AccessToken }
+            elseif ($AccessToken -is [securestring]) { New-Object System.Management.Automation.PSCredential('AccessToken', $AccessToken) }
             else { throw 'Unsupported type for -AccessToken.  Provide either a String, SecureString, or PSCredential.' }
 
         }
@@ -388,12 +389,12 @@ function New-VenafiSession {
 
         'RefreshToken' {
             $params = @{
-                AuthServer   = $authServerUrl
-                ClientId     = $ClientId
+                AuthServer = $authServerUrl
+                ClientId   = $ClientId
             }
-            $params.RefreshToken = if ( $RefreshToken -is [string] ) { $RefreshToken }
-            elseif ($RefreshToken -is [securestring]) { ConvertFrom-SecureString -SecureString $RefreshToken -AsPlainText }
-            elseif ($RefreshToken -is [pscredential]) { $RefreshToken.GetNetworkCredential().Password }
+            $params.RefreshToken = if ( $RefreshToken -is [string] ) { New-Object System.Management.Automation.PSCredential('RefreshToken', ($RefreshToken | ConvertTo-SecureString -AsPlainText -Force)) }
+            elseif ($RefreshToken -is [pscredential]) { $RefreshToken }
+            elseif ($RefreshToken -is [securestring]) { New-Object System.Management.Automation.PSCredential('RefreshToken', $RefreshToken) }
             else { throw 'Unsupported type for -RefreshToken.  Provide either a String, SecureString, or PSCredential.' }
 
             $newToken = New-VdcToken @params
@@ -499,28 +500,6 @@ function New-VenafiSession {
                     }
                 }, * -ExcludeProperty id)
         }
-
-        $newSession | Add-Member @{
-            MachineType = (Invoke-VenafiRestMethod -UriLeaf 'machinetypes' -VenafiSession $newSession | Select-Object -ExpandProperty machineTypes | Select-Object @{
-                    'n' = 'machineTypeId'
-                    'e' = {
-                        $_.Id
-                    }
-                }, * -ExcludeProperty id)
-        }
-
-        $machineTypeArgCompleterSb = {
-            param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-            $VenafiSession.MachineType.machineType | Where-Object {
-                $_ -like "$wordToComplete*"
-            } | ForEach-Object {
-                "'$_'"
-            }
-        }
-
-        Register-ArgumentCompleter -CommandName 'New-VcMachine', 'Find-VcMachine' -ParameterName 'Type' -ScriptBlock $machineTypeArgCompleterSb
-
     }
 
     if ( $PassThru ) {

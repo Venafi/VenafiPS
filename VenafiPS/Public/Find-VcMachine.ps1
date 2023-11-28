@@ -20,8 +20,8 @@ function Find-VcMachine {
     .PARAMETER Name
     Machine name to find via regex match
 
-    .PARAMETER Type
-    Machine type.  You can use tab-ahead autocompletion for this field if you created a session with New-VenafiSession and the list of machine types are pre-populated.
+    .PARAMETER MachineType
+    Machine type.  You can use tab-ahead autocompletion for a list.
 
     .PARAMETER Status
     Machine status, either DRAFT, VERIFIED, OR UNVERIFIED.
@@ -46,7 +46,8 @@ function Find-VcMachine {
         [string] $Name,
 
         [Parameter(ParameterSetName = 'All')]
-        [string] $Type,
+        [Alias('Type')]
+        [string] $MachineType,
 
         [Parameter(ParameterSetName = 'All')]
         [ValidateSet('DRAFT', 'VERIFIED', 'UNVERIFIED')]
