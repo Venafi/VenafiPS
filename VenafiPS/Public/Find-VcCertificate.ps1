@@ -38,6 +38,9 @@ function Find-VcCertificate {
     .PARAMETER SanDns
     Search for certificates with SAN DNS matching part or all of the value
 
+    .PARAMETER Application
+    Application ID or name that this certificate is associated with
+
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @(field, comparison operator, value).
@@ -174,6 +177,9 @@ function Find-VcCertificate {
         [Parameter(ParameterSetName = 'All')]
         [string] $SanDns,
 
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Application,
+
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
@@ -232,6 +238,9 @@ function Find-VcCertificate {
                 'ExpireBefore' { $null = $newFilter.Add(@('validityEnd', 'LTE', $ExpireBefore)) }
                 'ExpireAfter' { $null = $newFilter.Add(@('validityEnd', 'GTE', $ExpireAfter)) }
                 'SanDns' { $null = $newFilter.Add(@('subjectAlternativeNameDns', 'FIND', $SanDns)) }
+                'Application' {
+                    $newFilter.Add(@('applicationIds', 'MATCH', (Get-VcData -ID $Application -Type 'Application') ))
+                }
             }
 
             if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }

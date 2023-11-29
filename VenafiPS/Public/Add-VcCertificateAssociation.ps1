@@ -8,11 +8,15 @@
     The associated applications can either replace or be added to existing.
     By default, applications will be replaced.
 
-    .PARAMETER CertificateID
-    Certificate ID to be associated
+    .PARAMETER Certificate
+    Certificate ID or name to be associated.
+    If a name is provided and multiple certificates are found, they will all be associated.
+    Tab completion can be used for a list of certificate names to choose from.
+    Type 3 or more characters for tab completion to work.
 
-    .PARAMETER ApplicationID
-    One or more application IDs
+    .PARAMETER Application
+    One or more application IDs or names.
+    Tab completion can be used for a list of application names.
 
     .PARAMETER NoOverwrite
     Append to existing applications as opposed to overwriting
@@ -26,30 +30,30 @@
     A TLSPC key can also provided.
 
     .INPUTS
-    CertificateID
+    Certificate
 
     .OUTPUTS
     PSCustomObject
 
     .EXAMPLE
-    Add-VcCertificateAssociation -CertificateID '7ac56ec0-2017-11ee-9417-a17dd25b82f9' -ApplicationID '96fc9310-67ec-11eb-a8a7-794fe75a8e6f'
+    Add-VcCertificateAssociation -Certificate '7ac56ec0-2017-11ee-9417-a17dd25b82f9' -Application '96fc9310-67ec-11eb-a8a7-794fe75a8e6f'
 
     Associate a certificate to an application
 
     .EXAMPLE
-    Add-VcCertificateAssociation -CertificateID '7ac56ec0-2017-11ee-9417-a17dd25b82f9' -ApplicationID '96fc9310-67ec-11eb-a8a7-794fe75a8e6f', 'a05013bd-921d-440c-bc22-c9ead5c8d548'
+    Add-VcCertificateAssociation -Certificate '7ac56ec0-2017-11ee-9417-a17dd25b82f9' -Application '96fc9310-67ec-11eb-a8a7-794fe75a8e6f', 'a05013bd-921d-440c-bc22-c9ead5c8d548'
 
     Associate a certificate to multiple applications
 
     .EXAMPLE
-    Find-VcCertificate -First 5 | Add-VcCertificateAssociation -ApplicationID '96fc9310-67ec-11eb-a8a7-794fe75a8e6f'
+    Find-VcCertificate -First 5 | Add-VcCertificateAssociation -Application 'My Awesome App'
 
-    Associate multiple certificates to 1 application
+    Associate multiple certificates to 1 application by name
 
     .EXAMPLE
-    Add-VcCertificateAssociation -CertificateID '7ac56ec0-2017-11ee-9417-a17dd25b82f9' -ApplicationID '96fc9310-67ec-11eb-a8a7-794fe75a8e6f' -NoOverwrite
+    Add-VcCertificateAssociation -Certificate 'www.barron.com' -Application '96fc9310-67ec-11eb-a8a7-794fe75a8e6f' -NoOverwrite
 
-    Associate a certificate to another application, keeping the existing
+    Associate a certificate, by name, to another application, keeping the existing
     #>
 
     [CmdletBinding()]
@@ -58,10 +62,12 @@
     param (
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [string] $CertificateID,
+        [Alias('CertificateID')]
+        [string] $Certificate,
 
         [Parameter(Mandatory)]
-        [string[]] $ApplicationID,
+        [Alias('ApplicationID')]
+        [string[]] $Application,
 
         [Parameter()]
         [switch] $NoOverwrite,
@@ -77,6 +83,8 @@
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
+        $apps = $Application | Get-VcData -Type 'Application'
+
         $params = @{
             VenafiSession = $VenafiSession
             Method        = 'Patch'
@@ -84,7 +92,7 @@
             UriLeaf       = 'applications/certificates'
             Body          = @{
                 action                 = 'REPLACE'
-                targetedApplicationIds = $ApplicationID
+                targetedApplicationIds = @($apps)
             }
         }
 
@@ -92,11 +100,14 @@
             $params.Body.action = 'ADD'
         }
 
-        $allCerts = [System.Collections.Generic.List[object]]::new()
+        $allCerts = [System.Collections.Generic.List[string]]::new()
     }
 
     process {
-        $allCerts.Add($CertificateID)
+        $certIDs = Get-VcData -ID $Certificate -Type 'Certificate'
+        foreach ($certID in @($certIDs)) {
+            $allCerts.Add($certID)
+        }
     }
 
     end {
