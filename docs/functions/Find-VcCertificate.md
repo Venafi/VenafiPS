@@ -9,8 +9,8 @@ Find certificates in TLSPC
 ```
 Find-VcCertificate [-Name <String>] [-KeyLength <Int32>] [-Serial <String>] [-Fingerprint <String>]
  [-IsSelfSigned] [-Status <String[]>] [-ExpireBefore <DateTime>] [-ExpireAfter <DateTime>] [-Version <String>]
- [-SanDns <String>] [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-SanDns <String>] [-Application <String>] [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail]
+ [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### Filter
@@ -239,6 +239,21 @@ Accept wildcard characters: False
 
 ### -SanDns
 Search for certificates with SAN DNS matching part or all of the value
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Application
+Application ID or name that this certificate is associated with
 
 ```yaml
 Type: String

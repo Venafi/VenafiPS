@@ -332,5 +332,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## OUTPUTS
 
 ## NOTES
+To see a full list of tab-completion options, be sure to set the Tab option, Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete.
 
 ## RELATED LINKS
