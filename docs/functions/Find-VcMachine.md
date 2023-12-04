@@ -7,8 +7,8 @@ Find machines
 
 ### All (Default)
 ```
-Find-VcMachine [-Name <String>] [-Type <String>] [-Status <String>] [-Order <PSObject[]>] [-First <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+Find-VcMachine [-Name <String>] [-MachineType <String>] [-Status <String>] [-Order <PSObject[]>]
+ [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### Filter
@@ -46,14 +46,14 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Type
+### -MachineType
 Machine type. 
-You can use tab-ahead autocompletion for this field if you created a session with New-VenafiSession and the list of machine types are pre-populated.
+You can use tab-ahead autocompletion for a list.
 
 ```yaml
 Type: String
 Parameter Sets: All
-Aliases:
+Aliases: Type
 
 Required: False
 Position: Named
