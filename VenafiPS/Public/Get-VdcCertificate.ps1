@@ -1,4 +1,4 @@
-﻿function Get-VdcCertificate {
+function Get-VdcCertificate {
     <#
     .SYNOPSIS
     Get certificate information
@@ -110,19 +110,23 @@
             return (Find-VdcCertificate -Path '\ved' -Recursive | Get-VdcCertificate -IncludePreviousVersions:$IncludePreviousVersions -ExcludeExpired:$ExcludeExpired -ExcludeRevoked:$ExcludeRevoked)
         }
 
+        if ( Test-IsGuid($ID) ) {
         $certs.Add($ID)
+        }
+        else {
+            $certs.Add((ConvertTo-VdcFullPath -Path $ID))
+        }
     }
 
     end {
 
         Invoke-VenafiParallel -InputObject $certs -ScriptBlock {
 
-            if ( [guid]::TryParse($PSItem, $([ref][guid]::Empty)) ) {
+            if ( $PSItem -like '\ved*' ) {
+                # a path was provided, get the guid
+                $thisGuid = ConvertTo-VdcGuid -Path $PSItem
+            } else {
                 $thisGuid = ([guid] $PSItem).ToString()
-            }
-            else {
-                # a path was provided
-                $thisGuid = $PSItem | ConvertTo-VdcFullPath | ConvertTo-VdcGuid
             }
 
             $params = @{
