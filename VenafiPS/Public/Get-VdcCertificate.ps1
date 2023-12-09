@@ -1,4 +1,4 @@
-function Get-VdcCertificate {
+﻿function Get-VdcCertificate {
     <#
     .SYNOPSIS
     Get certificate information
@@ -90,7 +90,7 @@ function Get-VdcCertificate {
         [switch] $ExcludeRevoked,
 
         [Parameter()]
-        [int] $ThrottleLimit = 100,
+        [int32] $ThrottleLimit = 100,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -111,7 +111,7 @@ function Get-VdcCertificate {
         }
 
         if ( Test-IsGuid($ID) ) {
-        $certs.Add($ID)
+            $certs.Add($ID)
         }
         else {
             $certs.Add((ConvertTo-VdcFullPath -Path $ID))
