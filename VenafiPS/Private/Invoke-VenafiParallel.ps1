@@ -59,7 +59,7 @@ function Invoke-VenafiParallel {
         [scriptblock] $ScriptBlock,
 
         [Parameter()]
-        [int] $ThrottleLimit = 100,
+        [int32] $ThrottleLimit = 100,
 
         [Parameter()]
         [string] $ProgressTitle = 'Performing action',
@@ -119,14 +119,8 @@ function Invoke-VenafiParallel {
 
         if (-not $InputObject) { return }
 
-        if ( $PSVersionTable.PSVersion.Major -lt 7 ) {
-            Write-Warning 'Upgrade to PowerShell Core v7+ to make this function execute in parallel and be much faster!'
-
-            # ensure no $using: vars
-            $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
-        }
-        else {
-
+        # if we only have 1 item or limited to 1 at a time, no need for parallel
+        if ( $PSVersionTable.PSVersion.Major -ge 7 -and @($InputObject).Count -gt 1 -and $ThrottleLimit -gt 1 ) {
             $thisDir = $PSScriptRoot
             $starterSb = {
 
@@ -165,6 +159,15 @@ function Invoke-VenafiParallel {
                 }
 
             } while ($completedJobsCount -lt $job.ChildJobs.Count)
+        }
+        else {
+
+            if ( @($InputObject).Count -gt 1 ) {
+                Write-Warning 'Upgrade to PowerShell Core v7+ to make this function execute in parallel and be much faster!'
+            }
+
+            # ensure no $using: vars
+            $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
         }
 
         # close the progress bar
