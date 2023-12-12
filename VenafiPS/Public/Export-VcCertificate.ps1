@@ -7,7 +7,8 @@ function Export-VcCertificate {
     Export certificate data in PEM format.  You can retrieve the certificate, chain, and key.
 
     .PARAMETER ID
-    Full path to the certificate
+    Certificate ID, also known as uuid.  Use Find-VcCertificate or Get-VcCertificate to determine the ID.
+    You can pipe those functions as well.
 
     .PARAMETER PrivateKeyPassword
     Password required to include the private key.
@@ -18,6 +19,7 @@ function Export-VcCertificate {
 
     .PARAMETER OutPath
     Folder path to save the certificate to.  The name of the file will be determined automatically.
+    For each certificate a directory will be created in this folder with the format Name-ID.
 
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
@@ -155,6 +157,7 @@ function Export-VcCertificate {
 
     end {
         if ( $PrivateKeyPassword ) {
+            $currDir = $PSScriptRoot
             $sb = {
 
                 $out = [pscustomobject] @{
@@ -162,16 +165,16 @@ function Export-VcCertificate {
                     error         = ''
                 }
 
-                Import-Module (Join-Path -Path (Split-Path $using:thisDir -Parent) -ChildPath 'import/PSSodium/PSSodium.psd1') -Force
-
-                $params = $PSItem.InvokeParams
-
                 $thisCert = Get-VcCertificate -id $PSItem.ID
 
                 if ( -not $thisCert.dekHash ) {
                     $out.error = 'Private key not found'
                     return $out
                 }
+
+                Import-Module (Join-Path -Path (Split-Path $using:currDir -Parent) -ChildPath 'import/PSSodium/PSSodium.psd1') -Force
+
+                $params = $PSItem.InvokeParams
 
                 $publicKey = Invoke-VenafiRestMethod -UriLeaf "edgeencryptionkeys/$($thisCert.dekHash)" | Select-Object -ExpandProperty key
 
@@ -199,9 +202,10 @@ function Export-VcCertificate {
 
                     if ( $using:outPath ) {
                         # copy files to final desination
-                        $outPath = Resolve-Path -Path $using:OutPath
-                        $unzipFiles | Copy-Item -Destination $outPath -Force
-                        $out | Add-Member @{'outPath' = $outPath }
+                        $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}' -f $thisCert.certificateName, $thisCert.certificateId)
+                        $null = New-Item -Path $dest -ItemType Directory -Force
+                        $unzipFiles | Copy-Item -Destination $dest -Force
+                        $out | Add-Member @{'outPath' = $dest }
                     }
                     else {
                         # pull in the contents so we can provide them
@@ -227,7 +231,9 @@ function Export-VcCertificate {
                                 }
 
                                 $out | Add-Member @{'CertPem' = $certPem[0] }
-                                $out | Add-Member @{'ChainPem' = $certPem[1..($certPem.Count - 1)] }
+                                if ( $using:IncludeChain ) {
+                                    $out | Add-Member @{'ChainPem' = $certPem[1..($certPem.Count - 1)] }
+                                }
                             }
                         }
                     }
@@ -240,8 +246,11 @@ function Export-VcCertificate {
             }
         }
         else {
-            # cert/chain only, no private key.  different api call.
+            # cert/chain only, no private key.  different api call, better performance.
             $sb = {
+
+                $thisCert = Get-VcCertificate -id $PSItem.ID
+
                 $params = $PSItem.InvokeParams
                 $innerResponse = Invoke-VenafiRestMethod @params
                 $certificateData = $innerResponse.Content
@@ -253,8 +262,9 @@ function Export-VcCertificate {
 
                 if ( $certificateData ) {
                     if ( $using:OutPath ) {
-                        # if ( $certificateData ) {
-                        $outFile = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}.{1}' -f $PSItem.ID, $PSItem.InvokeParams.Body.format)
+                        $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}' -f $thisCert.certificateName, $thisCert.certificateId)
+                        $null = New-Item -Path $dest -ItemType Directory -Force
+                        $outFile = Join-Path -Path $dest -ChildPath ('{0}.{1}' -f $PSItem.ID, $PSItem.InvokeParams.Body.format)
                         try {
                             $sw = [IO.StreamWriter]::new($outFile, $false, [Text.Encoding]::ASCII)
                             $sw.WriteLine($certificateData)
@@ -264,8 +274,7 @@ function Export-VcCertificate {
                             if ($null -ne $sw) { $sw.Close() }
                         }
 
-                        $out | Add-Member @{'outFile' = $outFile }
-                        # }
+                        $out | Add-Member @{'outPath' = $dest }
                     }
                     else {
                         $out | Add-Member @{'certificateData' = $certificateData }
