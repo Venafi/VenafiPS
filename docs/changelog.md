@@ -1,3 +1,6 @@
+## 6.0.6
+- Fix incorrect path for Sodium in `Export-VcCertificate`, [#234](https://github.com/Venafi/VenafiPS/issues/234)
+
 ## 6.0.5
 - Fix path error when running in parallel on PS Core, [#235](https://github.com/Venafi/VenafiPS/issues/235)
 
@@ -589,6 +592,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
