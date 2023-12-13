@@ -193,7 +193,8 @@ function Export-VcCertificate {
                     # always save the zip file then decide to copy to the final destination or return contents
                     [IO.File]::WriteAllBytes($zipFile, $innerResponse.Content)
 
-                    $unzipFiles = Expand-Archive -Path $zipFile -DestinationPath $unzipPath -PassThru
+                    Expand-Archive -Path $zipFile -DestinationPath $unzipPath
+                    $unzipFiles = Get-ChildItem -Path $unzipPath
 
                     if ($innerResponse.StatusCode -notin 200, 201, 202) {
                         $out.error = $innerResponse.StatusDescription
@@ -225,7 +226,7 @@ function Export-VcCertificate {
                                     }
                                     if ($pemLines[$i].Contains('-----END')) {
                                         $thisPemLines = $pemLines[$iStart..$i]
-                                        $certPem += $thisPemLines | Join-String
+                                        $certPem += $thisPemLines -join "`n"
                                         continue
                                     }
                                 }

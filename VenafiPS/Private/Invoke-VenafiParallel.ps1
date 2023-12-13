@@ -121,6 +121,7 @@ function Invoke-VenafiParallel {
 
         # if we only have 1 item or limited to 1 at a time, no need for parallel
         if ( $PSVersionTable.PSVersion.Major -ge 7 -and @($InputObject).Count -gt 1 -and $ThrottleLimit -gt 1 ) {
+
             $thisDir = $PSScriptRoot
             $starterSb = {
 
@@ -145,10 +146,9 @@ function Invoke-VenafiParallel {
             do {
 
                 # let threads run
-                Start-Sleep -Seconds 1
+                Start-Sleep -Milliseconds 100
 
-                $completedJobsCount =
-                $job.ChildJobs.Where({ $_.State -notin 'NotStarted', 'Running' }).Count
+                $completedJobsCount = $job.ChildJobs.Where({ $_.State -notin 'NotStarted', 'Running' }).Count
 
                 # get latest job info
                 $job | Receive-Job
