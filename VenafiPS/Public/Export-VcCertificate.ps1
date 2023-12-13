@@ -184,7 +184,15 @@ function Export-VcCertificate {
 
                 $innerResponse = Invoke-VenafiRestMethod @params
 
-                if ( -not $innerResponse.Content ) { return }
+                if ($innerResponse.StatusCode -notin 200, 201, 202) {
+                    $out.error = $innerResponse.StatusDescription
+                    return $out
+                }
+
+                if ( -not $innerResponse.Content ) {
+                    $out.error = 'No certificate data received'
+                    return $out
+                }
 
                 $zipFile = New-TemporaryFile
                 $unzipPath = Join-Path -Path (Split-Path -Path $zipFile -Parent) -ChildPath $PSItem.ID
@@ -195,11 +203,6 @@ function Export-VcCertificate {
 
                     Expand-Archive -Path $zipFile -DestinationPath $unzipPath
                     $unzipFiles = Get-ChildItem -Path $unzipPath
-
-                    if ($innerResponse.StatusCode -notin 200, 201, 202) {
-                        $out.error = $innerResponse.StatusDescription
-                        return $out
-                    }
 
                     if ( $using:outPath ) {
                         # copy files to final desination
