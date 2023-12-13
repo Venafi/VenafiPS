@@ -47,7 +47,9 @@ Get certificate data with the certificate chain included.
 ## PARAMETERS
 
 ### -ID
-Full path to the certificate
+Certificate ID, also known as uuid. 
+Use Find-VcCertificate or Get-VcCertificate to determine the ID.
+You can pipe those functions as well.
 
 ```yaml
 Type: String
@@ -95,6 +97,7 @@ Accept wildcard characters: False
 ### -OutPath
 Folder path to save the certificate to. 
 The name of the file will be determined automatically.
+For each certificate a directory will be created in this folder with the format Name-ID.
 
 ```yaml
 Type: String
