@@ -1,1 +1,1 @@
-- Fix path error when running in parallel on PS Core, [#235](https://github.com/Venafi/VenafiPS/issues/235)
+- Fix incorrect path for Sodium in `Export-VcCertificate`, [#234](https://github.com/Venafi/VenafiPS/issues/234)
