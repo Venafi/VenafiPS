@@ -81,8 +81,18 @@ function Invoke-VenafiRestMethod {
         [switch] $FullResponse,
 
         [Parameter()]
+        [Int32] $TimeoutSec = 0,
+
+        [Parameter()]
         [switch] $SkipCertificateCheck
     )
+
+    $params = @{
+        Method          = $Method
+        ContentType     = 'application/json'
+        UseBasicParsing = $true
+        TimeoutSec      = $TimeoutSec
+    }
 
 
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
@@ -131,6 +141,7 @@ function Invoke-VenafiRestMethod {
                     }
                 }
                 $SkipCertificateCheck = $VenafiSession.SkipCertificateCheck
+                $params.TimeoutSec = $VenafiSession.TimeoutSec
                 break
             }
 
@@ -187,14 +198,7 @@ function Invoke-VenafiRestMethod {
         }
     }
 
-    $uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
-
-    $params = @{
-        Method          = $Method
-        Uri             = $uri
-        ContentType     = 'application/json'
-        UseBasicParsing = $true
-    }
+    $params.Uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
 
     # append any headers passed in
     if ( $Header ) { $allHeaders += $Header }

@@ -44,6 +44,10 @@ function New-VdcToken {
     You can either provide a String, SecureString, or PSCredential.
     If providing a credential, the username is not used.
 
+    .PARAMETER SkipCertificateCheck
+    Bypass certificate validation when connecting to the server.
+    This can be helpful for pre-prod environments where ssl isn't setup on the website or you are connecting via IP.
+
     .PARAMETER VenafiSession
     VenafiSession object created from New-VenafiSession method.
 
