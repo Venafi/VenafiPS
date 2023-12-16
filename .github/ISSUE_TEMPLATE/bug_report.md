@@ -8,16 +8,16 @@ assignees: ''
 ---
 
 <!--
-**Important: Please be sure to provide complete code samples, leaving in as much detail as posible, but without compromising your data.
+**Important: Please be sure to provide all requested information below including complete code samples, leaving in as much detail as posible, but without compromising your data.
 -->
 
 # Environment
 
 ```
-Operating System:
+Full Operating System:
 VenafiPS version:
 PowerShell version:
-TPP version (if applicable):
+TLSPDC version (if applicable):
 ```
 
 # Steps to reproduce
