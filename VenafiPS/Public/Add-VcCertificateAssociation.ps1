@@ -104,7 +104,7 @@
     }
 
     process {
-        $certIDs = Get-VcData -ID $Certificate -Type 'Certificate'
+        $certIDs = Get-VcData -InputObject $Certificate -Type 'Certificate'
         foreach ($certID in @($certIDs)) {
             $allCerts.Add($certID)
         }

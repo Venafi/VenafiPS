@@ -13,8 +13,8 @@ function New-VcMachineCommonKeystore {
     Machine name
 
     .PARAMETER VSatellite
-    ID or name of a vsatellite.
-    If not provided, the first vsatellite found will be used.
+    ID or name of a VSatellite.
+    If not provided, the first active VSatellite found will be used.
 
     .PARAMETER Owner
     ID or name of a team to be the owner of the machine
@@ -184,27 +184,27 @@ function New-VcMachineCommonKeystore {
         $allMachines = [System.Collections.Generic.List[pscustomobject]]::new()
         $machineTypeId = '575389b0-e6be-11ec-9172-d3c56ea8bcf6'
 
+        Initialize-PSSodium
     }
 
     process {
 
         # need vsat to get dek for encrypting username/password
-        if ( -not $allVsat ) {
-            $allVsat = Get-VcSatellite -All -IncludeKey
-        }
         if ( $VSatellite ) {
-            $thisVsat = $allVsat | Where-Object { $VSatellite -eq $_.vsatelliteId -or $VSatellite -eq $_.name }
-            if ( -not $thisVsat ) {
-                throw "$VSatellite is not a valid VSatellite id or name"
+            $vSat = Get-VcData -InputObject $VSatellite -Type 'VSatellite' -Object
+            if ( -not $vSat ) {
+                throw "'$VSatellite' is either not a valid VSatellite id or name or it is not active"
             }
         }
         else {
-            # choose the first vsat
-            $thisVsat = $allVsat | Select-Object -First 1
+            $vSat = Get-VcData -Type 'VSatellite' -First
+            if ( -not $vSat ) {
+                throw "An active VSatellite could not be found"
+            }
         }
 
-        $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $thisVsat.encryptionKey
-        $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $thisVsat.encryptionKey
+        $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
+        $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
 
         switch ($PSCmdlet.ParameterSetName) {
             'SshPassword' {
@@ -283,8 +283,8 @@ function New-VcMachineCommonKeystore {
         $params = @{
             Name             = $Name
             MachineType      = $machineTypeId
-            VSatellite       = $thisVsat.vsatelliteId
-            DekID            = $thisVsat.encryptionKeyId
+            VSatellite       = $vSat.vsatelliteId
+            DekID            = $vSat.encryptionKeyId
             Owner            = $Owner
             ConnectionDetail = $connectionDetails
         }

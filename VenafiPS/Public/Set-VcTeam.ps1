@@ -74,14 +74,14 @@
     Update many teams
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'NoOverwrite')]
     [Alias('Set-VaasTeam')]
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
-        [Alias('teamId')]
-        [string] $ID,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Alias('teamId', 'ID')]
+        [string] $Team,
 
         [Parameter()]
         [string] $Name,
@@ -91,6 +91,7 @@
         [string] $Role,
 
         [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Overwrite')]
         [ValidateScript({
                 foreach ($rule in $_) {
                     if ( $rule.Keys -contains 'ClaimName' -and $rule.Keys -contains 'Operator' -and $rule.Keys -contains 'ClaimValue' ) {
@@ -100,13 +101,13 @@
                         $true
                     }
                     else {
-                        throw 'NewUserMatchingRule is an array of hashtables where each hashtable must contain keys ''ClaimName'', ''Operator'', and ''ClaimValue''.'
+                        throw "NewUserMatchingRule is an array of hashtables where each hashtable must contain keys 'ClaimName', 'Operator', and 'ClaimValue'."
                     }
                 }
             })]
         [hashtable[]] $UserMatchingRule,
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Overwrite')]
         [switch] $NoOverwrite,
 
         [Parameter()]
@@ -125,27 +126,6 @@
             Method        = 'Patch'
             Body          = @{}
         }
-    }
-
-    process {
-
-        $thisID = if ( Test-IsGuid($ID) ) {
-            $ID
-        }
-        else {
-            if ( -not $allTeams ) {
-                $allTeams = Get-VcTeam -All
-            }
-            $allTeams | Where-Object { $_.name -ieq $ID } | Select-Object -ExpandProperty teamId
-        }
-
-        if ( -not $thisID ) {
-            # process the next one in the pipeline if we don't have a valid ID this time
-            Write-Error "Team $ID does not exist"
-            Continue
-        }
-
-        $params.UriLeaf = "teams/$thisID"
 
         if ( $Name ) {
             $params.Body.name = $Name
@@ -163,15 +143,22 @@
                     value     = $rule.ClaimValue
                 }
             }
-
-            if ( $NoOverwrite ) {
-                # get existing rules so we can append to the new ones
-                if ( -not $allTeams ) {
-                    $allTeams = Get-VcTeam -All
-                }
-                $params.Body.userMatchingRules += $allTeams | Where-Object { $_.name -eq $ID } | Select-Object -ExpandProperty userMatchingRules
-            }
         }
+    }
+
+    process {
+
+        $thisID = Get-VcData -InputObject $Team -Type 'Team'
+        if ( -not $thisID ) {
+            Write-Error "Team '$Team' does not exist"
+            return
+        }
+
+        if ( $NoOverwrite ) {
+            $params.Body.userMatchingRules += $thisID.userMatchingRules
+        }
+
+        $params.UriLeaf = "teams/$thisID"
 
         $response = Invoke-VenafiRestMethod @params
 

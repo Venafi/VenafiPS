@@ -104,11 +104,10 @@ function Import-VcCertificate {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
-        if ( -not (Get-Module -Name PSSodium)) {
-            Import-Module "$PSScriptRoot/../import/PSSodium/PSSodium.psd1" -Force
-        }
+        Initialize-PSSodium
 
-        $vSat = Get-VcSatellite -All | Where-Object { $_.edgeStatus -eq 'ACTIVE' } | Select-Object -First 1
+        $vSat = Get-VcData -Type 'VSatellite' -First
+        if ( -not $vSat ) { throw 'No active VSatellites were found' }
 
         $pkPassString = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
         elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }

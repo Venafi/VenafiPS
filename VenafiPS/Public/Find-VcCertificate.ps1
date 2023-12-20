@@ -41,6 +41,13 @@ function Find-VcCertificate {
     .PARAMETER Application
     Application ID or name that this certificate is associated with
 
+    .PARAMETER Tag
+    One or more tags associated with the certificate.
+    You can specify either just a tag name or name:value.
+
+    .PARAMETER CN
+    Search for certificates where the subject CN matches all of part of the value
+
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @(field, comparison operator, value).
@@ -180,6 +187,15 @@ function Find-VcCertificate {
         [Parameter(ParameterSetName = 'All')]
         [string] $Application,
 
+        [Parameter(ParameterSetName = 'All')]
+        [string[]] $Tag,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $CN,
+
+        [Parameter(ParameterSetName = 'All')]
+        [string] $Issuer,
+
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
         [System.Collections.ArrayList] $Filter,
 
@@ -238,8 +254,17 @@ function Find-VcCertificate {
                 'ExpireBefore' { $null = $newFilter.Add(@('validityEnd', 'LTE', $ExpireBefore)) }
                 'ExpireAfter' { $null = $newFilter.Add(@('validityEnd', 'GTE', $ExpireAfter)) }
                 'SanDns' { $null = $newFilter.Add(@('subjectAlternativeNameDns', 'FIND', $SanDns)) }
+                'CN' { $null = $newFilter.Add(@('subjectCN', 'FIND', $CN)) }
+                'Issuer' { $null = $newFilter.Add(@('issuerCN', 'FIND', $Issuer)) }
                 'Application' {
-                    $newFilter.Add(@('applicationIds', 'MATCH', (Get-VcData -ID $Application -Type 'Application') ))
+                    $appId = Get-VcData -InputObject $Application -Type 'Application'
+                    if ( -not $appId ) {
+                        throw "Application '$Application' does not exist"
+                    }
+                    $newFilter.Add(@('applicationIds', 'MATCH', $appId ))
+                }
+                'Tag' {
+                    $null = $newFilter.Add(@('tags', 'MATCH', $Tag))
                 }
             }
 
@@ -331,5 +356,13 @@ function Find-VcCertificate {
     @{
         'n' = 'instance'
         'e' = { $_.instances }
-    } -ExcludeProperty applicationIds, instances, totalInstanceCount, ownership
+    },
+    @{
+        'n' = 'issuerCN'
+        'e' = { $_.issuerCN[0] }
+    },
+    @{
+        'n' = 'issuerOU'
+        'e' = { $_.issuerOU[0] }
+    } -ExcludeProperty applicationIds, instances, totalInstanceCount, ownership, issuerCN, issuerOU
 }

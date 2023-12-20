@@ -130,6 +130,8 @@ function Export-VcCertificate {
                 $params.Body.chainOrder = 'EE_ONLY'
             }
         }
+
+        Initialize-PSSodium
     }
 
     process {
