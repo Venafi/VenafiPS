@@ -107,6 +107,9 @@ function New-VcMachine {
     .NOTES
     To see a full list of tab-completion options, be sure to set the Tab option, Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete.
 
+    This function requires the use of sodium encryption.
+    .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
+    On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
 

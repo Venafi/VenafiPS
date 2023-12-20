@@ -103,6 +103,11 @@ function New-VcMachineCommonKeystore {
     owningTeamId     : 59920180-a3e2-11ec-8dcd-3fcbf84c7da7
 
     Create a new machine with SSH password authentication
+
+    .NOTES
+    This function requires the use of sodium encryption.
+    .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
+    On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'SshPassword')]

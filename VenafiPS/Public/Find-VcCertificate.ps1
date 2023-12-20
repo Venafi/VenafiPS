@@ -48,6 +48,9 @@ function Find-VcCertificate {
     .PARAMETER CN
     Search for certificates where the subject CN matches all of part of the value
 
+    .PARAMETER Issuer
+    Search by issuer name
+
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @(field, comparison operator, value).

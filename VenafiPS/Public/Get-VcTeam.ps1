@@ -51,7 +51,7 @@
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('teamID', 'owningTeam', 'owningTeams', 'owningTeamId', 'ownedTeams')]
+        [Alias('teamID', 'owningTeam', 'owningTeams', 'owningTeamId', 'ownedTeams', 'ID')]
         [string[]] $Team,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]

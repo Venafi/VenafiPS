@@ -54,6 +54,11 @@ function Import-VcCertificate {
 
     .LINK
     https://developer.venafi.com/tlsprotectcloud/reference/certificates_import
+
+    .NOTES
+    This function requires the use of sodium encryption.
+    .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
+    On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ByFile')]

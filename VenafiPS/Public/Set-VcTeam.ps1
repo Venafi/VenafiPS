@@ -148,17 +148,17 @@
 
     process {
 
-        $thisID = Get-VcData -InputObject $Team -Type 'Team'
+        $thisID = Get-VcData -InputObject $Team -Type 'Team' -Object
         if ( -not $thisID ) {
             Write-Error "Team '$Team' does not exist"
             return
         }
 
-        if ( $NoOverwrite ) {
+        if ( $NoOverwrite -and $thisID.userMatchingRules ) {
             $params.Body.userMatchingRules += $thisID.userMatchingRules
         }
 
-        $params.UriLeaf = "teams/$thisID"
+        $params.UriLeaf = "teams/$($thisID.teamId)"
 
         $response = Invoke-VenafiRestMethod @params
 

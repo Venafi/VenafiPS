@@ -33,11 +33,6 @@ function Get-VcData {
     }
 
     process {
-        # Write-Verbose $PSCmdlet.ParameterSetName
-        # Write-Verbose ($InputObject | Test-IsGuid)
-        # if ( ($PSCmdlet.ParameterSetName -eq 'ID') -and ($InputObject | Test-IsGuid) ) {
-        #     return $InputObject
-        # }
 
         switch ($Type) {
             'Application' {
