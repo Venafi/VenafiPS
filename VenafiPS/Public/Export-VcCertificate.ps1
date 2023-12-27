@@ -201,7 +201,7 @@ function Export-VcCertificate {
                     return $out
                 }
 
-                $zipFile = New-TemporaryFile
+                $zipFile = '{0}.zip' -f (New-TemporaryFile)
                 $unzipPath = Join-Path -Path (Split-Path -Path $zipFile -Parent) -ChildPath $PSItem.ID
 
                 try {
