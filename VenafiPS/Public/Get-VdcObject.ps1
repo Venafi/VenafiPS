@@ -73,7 +73,7 @@ function Get-VdcObject {
             }
         }
         else {
-            $Guid | ConvertTo-VdcFullPath | ForEach-Object {
+            $Guid | ForEach-Object {
                 ConvertTo-VdcObject -Guid $_
             }
         }

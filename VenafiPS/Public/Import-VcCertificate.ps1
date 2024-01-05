@@ -73,7 +73,7 @@ function Import-VcCertificate {
                     throw "'$_' is not a valid file path"
                 }
 
-                if ((Split-Path -Path (Resolve-Path -Path $_) -Extension) -notin '.pfx', '.p12') {
+                if ([System.IO.Path]::GetExtension((Resolve-Path -Path $_)) -notin '.pfx', '.p12') {
                     throw "$_ is not a .p12 or .pfx file"
                 }
 
@@ -128,7 +128,7 @@ function Import-VcCertificate {
         if ( $PSBoundParameters.ContainsKey('Path') ) {
             $thisCertPath = Resolve-Path -Path $Path
 
-            switch (Split-Path -Path $thisCertPath -Extension) {
+            switch ([System.IO.Path]::GetExtension($thisCertPath)) {
                 { $_ -in '.pfx', '.p12' } { $format = 'Pkcs12' }
             }
 
