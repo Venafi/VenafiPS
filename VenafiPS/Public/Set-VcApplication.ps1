@@ -53,8 +53,8 @@
     param (
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [Alias('applicationId')]
-        [string] $ID,
+        [Alias('applicationId', 'ID')]
+        [string] $Application,
 
         [Parameter()]
         [string] $Name,

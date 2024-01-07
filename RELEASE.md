@@ -1,1 +1,4 @@
-- Fix incorrect path for Sodium in `Export-VcCertificate`, [#234](https://github.com/Venafi/VenafiPS/issues/234)
+- Add `Get-VcData` private function to centralize retrieving VC data for non search objects
+- Better messaging when VSats aren't available, [#242](https://github.com/Venafi/VenafiPS/issues/242)
+- Add messaging when PSSodium cannot be loaded, [#239](https://github.com/Venafi/VenafiPS/issues/239)
+- Add workaround for TLSPDC API failure when importing PKCS12
