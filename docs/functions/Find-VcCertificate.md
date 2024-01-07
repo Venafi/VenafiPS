@@ -9,8 +9,9 @@ Find certificates in TLSPC
 ```
 Find-VcCertificate [-Name <String>] [-KeyLength <Int32>] [-Serial <String>] [-Fingerprint <String>]
  [-IsSelfSigned] [-Status <String[]>] [-ExpireBefore <DateTime>] [-ExpireAfter <DateTime>] [-Version <String>]
- [-SanDns <String>] [-Application <String>] [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail]
- [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-SanDns <String>] [-Application <String>] [-Tag <String[]>] [-CN <String>] [-Issuer <String>]
+ [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
 ```
 
 ### Filter
@@ -254,6 +255,52 @@ Accept wildcard characters: False
 
 ### -Application
 Application ID or name that this certificate is associated with
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Tag
+One or more tags associated with the certificate.
+You can specify either just a tag name or name:value.
+
+```yaml
+Type: String[]
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CN
+Search for certificates where the subject CN matches all of part of the value
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Issuer
+Search by issuer name
 
 ```yaml
 Type: String

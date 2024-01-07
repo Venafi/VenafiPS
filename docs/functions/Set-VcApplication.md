@@ -6,8 +6,8 @@
 ## SYNTAX
 
 ```
-Set-VcApplication [-ID] <String> [[-Name] <String>] [[-TeamOwner] <String[]>] [-NoOverwrite] [-PassThru]
- [[-VenafiSession] <PSObject>] [<CommonParameters>]
+Set-VcApplication [-Application] <String> [[-Name] <String>] [[-TeamOwner] <String[]>] [-NoOverwrite]
+ [-PassThru] [[-VenafiSession] <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -24,13 +24,13 @@ PS C:\> {{ Add example code here }}
 
 ## PARAMETERS
 
-### -ID
-{{ Fill ID Description }}
+### -Application
+{{ Fill Application Description }}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: applicationId
+Aliases: applicationId, ID
 
 Required: True
 Position: 0

@@ -6,7 +6,7 @@ Add owners to a team
 ## SYNTAX
 
 ```
-Add-VcTeamOwner [-ID] <String> [-Owner] <String[]> [[-VenafiSession] <PSObject>] [<CommonParameters>]
+Add-VcTeamOwner [-Team] <String> [-Owner] <String[]> [[-VenafiSession] <PSObject>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -16,21 +16,20 @@ Add owners to a TLSPC team
 
 ### EXAMPLE 1
 ```
-Add-VcTeamOwner -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
+Add-VcTeamOwner -Team 'DevOps' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
 ```
 
 Add owners
 
 ## PARAMETERS
 
-### -ID
-Team ID.
-This is the unique guid obtained from Get-VcTeam.
+### -Team
+Team ID or name
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: PrefixedUniversal, Guid
+Aliases: ID
 
 Required: True
 Position: 1
@@ -77,7 +76,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### ID
+### Team
 ## OUTPUTS
 
 ## NOTES

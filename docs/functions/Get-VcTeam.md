@@ -7,7 +7,7 @@ Get team info
 
 ### ID
 ```
-Get-VcTeam [-ID] <String[]> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcTeam [-Team] <String[]> [-VenafiSession <PSObject>] [<CommonParameters>]
 ```
 
 ### All
@@ -44,13 +44,13 @@ Get info for all teams
 
 ## PARAMETERS
 
-### -ID
-Team name or guid.
+### -Team
+{{ Fill Team Description }}
 
 ```yaml
 Type: String[]
 Parameter Sets: ID
-Aliases: teamID, owningTeam, owningTeams, owningTeamId, ownedTeams
+Aliases: teamID, owningTeam, owningTeams, owningTeamId, ownedTeams, ID
 
 Required: True
 Position: 1
