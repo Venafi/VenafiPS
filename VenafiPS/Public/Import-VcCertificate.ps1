@@ -54,6 +54,11 @@ function Import-VcCertificate {
 
     .LINK
     https://developer.venafi.com/tlsprotectcloud/reference/certificates_import
+
+    .NOTES
+    This function requires the use of sodium encryption.
+    .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
+    On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ByFile')]
@@ -68,7 +73,7 @@ function Import-VcCertificate {
                     throw "'$_' is not a valid file path"
                 }
 
-                if ((Split-Path -Path (Resolve-Path -Path $_) -Extension) -notin '.pfx', '.p12') {
+                if ([System.IO.Path]::GetExtension((Resolve-Path -Path $_)) -notin '.pfx', '.p12') {
                     throw "$_ is not a .p12 or .pfx file"
                 }
 
@@ -104,11 +109,10 @@ function Import-VcCertificate {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
-        if ( -not (Get-Module -Name PSSodium)) {
-            Import-Module "$PSScriptRoot/../import/PSSodium/PSSodium.psd1" -Force
-        }
+        Initialize-PSSodium
 
-        $vSat = Get-VcSatellite -All | Where-Object { $_.edgeStatus -eq 'ACTIVE' } | Select-Object -First 1
+        $vSat = Get-VcData -Type 'VSatellite' -First
+        if ( -not $vSat ) { throw 'No active VSatellites were found' }
 
         $pkPassString = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
         elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
@@ -124,7 +128,7 @@ function Import-VcCertificate {
         if ( $PSBoundParameters.ContainsKey('Path') ) {
             $thisCertPath = Resolve-Path -Path $Path
 
-            switch (Split-Path -Path $thisCertPath -Extension) {
+            switch ([System.IO.Path]::GetExtension($thisCertPath)) {
                 { $_ -in '.pfx', '.p12' } { $format = 'Pkcs12' }
             }
 

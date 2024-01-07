@@ -142,9 +142,9 @@ function Invoke-VcWorkflow {
                 Write-Verbose 'Triggering workflow'
 
                 $triggerParams = @{
-                    UriLeaf       = "machines/$thisID/workflows"
-                    Method        = 'Post'
-                    Body          = @{
+                    UriLeaf = "machines/$thisID/workflows"
+                    Method  = 'Post'
+                    Body    = @{
                         'workflowInput' = @{
                             'wsClientId' = $thisWebSocketID
                         }
@@ -198,7 +198,9 @@ function Invoke-VcWorkflow {
 
             }
             finally {
-                $WS.Dispose()
+                if ( $WS ) {
+                    $WS.Dispose()
+                }
             }
         } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Invoking workflow'
     }

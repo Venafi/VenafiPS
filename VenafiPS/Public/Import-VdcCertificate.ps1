@@ -143,6 +143,7 @@ function Import-VdcCertificate {
     begin {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC' -AuthType 'token'
+        $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 
         $params = @{
 
@@ -179,79 +180,53 @@ function Import-VdcCertificate {
     }
 
     process {
+        $allCerts.Add(
+            @{
+                InvokeParams = $params
+                Data         = $Data
+                Path         = $Path
+            }
+        )
+    }
 
-        Write-Verbose $PSCmdlet.ParameterSetName
+    end {
+        Invoke-VenafiParallel -InputObject $allCerts -ScriptBlock {
 
-        $certInfo = if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
-            $Path
-        }
-        else {
-            $Data
-        }
+            $certData = $PSItem.Data
+            if ( $PSItem.Path ) {
+                if ((([System.IO.Path]::GetExtension($PSItem.Path)) -in '.pfx', '.p12') -and $PSItem.InvokeParams.Body.PrivateKeyPassword ) {
 
-        if ($PSVersionTable.PSVersion.Major -lt 6) {
+                    # tpp won't accept a p12 and password so use this workaround to decrypt first
+                    $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($PSItem.Path, $PSItem.InvokeParams.Body.PrivateKeyPassword, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+                    $certData = [System.Convert]::ToBase64String( $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12))
 
-            foreach ($thisCertInfo in $certInfo) {
-
-                $thisCertData = if ( $PSCmdlet.ParameterSetName -like 'ByFile*' ) {
-                    $cert = Get-Content $thisCertInfo -Encoding Byte
-                    [System.Convert]::ToBase64String($cert)
                 }
                 else {
-                    $thisCertInfo
-                }
 
-                $params.Body.CertificateData = $thisCertData
-
-                try {
-                    $response = Invoke-VenafiRestMethod @params
-
-                    Write-Verbose ('Successfully imported {0}' -f $response.CertificateDN)
-
-                    if ( $PassThru ) {
-                        Get-VdcObject -Guid $response.Guid
+                    if ($PSVersionTable.PSVersion.Major -lt 6) {
+                        $cert = Get-Content $PSItem.Path -AsByteStream
                     }
+                    else {
+                        $cert = Get-Content $PSItem.Path -Encoding Byte
+                    }
+                    $certData = [System.Convert]::ToBase64String($cert)
                 }
-                catch {
-                    Write-Error $_
+
+            }
+
+            $params = $PSItem.InvokeParams
+            $params.Body.CertificateData = $certData
+
+            try {
+                $response = Invoke-VenafiRestMethod @params
+
+                if ( $using:PassThru ) {
+                    Get-VdcObject -Guid $response.Guid.trim('{}')
                 }
             }
-        }
-        else {
-
-            $certInfo | ForEach-Object -ThrottleLimit $ThrottleLimit -Parallel {
-
-                $thisCertInfo = $_
-
-                Import-Module VenafiPS
-                # create session without call to server
-                New-VenafiSession -Server ($using:VenafiSession).Server -AccessToken ($using:VenafiSession).Token.AccessToken
-
-                # figure out if we're working with a cert path or data directly
-                $thisCertData = if ( Test-Path -Path $thisCertInfo ) {
-                    $cert = Get-Content $thisCertInfo -AsByteStream
-                    [System.Convert]::ToBase64String($cert)
-                }
-                else {
-                    $thisCertInfo
-                }
-
-                $params = $using:params
-                # session was set in params for ps v6, but as we recreated in this thread it needs to be set again
-                $params.
-                $params.Body.CertificateData = $thisCertData
-
-                try {
-                    $response = Invoke-VenafiRestMethod @params
-
-                    if ( $using:PassThru ) {
-                        Get-VdcObject -Guid $response.Guid
-                    }
-                }
-                catch {
-                    Write-Error $_
-                }
+            catch {
+                Write-Error $_
             }
-        }
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Importing certificates'
     }
 }

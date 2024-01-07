@@ -102,10 +102,14 @@ function New-VcMachine {
 
     Use pipeline data to create a machine.
     More than 1 machine can be sent thru the pipeline and they will be created in parallel.
+    You could also import a csv and pipe it to this function as well.
 
     .NOTES
     To see a full list of tab-completion options, be sure to set the Tab option, Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete.
 
+    This function requires the use of sodium encryption.
+    .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
+    On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
 
@@ -153,7 +157,7 @@ function New-VcMachine {
         [switch] $NoVerify,
 
         [Parameter()]
-        [int] $ThrottleLimit = 100,
+        [int32] $ThrottleLimit = 100,
 
         [Parameter()]
         [switch] $PassThru,
@@ -166,13 +170,9 @@ function New-VcMachine {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
-        if ( -not (Get-Module -Name PSSodium)) {
-            Import-Module "$PSScriptRoot/../import/PSSodium/PSSodium.psd1" -Force
-        }
+        Initialize-PSSodium
 
         $allMachines = [System.Collections.Generic.List[hashtable]]::new()
-
-        $allTeam = Get-VcTeam -All
 
         if ( $Credential ) {
             if ( $MachineType -in 'c1521d80-db7a-11ec-b79a-f3ded6c9808c', 'Microsoft IIS' ) { throw 'To create IIS machines, please use New-VcMachineIis' }
@@ -184,14 +184,16 @@ function New-VcMachine {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        $thisMachineType = Get-VcData -ID $MachineType -Type 'MachineType' -OutType 'Object' -FailOnMultiple
+        $thisMachineType = Get-VcData -InputObject $MachineType -Type 'MachineType' -Object
         if ( -not $thisMachineType ) {
-            throw "$MachineType is not a valid machine type id or name"
+            Write-Error "'$MachineType' is not a valid machine type id or name"
+            return
         }
 
-        $thisOwner = $allTeam | Where-Object { $Owner -eq $_.teamId -or $Owner -eq $_.name }
-        if ( -not $thisOwner ) {
-            throw "$Owner is not a valid team id or name"
+        $ownerId = Get-VcData -InputObject $Owner -Type 'Team'
+        if ( -not $ownerId ) {
+            Write-Error "'$Owner' is not a valid team id or name"
+            return
         }
 
         if ( $PSCmdlet.ParameterSetName -eq 'AdvancedMachine' ) {
@@ -200,25 +202,27 @@ function New-VcMachine {
             $thisConnectionDetail = $ConnectionDetail
         }
         else {
-            # ensure vsats get loaded into $script:vcSatellite
-            $null = Get-VcData -ID '' -Type 'VSatellite'
 
             if ( $VSatellite ) {
-                $thisVsat = Get-VcData -ID $VSatellite -Type 'VSatellite' -OutType 'Object'
-                if ( -not $thisVsat ) {
-                    throw "$VSatellite is not a valid VSatellite id or name"
+                $vSat = Get-VcData -InputObject $VSatellite -Type 'VSatellite' -Object
+                if ( -not $vSat ) {
+                    Write-Error "'$VSatellite' is either not a valid VSatellite id or name or it is not active."
+                    return
                 }
             }
             else {
-                # choose the first vsat
-                $thisVsat = $script:vcSatellite | Select-Object -First 1
+                $vSat = Get-VcData -Type 'VSatellite' -First
+                if ( -not $vSat ) {
+                    Write-Error "An active VSatellite could not be found"
+                    return
+                }
             }
 
-            $thisEdgeInstanceId = $thisVsat.vsatelliteId
-            $thisDekId = $thisVsat.encryptionKeyId
+            $thisEdgeInstanceId = $vSat.vsatelliteId
+            $thisDekId = $vSat.encryptionKeyId
 
-            $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $thisVsat.encryptionKey
-            $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $thisVsat.encryptionKey
+            $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
+            $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
 
             $thisConnectionDetail = @{
                 hostnameOrAddress = if ($Hostname) { $Hostname } else { $Name }
@@ -237,7 +241,7 @@ function New-VcMachine {
             dekId             = $thisDekId
             machineTypeId     = $thisMachineType.machineTypeId
             pluginId          = $thisMachineType.pluginId
-            owningTeamId      = $thisOwner.teamId
+            owningTeamId      = $ownerId
             connectionDetails = $thisConnectionDetail
         }
 

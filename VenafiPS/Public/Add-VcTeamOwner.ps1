@@ -6,9 +6,8 @@
     .DESCRIPTION
     Add owners to a TLSPC team
 
-    .PARAMETER ID
-    Team ID.
-    This is the unique guid obtained from Get-VcTeam.
+    .PARAMETER Team
+    Team ID or name
 
     .PARAMETER Owner
     1 or more owners to add to the team
@@ -20,10 +19,10 @@
     A TLSPC key can also provided.
 
     .INPUTS
-    ID
+    Team
 
     .EXAMPLE
-    Add-VcTeamOwner -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
+    Add-VcTeamOwner -Team 'DevOps' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
 
     Add owners
 
@@ -35,8 +34,8 @@
     param (
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Alias('PrefixedUniversal', 'Guid')]
-        [string] $ID,
+        [Alias('ID')]
+        [string] $Team,
 
         [Parameter(Mandatory)]
         [string[]] $Owner,
@@ -47,15 +46,18 @@
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+
+        $params = @{
+            Method = 'Post'
+            Body   = @{
+                'owners' = @($Owner)
+            }
+        }
     }
 
     process {
 
-        $params.Method = 'Post'
-        $params.UriLeaf = "teams/$ID/owners"
-        $params.Body = @{
-            'owners' = @($Owner)
-        }
+        $params.UriLeaf = 'teams/{0}/owners' -f (Get-VcData -InputObject $Team -Type 'Team')
 
         $null = Invoke-VenafiRestMethod @params
     }
