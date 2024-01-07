@@ -19,7 +19,8 @@ Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.r
 ## Supported Platforms
 
 VenafiPS works on PowerShell v5.1 as well as cross-platform PowerShell Core on Windows, Linux, and Mac.
-There are a few TLSPC functions which require Sodium encryption and can only be run on PowerShell Core.  Also, on Windows, the latest C++ runtime must be installed.
+
+There are a few TLSPC functions which require Sodium encryption and can only be run on PowerShell Core.  Also for those functions, on Windows, the latest C++ runtime must be installed.
 
 ## Install Module
 
