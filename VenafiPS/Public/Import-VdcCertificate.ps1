@@ -204,10 +204,10 @@ function Import-VdcCertificate {
                 else {
 
                     if ($PSVersionTable.PSVersion.Major -lt 6) {
-                        $cert = Get-Content $PSItem.Path -AsByteStream
+                        $cert = Get-Content $PSItem.Path -Encoding Byte
                     }
                     else {
-                        $cert = Get-Content $PSItem.Path -Encoding Byte
+                        $cert = Get-Content $PSItem.Path -AsByteStream
                     }
                     $certData = [System.Convert]::ToBase64String($cert)
                 }
