@@ -73,8 +73,20 @@ function Find-VdcObject {
     Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
 
     .EXAMPLE
-    Find-VdcObject -Pattern 'awesome*' -Attribute 'Description'
+    Find-VdcObject -Attribute 'Description' -Pattern 'awesome'
     Find objects where the specific attribute matches the pattern
+
+    .EXAMPLE
+    Find-VdcObject -Attribute 'Environment' -Pattern 'Development'
+
+    Find objects where a custom field value matches the pattern.
+    By default, the attribute will be checked against the current list of custom fields.
+
+    .EXAMPLE
+    Find-VdcObject -Attribute 'Description' -Pattern 'duplicate' -NoLookup
+
+    Bypass custom field lookup and force Attribute to be treated as a built-in attribute.
+    Useful if there are conflicting custom field and built-in attribute names and you want to force the lookup against built-in.
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcObject/
@@ -127,6 +139,9 @@ function Find-VdcObject {
         [Alias('r')]
         [switch] $Recursive,
 
+        [Parameter(ParameterSetName = 'FindByAttribute')]
+        [switch] $NoLookup,
+
         [Parameter()]
         [psobject] $VenafiSession
     )
@@ -138,18 +153,37 @@ function Find-VdcObject {
     process {
 
         $params = @{
-            Method        = 'Post'
-            Body          = @{
+            Method = 'Post'
+            Body   = @{
                 'ObjectDN' = $Path | ConvertTo-VdcFullPath
             }
         }
 
         Switch ($PsCmdlet.ParameterSetName) {
+
             'FindByAttribute' {
-                $params.UriLeaf = 'config/find'
-                # this is the only api for this function which doesn't accept a path, let's remove it
-                $params.Body.Remove('ObjectDN')
-                $params.Body.AttributeNames = $Attribute
+
+                $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $Attribute[0] -or $_.Guid -eq $Attribute[0] }
+                if ( -not $customField ) {
+                    $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $Attribute[0] -or $_.Guid -eq $Attribute[0] }
+                }
+
+                # if attribute isn't a custom field or user doesn't want to perform a cf lookup for a conflicting attrib/cf name, perform standard find object
+                if ( $NoLookup -or (-not $customField) ) {
+
+                    $params.UriLeaf = 'config/find'
+                    $params.Body = @{
+                        AttributeNames = $Attribute
+                    }
+                }
+                else {
+                    # cf found
+                    $params.UriLeaf = 'Metadata/Find'
+                    $params.Body = @{
+                        ItemGuid = $customField.Guid
+                        Value    = $Pattern
+                    }
+                }
             }
 
             { $_ -in 'FindByPath', 'FindByPattern', 'FindByClass' } {
@@ -169,8 +203,8 @@ function Find-VdcObject {
 
         }
 
-        # add filters
-        if ( $PSBoundParameters.ContainsKey('Pattern') ) {
+        # pattern is not used by custom field lookup
+        if ( $PSBoundParameters.ContainsKey('Pattern') -and ($params.UriLeaf -ne 'Metadata/Find') ) {
             $params.Body.Pattern = $Pattern
         }
 
@@ -190,17 +224,21 @@ function Find-VdcObject {
 
                 if ( $response.Result -eq [TppConfigResult]::Success ) {
                     $response.Objects
-                } else {
+                }
+                else {
                     Write-Error ('Retrieval of class {0} failed with error {1}' -f $thisClass, $response.Error)
                     Continue
                 }
             }
-        } else {
+        }
+        else {
             $response = Invoke-VenafiRestMethod @params
 
-            if ( $response.Result -eq [TppConfigResult]::Success ) {
+            # success for cf lookup is 0, all others are config calls and success is 1
+            if ( $response.Result -in 0, [TppConfigResult]::Success ) {
                 $objects = $response.Objects
-            } else {
+            }
+            else {
                 Write-Error $response.Error
             }
         }
