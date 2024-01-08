@@ -1,3 +1,6 @@
+## 6.1.1
+- Fix byte encoding bug with `Import-VdcCertificate`
+
 ## 6.1.0
 - Add `Get-VcData` private function to centralize retrieving VC data for non search objects
 - Better messaging when VSats aren't available, [#242](https://github.com/Venafi/VenafiPS/issues/242)
@@ -598,6 +601,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
