@@ -14,7 +14,7 @@ function Find-VdcObject {
 
     .PARAMETER Pattern
     Filter against object paths.
-    If the Attribute parameter is provided, this will filter against an object's attribute values instead of the path.
+    If the Attribute parameter is provided, this will filter against an object's attribute/custom field values instead of the path.
 
     Follow the below rules:
     - To list DNs that include an asterisk (*) or question mark (?), prepend two backslashes (\\). For example, \\*.MyCompany.net treats the asterisk as a literal character and returns only certificates with DNs that match *.MyCompany.net.
@@ -24,9 +24,16 @@ function Find-VdcObject {
 
     .PARAMETER Attribute
     A list of attribute names to limit the search against.  Only valid when searching by pattern.
+    A custom field name can also be provided.
 
     .PARAMETER Recursive
     Searches the subordinates of the object specified in Path.
+
+    .PARAMETER NoLookup
+    Default functionality when finding by Attribute is to perform a lookup to see if they are custom fields or not.
+    If they are, pass along the guid instead of name required by the api for custom fields.
+    To override this behavior and use the attribute name as is, add -NoLookup.
+    Useful if on the off chance you have a custom field with the same name as a built-in attribute.
 
     .PARAMETER VenafiSession
     Authentication for the function.
