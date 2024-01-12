@@ -104,7 +104,7 @@ function Remove-VdcCertificate {
             }
 
             if ($using:KeepAssociatedApps) {
-                $associatedApps = $PSItem | Get-VdcAttribute -Attribute "Consumers" | Select-Object -ExpandProperty Consumers
+                $associatedApps = ($PSItem | Get-VdcAttribute -Attribute "Consumers").Consumers
                 if ( $associatedApps ) {
                     Remove-VdcCertificateAssociation -Path $PSItem -ApplicationPath $associatedApps -Confirm:$false
                 }
