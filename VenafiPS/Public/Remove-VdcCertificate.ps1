@@ -6,12 +6,16 @@ function Remove-VdcCertificate {
     .DESCRIPTION
     Removes a Certificate object, all associated objects including pending workflow tickets, and the corresponding Secret Store vault information.
     You must either be a Master Admin or have Delete permission to the objects and have certificate:delete token scope.
+    Run this in parallel with PowerShell v7+ when you have a large number to process.
 
     .PARAMETER Path
     Path to the certificate to remove
 
     .PARAMETER KeepAssociatedApps
     Provide this switch to remove associations prior to certificate removal
+
+    .PARAMETER ThrottleLimit
+    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -70,34 +74,43 @@ function Remove-VdcCertificate {
         [switch] $KeepAssociatedApps,
 
         [Parameter()]
+        [int32] $ThrottleLimit = 100,
+
+        [Parameter()]
         [psobject] $VenafiSession
     )
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
-
-        $params = @{
-            Method        = 'Delete'
-            UriLeaf       = 'placeholder'
-        }
+        $allCerts = [System.Collections.Generic.List[string]]::new()
 
         # use in shouldprocess messaging below
         $appsMessage = if ($KeepAssociatedApps) { 'but keep associated apps' } else { 'and associated apps' }
     }
 
     process {
-        $guid = $Path | ConvertTo-VdcGuid
-        $params.UriLeaf = "Certificates/$guid"
-
         if ( $PSCmdlet.ShouldProcess($Path, "Remove certificate $appsMessage") ) {
-            if ($KeepAssociatedApps) {
-                $associatedApps = $Path | Get-VdcAttribute -Attribute "Consumers" | Select-Object -ExpandProperty Consumers
+            $allCerts.Add($Path)
+        }
+    }
+
+    end {
+
+        Invoke-VenafiParallel -InputObject $allCerts -ScriptBlock {
+            $guid = $PSItem | ConvertTo-VdcGuid -ErrorAction SilentlyContinue
+            if ( -not $guid ) {
+                Write-Error "'$PSItem' is not a valid path"
+                return
+            }
+
+            if ($using:KeepAssociatedApps) {
+                $associatedApps = ($PSItem | Get-VdcAttribute -Attribute "Consumers").Consumers
                 if ( $associatedApps ) {
-                    Remove-VdcCertificateAssociation -Path $Path -ApplicationPath $associatedApps -Confirm:$false
+                    Remove-VdcCertificateAssociation -Path $PSItem -ApplicationPath $associatedApps -Confirm:$false
                 }
             }
 
-            $null = Invoke-VenafiRestMethod @params
-        }
+            $null = Invoke-VenafiRestMethod -Method Delete -UriLeaf "Certificates/$guid"
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Deleting certificates'
     }
 }

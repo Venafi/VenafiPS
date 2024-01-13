@@ -43,9 +43,6 @@
         [string] $ID,
 
         [Parameter()]
-        [int32] $ThrottleLimit = 100,
-
-        [Parameter()]
         [psobject] $VenafiSession
     )
 
