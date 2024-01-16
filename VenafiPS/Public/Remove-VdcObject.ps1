@@ -6,12 +6,16 @@ function Remove-VdcObject {
     .DESCRIPTION
     Remove a TLSPDC object and optionally perform a recursive removal.
     This process can be very destructive as it will remove anything you send it!!!
+    Run this in parallel with PowerShell v7+ when you have a large number to process.
 
     .PARAMETER Path
     Full path to an existing object
 
     .PARAMETER Recursive
     Remove recursively, eg. everything within a policy folder
+
+    .PARAMETER ThrottleLimit
+    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -64,35 +68,43 @@ function Remove-VdcObject {
         [switch] $Recursive,
 
         [Parameter()]
+        [int32] $ThrottleLimit = 100,
+
+        [Parameter()]
         [psobject] $VenafiSession
     )
 
     begin {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
-
-        Write-Warning 'This operation is potentially very destructive.  Ensure you want to perform this action before continuing.'
-
-        $params = @{
-
-            Method        = 'Post'
-            UriLeaf       = 'config/Delete'
-            Body          = @{
-                ObjectDN  = ''
-                Recursive = [int] ($Recursive.IsPresent)
-            }
-        }
+        $allItems = [System.Collections.Generic.List[string]]::new()
     }
 
     process {
-        $params.Body.ObjectDN = $Path | ConvertTo-VdcFullPath
+        if ( $PSCmdlet.ShouldProcess($Path, "Remove object") ) {
+            $allItems.Add($Path)
+        }
+    }
 
-        if ($PSCmdlet.ShouldProcess($params.Body.ObjectDN, 'Remove object')) {
+    end {
+        Invoke-VenafiParallel -InputObject $allItems -ScriptBlock {
+
+            $params = @{
+
+                Method  = 'Post'
+                UriLeaf = 'config/Delete'
+                Body    = @{
+                    ObjectDN  = $PSItem
+                    Recursive = [int] (($using:Recursive).IsPresent)
+                }
+            }
+
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -ne [TppConfigResult]::Success ) {
-                throw $response.Error
+                Write-Error $response.Error
+                return
             }
-        }
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Removing objects'
     }
 }
