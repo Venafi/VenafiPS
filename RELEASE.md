@@ -1,1 +1,2 @@
-- Fix byte encoding bug with `Import-VdcCertificate`
+- Add custom field value lookup to `Find-VdcObject`.  Utilizing existing `-Attribute` and `-Pattern` parameters, find objects where Attribute is a custom field name or guid and Pattern is the value you are looking for.
+- Add parallel functionality to `Remove-VdcCertificate` for bulk cleanup
