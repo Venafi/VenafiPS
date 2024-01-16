@@ -23,7 +23,8 @@ Find-VdcObject [-Path <String>] [-Pattern <String>] -Class <String[]> [-Recursiv
 
 ### FindByAttribute
 ```
-Find-VdcObject -Pattern <String> -Attribute <String[]> [-VenafiSession <PSObject>] [<CommonParameters>]
+Find-VdcObject -Pattern <String> -Attribute <String[]> [-NoLookup] [-VenafiSession <PSObject>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -81,9 +82,25 @@ Find objects with the specific name.  All objects under \ved\policy (the default
 
 ### EXAMPLE 9
 ```
-Find-VdcObject -Pattern 'awesome*' -Attribute 'Description'
+Find-VdcObject -Attribute 'Description' -Pattern 'awesome'
 Find objects where the specific attribute matches the pattern
 ```
+
+### EXAMPLE 10
+```
+Find-VdcObject -Attribute 'Environment' -Pattern 'Development'
+```
+
+Find objects where a custom field value matches the pattern.
+By default, the attribute will be checked against the current list of custom fields.
+
+### EXAMPLE 11
+```
+Find-VdcObject -Attribute 'Description' -Pattern 'duplicate' -NoLookup
+```
+
+Bypass custom field lookup and force Attribute to be treated as a built-in attribute.
+Useful if there are conflicting custom field and built-in attribute names and you want to force the lookup against built-in.
 
 ## PARAMETERS
 
@@ -105,7 +122,7 @@ Accept wildcard characters: False
 
 ### -Pattern
 Filter against object paths.
-If the Attribute parameter is provided, this will filter against an object's attribute values instead of the path.
+If the Attribute parameter is provided, this will filter against an object's attribute/custom field values instead of the path.
 
 Follow the below rules:
 - To list DNs that include an asterisk (*) or question mark (?), prepend two backslashes (\\\\).
@@ -158,6 +175,7 @@ Accept wildcard characters: False
 ### -Attribute
 A list of attribute names to limit the search against. 
 Only valid when searching by pattern.
+A custom field name can also be provided.
 
 ```yaml
 Type: String[]
@@ -178,6 +196,24 @@ Searches the subordinates of the object specified in Path.
 Type: SwitchParameter
 Parameter Sets: FindByPath, FindByPattern, FindByClass
 Aliases: r
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -NoLookup
+Default functionality when finding by Attribute is to perform a lookup to see if they are custom fields or not.
+If they are, pass along the guid instead of name required by the api for custom fields.
+To override this behavior and use the attribute name as is, add -NoLookup.
+Useful if on the off chance you have a custom field with the same name as a built-in attribute.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: FindByAttribute
+Aliases:
 
 Required: False
 Position: Named
