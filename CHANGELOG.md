@@ -1,3 +1,8 @@
+## 6.1.2
+- Add custom field value lookup to `Find-VdcObject`.  Utilizing existing `-Attribute` and `-Pattern` parameters, find objects where Attribute is a custom field name or guid and Pattern is the value you are looking for.
+- Add parallel functionality to `Remove-VdcCertificate` for bulk cleanup
+
+
 ## 6.1.1
 - Fix byte encoding bug with `Import-VdcCertificate`
 
@@ -601,6 +606,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
