@@ -282,16 +282,21 @@ function Invoke-VenafiRestMethod {
                 $permMsg = ''
 
                 # get scope details for tpp
-                if ( $platform -ne 'TLSPC' ) {
+                if ( $platform -ne 'VC' ) {
                     $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
                     $callingFunctionScope = ($script:functionConfig).$callingFunction.TppTokenScope
-                    if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of $callingFunctionScope." }
+                    if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of '$callingFunctionScope'." }
 
-                    $rejectedScope = (Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ''(.*)''').matches.groups[1].value
-                    if ( $rejectedScope ) { $permMsg += "  The current scope of $rejectedScope is insufficient.`r`n`r`n" }
+                    $rejectedScope = Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ([^.]+)'
+
+                    if ( $rejectedScope.Matches.Groups.Count -gt 1 ) {
+                        $permMsg += ("  The current scope of {0} is insufficient." -f $rejectedScope.Matches.Groups[1].Value.Replace('\u0027', "'"))
+                    }
+                    $permMsg += '  Call New-VenafiSession with the correct scope.'
+                } else {
+                    $permMsg = $originalError.ErrorDetails.Message
                 }
 
-                $permMsg += $originalError.ErrorDetails.Message
 
                 throw $permMsg
             }
