@@ -213,7 +213,7 @@ function New-VdcCapiApplication {
             if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
                 # issue 129
                 $certName = $CertificatePath.Split('\')[-1]
-                $certPath = $CertificatePath -replace ('\\+{0}' -f $certName), ''
+                $certPath = $CertificatePath.Substring(0, $CertificatePath.LastIndexOf("\$certName"))
 
                 $certObject = Find-VdcCertificate -Path $certPath
 
