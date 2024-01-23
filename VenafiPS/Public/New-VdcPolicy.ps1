@@ -145,7 +145,6 @@ function New-VdcPolicy {
         $params = @{
             Class         = 'Policy'
             PassThru      = $true
-
             Force         = $Force
         }
 
