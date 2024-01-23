@@ -1,2 +1,3 @@
-- Add custom field value lookup to `Find-VdcObject`.  Utilizing existing `-Attribute` and `-Pattern` parameters, find objects where Attribute is a custom field name or guid and Pattern is the value you are looking for.
-- Add parallel functionality to `Remove-VdcCertificate` for bulk cleanup
+- Add parallel functionality to `Remove-VdcObject`.  PS Core for now, Windows PowerShell coming soon.
+- Fix invalid function reference with `New-VdcCapiApplication`, [#247](https://github.com/Venafi/VenafiPS/issues/247)
+- Fix wilcard certificate not accepted with `New-VdcCapiApplication`, [#248](https://github.com/Venafi/VenafiPS/issues/248)
