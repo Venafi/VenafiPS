@@ -1,3 +1,9 @@
+## 6.1.3
+- Add parallel functionality to `Remove-VdcObject`.  PS Core for now, Windows PowerShell coming soon.
+- Fix invalid function reference with `New-VdcCapiApplication`, [#247](https://github.com/Venafi/VenafiPS/issues/247)
+- Fix wilcard certificate not accepted with `New-VdcCapiApplication`, [#248](https://github.com/Venafi/VenafiPS/issues/248)
+
+
 ## 6.1.2
 - Add custom field value lookup to `Find-VdcObject`.  Utilizing existing `-Attribute` and `-Pattern` parameters, find objects where Attribute is a custom field name or guid and Pattern is the value you are looking for.
 - Add parallel functionality to `Remove-VdcCertificate` for bulk cleanup
@@ -606,6 +612,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
