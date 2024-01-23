@@ -6,13 +6,14 @@ Remove TLSPDC objects
 ## SYNTAX
 
 ```
-Remove-VdcObject [-Path] <String> [-Recursive] [[-VenafiSession] <PSObject>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-VdcObject [-Path] <String> [-Recursive] [[-ThrottleLimit] <Int32>] [[-VenafiSession] <PSObject>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Remove a TLSPDC object and optionally perform a recursive removal.
 This process can be very destructive as it will remove anything you send it!!!
+Run this in parallel with PowerShell v7+ when you have a large number to process.
 
 ## EXAMPLES
 
@@ -73,6 +74,22 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ThrottleLimit
+Limit the number of threads when running in parallel; the default is 100. 
+Applicable to PS v7+ only.
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 2
+Default value: 100
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -85,7 +102,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: 3
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
