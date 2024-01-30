@@ -202,29 +202,6 @@ function Invoke-VenafiRestMethod {
     # in the case of inital authentication, eg, there won't be any
     if ( $allHeaders ) { $params.Headers = $allHeaders }
 
-    if ( $Body ) {
-        $restBody = $Body
-        switch ($Method.ToLower()) {
-            'head' {
-                # a head method requires the params be provided as a query string, not body
-                # invoke-webrequest does not do this so we have to build the string manually
-                $newUri = New-HttpQueryString -Uri $uri -QueryParameter $Body
-                $params.Uri = $newUri
-                $params.Body = $null
-                Write-Verbose $newUri
-            }
-
-            'get' {
-                $params.Body = $restBody
-            }
-
-            Default {
-                $restBody = ConvertTo-Json $Body -Depth 20 -Compress
-                $params.Body = $restBody
-            }
-        }
-    }
-
     if ( $UseDefaultCredential.IsPresent -and $Certificate ) {
         throw 'You cannot use UseDefaultCredential and Certificate parameters together'
     }
@@ -233,7 +210,34 @@ function Invoke-VenafiRestMethod {
         $params.Add('UseDefaultCredentials', $true)
     }
 
-    $params | Write-VerboseWithSecret
+    if ( $Body ) {
+        switch ($Method.ToLower()) {
+            'head' {
+                # a head method requires the params be provided as a query string, not body
+                # invoke-webrequest does not do this so we have to build the string manually
+                $newUri = New-HttpQueryString -Uri $uri -QueryParameter $Body
+                $params.Uri = $newUri
+                $params.Body = $null
+            }
+
+            'get' {
+                $params.Body = $Body
+            }
+
+            Default {
+                $preJsonBody = $Body
+                $params.Body = (ConvertTo-Json $Body -Depth 20 -Compress)
+            }
+        }
+    }
+
+    if ( $preJsonBody ) {
+        $paramsToWrite = $params.Clone()
+        $paramsToWrite.Body = $preJsonBody
+        $paramsToWrite | Write-VerboseWithSecret
+    } else {
+        $params | Write-VerboseWithSecret
+    }
 
     # ConvertTo-Json, used in Write-VerboseWithSecret, has an issue with certificates
     # add this param after
