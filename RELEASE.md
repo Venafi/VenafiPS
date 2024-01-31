@@ -1,3 +1,2 @@
-- Add parallel functionality to `Remove-VdcObject`.  PS Core for now, Windows PowerShell coming soon.
-- Fix invalid function reference with `New-VdcCapiApplication`, [#247](https://github.com/Venafi/VenafiPS/issues/247)
-- Fix wilcard certificate not accepted with `New-VdcCapiApplication`, [#248](https://github.com/Venafi/VenafiPS/issues/248)
+- Fix property not found error with `New-VenafiSession -AccessToken`, [#252](https://github.com/Venafi/VenafiPS/issues/252)
+- Update `Invoke-VenafiRestMethod` to ensure parameter verbose output does not convert the body to json twice
