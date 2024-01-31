@@ -353,12 +353,15 @@ function New-VenafiSession {
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
                 Expires = (Get-Date).AddMonths(12)
+                AccessToken = $null
             }
             $newSession.Token.AccessToken = if ( $AccessToken -is [string] ) { New-Object System.Management.Automation.PSCredential('AccessToken', ($AccessToken | ConvertTo-SecureString -AsPlainText -Force)) }
             elseif ($AccessToken -is [pscredential]) { $AccessToken }
             elseif ($AccessToken -is [securestring]) { New-Object System.Management.Automation.PSCredential('AccessToken', $AccessToken) }
             else { throw 'Unsupported type for -AccessToken.  Provide either a String, SecureString, or PSCredential.' }
 
+            # validate token
+            $null = Invoke-VenafiRestMethod -UriRoot 'vedauth' -UriLeaf 'Authorize/Verify' -VenafiSession $newSession
         }
 
         'VaultAccessToken' {
