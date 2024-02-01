@@ -9,16 +9,16 @@ Write entries to the TLSPDC log
 ```
 Write-VdcLog -EventGroup <String> -EventId <String> -Component <String> [-Severity <TppEventSeverity>]
  [-SourceIp <IPAddress>] [-ComponentID <Int32>] [-ComponentSubsystem <String>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### CustomGroup
 ```
 Write-VdcLog -CustomEventGroup <String> -EventId <String> -Component <String> [-Severity <TppEventSeverity>]
  [-SourceIp <IPAddress>] [-ComponentID <Int32>] [-ComponentSubsystem <String>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -263,6 +263,21 @@ Prompts you for confirmation before running the cmdlet.
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

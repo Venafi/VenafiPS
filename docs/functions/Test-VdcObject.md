@@ -7,12 +7,14 @@ Test if an object exists
 
 ### DN (Default)
 ```
-Test-VdcObject -Path <String[]> [-ExistOnly] [-VenafiSession <PSObject>] [<CommonParameters>]
+Test-VdcObject -Path <String[]> [-ExistOnly] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### GUID
 ```
-Test-VdcObject -Guid <Guid[]> [-ExistOnly] [-VenafiSession <PSObject>] [<CommonParameters>]
+Test-VdcObject -Guid <Guid[]> [-ExistOnly] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -99,6 +101,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

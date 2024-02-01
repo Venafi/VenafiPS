@@ -8,14 +8,15 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 ### Session (Default)
 ```
 Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot <String>] -UriLeaf <String>
- [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-SkipCertificateCheck] [<CommonParameters>]
+ [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-SkipCertificateCheck]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### URL
 ```
 Invoke-VenafiRestMethod -Server <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
  [-Method <String>] [-UriRoot <String>] -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>]
- [-FullResponse] [-SkipCertificateCheck] [<CommonParameters>]
+ [-FullResponse] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -202,6 +203,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

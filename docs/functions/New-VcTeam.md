@@ -8,7 +8,7 @@ Create a new team
 ```
 New-VcTeam [-Name] <String> [-Owner] <String[]> [-Member] <String[]> [-Role] <String>
  [[-UserMatchingRule] <System.Collections.Generic.List`1[System.Array]>] [-PassThru]
- [[-VenafiSession] <PSObject>] [<CommonParameters>]
+ [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -157,6 +157,21 @@ Aliases:
 
 Required: False
 Position: 6
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

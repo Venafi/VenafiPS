@@ -9,28 +9,28 @@ Import one or more certificates
 ```
 Import-VdcCertificate -PolicyPath <String> -Path <String[]> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
  [-PrivateKeyPassword <PSObject>] [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByFileWithPrivateKey
 ```
 Import-VdcCertificate -PolicyPath <String> -Path <String[]> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
  -PrivateKey <String> -PrivateKeyPassword <PSObject> [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByDataWithPrivateKey
 ```
 Import-VdcCertificate -PolicyPath <String> -Data <String[]> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
  -PrivateKey <String> -PrivateKeyPassword <PSObject> [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByData
 ```
 Import-VdcCertificate -PolicyPath <String> -Data <String[]> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
  [-PrivateKeyPassword <PSObject>] [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -250,6 +250,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

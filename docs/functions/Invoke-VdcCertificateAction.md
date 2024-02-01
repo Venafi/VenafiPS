@@ -8,43 +8,47 @@ Perform an action against a certificate
 ### Disable
 ```
 Invoke-VdcCertificateAction -Path <String> [-Disable] [-AdditionalParameter <Hashtable>]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### Reset
 ```
 Invoke-VdcCertificateAction -Path <String> [-Reset] [-AdditionalParameter <Hashtable>] [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Renew
 ```
 Invoke-VdcCertificateAction -Path <String> [-Renew] [-AdditionalParameter <Hashtable>] [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Push
 ```
 Invoke-VdcCertificateAction -Path <String> [-Push] [-AdditionalParameter <Hashtable>] [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Validate
 ```
 Invoke-VdcCertificateAction -Path <String> [-Validate] [-AdditionalParameter <Hashtable>]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### Revoke
 ```
 Invoke-VdcCertificateAction -Path <String> [-Revoke] [-AdditionalParameter <Hashtable>]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### Delete
 ```
 Invoke-VdcCertificateAction -Path <String> [-Delete] [-AdditionalParameter <Hashtable>]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -292,6 +296,21 @@ Prompts you for confirmation before running the cmdlet.
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

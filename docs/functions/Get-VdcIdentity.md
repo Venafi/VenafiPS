@@ -8,17 +8,18 @@ Get user and group details
 ### Id (Default)
 ```
 Get-VdcIdentity -ID <String> [-IncludeAssociated] [-IncludeMembers] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Me
 ```
-Get-VdcIdentity [-Me] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VdcIdentity [-Me] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VdcIdentity [-All] [-IncludeAssociated] [-IncludeMembers] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VdcIdentity [-All] [-IncludeAssociated] [-IncludeMembers] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -150,6 +151,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

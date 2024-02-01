@@ -8,13 +8,14 @@ Find certificate requests
 ### All (Default)
 ```
 Find-VcCertificateInstance [-HostName <String>] [-IpAddress <IPAddress>] [-Port <Int32>] [-Status <String>]
- [-Order <PSObject[]>] [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-Order <PSObject[]>] [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### Filter
 ```
 Find-VcCertificateInstance -Filter <ArrayList> [-Order <PSObject[]>] [-First <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -151,6 +152,21 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

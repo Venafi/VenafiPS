@@ -11,19 +11,19 @@ Find-VcCertificate [-Name <String>] [-KeyLength <Int32>] [-Serial <String>] [-Fi
  [-IsSelfSigned] [-Status <String[]>] [-ExpireBefore <DateTime>] [-ExpireAfter <DateTime>] [-Version <String>]
  [-SanDns <String>] [-Application <String>] [-Tag <String[]>] [-CN <String>] [-Issuer <String>]
  [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Filter
 ```
 Find-VcCertificate -Filter <ArrayList> [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail]
- [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### SavedSearch
 ```
 Find-VcCertificate -SavedSearchName <String> [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -439,6 +439,21 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named
