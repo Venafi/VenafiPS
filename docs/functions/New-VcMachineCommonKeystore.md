@@ -9,14 +9,16 @@
 ```
 New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
  -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-SshPassword] [-Port <Int32>] [-NoVerify]
- [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### SshKey
 ```
 New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
  -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-SshKey] [-Port <Int32>] [-NoVerify]
- [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### WinrmBasic
@@ -24,7 +26,7 @@ New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String
 New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
  -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-WinrmBasic] [-Port <Int32>] [-UseTls]
  [-SkipCertificateCheck] [-NoVerify] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### WinrmKerberos
@@ -32,7 +34,8 @@ New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String
 New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
  -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-WinrmKerberos] [-Port <Int32>] [-UseTls]
  [-SkipCertificateCheck] -DomainName <String> -KeyDistributionCenter <String> -SPN <String> [-NoVerify]
- [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -362,6 +365,21 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

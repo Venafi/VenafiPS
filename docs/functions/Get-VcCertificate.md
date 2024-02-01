@@ -7,12 +7,14 @@ Get certificate information
 
 ### Id (Default)
 ```
-Get-VcCertificate [-ID] <String> [-IncludeVaasOwner] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcCertificate [-ID] <String> [-IncludeVaasOwner] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcCertificate [-All] [-IncludeVaasOwner] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcCertificate [-All] [-IncludeVaasOwner] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -90,6 +92,21 @@ A TLSPC key can also be provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

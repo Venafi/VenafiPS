@@ -8,19 +8,19 @@
 ### ByFile (Default)
 ```
 Import-VcCertificate -Path <String> -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Pkcs8
 ```
 Import-VcCertificate -Data <String> [-Pkcs8] -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Pkcs12
 ```
 Import-VcCertificate -Data <String> [-Pkcs12] -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -134,6 +134,21 @@ Accept wildcard characters: False
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

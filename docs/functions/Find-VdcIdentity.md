@@ -7,7 +7,8 @@ Search for identity details
 
 ```
 Find-VdcIdentity -Name <String[]> [-First <Int32>] [-IncludeUsers] [-IncludeSecurityGroups]
- [-IncludeDistributionGroups] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-IncludeDistributionGroups] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -115,6 +116,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

@@ -1,3 +1,8 @@
+## 6.1.4
+- Fix property not found error with `New-VenafiSession -AccessToken`, [#252](https://github.com/Venafi/VenafiPS/issues/252)
+- Update `Invoke-VenafiRestMethod` to ensure parameter verbose output does not convert the body to json twice
+
+
 ## 6.1.3
 - Add parallel functionality to `Remove-VdcObject`.  PS Core for now, Windows PowerShell coming soon.
 - Fix invalid function reference with `New-VdcCapiApplication`, [#247](https://github.com/Venafi/VenafiPS/issues/247)
@@ -612,6 +617,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

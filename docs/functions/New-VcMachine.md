@@ -9,14 +9,15 @@
 ```
 New-VcMachine -Name <String> -MachineType <String> -VSatellite <String> -Owner <String> [-Tag <String[]>]
  [-Status <String>] -ConnectionDetail <Hashtable> -DekID <String> [-NoVerify] [-ThrottleLimit <Int32>]
- [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### BasicMachine
 ```
 New-VcMachine -Name <String> -MachineType <String> [-VSatellite <String>] -Owner <String> [-Tag <String[]>]
  [-Status <String>] [-Hostname <String>] -Credential <PSCredential> [-Port <String>] [-NoVerify]
- [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -263,6 +264,21 @@ Accept wildcard characters: False
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

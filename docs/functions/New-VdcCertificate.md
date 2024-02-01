@@ -10,8 +10,8 @@ Enrolls or provisions a new certificate
 New-VdcCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <String>]
  [-CertificateType <String>] [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
  [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
- [-Device <Hashtable[]>] [-TimeoutSec <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+ [-Device <Hashtable[]>] [-TimeoutSec <Int32>] [-PassThru] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### ByNameWithDevice
@@ -20,7 +20,7 @@ New-VdcCertificate -Path <String> -Name <String> [-CommonName <String>] [-Csr <S
  [-CertificateType <String>] [-CertificateAuthorityPath <String>] [-CertificateAuthorityAttribute <Hashtable>]
  [-ManagementType <TppManagementType>] [-SubjectAltName <Hashtable[]>] [-CustomField <Hashtable>] [-NoWorkToDo]
  -Device <Hashtable[]> [-Application <Hashtable[]>] [-TimeoutSec <Int32>] [-PassThru]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -380,6 +380,21 @@ Prompts you for confirmation before running the cmdlet.
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

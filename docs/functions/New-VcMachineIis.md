@@ -10,7 +10,7 @@
 New-VcMachineIis -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
  -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-Port <Int32>] [-UseTls]
  [-SkipCertificateCheck] [-NoVerify] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### WinrmKerberos
@@ -18,7 +18,8 @@ New-VcMachineIis -Name <String> [-VSatellite <String>] -Owner <String> [-Hostnam
 New-VcMachineIis -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
  -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-Port <Int32>] [-UseTls]
  [-SkipCertificateCheck] -DomainName <String> -KeyDistributionCenter <String> -SPN <String> [-NoVerify]
- [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -283,6 +284,21 @@ Accept wildcard characters: False
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

@@ -7,12 +7,14 @@ Get machine details
 
 ### ID (Default)
 ```
-Get-VcMachine [-ID] <String> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcMachine [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcMachine [-All] [-IncludeConnectionDetail] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcMachine [-All] [-IncludeConnectionDetail] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -157,6 +159,21 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

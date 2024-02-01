@@ -18,7 +18,8 @@ Find-VdcCertificate [[-Path] <String>] [[-Guid] <Guid>] [-Recursive] [[-Country]
  [[-CreatedBefore] <DateTime>] [[-CertificateType] <String[]>] [[-ManagementType] <TppManagementType[]>]
  [-PendingWorkflow] [[-Stage] <TppCertificateStage[]>] [[-StageGreaterThan] <TppCertificateStage>]
  [[-StageLessThan] <TppCertificateStage>] [-ValidationEnabled] [[-ValidationState] <String[]>] [-CountOnly]
- [[-VenafiSession] <PSObject>] [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
+ [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [-IncludeTotalCount] [-Skip <UInt64>]
+ [-First <UInt64>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -843,6 +844,21 @@ Enter the number of objects to get.
 Type: UInt64
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

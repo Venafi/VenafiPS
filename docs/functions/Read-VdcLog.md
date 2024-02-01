@@ -8,7 +8,7 @@ Read entries from the TLSPDC log
 ```
 Read-VdcLog [[-Path] <String>] [[-EventId] <String>] [[-Severity] <TppEventSeverity>] [[-StartTime] <DateTime>]
  [[-EndTime] <DateTime>] [[-Text1] <String>] [[-Text2] <String>] [[-Value1] <Int32>] [[-Value2] <Int32>]
- [[-First] <Int32>] [[-VenafiSession] <PSObject>] [<CommonParameters>]
+ [[-First] <Int32>] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -203,6 +203,21 @@ Aliases:
 
 Required: False
 Position: 11
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

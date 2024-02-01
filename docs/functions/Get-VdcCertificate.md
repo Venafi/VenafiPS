@@ -7,24 +7,26 @@ Get certificate information
 
 ### Id (Default)
 ```
-Get-VdcCertificate [-ID] <String> [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VdcCertificate [-ID] <String> [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### IdWithPrevious
 ```
 Get-VdcCertificate [-ID] <String> [-IncludePreviousVersions] [-ExcludeExpired] [-ExcludeRevoked]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### AllWithPrevious
 ```
 Get-VdcCertificate [-All] [-IncludePreviousVersions] [-ExcludeExpired] [-ExcludeRevoked]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VdcCertificate [-All] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VdcCertificate [-All] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -167,6 +169,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

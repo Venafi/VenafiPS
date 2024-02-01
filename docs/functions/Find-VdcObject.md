@@ -7,24 +7,26 @@ Find objects by path, class, or pattern
 
 ### FindByPath (Default)
 ```
-Find-VdcObject [-Path <String>] [-Recursive] [-VenafiSession <PSObject>] [<CommonParameters>]
+Find-VdcObject [-Path <String>] [-Recursive] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### FindByPattern
 ```
-Find-VdcObject [-Path <String>] -Pattern <String> [-Recursive] [-VenafiSession <PSObject>] [<CommonParameters>]
+Find-VdcObject [-Path <String>] -Pattern <String> [-Recursive] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### FindByClass
 ```
 Find-VdcObject [-Path <String>] [-Pattern <String>] -Class <String[]> [-Recursive] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### FindByAttribute
 ```
 Find-VdcObject -Pattern <String> -Attribute <String[]> [-NoLookup] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -232,6 +234,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

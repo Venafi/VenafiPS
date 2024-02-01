@@ -8,7 +8,7 @@ Set explicit permissions for TLSPDC objects
 ### PermissionObjectGuid (Default)
 ```
 Set-VdcPermission -Guid <Guid> -IdentityId <String> -Permission <TppPermission> [-Force]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### PermissionPath
@@ -16,13 +16,14 @@ Set-VdcPermission -Guid <Guid> -IdentityId <String> -Permission <TppPermission> 
 Set-VdcPermission -Path <String> -IdentityId <String> [-IsAssociateAllowed] [-IsCreateAllowed]
  [-IsDeleteAllowed] [-IsManagePermissionsAllowed] [-IsPolicyWriteAllowed] [-IsPrivateKeyReadAllowed]
  [-IsPrivateKeyWriteAllowed] [-IsReadAllowed] [-IsRenameAllowed] [-IsRevokeAllowed] [-IsViewAllowed]
- [-IsWriteAllowed] [-Force] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-IsWriteAllowed] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### PermissionObjectPath
 ```
 Set-VdcPermission -Path <String> -IdentityId <String> -Permission <TppPermission> [-Force]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### PermissionGuid
@@ -30,7 +31,7 @@ Set-VdcPermission -Path <String> -IdentityId <String> -Permission <TppPermission
 Set-VdcPermission -Guid <Guid> -IdentityId <String> [-IsAssociateAllowed] [-IsCreateAllowed] [-IsDeleteAllowed]
  [-IsManagePermissionsAllowed] [-IsPolicyWriteAllowed] [-IsPrivateKeyReadAllowed] [-IsPrivateKeyWriteAllowed]
  [-IsReadAllowed] [-IsRenameAllowed] [-IsRevokeAllowed] [-IsViewAllowed] [-IsWriteAllowed] [-Force]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -400,6 +401,21 @@ Prompts you for confirmation before running the cmdlet.
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

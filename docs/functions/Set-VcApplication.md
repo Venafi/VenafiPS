@@ -7,7 +7,7 @@
 
 ```
 Set-VcApplication [-Application] <String> [[-Name] <String>] [[-TeamOwner] <String[]>] [-NoOverwrite]
- [-PassThru] [[-VenafiSession] <PSObject>] [<CommonParameters>]
+ [-PassThru] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -109,6 +109,21 @@ Aliases: Key
 
 Required: False
 Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
