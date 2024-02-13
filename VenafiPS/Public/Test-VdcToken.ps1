@@ -18,7 +18,6 @@ function Test-VdcToken {
 
     .PARAMETER VaultAccessTokenName
     Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
-    Note: '-Server' parameter is required if the vault does not contain saved metadata.
 
     .PARAMETER VenafiPsToken
     Token object obtained from New-VdcToken
