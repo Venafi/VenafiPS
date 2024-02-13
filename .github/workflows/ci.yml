@@ -38,7 +38,7 @@ jobs:
       #       ${{ github.workspace }}/merged/${{ env.module_name }}.psm1
       #       ${{ github.workspace }}/merged/${{ env.module_name }}.psd1
 
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
       - name: Install PSScriptAnalyzer module
         shell: pwsh
         run: |
@@ -57,7 +57,7 @@ jobs:
               Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
           }
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@main
         with:
           name: pssa-results
           path: ${{ github.workspace }}/pssa.json
@@ -68,7 +68,7 @@ jobs:
           platform: [ubuntu-latest, macos-latest, windows-latest]
       runs-on: ${{ matrix.platform }}
       steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@main
       - name: Run Pester tests (pwsh)
         run: |
           Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
@@ -82,7 +82,7 @@ jobs:
           Invoke-Pester -Configuration $config
         shell: pwsh
       - name: Upload test results
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@main
         if: always()
         with:
           name: Powershell (v7) Pester Test Results ${{ matrix.platform }}
@@ -91,7 +91,7 @@ jobs:
   test-posh:
     runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@main
     - name: Run Pester tests (PowerShell)
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
@@ -106,7 +106,7 @@ jobs:
         if ($Error[0].Fullyqualifiederrorid -eq 'PesterAssertionFailed') {exit 1}
       shell: powershell
     - name: Upload test results
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@main
       if: always()
       with:
         name: Windows Powershell (v5) Pester Test Results
