@@ -8,7 +8,7 @@ jobs:
     env:
       module_name: VenafiPS
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@main
         with:
           token: ${{ secrets.CD_TOKEN }}
 
