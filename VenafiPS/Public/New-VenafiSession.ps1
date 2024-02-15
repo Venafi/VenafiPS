@@ -80,6 +80,7 @@ function New-VenafiSession {
     Name of the SecretManagement vault entry for the TLSPC key.
     First time use requires it to be provided with -VcKey to populate the vault.
     With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VcKey.
+    The server associated with the region will be saved and restored when this parameter is used on subsequent use.
 
     .PARAMETER SkipCertificateCheck
     Bypass certificate validation when connecting to the server.
@@ -262,7 +263,14 @@ function New-VenafiSession {
         [psobject] $VcKey,
 
         [Parameter(ParameterSetName = 'Vc')]
-        [ValidateSet('us', 'eu')]
+        [ValidateScript(
+            {
+                if ( $_ -notin ($script:VcRegions).Keys ) {
+                    throw ('{0} is not a valid region.  Valid regions include {1}.' -f $_, (($script:VcRegions).Keys -join ','))
+                }
+                $true
+            }
+        )]
         [string] $VcRegion = 'us',
 
         [Parameter(ParameterSetName = 'Vc')]
