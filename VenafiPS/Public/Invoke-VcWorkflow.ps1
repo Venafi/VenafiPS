@@ -104,16 +104,25 @@ function Invoke-VcWorkflow {
 
             try {
 
-                $URL = 'wss://api.venafi.cloud/ws/notificationclients/' + $thisWebSocketID
                 $WS = New-Object System.Net.WebSockets.ClientWebSocket
                 $CT = New-Object System.Threading.CancellationToken
 
                 if ( $VenafiSession.GetType().Name -in 'PSCustomObject', 'VenafiSession' ) {
+                    $server = $VenafiSession.Server.Replace('https://', '')
                     $WS.Options.SetRequestHeader("tppl-api-key", $VenafiSession.Key.GetNetworkCredential().password)
                 }
                 else {
+                    if ( $env:VC_SERVER ) {
+                        $server = $env:VC_SERVER
+                    }
+                    else {
+                        # default to US region
+                        $server = ($script:VcRegions).'us'
+                    }
+                    $server = $server.Replace('https://', '')
                     $WS.Options.SetRequestHeader("tppl-api-key", $VenafiSession)
                 }
+                $URL = 'wss://{0}/ws/notificationclients/{1}' -f $server, $thisWebSocketID
 
                 #Get connected
                 $Conn = $WS.ConnectAsync($URL, $CT)

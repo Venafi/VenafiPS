@@ -138,7 +138,16 @@ function Invoke-VenafiRestMethod {
                 $auth = $VenafiSession
 
                 if ( Test-IsGuid($VenafiSession) ) {
-                    $Server = $script:CloudUrl
+                    if ( $env:VC_SERVER ) {
+                        $Server = $env:VC_SERVER
+                    }
+                    else {
+                        # default to US region
+                        $Server = ($script:VcRegions).'us'
+                    }
+                    if ( $Server -notlike 'https://*') {
+                        $Server = 'https://{0}' -f $Server
+                    }
                     $platform = 'VC'
                 }
                 else {
@@ -235,7 +244,8 @@ function Invoke-VenafiRestMethod {
         $paramsToWrite = $params.Clone()
         $paramsToWrite.Body = $preJsonBody
         $paramsToWrite | Write-VerboseWithSecret
-    } else {
+    }
+    else {
         $params | Write-VerboseWithSecret
     }
 
@@ -297,7 +307,8 @@ function Invoke-VenafiRestMethod {
                         $permMsg += ("  The current scope of {0} is insufficient." -f $rejectedScope.Matches.Groups[1].Value.Replace('\u0027', "'"))
                     }
                     $permMsg += '  Call New-VenafiSession with the correct scope.'
-                } else {
+                }
+                else {
                     $permMsg = $originalError.ErrorDetails.Message
                 }
 

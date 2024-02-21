@@ -33,7 +33,11 @@ foreach ( $folder in $folders) {
     }
 }
 
-$script:CloudUrl = 'https://api.venafi.cloud'
+$script:VcRegions = @{
+    'us'='https://api.venafi.cloud'
+    'eu'='https://api.venafi.eu'
+}
+# the new version will be replaced below during deployment
 $script:ModuleVersion = '((NEW_VERSION))'
 $script:functionConfig = ConvertFrom-Json (Get-Content "$PSScriptRoot/config/functions.json" -Raw)
 
