@@ -105,8 +105,8 @@
         @{
             'n' = 'application'
             'e' = {
-                if ( $_.application ) {
-                    $_.application | Get-VcApplication | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
+                if ( $_.applicationIds ) {
+                    $_.applicationIds | Get-VcApplication | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
                 }
             }
         },
