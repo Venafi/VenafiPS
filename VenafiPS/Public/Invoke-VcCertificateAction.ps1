@@ -17,7 +17,8 @@ function Invoke-VcCertificateAction {
     Recover a retired certificate
 
     .PARAMETER Renew
-    Requests immediate renewal for an existing certificate
+    Requests immediate renewal for an existing certificate.
+    If more than 1 application is associated with the certificate, provide -AdditionalParameters @{'Application'='application id'} to specify the id.
 
     .PARAMETER Validate
     Initiates SSL/TLS network validation
@@ -47,6 +48,13 @@ function Invoke-VcCertificateAction {
     Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Retire
 
     Perform an action against 1 certificate
+
+    .EXAMPLE
+    Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -AdditionalParameters @{'Application'='10f71a12-daf3-4737-b589-6a9dd1cc5a97'}
+
+    Perform an action against 1 certificate with additional parameters.
+    In this case we are renewing a certificate, but the certificate has multiple applications associated with it.
+    Only one certificate and application combination can be renewed at a time so provide the specific application to be renewed.
 
     .EXAMPLE
     Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete -Confirm:$false
@@ -111,8 +119,51 @@ function Invoke-VcCertificateAction {
 
         $addThis = $true
 
-        if ( $PsCmdlet.ParameterSetName -eq 'Delete' ) {
-            $addThis = $PSCmdlet.ShouldProcess($ID, 'Delete certificate')
+        switch ($PSCmdlet.ParameterSetName) {
+            'Delete' {
+                $addThis = $PSCmdlet.ShouldProcess($ID, 'Delete certificate')
+            }
+
+            'Renew' {
+                $addThis = $false
+
+                $out = [pscustomobject] @{
+                    CertificateID = $ID
+                    Success       = $true
+                    Error         = $null
+                }
+
+                $thisCert = Get-VcCertificate -ID $ID
+
+                if ( $thisCert.application.count -gt 1 ) {
+                    if ( $AdditionalParameters.Application ) {
+                        $thisAppId = $AdditionalParameters.Application
+                    }
+                    else {
+                        $out.Success = $false
+                        $out.Error = 'Multiple applications associated, {0}.  Only 1 application can be renewed at a time.  Rerun Invoke-VcCertificateAction and add ''-AdditionalParameter @{{''Application''=''application id''}}'' and provide the actual id you would like to renew.' -f (($thisCert.application | ForEach-Object { '{0} ({1})' -f $_.name, $_.applicationId }) -join ',')
+                        return $out
+                    }
+                }
+
+                $thisCertRequest = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificaterequests/$($thisCert.certificateRequestId)"
+                $renewParams = @{
+                    existingCertificateId        = $ID
+                    certificateIssuingTemplateId = $thisCertRequest.certificateIssuingTemplateId
+                    applicationId                = if ( $thisAppId ) { $thisAppId } else { $thisCert.application.applicationId }
+                    reuseCSR                     = $true
+                }
+
+                try {
+                    $null = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
+                }
+                catch {
+                    $out.Success = $false
+                    $out.Error = $_.Exception.Message
+                }
+
+                return $out
+            }
         }
 
         if ( $addThis ) { $allCerts.Add($ID) }
@@ -131,11 +182,6 @@ function Invoke-VcCertificateAction {
             'Recover' {
                 $params.UriLeaf = "certificates/recovery"
                 $params.Body = @{"certificateIds" = $allCerts }
-            }
-
-            'Renew' {
-                $params.UriLeaf = "certificaterequests"
-                $params.Body = @{"existingCertificateId" = $allCerts }
             }
 
             'Validate' {
@@ -162,7 +208,7 @@ function Invoke-VcCertificateAction {
         foreach ($certId in $allCerts) {
             [pscustomobject] @{
                 CertificateID = $certId
-                Success = ($certId -in $processedIds)
+                Success       = ($certId -in $processedIds)
             }
         }
     }
