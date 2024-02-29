@@ -9,9 +9,6 @@
     .PARAMETER ID
     Connector ID, this is the guid/uuid
 
-    .PARAMETER DisableOnly
-    Disable the connector instead of removing
-
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -25,10 +22,6 @@
     Remove a connector
 
     .EXAMPLE
-    Remove-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -DisableOnly
-    Disable a connector, do not remove it
-
-    .EXAMPLE
     Remove-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Confirm:$false
     Remove a connector bypassing the confirmation prompt
     #>
@@ -39,13 +32,15 @@
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('connectorId')]
+        [ValidateScript(
+            {
+                if ( -not (Test-IsGuid -InputObject $_ ) ) {
+                    throw "$_ is not a valid connector id format"
+                }
+                $true
+            }
+        )]
         [string] $ID,
-
-        [Parameter()]
-        [switch] $DisableOnly,
-
-        [Parameter()]
-        [int32] $ThrottleLimit = 100,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -53,23 +48,11 @@
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
-        $allObjects = [System.Collections.Generic.List[object]]::new()
     }
 
     process {
         if ( $PSCmdlet.ShouldProcess($ID, "Delete connector") ) {
-            $allObjects.Add($ID)
+            $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "plugins/$ID"
         }
-    }
-
-    end {
-        Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
-            if ( $using:DisableOnly ) {
-                $null = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf "plugins/$PSItem/disablements"
-            }
-            else {
-                $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "plugins/$PSItem"
-            }
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
     }
 }
