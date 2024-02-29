@@ -1,16 +1,16 @@
-﻿function Get-VcConnector {
+﻿function Get-VcWebhook {
     <#
     .SYNOPSIS
-    Get connector info
+    Get webhook info
 
     .DESCRIPTION
-    Get details on 1 or all connectors
+    Get 1 or all webhooks
 
     .PARAMETER ID
-    Connector ID or name
+    Webhook ID or name
 
     .PARAMETER All
-    Get all connectors
+    Get all webhooks
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -57,7 +57,6 @@
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ID')]
-    [Alias('Get-VaasConnector')]
 
     param (
 
@@ -79,7 +78,7 @@
     process {
 
         $params = @{
-            UriLeaf = 'plugins'
+            UriLeaf = 'connectors'
         }
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
@@ -94,15 +93,15 @@
 
         $response = Invoke-VenafiRestMethod @params
 
-        if ( $response.PSObject.Properties.Name -contains 'plugins' ) {
-            $connectors = $response | Select-Object -ExpandProperty 'plugins'
+        if ( $response.PSObject.Properties.Name -contains 'connectors' ) {
+            $connectors = $response | Select-Object -ExpandProperty 'connectors'
         }
         else {
             $connectors = $response
         }
 
         if ( $connectors ) {
-            $connectors | Select-Object @{ 'n' = 'connectorId'; 'e' = { $_.Id } }, @{ 'n' = 'connectorType'; 'e' = { $_.pluginType } }, * -ExcludeProperty Id, pluginType
+            $connectors | Select-Object @{ 'n' = 'webhookId'; 'e' = { $_.Id } }, * -ExcludeProperty Id
         }
     }
 }
