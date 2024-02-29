@@ -21,10 +21,10 @@
     ID
 
     .EXAMPLE
-    Get-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
+    Get-VcWebhook -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
 
     {
-        "connectorId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
+        "webhookId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
         "name": "ServiceNow-expiry,
         "properties": {
             "connectorKind": "WEBHOOK",
@@ -45,14 +45,14 @@
     Get a single object by ID
 
     .EXAMPLE
-    Get-VcConnector -ID 'My Connector'
+    Get-VcWebhook -ID 'My Webhook'
 
     Get a single object by name.  The name is case sensitive.
 
     .EXAMPLE
-    Get-VcConnector -All
+    Get-VcWebhook -All
 
-    Get all connectors
+    Get all webhooks
 
     #>
 
@@ -61,7 +61,7 @@
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('connectorId')]
+        [Alias('webhookId')]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
@@ -87,7 +87,7 @@
             }
             else {
                 # search by name
-                return Get-VcConnector -All | Where-Object { $_.name -eq $ID }
+                return Get-VcWebhook -All | Where-Object { $_.name -eq $ID }
             }
         }
 

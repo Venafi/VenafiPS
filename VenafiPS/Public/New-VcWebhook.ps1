@@ -1,17 +1,17 @@
 function New-VcWebhook {
     <#
     .SYNOPSIS
-    Create a new connector
+    Create a new webhook
 
     .DESCRIPTION
-    Create a new connector
+    Create a new webhook
 
     .PARAMETER Name
-    Connector name
+    Webhook name
 
     .PARAMETER Url
     Endpoint to be called when the event type/name is triggered.
-    This should be the full url and will be validated during connector creation.
+    This should be the full url and will be validated during webhook creation.
 
     .PARAMETER EventType
     One or more event types to trigger on.
@@ -27,7 +27,7 @@ function New-VcWebhook {
     Only subscribe to log messages deemed as critical
 
     .PARAMETER PassThru
-    Return newly created connector object
+    Return newly created webhook object
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -38,41 +38,35 @@ function New-VcWebhook {
     PSCustomObject, if PassThru provided
 
     .EXAMPLE
-    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication'
+    New-VcWebhook -Name 'MyWebhook' -Url 'https://my.com/endpoint' -EventType 'Authentication'
 
-    Create a new connector for one event type
-
-    .EXAMPLE
-    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication', 'Certificates', 'Applications'
-
-    Create a new connector with multiple event types
+    Create a new webhook for one event type
 
     .EXAMPLE
-    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventName 'Certificate Validation Started'
+    New-VcWebhook -Name 'MyWebhook' -Url 'https://my.com/endpoint' -EventType 'Authentication', 'Certificates', 'Applications'
 
-    Create a new connector with event names as opposed to event types.
+    Create a new webhook with multiple event types
+
+    .EXAMPLE
+    New-VcWebhook -Name 'MyWebhook' -Url 'https://my.com/endpoint' -EventName 'Certificate Validation Started'
+
+    Create a new webhook with event names as opposed to event types.
     This will result in fewer messages received as opposed to subscribing at the event type level.
 
     .EXAMPLE
-    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Certificates' -CriticalOnly
+    New-VcWebhook -Name 'MyWebhook' -Url 'https://my.com/endpoint' -EventType 'Certificates' -CriticalOnly
 
     Subscribe to critical messages only for a specific event type
 
     .EXAMPLE
-    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Secret 'MySecret'
+    New-VcWebhook -Name 'MyWebhook' -Url 'https://my.com/endpoint' -EventType 'Authentication' -Secret 'MySecret'
 
-    Create a new connector with optional secret
+    Create a new webhook with optional secret
 
     .EXAMPLE
-    New-VcConnector -Name 'MyConnector' -Url 'https://my.com/endpoint' -EventType 'Authentication' -PassThru
+    New-VcWebhook -Name 'MyWebhook' -Url 'https://my.com/endpoint' -EventType 'Authentication' -PassThru
 
-    Create a new connector returning the newly created object
-
-    .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/New-VcConnector/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/New-VcConnector.ps1
+    Create a new webhook returning the newly created object
 
     .LINK
     https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=connectors-service#/Connectors/connectors_create
@@ -166,7 +160,7 @@ function New-VcWebhook {
             $params.Body.properties.target.connection.secret = $Secret
         }
 
-        if ( $PSCmdlet.ShouldProcess($Name, 'Create connector') ) {
+        if ( $PSCmdlet.ShouldProcess($Name, 'Create webhook') ) {
 
             try {
                 $response = Invoke-VenafiRestMethod @params
@@ -174,12 +168,12 @@ function New-VcWebhook {
 
                     201 {
                         if ( $PassThru ) {
-                            $response.Content | ConvertFrom-Json | Select-Object -Property @{'n' = 'connectorId'; 'e' = { $_.id } }, * -ExcludeProperty id
+                            $response.Content | ConvertFrom-Json | Select-Object -Property @{'n' = 'webhookId'; 'e' = { $_.id } }, * -ExcludeProperty id
                         }
                     }
 
                     409 {
-                        throw "Connector '$Name' already exists"
+                        throw "Webhook '$Name' already exists"
                     }
 
                     default {
