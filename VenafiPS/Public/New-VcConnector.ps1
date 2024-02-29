@@ -8,7 +8,8 @@ function New-VcConnector {
 
     .PARAMETER ManifestPath
     Path to an existing manifest.
-    Ensure the manifest has the deployment property which is not needed when testing in the simulator.
+    Ensure the manifest has the deployment element which is not needed when testing in the simulator.
+    See https://github.com/Venafi/vmware-avi-connector?tab=readme-ov-file#manifest for details.
 
     .PARAMETER PassThru
     Return newly created connector object
