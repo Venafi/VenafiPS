@@ -1,5 +1,6 @@
 ﻿function Set-VcApplication {
     <#
+    .SYNOPSIS
     Update an existing application
 
     .DESCRIPTION
