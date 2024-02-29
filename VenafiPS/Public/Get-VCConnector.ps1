@@ -91,6 +91,9 @@
                 return Get-VcConnector -All | Where-Object { $_.name -eq $ID }
             }
         }
+        else {
+            $params.Body = @{'includeDisabled' = $true }
+        }
 
         $response = Invoke-VenafiRestMethod @params
 
