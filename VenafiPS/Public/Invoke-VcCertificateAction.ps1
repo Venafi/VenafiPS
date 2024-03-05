@@ -76,6 +76,9 @@ function Invoke-VcCertificateAction {
 
     .LINK
     https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificateretirement_deleteCertificates
+
+    .NOTES
+    If performing a renewal and subjectCN has more than 1 value, only the first will be submitted with the renewal.
     #>
 
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
@@ -174,6 +177,7 @@ function Invoke-VcCertificateAction {
                 }
 
                 switch ($thisCert.PSObject.Properties.Name) {
+                    'subjectCN' { $renewParams.csrAttributes.commonName = $thisCert.subjectCN[0] }
                     'subjectO' { $renewParams.csrAttributes.organization = $thisCert.subjectO }
                     'subjectOU' { $renewParams.csrAttributes.organizationalUnits = $thisCert.subjectOU }
                     'subjectL' { $renewParams.csrAttributes.locality = $thisCert.subjectL }
