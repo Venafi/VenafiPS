@@ -31,6 +31,10 @@ function Invoke-VcCertificateAction {
     Additional items specific to the action being taken, if needed.
     See the api documentation for appropriate items, many are in the links in this help.
 
+    .PARAMETER Force
+    Force the operation under certain circumstances.
+    - During a renewal, force choosing the first CN in the case of multiple CNs as only 1 is supported.
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -105,6 +109,9 @@ function Invoke-VcCertificateAction {
         [Parameter(Mandatory, ParameterSetName = 'Delete')]
         [switch] $Delete,
 
+        [Parameter(ParameterSetName = 'Renew')]
+        [switch] $Force,
+
         [Parameter()]
         [hashtable] $AdditionalParameters,
 
@@ -142,6 +149,15 @@ function Invoke-VcCertificateAction {
                 }
 
                 $thisCert = Get-VcCertificate -ID $ID
+
+                # multiple CN certs are supported by tlspc, but the request/renew api does not support it
+                if ( $thisCert.subjectDN.count -gt 1 ) {
+                    if ( -not $Force ) {
+                        $out.Success = $false
+                        $out.Error = 'The certificate you are trying to renew has more than 1 common name.  You can either use -Force to automatically choose the first common name or utilize a different process to renew.'
+                        return $out
+                    }
+                }
 
                 switch ($thisCert.application.count) {
                     1 {
