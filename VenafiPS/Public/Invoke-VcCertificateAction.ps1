@@ -61,6 +61,11 @@ function Invoke-VcCertificateAction {
     Only one certificate and application combination can be renewed at a time so provide the specific application to be renewed.
 
     .EXAMPLE
+    Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -Force
+
+    Renewals can only support 1 CN assigned to a certificate.  To force this function to renew and automatically select the first CN, use -Force.
+
+    .EXAMPLE
     Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete
 
     Delete a certificate.  As only retired certificates can be deleted, it will be retired first.
