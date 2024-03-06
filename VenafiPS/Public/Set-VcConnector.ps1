@@ -12,9 +12,10 @@
     Ensure the manifest has the deployment element which is not needed when testing in the simulator.
     See https://github.com/Venafi/vmware-avi-connector?tab=readme-ov-file#manifest for details.
 
-    .PARAMETER Connector
+    .PARAMETER ID
     Connector ID to update.
     If not provided, the ID will be looked up by the name in the manifest.
+    Note that if both ManifestPath and ID are provided and the name in the manifest is different than the one associated with ID, the name will be changed.
 
     .PARAMETER Disable
     Disable or reenable a connector
@@ -33,12 +34,12 @@
     Update an existing connector with the same name as in the manifest
 
     .EXAMPLE
-    Set-VcConnector -Connector 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -ManifestPath '/tmp/manifest_v2.json'
+    Set-VcConnector ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -ManifestPath '/tmp/manifest_v2.json'
 
     Update an existing connector utilizing a specific connector ID
 
     .EXAMPLE
-    Set-VcConnector -Connector 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Disable
+    Set-VcConnector ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Disable
 
     Disable a connector
 
@@ -48,7 +49,7 @@
     Disable a connector by name
 
     .EXAMPLE
-    Set-VcConnector -Connector 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Disable:$false
+    Set-VcConnector ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Disable:$false
 
     Reenable a disabled connector
 
@@ -71,7 +72,7 @@
 
         [Parameter(ParameterSetName = 'Manifest', ValueFromPipelineByPropertyName)]
         [Parameter(ParameterSetName = 'Disable', Mandatory, ValueFromPipelineByPropertyName)]
-        [Alias('connectorId', 'ID')]
+        [Alias('connectorId', 'connector')]
         [ValidateScript(
             {
                 if ( -not (Test-IsGuid -InputObject $_ ) ) {
@@ -80,7 +81,7 @@
                 $true
             }
         )]
-        [string] $Connector,
+        [string] $ID,
 
         [Parameter(ParameterSetName = 'Disable', Mandatory)]
         [switch] $Disable,
@@ -102,8 +103,8 @@
                 # if connector is provided, update that specific one
                 # if not, use the name from the manifest to find the existing connector id
 
-                if ( $Connector ) {
-                    $connectorId = $Connector
+                if ( $ID ) {
+                    $connectorId = $ID
                 }
                 else {
                     $thisConnector = Get-VcConnector -ID $manifestObject.name
@@ -134,12 +135,12 @@
             'Disable' {
 
                 if ( $Disable ) {
-                    if ( $PSCmdlet.ShouldProcess($Connector, "Disable connector") ) {
-                        $null = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf "plugins/$Connector/disablements"
+                    if ( $PSCmdlet.ShouldProcess($ID, "Disable connector") ) {
+                        $null = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf "plugins/$ID/disablements"
                     }
                 }
                 else {
-                    $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "plugins/$Connector/disablements"
+                    $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "plugins/$ID/disablements"
                 }
             }
         }
