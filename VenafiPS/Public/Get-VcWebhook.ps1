@@ -1,16 +1,16 @@
-﻿function Get-VcConnector {
+﻿function Get-VcWebhook {
     <#
     .SYNOPSIS
-    Get connector info
+    Get webhook info
 
     .DESCRIPTION
-    Get details on 1 or all connectors
+    Get 1 or all webhooks
 
     .PARAMETER ID
-    Connector ID or name
+    Webhook ID or name
 
     .PARAMETER All
-    Get all connectors
+    Get all webhooks
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -21,10 +21,10 @@
     ID
 
     .EXAMPLE
-    Get-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
+    Get-VcWebhook -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
 
     {
-        "connectorId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
+        "webhookId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
         "name": "ServiceNow-expiry,
         "properties": {
             "connectorKind": "WEBHOOK",
@@ -45,24 +45,23 @@
     Get a single object by ID
 
     .EXAMPLE
-    Get-VcConnector -ID 'My Connector'
+    Get-VcWebhook -ID 'My Webhook'
 
     Get a single object by name.  The name is case sensitive.
 
     .EXAMPLE
-    Get-VcConnector -All
+    Get-VcWebhook -All
 
-    Get all connectors
+    Get all webhooks
 
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ID')]
-    [Alias('Get-VaasConnector')]
 
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('connectorId')]
+        [Alias('webhookId')]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
@@ -79,7 +78,7 @@
     process {
 
         $params = @{
-            UriLeaf = 'plugins'
+            UriLeaf = 'connectors'
         }
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
@@ -88,24 +87,21 @@
             }
             else {
                 # search by name
-                return Get-VcConnector -All | Where-Object { $_.name -eq $ID }
+                return Get-VcWebhook -All | Where-Object { $_.name -eq $ID }
             }
-        }
-        else {
-            $params.Body = @{'includeDisabled' = $true }
         }
 
         $response = Invoke-VenafiRestMethod @params
 
-        if ( $response.PSObject.Properties.Name -contains 'plugins' ) {
-            $connectors = $response | Select-Object -ExpandProperty 'plugins'
+        if ( $response.PSObject.Properties.Name -contains 'connectors' ) {
+            $connectors = $response | Select-Object -ExpandProperty 'connectors'
         }
         else {
             $connectors = $response
         }
 
         if ( $connectors ) {
-            $connectors | Select-Object @{ 'n' = 'connectorId'; 'e' = { $_.Id } }, @{ 'n' = 'connectorType'; 'e' = { $_.pluginType } }, * -ExcludeProperty Id, pluginType
+            $connectors | Select-Object @{ 'n' = 'webhookId'; 'e' = { $_.Id } }, * -ExcludeProperty Id
         }
     }
 }
