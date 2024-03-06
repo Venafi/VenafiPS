@@ -31,6 +31,10 @@ function Invoke-VcCertificateAction {
     Additional items specific to the action being taken, if needed.
     See the api documentation for appropriate items, many are in the links in this help.
 
+    .PARAMETER Force
+    Force the operation under certain circumstances.
+    - During a renewal, force choosing the first CN in the case of multiple CNs as only 1 is supported.
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -40,7 +44,7 @@ function Invoke-VcCertificateAction {
     ID
 
     .OUTPUTS
-    PSCustomObject with the following properties:
+    When using retire and recover, PSCustomObject with the following properties:
         CertificateID - Certificate uuid
         Success - A value of true indicates that the action was successful
 
@@ -57,6 +61,16 @@ function Invoke-VcCertificateAction {
     Only one certificate and application combination can be renewed at a time so provide the specific application to be renewed.
 
     .EXAMPLE
+    Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -Force
+
+    Renewals can only support 1 CN assigned to a certificate.  To force this function to renew and automatically select the first CN, use -Force.
+
+    .EXAMPLE
+    Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete
+
+    Delete a certificate.  As only retired certificates can be deleted, it will be retired first.
+
+    .EXAMPLE
     Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete -Confirm:$false
 
     Perform an action bypassing the confirmation prompt.  Only applicable to Delete.
@@ -71,6 +85,9 @@ function Invoke-VcCertificateAction {
 
     .LINK
     https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificates/certificateretirement_deleteCertificates
+
+    .NOTES
+    If performing a renewal and subjectCN has more than 1 value, only the first will be submitted with the renewal.
     #>
 
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = 'High')]
@@ -96,6 +113,9 @@ function Invoke-VcCertificateAction {
 
         [Parameter(Mandatory, ParameterSetName = 'Delete')]
         [switch] $Delete,
+
+        [Parameter(ParameterSetName = 'Renew')]
+        [switch] $Force,
 
         [Parameter()]
         [hashtable] $AdditionalParameters,
@@ -135,14 +155,34 @@ function Invoke-VcCertificateAction {
 
                 $thisCert = Get-VcCertificate -ID $ID
 
-                if ( $thisCert.application.count -gt 1 ) {
-                    if ( $AdditionalParameters.Application ) {
-                        $thisAppId = $AdditionalParameters.Application
-                    }
-                    else {
+                # multiple CN certs are supported by tlspc, but the request/renew api does not support it
+                if ( $thisCert.subjectDN.count -gt 1 ) {
+                    if ( -not $Force ) {
                         $out.Success = $false
-                        $out.Error = 'Multiple applications associated, {0}.  Only 1 application can be renewed at a time.  Rerun Invoke-VcCertificateAction and add ''-AdditionalParameter @{{''Application''=''application id''}}'' and provide the actual id you would like to renew.' -f (($thisCert.application | ForEach-Object { '{0} ({1})' -f $_.name, $_.applicationId }) -join ',')
+                        $out.Error = 'The certificate you are trying to renew has more than 1 common name.  You can either use -Force to automatically choose the first common name or utilize a different process to renew.'
                         return $out
+                    }
+                }
+
+                switch ($thisCert.application.count) {
+                    1 {
+                        $thisAppId = $thisCert.application.applicationId
+                    }
+
+                    0 {
+                        throw 'To renew a certificate at least one application must be assigned'
+                    }
+
+                    Default {
+                        # more than 1 application assigned
+                        if ( $AdditionalParameters.Application ) {
+                            $thisAppId = $AdditionalParameters.Application
+                        }
+                        else {
+                            $out.Success = $false
+                            $out.Error = 'Multiple applications associated, {0}.  Only 1 application can be renewed at a time.  Rerun Invoke-VcCertificateAction and add ''-AdditionalParameter @{{''Application''=''application id''}}'' and provide the actual id you would like to renew.' -f (($thisCert.application | ForEach-Object { '{0} ({1})' -f $_.name, $_.applicationId }) -join ',')
+                            return $out
+                        }
                     }
                 }
 
@@ -150,8 +190,28 @@ function Invoke-VcCertificateAction {
                 $renewParams = @{
                     existingCertificateId        = $ID
                     certificateIssuingTemplateId = $thisCertRequest.certificateIssuingTemplateId
-                    applicationId                = if ( $thisAppId ) { $thisAppId } else { $thisCert.application.applicationId }
-                    reuseCSR                     = $true
+                    applicationId                = $thisAppId
+                    isVaaSGenerated              = $true
+                    validityPeriod               = $thisCertRequest.validityPeriod
+                    certificateOwnerUserId       = $thisCertRequest.certificateOwnerUserId
+                    csrAttributes                = @{}
+                }
+
+                switch ($thisCert.PSObject.Properties.Name) {
+                    'subjectCN' { $renewParams.csrAttributes.commonName = $thisCert.subjectCN[0] }
+                    'subjectO' { $renewParams.csrAttributes.organization = $thisCert.subjectO }
+                    'subjectOU' { $renewParams.csrAttributes.organizationalUnits = $thisCert.subjectOU }
+                    'subjectL' { $renewParams.csrAttributes.locality = $thisCert.subjectL }
+                    'subjectST' { $renewParams.csrAttributes.state = $thisCert.subjectST }
+                    'subjectC' { $renewParams.csrAttributes.country = $thisCert.subjectC }
+                    'subjectAlternativeNamesByType' {
+                        $renewParams.csrAttributes.subjectAlternativeNamesByType = @{
+                            'dnsNames'                   = $thisCert.subjectAlternativeNamesByType.dNSName
+                            'ipAddresses'                = $thisCert.subjectAlternativeNamesByType.iPAddress
+                            'rfc822Names'                = $thisCert.subjectAlternativeNamesByType.rfc822Name
+                            'uniformResourceIdentifiers' = $thisCert.subjectAlternativeNamesByType.uniformResourceIdentifier
+                        }
+                    }
                 }
 
                 try {
@@ -159,7 +219,7 @@ function Invoke-VcCertificateAction {
                 }
                 catch {
                     $out.Success = $false
-                    $out.Error = $_.Exception.Message
+                    $out.Error = $_
                 }
 
                 return $out
@@ -177,16 +237,48 @@ function Invoke-VcCertificateAction {
             'Retire' {
                 $params.UriLeaf = "certificates/retirement"
                 $params.Body = @{"certificateIds" = $allCerts }
+
+                if ( $AdditionalParameters ) {
+                    $params.Body += $AdditionalParameters
+                }
+
+                $response = Invoke-VenafiRestMethod @params
+
+                $processedIds = $response.certificates.id
+
+                foreach ($certId in $allCerts) {
+                    [pscustomobject] @{
+                        CertificateID = $certId
+                        Success       = ($certId -in $processedIds)
+                    }
+                }
             }
 
             'Recover' {
                 $params.UriLeaf = "certificates/recovery"
                 $params.Body = @{"certificateIds" = $allCerts }
+
+                if ( $AdditionalParameters ) {
+                    $params.Body += $AdditionalParameters
+                }
+
+                $response = Invoke-VenafiRestMethod @params
+
+                $processedIds = $response.certificates.id
+
+                foreach ($certId in $allCerts) {
+                    [pscustomobject] @{
+                        CertificateID = $certId
+                        Success       = ($certId -in $processedIds)
+                    }
+                }
             }
 
             'Validate' {
                 $params.UriLeaf = "certificates/validation"
                 $params.Body = @{"certificateIds" = $allCerts }
+
+                $response = Invoke-VenafiRestMethod @params
             }
 
             'Delete' {
@@ -194,22 +286,10 @@ function Invoke-VcCertificateAction {
 
                 $params.UriLeaf = "certificates/deletion"
                 $params.Body = @{"certificateIds" = $allCerts }
+
+                $response = Invoke-VenafiRestMethod @params
             }
         }
 
-        if ( $AdditionalParameters ) {
-            $params.Body += $AdditionalParameters
-        }
-
-        $response = Invoke-VenafiRestMethod @params
-
-        $processedIds = $response.certificates.id
-
-        foreach ($certId in $allCerts) {
-            [pscustomobject] @{
-                CertificateID = $certId
-                Success       = ($certId -in $processedIds)
-            }
-        }
     }
 }
