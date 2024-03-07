@@ -69,10 +69,10 @@ New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [-Skip
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### Vaas
+### Vc
 ```
-New-VenafiSession -VcKey <PSObject> [-VaultVcKeyName <String>] [-PassThru] [-SkipCertificateCheck]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+New-VenafiSession -VcKey <PSObject> [-VcRegion <String>] [-VaultVcKeyName <String>] [-PassThru]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### VaultVcKey
@@ -156,6 +156,12 @@ Create session against TLSPC
 ```
 
 ### EXAMPLE 12
+```
+New-VenafiSession -VcKey $cred -VcRegion 'eu'
+Create session against TLSPC in EU region
+```
+
+### EXAMPLE 13
 ```
 New-VenafiSession -VaultVcKeyName vaas-key
 Create session against TLSPC with a key stored in a vault
@@ -437,7 +443,7 @@ If providing a credential, the username is not used.
 
 ```yaml
 Type: PSObject
-Parameter Sets: Vaas
+Parameter Sets: Vc
 Aliases: VaasKey
 
 Required: True
@@ -447,14 +453,32 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -VcRegion
+TLSPC region to connect to. 
+Valid values are 'us' and 'eu'. 
+Defaults to 'us'.
+
+```yaml
+Type: String
+Parameter Sets: Vc
+Aliases:
+
+Required: False
+Position: Named
+Default value: Us
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VaultVcKeyName
 Name of the SecretManagement vault entry for the TLSPC key.
 First time use requires it to be provided with -VcKey to populate the vault.
 With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VcKey.
+The server associated with the region will be saved and restored when this parameter is used on subsequent use.
 
 ```yaml
 Type: String
-Parameter Sets: Vaas
+Parameter Sets: Vc
 Aliases: VaultVaasKeyName
 
 Required: False

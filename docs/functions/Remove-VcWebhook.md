@@ -1,95 +1,60 @@
-# Get-VcConnector
+# Remove-VcWebhook
 
 ## SYNOPSIS
-Get connector info
+Remove a webhook
 
 ## SYNTAX
 
-### ID (Default)
 ```
-Get-VcConnector [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
-```
-
-### All
-```
-Get-VcConnector [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Remove-VcWebhook [-ID] <String> [[-ThrottleLimit] <Int32>] [[-VenafiSession] <PSObject>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get details on 1 or all connectors
+Remove a webhook from TLSPC
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
+Remove-VcWebhook -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Remove a webhook
 ```
-
-{
-    "connectorId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
-    "name": "ServiceNow-expiry,
-    "properties": {
-        "connectorKind": "WEBHOOK",
-        "filter": {
-            "filterType": "EXPIRATION",
-            "applicationIds": \[\]
-        },
-        "target": {
-            "type": "generic",
-            "connection": {
-                "secret": "MySecret",
-                "url": "https://instance.service-now.com/api/company/endpoint"
-            }
-        }
-    }
-}
-
-Get a single object by ID
 
 ### EXAMPLE 2
 ```
-Get-VcConnector -ID 'My Connector'
+Remove-VcWebhook -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Confirm:$false
+Remove a webhook bypassing the confirmation prompt
 ```
-
-Get a single object by name. 
-The name is case sensitive.
-
-### EXAMPLE 3
-```
-Get-VcConnector -All
-```
-
-Get all connectors
 
 ## PARAMETERS
 
 ### -ID
-Connector ID or name
+Webhook ID, this is the guid/uuid
 
 ```yaml
 Type: String
-Parameter Sets: ID
-Aliases: connectorId
+Parameter Sets: (All)
+Aliases: webhookId
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -All
-Get all connectors
+### -ThrottleLimit
+{{ Fill ThrottleLimit Description }}
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: All
+Type: Int32
+Parameter Sets: (All)
 Aliases:
 
-Required: True
-Position: Named
-Default value: False
+Required: False
+Position: 2
+Default value: 100
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -103,6 +68,37 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
 
 Required: False
 Position: Named
