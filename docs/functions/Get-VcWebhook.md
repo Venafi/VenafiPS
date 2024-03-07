@@ -1,33 +1,33 @@
-# Get-VcConnector
+# Get-VcWebhook
 
 ## SYNOPSIS
-Get connector info
+Get webhook info
 
 ## SYNTAX
 
 ### ID (Default)
 ```
-Get-VcConnector [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+Get-VcWebhook [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcConnector [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-VcWebhook [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get details on 1 or all connectors
+Get 1 or all webhooks
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
+Get-VcWebhook -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
 ```
 
 {
-    "connectorId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
+    "webhookId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
     "name": "ServiceNow-expiry,
     "properties": {
         "connectorKind": "WEBHOOK",
@@ -49,7 +49,7 @@ Get a single object by ID
 
 ### EXAMPLE 2
 ```
-Get-VcConnector -ID 'My Connector'
+Get-VcWebhook -ID 'My Webhook'
 ```
 
 Get a single object by name. 
@@ -57,20 +57,20 @@ The name is case sensitive.
 
 ### EXAMPLE 3
 ```
-Get-VcConnector -All
+Get-VcWebhook -All
 ```
 
-Get all connectors
+Get all webhooks
 
 ## PARAMETERS
 
 ### -ID
-Connector ID or name
+Webhook ID or name
 
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: connectorId
+Aliases: webhookId
 
 Required: True
 Position: 1
@@ -80,7 +80,7 @@ Accept wildcard characters: False
 ```
 
 ### -All
-Get all connectors
+Get all webhooks
 
 ```yaml
 Type: SwitchParameter

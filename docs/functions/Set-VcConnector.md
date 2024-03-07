@@ -1,62 +1,120 @@
-# New-VcConnector
+# Set-VcConnector
 
 ## SYNOPSIS
-Create a new connector
+Update an existing connector
 
 ## SYNTAX
 
+### Manifest (Default)
 ```
-New-VcConnector [-ManifestPath] <String> [-PassThru] [[-VenafiSession] <PSObject>]
+Set-VcConnector -ManifestPath <String> [-ID <String>] [-VenafiSession <PSObject>]
  [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
+### Disable
+```
+Set-VcConnector -ID <String> [-Disable] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
 ## DESCRIPTION
-Create a new machine, CA, TPP, or credential connector
+Update a new machine, CA, TPP, or credential connector.
+You can either update the manifest or disable/reenable it.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-New-VcConnector -ManifestPath '/tmp/manifest.json'
+Set-VcConnector -ManifestPath '/tmp/manifest_v2.json'
 ```
 
-Create a new connector
+Update an existing connector with the same name as in the manifest
 
 ### EXAMPLE 2
 ```
-New-VcConnector -ManifestPath '/tmp/manifest.json' -PassThru
+Set-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -ManifestPath '/tmp/manifest_v2.json'
 ```
 
-Create a new connector and return the newly created connector object
+Update an existing connector utilizing a specific connector ID
+
+### EXAMPLE 3
+```
+Set-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Disable
+```
+
+Disable a connector
+
+### EXAMPLE 4
+```
+Get-VcConnector -ID 'My connector' | Set-VcConnector -Disable
+```
+
+Disable a connector by name
+
+### EXAMPLE 5
+```
+Set-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Disable:$false
+```
+
+Reenable a disabled connector
 
 ## PARAMETERS
 
 ### -ManifestPath
-Path to an existing manifest.
+Path to an updated manifest for an existing connector.
 Ensure the manifest has the deployment element which is not needed when testing in the simulator.
 See https://github.com/Venafi/vmware-avi-connector?tab=readme-ov-file#manifest for details.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: Manifest
 Aliases:
 
 Required: True
-Position: 1
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -PassThru
-Return newly created connector object
+### -ID
+Connector ID to update.
+If not provided, the ID will be looked up by the name in the manifest provided by ManifestPath.
+Note that if both ManifestPath and ID are provided and the name in the manifest is different than the one associated with ID, the name will be changed.
+
+```yaml
+Type: String
+Parameter Sets: Manifest
+Aliases: connectorId, connector
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+```yaml
+Type: String
+Parameter Sets: Disable
+Aliases: connectorId, connector
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -Disable
+Disable or reenable a connector
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: Disable
 Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: False
 Accept pipeline input: False
@@ -74,7 +132,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 2
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -131,12 +189,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
+### Connector
 ## OUTPUTS
 
-### PSCustomObject, if PassThru provided
 ## NOTES
 
 ## RELATED LINKS
-
-[https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins](https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins)
-
