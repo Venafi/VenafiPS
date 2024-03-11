@@ -21,7 +21,7 @@ ModuleVersion = '6.2.0'
 GUID = 'a1c0ef7c-8499-4ac4-9659-52ca91258d13'
 
 # Author of this module
-Author = 'Venafi'
+Author = 'Greg Brownstein'
 
 # Company or vendor of this module
 CompanyName = 'Venafi'
