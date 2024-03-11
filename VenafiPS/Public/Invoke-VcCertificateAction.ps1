@@ -156,7 +156,7 @@ function Invoke-VcCertificateAction {
                 $thisCert = Get-VcCertificate -ID $ID
 
                 # multiple CN certs are supported by tlspc, but the request/renew api does not support it
-                if ( $thisCert.subjectDN.count -gt 1 ) {
+                if ( $thisCert.subjectCN.count -gt 1 ) {
                     if ( -not $Force ) {
                         $out.Success = $false
                         $out.Error = 'The certificate you are trying to renew has more than 1 common name.  You can either use -Force to automatically choose the first common name or utilize a different process to renew.'
@@ -164,7 +164,7 @@ function Invoke-VcCertificateAction {
                     }
                 }
 
-                switch ($thisCert.application.count) {
+                switch (([array]$thisCert.application).count) {
                     1 {
                         $thisAppId = $thisCert.application.applicationId
                     }
