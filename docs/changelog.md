@@ -1,3 +1,7 @@
+## 6.2.1
+- Fix `Invoke-VcCertificateAction -Renew` flagging multiple applications incorrectly
+
+
 ## 6.2.0
 - Add support for managing TLSPC Connectors via `Get-VcConnector`, `New-VcConnector`, `Set-VcConnector`, and `Remove-VcConnector`.  The old Connector functions, Get, New, and Remove, which were for managing Webhooks, have been renamed to more appropriately reflect their usage.  They are now `Get-VcWebhook`, `New-VcWebhook`, and `Remove-VcWebhook`.
 - Add support for TLSPC EU region with `New-VenafiSession -VcRegion`.  The default is 'us' and accepts 'eu' as well.  This detail will be stored in the resulting session and vault if utilized.
@@ -627,6 +631,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
