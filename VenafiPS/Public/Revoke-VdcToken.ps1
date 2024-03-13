@@ -82,7 +82,7 @@ function Revoke-VdcToken {
         [switch] $Force,
 
         [Parameter(ParameterSetName = 'Session')]
-        [psobject] $VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {

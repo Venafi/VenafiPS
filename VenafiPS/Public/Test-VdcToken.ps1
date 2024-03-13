@@ -77,7 +77,7 @@ function Test-VdcToken {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'AccessToken')]
+    [CmdletBinding(DefaultParameterSetName = 'Session')]
     [Alias('Test-TppToken')]
     [OutputType([System.Boolean])]
 
@@ -115,7 +115,7 @@ function Test-VdcToken {
         [switch] $GrantDetail,
 
         [Parameter(ParameterSetName = 'Session')]
-        [psobject] $VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {

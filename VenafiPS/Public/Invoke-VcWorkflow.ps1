@@ -107,9 +107,9 @@ function Invoke-VcWorkflow {
                 $WS = New-Object System.Net.WebSockets.ClientWebSocket
                 $CT = New-Object System.Threading.CancellationToken
 
-                if ( $VenafiSession.GetType().Name -in 'PSCustomObject', 'VenafiSession' ) {
-                    $server = $VenafiSession.Server.Replace('https://', '')
-                    $WS.Options.SetRequestHeader("tppl-api-key", $VenafiSession.Key.GetNetworkCredential().password)
+                if ( $VenafiSessionNested.GetType().Name -in 'PSCustomObject', 'VenafiSession' ) {
+                    $server = $VenafiSessionNested.Server.Replace('https://', '')
+                    $WS.Options.SetRequestHeader("tppl-api-key", $VenafiSessionNested.Key.GetNetworkCredential().password)
                 }
                 else {
                     if ( $env:VC_SERVER ) {
