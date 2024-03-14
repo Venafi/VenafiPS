@@ -23,7 +23,7 @@ function Export-VcCertificate {
     For each certificate a directory will be created in this folder with the format Name-ID.
     In the case of PKCS12, the file will be saved to the root of the folder.
 
-    .PARAMETER Pkcs12
+    .PARAMETER PKCS12
     Export the certificate and private key in PKCS12 format.
 
     .PARAMETER ThrottleLimit
@@ -51,7 +51,7 @@ function Export-VcCertificate {
     Export certificate and private key data
 
     .EXAMPLE
-    $certId | Export-VcCertificate -PrivateKeyPassword 'myPassw0rd!' -Pkcs12 -OutPath '~/temp'
+    $certId | Export-VcCertificate -PrivateKeyPassword 'myPassw0rd!' -PKCS12 -OutPath '~/temp'
 
     Export certificate and private key in PKCS12 format
 
@@ -80,14 +80,14 @@ function Export-VcCertificate {
         [string] $ID,
 
         [Parameter(ParameterSetName = 'PEM')]
-        [Parameter(ParameterSetName = 'Pkcs12', Mandatory)]
+        [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
         [psobject] $PrivateKeyPassword,
 
         [Parameter(ParameterSetName = 'PEM')]
         [switch] $IncludeChain,
 
         [Parameter(ParameterSetName = 'PEM')]
-        [Parameter(ParameterSetName = 'Pkcs12', Mandatory)]
+        [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if (Test-Path $_ -PathType Container) {
@@ -99,8 +99,8 @@ function Export-VcCertificate {
             })]
         [String] $OutPath,
 
-        [Parameter(ParameterSetName = 'Pkcs12', Mandatory)]
-        [switch] $Pkcs12,
+        [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
+        [switch] $PKCS12,
 
         [Parameter()]
         [int32] $ThrottleLimit = 100,
@@ -117,7 +117,7 @@ function Export-VcCertificate {
         if ( $PrivateKeyPassword ) {
 
             if ( $PSVersionTable.PSEdition -ne 'Core' ) {
-                throw 'Exporting private keys is only supported on PowerShell Core'
+                throw 'Exporting private keys is only supported on PowerShell v7+'
             }
 
             $params = @{
@@ -234,7 +234,7 @@ function Export-VcCertificate {
 
                     if ( $using:OutPath ) {
 
-                        if ( $using:Pkcs12 ) {
+                        if ( $using:PKCS12 ) {
                             $keyFile = Get-ChildItem -Path $unzipPath -Filter '*.key'
 
                             if ( $keyFile.Count -ne 1 ) {
