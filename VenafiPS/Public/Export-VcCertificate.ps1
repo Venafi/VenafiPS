@@ -25,6 +25,7 @@ function Export-VcCertificate {
 
     .PARAMETER PKCS12
     Export the certificate and private key in PKCS12 format.
+    Requires PowerShell v7.1+.
 
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
@@ -67,7 +68,7 @@ function Export-VcCertificate {
 
     .NOTES
     This function requires the use of sodium encryption.
-    .net standard 2.0 or greater is required via PS Core.
+    PS v7.1+ is required.
     On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
@@ -81,6 +82,14 @@ function Export-VcCertificate {
 
         [Parameter(ParameterSetName = 'PEM')]
         [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
+        [ValidateScript(
+            {
+                if ($PSVersionTable.PSVersion -lt [version]'7.1') {
+                    throw 'Exporting private keys is only supported on PowerShell v7.1+'
+                }
+                $true
+            }
+        )]
         [psobject] $PrivateKeyPassword,
 
         [Parameter(ParameterSetName = 'PEM')]
@@ -115,10 +124,6 @@ function Export-VcCertificate {
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 
         if ( $PrivateKeyPassword ) {
-
-            if ( $PSVersionTable.PSEdition -ne 'Core' ) {
-                throw 'Exporting private keys is only supported on PowerShell v7+'
-            }
 
             $params = @{
                 Method       = 'Post'
