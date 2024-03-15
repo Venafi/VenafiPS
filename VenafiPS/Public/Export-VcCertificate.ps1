@@ -14,6 +14,7 @@ function Export-VcCertificate {
     .PARAMETER PrivateKeyPassword
     Password required to include the private key.
     You can either provide a String, SecureString, or PSCredential.
+    Requires PowerShell v7.0+.
 
     .PARAMETER IncludeChain
     Include the certificate chain with the exported or saved PEM certificate data.
@@ -84,8 +85,8 @@ function Export-VcCertificate {
         [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
         [ValidateScript(
             {
-                if ($PSVersionTable.PSVersion -lt [version]'7.1') {
-                    throw 'Exporting private keys is only supported on PowerShell v7.1+'
+                if ($PSVersionTable.PSVersion -lt [version]'7.0') {
+                    throw 'Exporting private keys is only supported on PowerShell v7.0+'
                 }
                 $true
             }
@@ -109,6 +110,14 @@ function Export-VcCertificate {
         [String] $OutPath,
 
         [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
+        [ValidateScript(
+            {
+                if ($PSVersionTable.PSVersion -lt [version]'7.1') {
+                    throw 'Exporting in PKCS#12 foramt is only supported on PowerShell v7.1+'
+                }
+                $true
+            }
+        )]
         [switch] $PKCS12,
 
         [Parameter()]
