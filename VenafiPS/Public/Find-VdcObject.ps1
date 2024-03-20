@@ -171,9 +171,6 @@ function Find-VdcObject {
             'FindByAttribute' {
 
                 $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $Attribute[0] -or $_.Guid -eq $Attribute[0] }
-                if ( -not $customField ) {
-                    $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $Attribute[0] -or $_.Guid -eq $Attribute[0] }
-                }
 
                 # if attribute isn't a custom field or user doesn't want to perform a cf lookup for a conflicting attrib/cf name, perform standard find object
                 if ( $NoLookup -or (-not $customField) ) {

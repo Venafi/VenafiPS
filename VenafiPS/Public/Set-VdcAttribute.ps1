@@ -166,7 +166,8 @@ function Set-VdcAttribute {
             }
             $customFieldError = $null
 
-            $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisKey -or $_.Guid -eq $thisKey }
+            $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $thisKey -or $_.Guid -eq $thisKey }
+            Write-Verbose ('found custom field {0} - {1}' -f $customField.DN, $customField|ConvertTo-Json)
             if ( $customField ) {
                 if ( -not $BypassValidation ) {
                     switch ( $customField.Type.ToString() ) {

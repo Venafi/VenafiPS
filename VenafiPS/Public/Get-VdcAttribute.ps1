@@ -264,7 +264,7 @@ function Get-VdcAttribute {
             $customField = $null
 
             if ( -not $NoLookup ) {
-                $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+                $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
 
                 if ( $customField ) {
                     $params.Body.AttributeName = $customField.Guid

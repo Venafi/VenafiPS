@@ -19,6 +19,7 @@ function Invoke-VcCertificateAction {
     .PARAMETER Renew
     Requests immediate renewal for an existing certificate.
     If more than 1 application is associated with the certificate, provide -AdditionalParameters @{'Application'='application id'} to specify the id.
+    Use -AdditionalParameters to provide additional parameters to the renewal request, see https://developer.venafi.com/tlsprotectcloud/reference/certificaterequests_create.
 
     .PARAMETER Validate
     Initiates SSL/TLS network validation
@@ -59,6 +60,11 @@ function Invoke-VcCertificateAction {
     Perform an action against 1 certificate with additional parameters.
     In this case we are renewing a certificate, but the certificate has multiple applications associated with it.
     Only one certificate and application combination can be renewed at a time so provide the specific application to be renewed.
+
+    .EXAMPLE
+    Find-VcCertificate -Version CURRENT -Issuer i1 | Invoke-VcCertificateAction -Renew -AdditionalParameters @{'certificateIssuingTemplateId'='10f71a12-daf3-4737-b589-6a9dd1cc5a97'}
+
+    Find all current certificates issued by i1 and renew them with a different issuer.
 
     .EXAMPLE
     Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -Force
@@ -149,16 +155,21 @@ function Invoke-VcCertificateAction {
 
                 $out = [pscustomobject] @{
                     CertificateID = $ID
-                    Success       = $true
+                    Success       = $false
                     Error         = $null
                 }
 
                 $thisCert = Get-VcCertificate -ID $ID
 
+                # only current certs can be renewed
+                if ( $thisCert.versionType -ne 'CURRENT' ) {
+                    $out.Error = 'Only certificates with a versionType of CURRENT can be renewed'
+                    return $out
+                }
+
                 # multiple CN certs are supported by tlspc, but the request/renew api does not support it
                 if ( $thisCert.subjectCN.count -gt 1 ) {
                     if ( -not $Force ) {
-                        $out.Success = $false
                         $out.Error = 'The certificate you are trying to renew has more than 1 common name.  You can either use -Force to automatically choose the first common name or utilize a different process to renew.'
                         return $out
                     }
@@ -179,7 +190,6 @@ function Invoke-VcCertificateAction {
                             $thisAppId = $AdditionalParameters.Application
                         }
                         else {
-                            $out.Success = $false
                             $out.Error = 'Multiple applications associated, {0}.  Only 1 application can be renewed at a time.  Rerun Invoke-VcCertificateAction and add ''-AdditionalParameter @{{''Application''=''application id''}}'' and provide the actual id you would like to renew.' -f (($thisCert.application | ForEach-Object { '{0} ({1})' -f $_.name, $_.applicationId }) -join ',')
                             return $out
                         }
@@ -214,11 +224,17 @@ function Invoke-VcCertificateAction {
                     }
                 }
 
+                if ( $AdditionalParameters ) {
+                    foreach ($key in $AdditionalParameters.Keys) {
+                        $renewParams[$key] = $AdditionalParameters[$key]
+                    }
+                }
+
                 try {
                     $null = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
+                    $out.Success = $true
                 }
                 catch {
-                    $out.Success = $false
                     $out.Error = $_
                 }
 

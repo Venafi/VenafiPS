@@ -66,7 +66,7 @@ function Revoke-VdcGrant {
 
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC' -AuthType 'token'
 
-        if ( $VenafiSession.Version -lt [Version]::new('22', '3', '0') ) {
+        if ( $VenafiSessionNested.Version -lt [Version]::new('22', '3', '0') ) {
             throw 'Revoke-VdcGrant is available on TLSPDC v22.3 and greater'
         }
 

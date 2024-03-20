@@ -13,6 +13,21 @@ class TppPermission {
     [bool] $IsViewAllowed
     [bool] $IsWriteAllowed
 
+    TppPermission () {
+        $this.IsAssociateAllowed = $false
+        $this.IsCreateAllowed = $false
+        $this.IsDeleteAllowed = $false
+        $this.IsManagePermissionsAllowed = $false
+        $this.IsPolicyWriteAllowed = $false
+        $this.IsPrivateKeyReadAllowed = $false
+        $this.IsPrivateKeyWriteAllowed = $false
+        $this.IsReadAllowed = $false
+        $this.IsRenameAllowed = $false
+        $this.IsRevokeAllowed = $false
+        $this.IsViewAllowed = $false
+        $this.IsWriteAllowed = $false
+    }
+
     TppPermission ([pscustomobject] $InputObject) {
         $this.IsAssociateAllowed = $InputObject.IsAssociateAllowed
         $this.IsCreateAllowed = $InputObject.IsCreateAllowed
