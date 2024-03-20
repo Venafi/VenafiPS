@@ -8,7 +8,7 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 ### Session (Default)
 ```
 Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot <String>] -UriLeaf <String>
- [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-SkipCertificateCheck]
+ [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
@@ -16,7 +16,8 @@ Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot
 ```
 Invoke-VenafiRestMethod -Server <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
  [-Method <String>] [-UriRoot <String>] -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>]
- [-FullResponse] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -188,6 +189,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -TimeoutSec
+{{ Fill TimeoutSec Description }}
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
