@@ -85,6 +85,10 @@ function New-VenafiSession {
     .PARAMETER SkipCertificateCheck
     Bypass certificate validation when connecting to the server.
     This can be helpful for pre-prod environments where ssl isn't setup on the website or you are connecting via IP.
+    You can also create an environment variable named VENAFIPS_SKIP_CERT_CHECK and set it to 1 for the same effect.
+
+    .PARAMETER TimeoutSec
+    Specifies how long the request can be pending before it times out. Enter a value in seconds. The default value, 0, specifies an indefinite time-out.
 
     .PARAMETER PassThru
     Optionally, send the session object to the pipeline instead of script scope.
@@ -279,9 +283,19 @@ function New-VenafiSession {
         [string] $VaultVcKeyName,
 
         [Parameter()]
-        [switch] $PassThru,
+        [Int32] $TimeoutSec = 0,
 
         [Parameter()]
+        [switch] $PassThru,
+
+        [Parameter(ParameterSetName = 'TokenOAuth')]
+        [Parameter(ParameterSetName = 'TokenIntegrated')]
+        [Parameter(ParameterSetName = 'TokenCertificate')]
+        [Parameter(ParameterSetName = 'TokenJwt')]
+        [Parameter(ParameterSetName = 'AccessToken')]
+        [Parameter(ParameterSetName = 'RefreshToken')]
+        [Parameter(ParameterSetName = 'VaultAccessToken')]
+        [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [switch] $SkipCertificateCheck
     )
 
@@ -305,6 +319,7 @@ function New-VenafiSession {
         Server = $serverUrl
     }
 
+    $newSession | Add-Member @{ 'TimeoutSec' = $TimeoutSec }
     $newSession | Add-Member @{ 'SkipCertificateCheck' = $SkipCertificateCheck.IsPresent }
 
     Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
@@ -402,6 +417,7 @@ function New-VenafiSession {
                     Scope       = $secretInfo.Metadata.Scope
                 }
                 $newSession.SkipCertificateCheck = [bool] $secretInfo.Metadata.SkipCertificateCheck
+                $newSession.TimeoutSec = $secretInfo.Metadata.TimeoutSec
             }
             else {
                 throw 'Server and ClientId metadata not found.  Execute New-VenafiSession -Server $server -Credential $cred -ClientId $clientId -Scope $scope -VaultAccessToken $secretName and attempt the operation again.'
@@ -451,6 +467,7 @@ function New-VenafiSession {
             $newSession.Server = $newToken.Server
             $newSession.Token.Scope = $secretInfo.Metadata.Scope | ConvertFrom-Json
             $newSession.SkipCertificateCheck = [bool] $secretInfo.Metadata.SkipCertificateCheck
+            $newSession.TimeoutSec = $secretInfo.Metadata.TimeoutSec
         }
 
         'Vc' {
@@ -463,6 +480,7 @@ function New-VenafiSession {
             if ( $VaultVcKeyName ) {
                 $metadata = @{
                     Server = $newSession.Server
+                    TimeoutSec = [int]$newSession.TimeoutSec
                 }
                 Set-Secret -Name $VaultVcKeyName -Secret $newSession.Key -Vault 'VenafiPS' -Metadata $metadata
             }
@@ -492,6 +510,7 @@ function New-VenafiSession {
     }
 
     if ( $VaultAccessTokenName -or $VaultRefreshTokenName ) {
+        # save secret and all associated metadata to be retrieved later
         $metadata = @{
             Server               = $newSession.Server
             AuthServer           = $newSession.Token.Server
@@ -499,6 +518,7 @@ function New-VenafiSession {
             Expires              = $newSession.Expires
             Scope                = $newSession.Token.Scope | ConvertTo-Json -Compress
             SkipCertificateCheck = [int]$newSession.SkipCertificateCheck
+            TimeoutSec           = [int]$newSession.TimeoutSec
         }
 
         $metadata | ConvertTo-Json | Write-Verbose
