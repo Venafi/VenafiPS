@@ -7,77 +7,82 @@ Create a new Venafi TLSPDC or TLSPC session
 
 ### KeyIntegrated (Default)
 ```
-New-VenafiSession -Server <String> [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
+New-VenafiSession -Server <String> [-TimeoutSec <Int32>] [-PassThru] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
 ### VaultRefreshToken
 ```
 New-VenafiSession [-Server <String>] [-ClientId <String>] [-Scope <Hashtable>] -VaultRefreshTokenName <String>
- [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-TimeoutSec <Int32>] [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### VaultAccessToken
 ```
-New-VenafiSession [-Server <String>] [-Scope <Hashtable>] -VaultAccessTokenName <String> [-PassThru]
- [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+New-VenafiSession [-Server <String>] [-Scope <Hashtable>] -VaultAccessTokenName <String> [-TimeoutSec <Int32>]
+ [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### RefreshToken
 ```
 New-VenafiSession -Server <String> -ClientId <String> -RefreshToken <PSObject>
- [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru] [-SkipCertificateCheck]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-TimeoutSec <Int32>] [-PassThru]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### AccessToken
 ```
-New-VenafiSession -Server <String> -AccessToken <PSObject> [-VaultAccessTokenName <String>] [-PassThru]
- [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+New-VenafiSession -Server <String> -AccessToken <PSObject> [-VaultAccessTokenName <String>]
+ [-TimeoutSec <Int32>] [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### TokenJwt
 ```
-New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Jwt <String> [-PassThru]
- [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Jwt <String> [-TimeoutSec <Int32>]
+ [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### TokenCertificate
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
- [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru]
- [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>]
+ [-TimeoutSec <Int32>] [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### TokenIntegrated
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>]
- [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru]
- [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>]
+ [-TimeoutSec <Int32>] [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### TokenOAuth
 ```
 New-VenafiSession -Server <String> -Credential <PSCredential> -ClientId <String> -Scope <Hashtable>
  [-State <String>] [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>]
- [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-TimeoutSec <Int32>] [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### KeyCredential
 ```
-New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [-SkipCertificateCheck]
+New-VenafiSession -Server <String> -Credential <PSCredential> [-TimeoutSec <Int32>] [-PassThru]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Vc
 ```
-New-VenafiSession -VcKey <PSObject> [-VcRegion <String>] [-VaultVcKeyName <String>] [-PassThru]
- [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+New-VenafiSession -VcKey <PSObject> [-VcRegion <String>] [-VaultVcKeyName <String>] [-TimeoutSec <Int32>]
+ [-PassThru] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### VaultVcKey
 ```
-New-VenafiSession -VaultVcKeyName <String> [-PassThru] [-SkipCertificateCheck]
+New-VenafiSession -VaultVcKeyName <String> [-TimeoutSec <Int32>] [-PassThru]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
@@ -500,6 +505,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -TimeoutSec
+Specifies how long the request can be pending before it times out.
+Enter a value in seconds.
+The default value, 0, specifies an indefinite time-out.
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: 0
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -PassThru
 Optionally, send the session object to the pipeline instead of script scope.
 
@@ -518,10 +540,11 @@ Accept wildcard characters: False
 ### -SkipCertificateCheck
 Bypass certificate validation when connecting to the server.
 This can be helpful for pre-prod environments where ssl isn't setup on the website or you are connecting via IP.
+You can also create an environment variable named VENAFIPS_SKIP_CERT_CHECK and set it to 1 for the same effect.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: VaultRefreshToken, VaultAccessToken, RefreshToken, AccessToken, TokenJwt, TokenCertificate, TokenIntegrated, TokenOAuth
 Aliases:
 
 Required: False

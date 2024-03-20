@@ -59,13 +59,20 @@ Only one certificate and application combination can be renewed at a time so pro
 
 ### EXAMPLE 3
 ```
+Find-VcCertificate -Version CURRENT -Issuer i1 | Invoke-VcCertificateAction -Renew -AdditionalParameters @{'certificateIssuingTemplateId'='10f71a12-daf3-4737-b589-6a9dd1cc5a97'}
+```
+
+Find all current certificates issued by i1 and renew them with a different issuer.
+
+### EXAMPLE 4
+```
 Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -Force
 ```
 
 Renewals can only support 1 CN assigned to a certificate. 
 To force this function to renew and automatically select the first CN, use -Force.
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete
 ```
@@ -73,7 +80,7 @@ Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete
 Delete a certificate. 
 As only retired certificates can be deleted, it will be retired first.
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete -Confirm:$false
 ```
@@ -81,7 +88,7 @@ Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete -C
 Perform an action bypassing the confirmation prompt. 
 Only applicable to Delete.
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 Find-VcObject -Type Certificate -Filter @('certificateStatus','eq','retired') | Invoke-VcCertificateAction -Delete
 ```
@@ -138,6 +145,7 @@ Accept wildcard characters: False
 ### -Renew
 Requests immediate renewal for an existing certificate.
 If more than 1 application is associated with the certificate, provide -AdditionalParameters @{'Application'='application id'} to specify the id.
+Use -AdditionalParameters to provide additional parameters to the renewal request, see https://developer.venafi.com/tlsprotectcloud/reference/certificaterequests_create.
 
 ```yaml
 Type: SwitchParameter

@@ -1,32 +1,70 @@
 # Export-VcCertificate
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Export certificate data from TLSPC
 
 ## SYNTAX
 
+### PEM (Default)
 ```
-Export-VcCertificate [-ID] <String> [[-PrivateKeyPassword] <PSObject>] [-IncludeChain] [[-OutPath] <String>]
- [[-ThrottleLimit] <Int32>] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Export-VcCertificate -ID <String> [-PrivateKeyPassword <PSObject>] [-IncludeChain] [-OutPath <String>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### PKCS12
+```
+Export-VcCertificate -ID <String> -PrivateKeyPassword <PSObject> -OutPath <String> [-PKCS12]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Export certificate data in PEM format. 
+You can retrieve the certificate, chain, and key.
+You can also save the certificate and private key in PEM or PKCS12 format.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+$certId | Export-VcCertificate
 ```
 
-{{ Add example description here }}
+Export certificate data
+
+### EXAMPLE 2
+```
+$certId | Export-VcCertificate -PrivateKeyPassword 'myPassw0rd!'
+```
+
+Export certificate and private key data
+
+### EXAMPLE 3
+```
+$certId | Export-VcCertificate -PrivateKeyPassword 'myPassw0rd!' -PKCS12 -OutPath '~/temp'
+```
+
+Export certificate and private key in PKCS12 format
+
+### EXAMPLE 4
+```
+$cert | Export-VcCertificate -OutPath '~/temp'
+```
+
+Get certificate data and save to a file
+
+### EXAMPLE 5
+```
+$cert | Export-VcCertificate -IncludeChain
+```
+
+Get certificate data with the certificate chain included.
 
 ## PARAMETERS
 
 ### -ID
-{{ Fill ID Description }}
+Certificate ID, also known as uuid. 
+Use Find-VcCertificate or Get-VcCertificate to determine the ID.
+You can pipe those functions as well.
 
 ```yaml
 Type: String
@@ -34,18 +72,20 @@ Parameter Sets: (All)
 Aliases: certificateId
 
 Required: True
-Position: 0
+Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -IncludeChain
-{{ Fill IncludeChain Description }}
+### -PrivateKeyPassword
+Password required to include the private key.
+You can either provide a String, SecureString, or PSCredential.
+Requires PowerShell v7.0+.
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
+Type: PSObject
+Parameter Sets: PEM
 Aliases:
 
 Required: False
@@ -55,38 +95,82 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -OutPath
-{{ Fill OutPath Description }}
-
 ```yaml
-Type: String
-Parameter Sets: (All)
+Type: PSObject
+Parameter Sets: PKCS12
 Aliases:
 
-Required: False
-Position: 2
+Required: True
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -PrivateKeyPassword
-{{ Fill PrivateKeyPassword Description }}
+### -IncludeChain
+Include the certificate chain with the exported or saved PEM certificate data.
 
 ```yaml
-Type: PSObject
-Parameter Sets: (All)
+Type: SwitchParameter
+Parameter Sets: PEM
 Aliases:
 
 Required: False
-Position: 1
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -OutPath
+Folder path to save the certificate to. 
+The name of the file will be determined automatically.
+For each certificate a directory will be created in this folder with the format Name-ID.
+In the case of PKCS12, the file will be saved to the root of the folder.
+
+```yaml
+Type: String
+Parameter Sets: PEM
+Aliases:
+
+Required: False
+Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: String
+Parameter Sets: PKCS12
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PKCS12
+Export the certificate and private key in PKCS12 format.
+Requires PowerShell v7.1+.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PKCS12
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -ThrottleLimit
-{{ Fill ThrottleLimit Description }}
+Limit the number of threads when running in parallel; the default is 100. 
+Applicable to PS v7+ only.
 
 ```yaml
 Type: Int32
@@ -94,14 +178,16 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 3
-Default value: None
+Position: Named
+Default value: 100
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-{{ Fill VenafiSession Description }}
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TLSPC key can also provided.
 
 ```yaml
 Type: PSObject
@@ -109,7 +195,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 4
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -135,10 +221,14 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.String
+### ID
 ## OUTPUTS
 
-### System.Object
+### PSCustomObject
 ## NOTES
+This function requires the use of sodium encryption.
+PS v7.1+ is required.
+On Windows, the latest Visual C++ redist must be installed. 
+See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
 
 ## RELATED LINKS

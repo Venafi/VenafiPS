@@ -1,3 +1,11 @@
+## 6.3.0
+- Add `Export-VcCertificate -PKCS12`, requires PowerShell v7.1+.  [#251](https://github.com/Venafi/VenafiPS/issues/251)
+- Add `New-VenafiSession -TimeoutSec`, the default is 0 for no timeout.  If using SecretManagement, store this with the other metadata.
+- Add support for `Invoke-VcCertificateAction -Renew -AdditionalParameters`.  The use case was renewing many certificates with a different issuer.
+- Update `Set-VdcPermission` to accept just permission switches and not require a permission object.  This assists in setting a permission for the first time for a specific id.
+- Fix `Get-VdcAttribute` and `Set-VdcAttribute` recognizing custom field guids, but not labels
+
+
 ## 6.2.1
 - Fix `Invoke-VcCertificateAction -Renew` flagging multiple applications incorrectly
 
@@ -631,6 +639,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

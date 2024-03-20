@@ -5,9 +5,9 @@ Test if a TLSPDC token is valid
 
 ## SYNTAX
 
-### AccessToken (Default)
+### Session (Default)
 ```
-Test-VdcToken -AuthServer <String> -AccessToken <PSObject> [-GrantDetail] [-ProgressAction <ActionPreference>]
+Test-VdcToken [-GrantDetail] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -17,15 +17,15 @@ Test-VdcToken [-AuthServer <String>] -VaultAccessTokenName <String> [-GrantDetai
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### VenafiPsToken
+### AccessToken
 ```
-Test-VdcToken -VenafiPsToken <PSObject> [-GrantDetail] [-ProgressAction <ActionPreference>]
+Test-VdcToken -AuthServer <String> -AccessToken <PSObject> [-GrantDetail] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
-### Session
+### VenafiPsToken
 ```
-Test-VdcToken [-GrantDetail] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+Test-VdcToken -VenafiPsToken <PSObject> [-GrantDetail] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -79,10 +79,10 @@ If just the server name is provided, https:// will be appended.
 
 ```yaml
 Type: String
-Parameter Sets: AccessToken
+Parameter Sets: VaultAccessToken
 Aliases: Server
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -91,10 +91,10 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String
-Parameter Sets: VaultAccessToken
+Parameter Sets: AccessToken
 Aliases: Server
 
-Required: False
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -175,7 +175,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

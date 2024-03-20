@@ -124,7 +124,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: None
+Default value: $script:VenafiSession
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

@@ -216,7 +216,8 @@ Accept wildcard characters: False
 ```
 
 ### -SkipCertificateCheck
-{{ Fill SkipCertificateCheck Description }}
+Bypass certificate validation when connecting to the server.
+This can be helpful for pre-prod environments where ssl isn't setup on the website or you are connecting via IP.
 
 ```yaml
 Type: SwitchParameter
