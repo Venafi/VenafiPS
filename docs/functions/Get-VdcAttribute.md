@@ -8,13 +8,13 @@ Get object attributes as well as policy attributes
 ### Attribute (Default)
 ```
 Get-VdcAttribute -Path <String> -Attribute <String[]> [-Class <String>] [-NoLookup] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
 Get-VdcAttribute -Path <String> [-Class <String>] [-All] [-NoLookup] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -249,6 +249,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

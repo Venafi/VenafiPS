@@ -5,9 +5,16 @@ Update an existing team
 
 ## SYNTAX
 
+### NoOverwrite (Default)
 ```
-Set-VcTeam -ID <String> [-Name <String>] [-Role <String>] [-UserMatchingRule <Hashtable[]>] [-NoOverwrite]
- [-PassThru] [-VenafiSession <PSObject>] [<CommonParameters>]
+Set-VcTeam -Team <String> [-Name <String>] [-Role <String>] [-UserMatchingRule <Hashtable[]>] [-PassThru]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### Overwrite
+```
+Set-VcTeam -Team <String> [-Name <String>] [-Role <String>] -UserMatchingRule <Hashtable[]> [-NoOverwrite]
+ [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -59,13 +66,13 @@ Update many teams
 
 ## PARAMETERS
 
-### -ID
-Team ID or name
+### -Team
+{{ Fill Team Description }}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: teamId
+Aliases: teamId, ID
 
 Required: True
 Position: Named
@@ -118,10 +125,22 @@ To append use -NoOverwrite.
 
 ```yaml
 Type: Hashtable[]
-Parameter Sets: (All)
+Parameter Sets: NoOverwrite
 Aliases:
 
 Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: Hashtable[]
+Parameter Sets: Overwrite
+Aliases:
+
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -133,10 +152,10 @@ Append to existing user matching rules as opposed to overwriting
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: (All)
+Parameter Sets: Overwrite
 Aliases:
 
-Required: False
+Required: True
 Position: Named
 Default value: False
 Accept pipeline input: False
@@ -167,6 +186,21 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases: Key
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

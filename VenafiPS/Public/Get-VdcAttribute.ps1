@@ -264,7 +264,7 @@ function Get-VdcAttribute {
             $customField = $null
 
             if ( -not $NoLookup ) {
-                $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+                $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
 
                 if ( $customField ) {
                     $params.Body.AttributeName = $customField.Guid
@@ -273,7 +273,10 @@ function Get-VdcAttribute {
 
             # disabled is a special kind of attribute which cannot be read with readeffectivepolicy
             if ( $params.Body.AttributeName -eq 'Disabled' ) {
-                $response = Invoke-VenafiRestMethod @params -UriLeaf 'Config/Read'
+                $oldUri = $params.UriLeaf
+                $params.UriLeaf = 'Config/Read'
+                $response = Invoke-VenafiRestMethod @params
+                $params.UriLeaf = $oldUri
             }
             else {
                 $response = Invoke-VenafiRestMethod @params

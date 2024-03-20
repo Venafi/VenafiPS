@@ -9,20 +9,21 @@ Find certificates in TLSPC
 ```
 Find-VcCertificate [-Name <String>] [-KeyLength <Int32>] [-Serial <String>] [-Fingerprint <String>]
  [-IsSelfSigned] [-Status <String[]>] [-ExpireBefore <DateTime>] [-ExpireAfter <DateTime>] [-Version <String>]
- [-SanDns <String>] [-Application <String>] [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail]
- [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-SanDns <String>] [-Application <String>] [-Tag <String[]>] [-CN <String>] [-Issuer <String>]
+ [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Filter
 ```
 Find-VcCertificate -Filter <ArrayList> [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail]
- [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### SavedSearch
 ```
 Find-VcCertificate -SavedSearchName <String> [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -267,6 +268,52 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Tag
+One or more tags associated with the certificate.
+You can specify either just a tag name or name:value.
+
+```yaml
+Type: String[]
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -CN
+Search for certificates where the subject CN matches all of part of the value
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Issuer
+Search by issuer name
+
+```yaml
+Type: String
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Filter
 Array or multidimensional array of fields and values to filter on.
 Each array should be of the format @(field, comparison operator, value).
@@ -392,6 +439,21 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

@@ -149,7 +149,16 @@ function Invoke-VenafiRestMethod {
                 $auth = $VenafiSession
 
                 if ( Test-IsGuid($VenafiSession) ) {
-                    $Server = $script:CloudUrl
+                    if ( $env:VC_SERVER ) {
+                        $Server = $env:VC_SERVER
+                    }
+                    else {
+                        # default to US region
+                        $Server = ($script:VcRegions).'us'
+                    }
+                    if ( $Server -notlike 'https://*') {
+                        $Server = 'https://{0}' -f $Server
+                    }
                     $platform = 'VC'
                 }
                 else {
@@ -206,29 +215,6 @@ function Invoke-VenafiRestMethod {
     # in the case of inital authentication, eg, there won't be any
     if ( $allHeaders ) { $params.Headers = $allHeaders }
 
-    if ( $Body ) {
-        $restBody = $Body
-        switch ($Method.ToLower()) {
-            'head' {
-                # a head method requires the params be provided as a query string, not body
-                # invoke-webrequest does not do this so we have to build the string manually
-                $newUri = New-HttpQueryString -Uri $uri -QueryParameter $Body
-                $params.Uri = $newUri
-                $params.Body = $null
-                Write-Verbose $newUri
-            }
-
-            'get' {
-                $params.Body = $restBody
-            }
-
-            Default {
-                $restBody = ConvertTo-Json $Body -Depth 20 -Compress
-                $params.Body = $restBody
-            }
-        }
-    }
-
     if ( $UseDefaultCredential.IsPresent -and $Certificate ) {
         throw 'You cannot use UseDefaultCredential and Certificate parameters together'
     }
@@ -237,7 +223,35 @@ function Invoke-VenafiRestMethod {
         $params.Add('UseDefaultCredentials', $true)
     }
 
-    $params | Write-VerboseWithSecret
+    if ( $Body ) {
+        switch ($Method.ToLower()) {
+            'head' {
+                # a head method requires the params be provided as a query string, not body
+                # invoke-webrequest does not do this so we have to build the string manually
+                $newUri = New-HttpQueryString -Uri $uri -QueryParameter $Body
+                $params.Uri = $newUri
+                $params.Body = $null
+            }
+
+            'get' {
+                $params.Body = $Body
+            }
+
+            Default {
+                $preJsonBody = $Body
+                $params.Body = (ConvertTo-Json $Body -Depth 20 -Compress)
+            }
+        }
+    }
+
+    if ( $preJsonBody ) {
+        $paramsToWrite = $params.Clone()
+        $paramsToWrite.Body = $preJsonBody
+        $paramsToWrite | Write-VerboseWithSecret
+    }
+    else {
+        $params | Write-VerboseWithSecret
+    }
 
     # ConvertTo-Json, used in Write-VerboseWithSecret, has an issue with certificates
     # add this param after
@@ -286,16 +300,22 @@ function Invoke-VenafiRestMethod {
                 $permMsg = ''
 
                 # get scope details for tpp
-                if ( $platform -ne 'TLSPC' ) {
+                if ( $platform -ne 'VC' ) {
                     $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
                     $callingFunctionScope = ($script:functionConfig).$callingFunction.TppTokenScope
-                    if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of $callingFunctionScope." }
+                    if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of '$callingFunctionScope'." }
 
-                    $rejectedScope = (Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ''(.*)''').matches.groups[1].value
-                    if ( $rejectedScope ) { $permMsg += "  The current scope of $rejectedScope is insufficient.`r`n`r`n" }
+                    $rejectedScope = Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ([^.]+)'
+
+                    if ( $rejectedScope.Matches.Groups.Count -gt 1 ) {
+                        $permMsg += ("  The current scope of {0} is insufficient." -f $rejectedScope.Matches.Groups[1].Value.Replace('\u0027', "'"))
+                    }
+                    $permMsg += '  Call New-VenafiSession with the correct scope.'
+                }
+                else {
+                    $permMsg = $originalError.ErrorDetails.Message
                 }
 
-                $permMsg += $originalError.ErrorDetails.Message
 
                 throw $permMsg
             }

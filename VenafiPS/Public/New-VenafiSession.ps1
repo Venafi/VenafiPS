@@ -73,10 +73,14 @@ function New-VenafiSession {
     You can either provide a String, SecureString, or PSCredential.
     If providing a credential, the username is not used.
 
+    .PARAMETER VcRegion
+    TLSPC region to connect to.  Valid values are 'us' and 'eu'.  Defaults to 'us'.
+
     .PARAMETER VaultVcKeyName
     Name of the SecretManagement vault entry for the TLSPC key.
     First time use requires it to be provided with -VcKey to populate the vault.
     With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VcKey.
+    The server associated with the region will be saved and restored when this parameter is used on subsequent use.
 
     .PARAMETER SkipCertificateCheck
     Bypass certificate validation when connecting to the server.
@@ -135,6 +139,10 @@ function New-VenafiSession {
     .EXAMPLE
     New-VenafiSession -VcKey $cred
     Create session against TLSPC
+
+    .EXAMPLE
+    New-VenafiSession -VcKey $cred -VcRegion 'eu'
+    Create session against TLSPC in EU region
 
     .EXAMPLE
     New-VenafiSession -VaultVcKeyName vaas-key
@@ -254,11 +262,22 @@ function New-VenafiSession {
         )]
         [string] $AuthServer,
 
-        [Parameter(Mandatory, ParameterSetName = 'Vaas')]
+        [Parameter(Mandatory, ParameterSetName = 'Vc')]
         [Alias('VaasKey')]
         [psobject] $VcKey,
 
-        [Parameter(ParameterSetName = 'Vaas')]
+        [Parameter(ParameterSetName = 'Vc')]
+        [ValidateScript(
+            {
+                if ( $_ -notin ($script:VcRegions).Keys ) {
+                    throw ('{0} is not a valid region.  Valid regions include {1}.' -f $_, (($script:VcRegions).Keys -join ','))
+                }
+                $true
+            }
+        )]
+        [string] $VcRegion = 'us',
+
+        [Parameter(ParameterSetName = 'Vc')]
         [Parameter(Mandatory, ParameterSetName = 'VaultVcKey')]
         [Alias('VaultVaasKeyName')]
         [string] $VaultVcKeyName,
@@ -364,16 +383,19 @@ function New-VenafiSession {
 
         'AccessToken' {
             $newSession.Token = [PSCustomObject]@{
-                Server  = $authServerUrl
+                Server      = $authServerUrl
                 # we don't have the expiry so create one
                 # rely on the api call itself to fail if access token is invalid
-                Expires = (Get-Date).AddMonths(12)
+                Expires     = (Get-Date).AddMonths(12)
+                AccessToken = $null
             }
             $newSession.Token.AccessToken = if ( $AccessToken -is [string] ) { New-Object System.Management.Automation.PSCredential('AccessToken', ($AccessToken | ConvertTo-SecureString -AsPlainText -Force)) }
             elseif ($AccessToken -is [pscredential]) { $AccessToken }
             elseif ($AccessToken -is [securestring]) { New-Object System.Management.Automation.PSCredential('AccessToken', $AccessToken) }
             else { throw 'Unsupported type for -AccessToken.  Provide either a String, SecureString, or PSCredential.' }
 
+            # validate token
+            $null = Invoke-VenafiRestMethod -UriRoot 'vedauth' -UriLeaf 'Authorize/Verify' -VenafiSession $newSession
         }
 
         'VaultAccessToken' {
@@ -448,8 +470,8 @@ function New-VenafiSession {
             $newSession.TimeoutSec = $secretInfo.Metadata.TimeoutSec
         }
 
-        'Vaas' {
-            $newSession.Server = $script:CloudUrl
+        'Vc' {
+            $newSession.Server = ($script:VcRegions).$VcRegion
             $newSession.Key = if ( $VcKey -is [string] ) { New-Object System.Management.Automation.PSCredential('VcKey', ($VcKey | ConvertTo-SecureString -AsPlainText -Force)) }
             elseif ($VcKey -is [pscredential]) { $VcKey }
             elseif ($VcKey -is [securestring]) { New-Object System.Management.Automation.PSCredential('VcKey', $VcKey) }
@@ -457,6 +479,7 @@ function New-VenafiSession {
 
             if ( $VaultVcKeyName ) {
                 $metadata = @{
+                    Server = $newSession.Server
                     TimeoutSec = [int]$newSession.TimeoutSec
                 }
                 Set-Secret -Name $VaultVcKeyName -Secret $newSession.Key -Vault 'VenafiPS' -Metadata $metadata
@@ -464,11 +487,20 @@ function New-VenafiSession {
         }
 
         'VaultVcKey' {
-            $newSession.Server = $script:CloudUrl
             $keySecret = Get-Secret -Name $VaultVcKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
             if ( -not $keySecret ) {
                 throw "'$VaultVcKeyName' secret not found in vault VenafiPS."
             }
+
+            $secretInfo = Get-SecretInfo -Name $VaultVcKeyName -Vault 'VenafiPS' -ErrorAction SilentlyContinue
+
+            if ( $secretInfo.Metadata.Count -gt 0 ) {
+                $newSession.Server = $secretInfo.Metadata.Server
+            }
+            else {
+                throw 'Server metadata not found.  Execute New-VenafiSession -VcKey $key -VaultVcKeyName $secretName and attempt the operation again.'
+            }
+
             $newSession.Key = $keySecret
         }
 

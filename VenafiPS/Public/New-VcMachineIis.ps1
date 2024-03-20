@@ -94,6 +94,11 @@ function New-VcMachineIis {
     owningTeamId     : 59920180-a3e2-11ec-8dcd-3fcbf84c7da7
 
     Create a new machine with Kerberos authentication
+
+    .NOTES
+    This function requires the use of sodium encryption.
+    .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
+    On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'WinrmBasic')]
@@ -161,27 +166,27 @@ function New-VcMachineIis {
         $allMachines = [System.Collections.Generic.List[pscustomobject]]::new()
         $machineTypeId = 'c1521d80-db7a-11ec-b79a-f3ded6c9808c'
 
+        Initialize-PSSodium
     }
 
     process {
 
         # need vsat to get dek for encrypting username/password
-        if ( -not $allVsat ) {
-            $allVsat = Get-VcSatellite -All -IncludeKey
-        }
         if ( $VSatellite ) {
-            $thisVsat = $allVsat | Where-Object { $VSatellite -eq $_.vsatelliteId -or $VSatellite -eq $_.name }
-            if ( -not $thisVsat ) {
-                throw "$VSatellite is not a valid VSatellite id or name"
+            $vSat = Get-VcData -InputObject $VSatellite -Type 'VSatellite' -Object
+            if ( -not $vSat ) {
+                throw "'$VSatellite' is either not a valid VSatellite id or name or it is not active"
             }
         }
         else {
-            # choose the first vsat
-            $thisVsat = $allVsat | Select-Object -First 1
+            $vSat = Get-VcData -Type 'VSatellite' -First
+            if ( -not $vSat ) {
+                throw "An active VSatellite could not be found"
+            }
         }
 
-        $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $thisVsat.encryptionKey
-        $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $thisVsat.encryptionKey
+        $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
+        $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
 
         switch ($PSCmdlet.ParameterSetName) {
             'WinrmBasic' {
@@ -224,8 +229,8 @@ function New-VcMachineIis {
         $params = @{
             Name             = $Name
             MachineType      = $machineTypeId
-            VSatellite       = $thisVsat.vsatelliteId
-            DekID            = $thisVsat.encryptionKeyId
+            VSatellite       = $vSat.vsatelliteId
+            DekID            = $vSat.encryptionKeyId
             Owner            = $Owner
             ConnectionDetail = $connectionDetails
         }

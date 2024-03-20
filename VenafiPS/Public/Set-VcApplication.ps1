@@ -1,5 +1,6 @@
 ﻿function Set-VcApplication {
     <#
+    .SYNOPSIS
     Update an existing application
 
     .DESCRIPTION
@@ -53,8 +54,8 @@
     param (
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [Alias('applicationId')]
-        [string] $ID,
+        [Alias('applicationId', 'ID')]
+        [string] $Application,
 
         [Parameter()]
         [string] $Name,

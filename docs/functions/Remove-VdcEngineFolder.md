@@ -7,20 +7,20 @@ Remove TLSPDC processing engine assignment(s) from policy folder(s)
 
 ### Matrix
 ```
-Remove-VdcEngineFolder -FolderPath <String[]> -EnginePath <String[]> [-VenafiSession <PSObject>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Remove-VdcEngineFolder -FolderPath <String[]> -EnginePath <String[]> [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### AllEngines
 ```
-Remove-VdcEngineFolder -FolderPath <String[]> [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-VdcEngineFolder -FolderPath <String[]> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### AllFolders
 ```
-Remove-VdcEngineFolder -EnginePath <String[]> [-VenafiSession <PSObject>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Remove-VdcEngineFolder -EnginePath <String[]> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -126,6 +126,21 @@ Prompts you for confirmation before running the cmdlet.
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

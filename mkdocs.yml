@@ -62,6 +62,7 @@ nav:
     - Get-VcTag: functions/Get-VcTag.md
     - Get-VcTeam: functions/Get-VcTeam.md
     - Get-VcUser: functions/Get-VcUser.md
+    - Get-VcWebhook: functions/Get-VcWebhook.md
     - Get-VdcAttribute: functions/Get-VdcAttribute.md
     - Get-VdcCertificate: functions/Get-VdcCertificate.md
     - Get-VdcClassAttribute: functions/Get-VdcClassAttribute.md
@@ -90,6 +91,7 @@ nav:
     - New-VcMachineCommonKeystore: functions/New-VcMachineCommonKeystore.md
     - New-VcMachineIis: functions/New-VcMachineIis.md
     - New-VcTeam: functions/New-VcTeam.md
+    - New-VcWebhook: functions/New-VcWebhook.md
     - New-VdcCapiApplication: functions/New-VdcCapiApplication.md
     - New-VdcCertificate: functions/New-VdcCertificate.md
     - New-VdcCustomField: functions/New-VdcCustomField.md
@@ -110,6 +112,7 @@ nav:
     - Remove-VcTeam: functions/Remove-VcTeam.md
     - Remove-VcTeamMember: functions/Remove-VcTeamMember.md
     - Remove-VcTeamOwner: functions/Remove-VcTeamOwner.md
+    - Remove-VcWebhook: functions/Remove-VcWebhook.md
     - Remove-VdcCertificate: functions/Remove-VdcCertificate.md
     - Remove-VdcCertificateAssociation: functions/Remove-VdcCertificateAssociation.md
     - Remove-VdcClient: functions/Remove-VdcClient.md
@@ -124,6 +127,7 @@ nav:
     - Revoke-VdcToken: functions/Revoke-VdcToken.md
     - Search-VdcHistory: functions/Search-VdcHistory.md
     - Set-VcApplication: functions/Set-VcApplication.md
+    - Set-VcConnector: functions/Set-VcConnector.md
     - Set-VcTeam: functions/Set-VcTeam.md
     - Set-VdcAttribute: functions/Set-VdcAttribute.md
     - Set-VdcCredential: functions/Set-VdcCredential.md

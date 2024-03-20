@@ -5,6 +5,7 @@ function Export-VcCertificate {
 
     .DESCRIPTION
     Export certificate data in PEM format.  You can retrieve the certificate, chain, and key.
+    You can also save the certificate and private key in PEM or PKCS12 format.
 
     .PARAMETER ID
     Certificate ID, also known as uuid.  Use Find-VcCertificate or Get-VcCertificate to determine the ID.
@@ -13,13 +14,19 @@ function Export-VcCertificate {
     .PARAMETER PrivateKeyPassword
     Password required to include the private key.
     You can either provide a String, SecureString, or PSCredential.
+    Requires PowerShell v7.0+.
 
     .PARAMETER IncludeChain
-    Include the certificate chain with the exported certificate.
+    Include the certificate chain with the exported or saved PEM certificate data.
 
     .PARAMETER OutPath
     Folder path to save the certificate to.  The name of the file will be determined automatically.
     For each certificate a directory will be created in this folder with the format Name-ID.
+    In the case of PKCS12, the file will be saved to the root of the folder.
+
+    .PARAMETER PKCS12
+    Export the certificate and private key in PKCS12 format.
+    Requires PowerShell v7.1+.
 
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
@@ -46,6 +53,11 @@ function Export-VcCertificate {
     Export certificate and private key data
 
     .EXAMPLE
+    $certId | Export-VcCertificate -PrivateKeyPassword 'myPassw0rd!' -PKCS12 -OutPath '~/temp'
+
+    Export certificate and private key in PKCS12 format
+
+    .EXAMPLE
     $cert | Export-VcCertificate -OutPath '~/temp'
 
     Get certificate data and save to a file
@@ -54,9 +66,14 @@ function Export-VcCertificate {
     $cert | Export-VcCertificate -IncludeChain
 
     Get certificate data with the certificate chain included.
+
+    .NOTES
+    This function requires the use of sodium encryption.
+    PS v7.1+ is required.
+    On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'PEM')]
 
     param (
 
@@ -64,13 +81,23 @@ function Export-VcCertificate {
         [Alias('certificateId')]
         [string] $ID,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'PEM')]
+        [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
+        [ValidateScript(
+            {
+                if ($PSVersionTable.PSVersion -lt [version]'7.0') {
+                    throw 'Exporting private keys is only supported on PowerShell v7.0+'
+                }
+                $true
+            }
+        )]
         [psobject] $PrivateKeyPassword,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'PEM')]
         [switch] $IncludeChain,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'PEM')]
+        [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if (Test-Path $_ -PathType Container) {
@@ -81,6 +108,17 @@ function Export-VcCertificate {
                 }
             })]
         [String] $OutPath,
+
+        [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
+        [ValidateScript(
+            {
+                if ($PSVersionTable.PSVersion -lt [version]'7.1') {
+                    throw 'Exporting in PKCS#12 foramt is only supported on PowerShell v7.1+'
+                }
+                $true
+            }
+        )]
+        [switch] $PKCS12,
 
         [Parameter()]
         [int32] $ThrottleLimit = 100,
@@ -130,6 +168,8 @@ function Export-VcCertificate {
                 $params.Body.chainOrder = 'EE_ONLY'
             }
         }
+
+        Initialize-PSSodium
     }
 
     process {
@@ -194,22 +234,41 @@ function Export-VcCertificate {
                     return $out
                 }
 
-                $zipFile = New-TemporaryFile
+                $zipFile = '{0}.zip' -f (New-TemporaryFile)
                 $unzipPath = Join-Path -Path (Split-Path -Path $zipFile -Parent) -ChildPath $PSItem.ID
 
                 try {
                     # always save the zip file then decide to copy to the final destination or return contents
                     [IO.File]::WriteAllBytes($zipFile, $innerResponse.Content)
 
+                    Write-Verbose ('Expanding {0} to {1}' -f $zipFile, $unzipPath)
+
                     Expand-Archive -Path $zipFile -DestinationPath $unzipPath
                     $unzipFiles = Get-ChildItem -Path $unzipPath
 
-                    if ( $using:outPath ) {
-                        # copy files to final desination
-                        $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}' -f $thisCert.certificateName, $thisCert.certificateId)
-                        $null = New-Item -Path $dest -ItemType Directory -Force
-                        $unzipFiles | Copy-Item -Destination $dest -Force
-                        $out | Add-Member @{'outPath' = $dest }
+                    if ( $using:OutPath ) {
+
+                        if ( $using:PKCS12 ) {
+                            $keyFile = Get-ChildItem -Path $unzipPath -Filter '*.key'
+
+                            if ( $keyFile.Count -ne 1 ) {
+                                $out.error = 'Private key not found'
+                                return $out
+                            }
+
+                            $keyPath = $keyFile.FullName
+                            $crtPath = $keyPath.Replace('.key', '.crt')
+                            $cert = [System.Security.Cryptography.X509Certificates.x509Certificate2]::CreateFromEncryptedPemFile($crtPath, $PSItem.PrivateKeyPassword, $keyPath)
+                            # export content type of 3 is for pfx
+                            $cert.Export(3, $PSItem.PrivateKeyPassword) | Set-Content -Path (Join-Path -Path $using:OutPath -ChildPath ('{0}.pfx' -f $keyFile.BaseName)) -AsByteStream
+                        }
+                        else {
+                            # copy files to final desination
+                            $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}' -f $thisCert.certificateName, $thisCert.certificateId)
+                            $null = New-Item -Path $dest -ItemType Directory -Force
+                            $unzipFiles | Copy-Item -Destination $dest -Force
+                            $out | Add-Member @{'outPath' = $dest }
+                        }
                     }
                     else {
                         # pull in the contents so we can provide them

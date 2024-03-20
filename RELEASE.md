@@ -1,1 +1,1 @@
-- Fix incorrect path for Sodium in `Export-VcCertificate`, [#234](https://github.com/Venafi/VenafiPS/issues/234)
+- Fix `Invoke-VcCertificateAction -Renew` flagging multiple applications incorrectly

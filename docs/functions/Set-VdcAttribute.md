@@ -8,13 +8,14 @@ Sets a value on an objects attribute or policies (policy attributes)
 ### NotPolicy (Default)
 ```
 Set-VdcAttribute -Path <String> -Attribute <Hashtable> [-BypassValidation] [-NoOverwrite]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Policy
 ```
 Set-VdcAttribute -Path <String> -Attribute <Hashtable> -Class <String> [-Lock] [-BypassValidation]
- [-NoOverwrite] [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-NoOverwrite] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -207,6 +208,21 @@ Prompts you for confirmation before running the cmdlet.
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

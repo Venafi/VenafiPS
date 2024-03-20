@@ -8,36 +8,38 @@ Get a new access token or refresh an existing one
 ### Integrated (Default)
 ```
 New-VdcToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> [-State <String>]
- [-SkipCertificateCheck] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### RefreshToken
 ```
-New-VdcToken -AuthServer <String> -ClientId <String> -RefreshToken <PSObject> [-SkipCertificateCheck] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+New-VdcToken -AuthServer <String> -ClientId <String> -RefreshToken <PSObject> [-SkipCertificateCheck]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Jwt
 ```
 New-VdcToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Jwt <String> [-SkipCertificateCheck]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Certificate
 ```
 New-VdcToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
- [-SkipCertificateCheck] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### OAuth
 ```
 New-VdcToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Credential <PSCredential>
- [-State <String>] [-SkipCertificateCheck] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-State <String>] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ### RefreshSession
 ```
-New-VdcToken [-SkipCertificateCheck] -VenafiSession <VenafiSession> [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VdcToken [-SkipCertificateCheck] -VenafiSession <VenafiSession> [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -266,6 +268,21 @@ Prompts you for confirmation before running the cmdlet.
 Type: SwitchParameter
 Parameter Sets: (All)
 Aliases: cf
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

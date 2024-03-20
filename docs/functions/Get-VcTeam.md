@@ -7,12 +7,13 @@ Get team info
 
 ### ID
 ```
-Get-VcTeam [-ID] <String[]> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcTeam [-Team] <String[]> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcTeam [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcTeam [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -44,13 +45,13 @@ Get info for all teams
 
 ## PARAMETERS
 
-### -ID
-Team name or guid.
+### -Team
+{{ Fill Team Description }}
 
 ```yaml
 Type: String[]
 Parameter Sets: ID
-Aliases: teamID, owningTeam, owningTeams, owningTeamId, ownedTeams
+Aliases: teamID, owningTeam, owningTeams, owningTeamId, ownedTeams, ID
 
 Required: True
 Position: 1
@@ -83,6 +84,21 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases: Key, AccessToken
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

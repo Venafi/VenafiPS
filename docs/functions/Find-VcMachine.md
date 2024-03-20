@@ -8,13 +8,13 @@ Find machines
 ### All (Default)
 ```
 Find-VcMachine [-Name <String>] [-MachineType <String>] [-Status <String>] [-Order <PSObject[]>]
- [-First <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Filter
 ```
 Find-VcMachine -Filter <ArrayList> [-Order <PSObject[]>] [-First <Int32>] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -136,6 +136,21 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

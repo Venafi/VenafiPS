@@ -1,55 +1,32 @@
 # Export-VcCertificate
 
 ## SYNOPSIS
-Export certificate data from TLSPC
+{{ Fill in the Synopsis }}
 
 ## SYNTAX
 
 ```
 Export-VcCertificate [-ID] <String> [[-PrivateKeyPassword] <PSObject>] [-IncludeChain] [[-OutPath] <String>]
- [[-ThrottleLimit] <Int32>] [[-VenafiSession] <PSObject>] [<CommonParameters>]
+ [[-ThrottleLimit] <Int32>] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Export certificate data in PEM format. 
-You can retrieve the certificate, chain, and key.
+{{ Fill in the Description }}
 
 ## EXAMPLES
 
-### EXAMPLE 1
-```
-$certId | Export-VcCertificate
-```
-
-Export certificate data
-
-### EXAMPLE 2
-```
-$certId | Export-VcCertificate -PrivateKeyPassword 'myPassw0rd!'
+### Example 1
+```powershell
+PS C:\> {{ Add example code here }}
 ```
 
-Export certificate and private key data
-
-### EXAMPLE 3
-```
-$cert | Export-VcCertificate -OutPath '~/temp'
-```
-
-Get certificate data and save to a file
-
-### EXAMPLE 4
-```
-$cert | Export-VcCertificate -IncludeChain
-```
-
-Get certificate data with the certificate chain included.
+{{ Add example description here }}
 
 ## PARAMETERS
 
 ### -ID
-Certificate ID, also known as uuid. 
-Use Find-VcCertificate or Get-VcCertificate to determine the ID.
-You can pipe those functions as well.
+{{ Fill ID Description }}
 
 ```yaml
 Type: String
@@ -57,18 +34,32 @@ Parameter Sets: (All)
 Aliases: certificateId
 
 Required: True
-Position: 1
+Position: 0
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
 ```
 
-### -PrivateKeyPassword
-Password required to include the private key.
-You can either provide a String, SecureString, or PSCredential.
+### -IncludeChain
+{{ Fill IncludeChain Description }}
 
 ```yaml
-Type: PSObject
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -OutPath
+{{ Fill OutPath Description }}
+
+```yaml
+Type: String
 Parameter Sets: (All)
 Aliases:
 
@@ -79,28 +70,26 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IncludeChain
-Include the certificate chain with the exported certificate.
+### -PrivateKeyPassword
+{{ Fill PrivateKeyPassword Description }}
 
 ```yaml
-Type: SwitchParameter
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
-Default value: False
+Position: 1
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -OutPath
-Folder path to save the certificate to. 
-The name of the file will be determined automatically.
-For each certificate a directory will be created in this folder with the format Name-ID.
+### -ThrottleLimit
+{{ Fill ThrottleLimit Description }}
 
 ```yaml
-Type: String
+Type: Int32
 Parameter Sets: (All)
 Aliases:
 
@@ -111,26 +100,8 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -ThrottleLimit
-Limit the number of threads when running in parallel; the default is 100. 
-Applicable to PS v7+ only.
-
-```yaml
-Type: Int32
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 4
-Default value: 100
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -VenafiSession
-Authentication for the function.
-The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TLSPC key can also provided.
+{{ Fill VenafiSession Description }}
 
 ```yaml
 Type: PSObject
@@ -138,7 +109,22 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 5
+Position: 4
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -149,10 +135,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### ID
+### System.String
 ## OUTPUTS
 
-### PSCustomObject
+### System.Object
 ## NOTES
 
 ## RELATED LINKS

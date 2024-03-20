@@ -8,19 +8,19 @@ Get permissions for TLSPDC objects
 ### ByObject (Default)
 ```
 Get-VdcPermission -InputObject <PSObject> [-IdentityId <String[]>] [-Explicit] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByPath
 ```
 Get-VdcPermission -Path <String[]> [-IdentityId <String[]>] [-Explicit] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByGuid
 ```
 Get-VdcPermission -Guid <Guid[]> [-IdentityId <String[]>] [-Explicit] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -166,6 +166,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

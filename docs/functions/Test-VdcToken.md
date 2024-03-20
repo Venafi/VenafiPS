@@ -7,22 +7,26 @@ Test if a TLSPDC token is valid
 
 ### AccessToken (Default)
 ```
-Test-VdcToken -AuthServer <String> -AccessToken <PSObject> [-GrantDetail] [<CommonParameters>]
+Test-VdcToken -AuthServer <String> -AccessToken <PSObject> [-GrantDetail] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### VaultAccessToken
 ```
-Test-VdcToken [-AuthServer <String>] -VaultAccessTokenName <String> [-GrantDetail] [<CommonParameters>]
+Test-VdcToken [-AuthServer <String>] -VaultAccessTokenName <String> [-GrantDetail]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### VenafiPsToken
 ```
-Test-VdcToken -VenafiPsToken <PSObject> [-GrantDetail] [<CommonParameters>]
+Test-VdcToken -VenafiPsToken <PSObject> [-GrantDetail] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### Session
 ```
-Test-VdcToken [-GrantDetail] [-VenafiSession <PSObject>] [<CommonParameters>]
+Test-VdcToken [-GrantDetail] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -131,8 +135,6 @@ Accept wildcard characters: False
 
 ### -VaultAccessTokenName
 Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
-Note: '-Server' parameter is required if the vault does not contain saved metadata.
-See New-VenafiSession -VaultMetaData
 
 ```yaml
 Type: String
@@ -170,6 +172,21 @@ The value defaults to the script session object $VenafiSession created by New-Ve
 Type: PSObject
 Parameter Sets: Session
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

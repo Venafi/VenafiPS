@@ -8,39 +8,40 @@ Expoort certificate data from TLSPDC
 ### Base64 (Default)
 ```
 Export-VdcCertificate -Path <String> [-Base64] [-IncludeChain] [-FriendlyName <String>] [-OutPath <String>]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Pkcs7
 ```
 Export-VdcCertificate -Path <String> [-Pkcs7] [-IncludeChain] [-OutPath <String>] [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Pkcs8
 ```
 Export-VdcCertificate -Path <String> [-Pkcs8] [-PrivateKeyPassword <PSObject>] [-IncludeChain]
- [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### Der
 ```
 Export-VdcCertificate -Path <String> [-Der] [-OutPath <String>] [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Pkcs12
 ```
 Export-VdcCertificate -Path <String> [-Pkcs12] -PrivateKeyPassword <PSObject> [-IncludeChain]
  [-FriendlyName <String>] [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Jks
 ```
 Export-VdcCertificate -Path <String> [-Jks] [-PrivateKeyPassword <PSObject>] [-IncludeChain]
  -FriendlyName <String> -KeystorePassword <PSObject> [-OutPath <String>] [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -346,6 +347,21 @@ If providing a TLSPDC token, an environment variable named VDC_SERVER must also 
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

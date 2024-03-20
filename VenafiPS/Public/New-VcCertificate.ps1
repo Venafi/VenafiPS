@@ -155,12 +155,13 @@ function New-VcCertificate {
                 $span = $_ - (Get-Date)
                 if ( $span.Days -ge 0 -or $span.Hours -ge 0 ) {
                     $true
-                } else {
+                }
+                else {
                     throw 'ValidUntil must be a date in the future'
                 }
             }
         )]
-        [DateTime] $ValidUntil = (Get-Date).AddYears(1),
+        [DateTime] $ValidUntil = (Get-Date).AddDays(90),
 
         [Parameter()]
         [switch] $PassThru,
@@ -192,7 +193,7 @@ function New-VcCertificate {
             }
         }
 
-        $thisTemplate = $thisApp.certificateIssuingTemplate | Where-Object { $_.Name -like $IssuingTemplate -or $_.id -eq $IssuingTemplate }
+        $thisTemplate = $thisApp.issuingTemplate | Where-Object { $_.Name -like $IssuingTemplate -or $_.issuingTemplateId -eq $IssuingTemplate }
         switch (@($thisTemplate).Count) {
             0 {
                 throw ('Issuing template not found or not valid for this application.  Valid templates are {0}.' -f ($thisApp.certificateIssuingTemplate.name -join ', '))
@@ -200,7 +201,7 @@ function New-VcCertificate {
 
             1 {
                 Write-Verbose ('Found template {0}, ID: {1}' -f $thisTemplate.name, $thisTemplate.id)
-                $thisTemplateID = $thisTemplate.id
+                $thisTemplateID = $thisTemplate.issuingTemplateId
             }
 
             Default {
@@ -213,10 +214,10 @@ function New-VcCertificate {
 
         $params = @{
 
-            Method        = 'Post'
-            UriRoot       = 'outagedetection/v1'
-            UriLeaf       = 'certificaterequests'
-            Body          = @{
+            Method  = 'Post'
+            UriRoot = 'outagedetection/v1'
+            UriLeaf = 'certificaterequests'
+            Body    = @{
                 isVaaSGenerated              = $true
                 applicationId                = $thisAppID
                 certificateIssuingTemplateId = $thisTemplateID
@@ -226,7 +227,8 @@ function New-VcCertificate {
 
         if ( $PSCmdlet.ParameterSetName -eq 'Ask' ) {
             $params.Body.csrAttributes = @{}
-        } else {
+        }
+        else {
             $params.Body.certificateSigningRequest = $Csr
         }
 
@@ -250,24 +252,23 @@ function New-VcCertificate {
             $params.Body.csrAttributes.country = $Country
         }
 
-        if ( Compare-Object -ReferenceObject $PSBoundParameters.Keys -DifferenceObject 'SanDns|SanEmail|SanIP|SanUri' -IncludeEqual | Where-Object { $_.SideIndicator -eq '==' } ) {
+        if ( $SanDns -or $SanEmail -or $SanIP -or $SanUri ) {
             $params.Body.csrAttributes.subjectAlternativeNamesByType = @{}
+        }
+        if ( $PSBoundParameters.ContainsKey('SanDns') ) {
+            $params.Body.csrAttributes.subjectAlternativeNamesByType.dnsNames = @($SanDns)
+        }
 
-            if ( $PSBoundParameters.ContainsKey('SanDns') ) {
-                $params.Body.csrAttributes.subjectAlternativeNamesByType.dnsNames = @($SanDns)
-            }
+        if ( $PSBoundParameters.ContainsKey('SanEmail') ) {
+            $params.Body.csrAttributes.subjectAlternativeNamesByType.rfc822Names = @($SanEmail)
+        }
 
-            if ( $PSBoundParameters.ContainsKey('SanEmail') ) {
-                $params.Body.csrAttributes.subjectAlternativeNamesByType.rfc822Names = @($SanEmail)
-            }
+        if ( $PSBoundParameters.ContainsKey('SanIP') ) {
+            $params.Body.csrAttributes.subjectAlternativeNamesByType.ipAddresses = @($SanIP)
+        }
 
-            if ( $PSBoundParameters.ContainsKey('SanIP') ) {
-                $params.Body.csrAttributes.subjectAlternativeNamesByType.ipAddresses = @($SanIP)
-            }
-
-            if ( $PSBoundParameters.ContainsKey('SanUri') ) {
-                $params.Body.csrAttributes.subjectAlternativeNamesByType.uniformResourceIdentifiers = @($SanUri)
-            }
+        if ( $PSBoundParameters.ContainsKey('SanUri') ) {
+            $params.Body.csrAttributes.subjectAlternativeNamesByType.uniformResourceIdentifiers = @($SanUri)
         }
     }
 
@@ -276,7 +277,8 @@ function New-VcCertificate {
         if ( $PSCmdlet.ParameterSetName -eq 'Ask' ) {
             $params.Body.csrAttributes.commonName = $CommonName
             $target = $CommonName
-        } else {
+        }
+        else {
             $target = 'CSR'
         }
 
@@ -295,7 +297,8 @@ function New-VcCertificate {
 
                     $certRequest | Select-Object @{'n' = 'certificateRequestId'; 'e' = { $_.id } }, *, @{'n' = 'certificateId'; 'e' = { $_.certificateIds } } -ExcludeProperty id, certificateIds
                 }
-            } catch {
+            }
+            catch {
                 Write-Error $_
                 continue
             }

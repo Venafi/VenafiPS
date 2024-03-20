@@ -32,10 +32,15 @@
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('connectorId')]
+        [ValidateScript(
+            {
+                if ( -not (Test-IsGuid -InputObject $_ ) ) {
+                    throw "$_ is not a valid connector id format"
+                }
+                $true
+            }
+        )]
         [string] $ID,
-
-        [Parameter()]
-        [int32] $ThrottleLimit = 100,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -43,18 +48,11 @@
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
-        $allObjects = [System.Collections.Generic.List[object]]::new()
     }
 
     process {
         if ( $PSCmdlet.ShouldProcess($ID, "Delete connector") ) {
-            $allObjects.Add($ID)
+            $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "plugins/$ID"
         }
-    }
-
-    end {
-        Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
-            $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "connectors/$PSItem"
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
     }
 }

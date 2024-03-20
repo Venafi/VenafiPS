@@ -7,12 +7,14 @@ Get TLSPDC folder/engine assignments
 
 ### ID (Default)
 ```
-Get-VdcEngineFolder [-ID] <String> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VdcEngineFolder [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VdcEngineFolder [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VdcEngineFolder [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -86,6 +88,21 @@ A TLSPDC token can also be provided, but this requires an environment variable V
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

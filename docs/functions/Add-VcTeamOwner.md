@@ -6,7 +6,8 @@ Add owners to a team
 ## SYNTAX
 
 ```
-Add-VcTeamOwner [-ID] <String> [-Owner] <String[]> [[-VenafiSession] <PSObject>] [<CommonParameters>]
+Add-VcTeamOwner [-Team] <String> [-Owner] <String[]> [[-VenafiSession] <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -16,21 +17,20 @@ Add owners to a TLSPC team
 
 ### EXAMPLE 1
 ```
-Add-VcTeamOwner -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
+Add-VcTeamOwner -Team 'DevOps' -Owner @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
 ```
 
 Add owners
 
 ## PARAMETERS
 
-### -ID
-Team ID.
-This is the unique guid obtained from Get-VcTeam.
+### -Team
+Team ID or name
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: PrefixedUniversal, Guid
+Aliases: ID
 
 Required: True
 Position: 1
@@ -72,12 +72,27 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
 ## INPUTS
 
-### ID
+### Team
 ## OUTPUTS
 
 ## NOTES

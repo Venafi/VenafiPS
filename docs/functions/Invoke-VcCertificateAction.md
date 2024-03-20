@@ -8,31 +8,31 @@ Perform an action against one or more certificates
 ### Retire
 ```
 Invoke-VcCertificateAction -ID <String> [-Retire] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Recover
 ```
 Invoke-VcCertificateAction -ID <String> [-Recover] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Renew
 ```
-Invoke-VcCertificateAction -ID <String> [-Renew] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Invoke-VcCertificateAction -ID <String> [-Renew] [-Force] [-AdditionalParameters <Hashtable>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Validate
 ```
 Invoke-VcCertificateAction -ID <String> [-Validate] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Delete
 ```
 Invoke-VcCertificateAction -ID <String> [-Delete] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <PSObject>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -50,13 +50,38 @@ Perform an action against 1 certificate
 
 ### EXAMPLE 2
 ```
+Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -AdditionalParameters @{'Application'='10f71a12-daf3-4737-b589-6a9dd1cc5a97'}
+```
+
+Perform an action against 1 certificate with additional parameters.
+In this case we are renewing a certificate, but the certificate has multiple applications associated with it.
+Only one certificate and application combination can be renewed at a time so provide the specific application to be renewed.
+
+### EXAMPLE 3
+```
+Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -Force
+```
+
+Renewals can only support 1 CN assigned to a certificate. 
+To force this function to renew and automatically select the first CN, use -Force.
+
+### EXAMPLE 4
+```
+Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete
+```
+
+Delete a certificate. 
+As only retired certificates can be deleted, it will be retired first.
+
+### EXAMPLE 5
+```
 Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete -Confirm:$false
 ```
 
 Perform an action bypassing the confirmation prompt. 
 Only applicable to Delete.
 
-### EXAMPLE 3
+### EXAMPLE 6
 ```
 Find-VcObject -Type Certificate -Filter @('certificateStatus','eq','retired') | Invoke-VcCertificateAction -Delete
 ```
@@ -111,7 +136,8 @@ Accept wildcard characters: False
 ```
 
 ### -Renew
-Requests immediate renewal for an existing certificate
+Requests immediate renewal for an existing certificate.
+If more than 1 application is associated with the certificate, provide -AdditionalParameters @{'Application'='application id'} to specify the id.
 
 ```yaml
 Type: SwitchParameter
@@ -150,6 +176,22 @@ Parameter Sets: Delete
 Aliases:
 
 Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Force the operation under certain circumstances.
+- During a renewal, force choosing the first CN in the case of multiple CNs as only 1 is supported.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Renew
+Aliases:
+
+Required: False
 Position: Named
 Default value: False
 Accept pipeline input: False
@@ -220,6 +262,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### CommonParameters
 This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable, -InformationAction, -InformationVariable, -OutVariable, -OutBuffer, -PipelineVariable, -Verbose, -WarningAction, and -WarningVariable. For more information, see [about_CommonParameters](http://go.microsoft.com/fwlink/?LinkID=113216).
 
@@ -228,10 +285,11 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### ID
 ## OUTPUTS
 
-### PSCustomObject with the following properties:
+### When using retire and recover, PSCustomObject with the following properties:
 ###     CertificateID - Certificate uuid
 ###     Success - A value of true indicates that the action was successful
 ## NOTES
+If performing a renewal and subjectCN has more than 1 value, only the first will be submitted with the renewal.
 
 ## RELATED LINKS
 

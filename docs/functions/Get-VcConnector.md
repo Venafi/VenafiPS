@@ -1,22 +1,23 @@
 # Get-VcConnector
 
 ## SYNOPSIS
-Get connector/webhook info
+Get connector info
 
 ## SYNTAX
 
 ### ID (Default)
 ```
-Get-VcConnector [-ID] <String> [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcConnector [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcConnector [-All] [-VenafiSession <PSObject>] [<CommonParameters>]
+Get-VcConnector [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get 1 or all connector/webhook info
+Get details on 1 or all connectors
 
 ## EXAMPLES
 
@@ -102,6 +103,21 @@ A TLSPC key can also provided.
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
 
 Required: False
 Position: Named

@@ -114,7 +114,8 @@ function New-VdcCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -129,7 +130,8 @@ function New-VdcCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -141,7 +143,8 @@ function New-VdcCapiApplication {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -210,7 +213,7 @@ function New-VdcCapiApplication {
             if ( $PSBoundParameters.ContainsKey('CertificatePath') ) {
                 # issue 129
                 $certName = $CertificatePath.Split('\')[-1]
-                $certPath = $CertificatePath -replace ('\\+{0}' -f $certName), ''
+                $certPath = $CertificatePath.Substring(0, $CertificatePath.LastIndexOf("\$certName"))
 
                 $certObject = Find-VdcCertificate -Path $certPath
 
@@ -231,12 +234,12 @@ function New-VdcCapiApplication {
         }
 
         $params = @{
-            Path          = ''
-            Class         = 'CAPI'
-            Attribute     = @{
+            Path      = ''
+            Class     = 'CAPI'
+            Attribute = @{
                 'Driver Name' = 'appcapi'
             }
-            PassThru      = $true
+            PassThru  = $true
 
         }
 
@@ -289,7 +292,8 @@ function New-VdcCapiApplication {
             # ensure the parent path exists and is of type device
             if ( $PSBoundParameters.ContainsKey('ApplicationName') ) {
                 $devicePath = $Path
-            } else {
+            }
+            else {
                 $deviceName = $Path.Split('\')[-1]
                 $devicePath = $Path -replace ('\\+{0}' -f $deviceName), ''
             }
@@ -300,7 +304,8 @@ function New-VdcCapiApplication {
                 if ( $device.TypeName -ne 'Device' ) {
                     throw ('A device object could not be found at ''{0}''' -f $devicePath)
                 }
-            } else {
+            }
+            else {
                 throw ('No object was found at the parent path ''{0}''' -f $devicePath)
             }
         }
@@ -309,7 +314,8 @@ function New-VdcCapiApplication {
             $appPaths = $ApplicationName | ForEach-Object {
                 $Path + "\$_"
             }
-        } else {
+        }
+        else {
             $appPaths = @($Path)
         }
 
@@ -328,12 +334,14 @@ function New-VdcCapiApplication {
 
             if ( $PushCertificate.IsPresent ) {
                 $params = @{
-                    CertificatePath = $CertificatePath
-                    ApplicationPath = $appPaths
-                    VenafiSession   = $VenafiSession
+                    Path                = $CertificatePath
+                    AdditionalParameter = @{
+                        ApplicationDN = @($appPaths)
+                    }
+                    Push                = $true
                 }
 
-                Invoke-TppCertificatePush @params
+                Invoke-VdcCertificateAction @params
             }
 
         }

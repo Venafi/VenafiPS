@@ -18,8 +18,6 @@ function Test-VdcToken {
 
     .PARAMETER VaultAccessTokenName
     Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
-    Note: '-Server' parameter is required if the vault does not contain saved metadata.
-    See New-VenafiSession -VaultMetaData
 
     .PARAMETER VenafiPsToken
     Token object obtained from New-VdcToken
@@ -79,7 +77,7 @@ function Test-VdcToken {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'AccessToken')]
+    [CmdletBinding(DefaultParameterSetName = 'Session')]
     [Alias('Test-TppToken')]
     [OutputType([System.Boolean])]
 
@@ -117,7 +115,7 @@ function Test-VdcToken {
         [switch] $GrantDetail,
 
         [Parameter(ParameterSetName = 'Session')]
-        [psobject] $VenafiSession
+        [psobject] $VenafiSession = $script:VenafiSession
     )
 
     begin {
@@ -188,7 +186,7 @@ function Test-VdcToken {
                 }
                 else {
                     if ( -not $AuthServer ) {
-                        throw '-AuthServer is a required parameter as it wasn''t stored with New-VenafiSession -VaultMetadata'
+                        throw '-AuthServer is a required parameter'
                     }
 
                     $params.Server = $serverUrl

@@ -7,76 +7,78 @@ Create a new Venafi TLSPDC or TLSPC session
 
 ### KeyIntegrated (Default)
 ```
-New-VenafiSession -Server <String> [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+New-VenafiSession -Server <String> [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### VaultRefreshToken
 ```
 New-VenafiSession [-Server <String>] [-ClientId <String>] [-Scope <Hashtable>] -VaultRefreshTokenName <String>
- [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+ [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### VaultAccessToken
 ```
 New-VenafiSession [-Server <String>] [-Scope <Hashtable>] -VaultAccessTokenName <String> [-PassThru]
- [-SkipCertificateCheck] [<CommonParameters>]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### RefreshToken
 ```
 New-VenafiSession -Server <String> -ClientId <String> -RefreshToken <PSObject>
  [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru] [-SkipCertificateCheck]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### AccessToken
 ```
 New-VenafiSession -Server <String> -AccessToken <PSObject> [-VaultAccessTokenName <String>] [-PassThru]
- [-SkipCertificateCheck] [<CommonParameters>]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### TokenJwt
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Jwt <String> [-PassThru]
- [-SkipCertificateCheck] [<CommonParameters>]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### TokenCertificate
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> -Certificate <X509Certificate>
  [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru]
- [-SkipCertificateCheck] [<CommonParameters>]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### TokenIntegrated
 ```
 New-VenafiSession -Server <String> -ClientId <String> -Scope <Hashtable> [-State <String>]
  [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>] [-PassThru]
- [-SkipCertificateCheck] [<CommonParameters>]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### TokenOAuth
 ```
 New-VenafiSession -Server <String> -Credential <PSCredential> -ClientId <String> -Scope <Hashtable>
  [-State <String>] [-VaultAccessTokenName <String>] [-VaultRefreshTokenName <String>] [-AuthServer <String>]
- [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+ [-PassThru] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### KeyCredential
 ```
 New-VenafiSession -Server <String> -Credential <PSCredential> [-PassThru] [-SkipCertificateCheck]
- [<CommonParameters>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### Vaas
+### Vc
 ```
-New-VenafiSession -VcKey <PSObject> [-VaultVcKeyName <String>] [-PassThru] [-SkipCertificateCheck]
- [<CommonParameters>]
+New-VenafiSession -VcKey <PSObject> [-VcRegion <String>] [-VaultVcKeyName <String>] [-PassThru]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### VaultVcKey
 ```
-New-VenafiSession -VaultVcKeyName <String> [-PassThru] [-SkipCertificateCheck] [<CommonParameters>]
+New-VenafiSession -VaultVcKeyName <String> [-PassThru] [-SkipCertificateCheck]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -154,6 +156,12 @@ Create session against TLSPC
 ```
 
 ### EXAMPLE 12
+```
+New-VenafiSession -VcKey $cred -VcRegion 'eu'
+Create session against TLSPC in EU region
+```
+
+### EXAMPLE 13
 ```
 New-VenafiSession -VaultVcKeyName vaas-key
 Create session against TLSPC with a key stored in a vault
@@ -435,7 +443,7 @@ If providing a credential, the username is not used.
 
 ```yaml
 Type: PSObject
-Parameter Sets: Vaas
+Parameter Sets: Vc
 Aliases: VaasKey
 
 Required: True
@@ -445,14 +453,32 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -VcRegion
+TLSPC region to connect to. 
+Valid values are 'us' and 'eu'. 
+Defaults to 'us'.
+
+```yaml
+Type: String
+Parameter Sets: Vc
+Aliases:
+
+Required: False
+Position: Named
+Default value: Us
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VaultVcKeyName
 Name of the SecretManagement vault entry for the TLSPC key.
 First time use requires it to be provided with -VcKey to populate the vault.
 With subsequent uses, it can be provided standalone and the key will be retrieved without the need for -VcKey.
+The server associated with the region will be saved and restored when this parameter is used on subsequent use.
 
 ```yaml
 Type: String
-Parameter Sets: Vaas
+Parameter Sets: Vc
 Aliases: VaultVaasKeyName
 
 Required: False
@@ -501,6 +527,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

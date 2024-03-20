@@ -1,94 +1,64 @@
 # Set-VcApplication
 
 ## SYNOPSIS
-{{ Fill in the Synopsis }}
+Update an existing application
 
 ## SYNTAX
 
 ```
-Set-VcApplication [-ID] <String> [[-Name] <String>] [[-TeamOwner] <String[]>] [-NoOverwrite] [-PassThru]
- [[-VenafiSession] <PSObject>] [<CommonParameters>]
+Set-VcApplication [-Application] <String> [[-Name] <String>] [[-TeamOwner] <String[]>] [-NoOverwrite]
+ [-PassThru] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-{{ Fill in the Description }}
+Update name or team owners of an existing applications.
+Additional properties will be available in the future.
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+Set-VcApplication -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Name 'ThisAppNameIsBetter'
 ```
 
-{{ Add example description here }}
+Rename an existing application
+
+### EXAMPLE 2
+```
+Set-VcApplication -ID 'MyApp' -TeamOwner 'GreatTeam'
+```
+
+Change the owner to this team
+
+### EXAMPLE 3
+```
+Set-VcApplication -ID 'MyApp' -TeamOwner 'GreatTeam' -NoOverwrite
+```
+
+Append this team to the list of owners
 
 ## PARAMETERS
 
-### -ID
-{{ Fill ID Description }}
+### -Application
+{{ Fill Application Description }}
 
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases: applicationId
+Aliases: applicationId, ID
 
 Required: True
-Position: 0
+Position: 1
 Default value: None
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
 ### -Name
-{{ Fill Name Description }}
+Provide a new name for the application if you wish to change it.
 
 ```yaml
 Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: 1
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -NoOverwrite
-{{ Fill NoOverwrite Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -PassThru
-{{ Fill PassThru Description }}
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -TeamOwner
-{{ Fill TeamOwner Description }}
-
-```yaml
-Type: String[]
 Parameter Sets: (All)
 Aliases:
 
@@ -99,8 +69,55 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -TeamOwner
+Associate a team as an owner of this application
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -NoOverwrite
+Append to existing details as opposed to overwriting
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PassThru
+Return the newly updated object
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -VenafiSession
-{{ Fill VenafiSession Description }}
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TLSPC key can also provided.
 
 ```yaml
 Type: PSObject
@@ -108,7 +125,22 @@ Parameter Sets: (All)
 Aliases: Key
 
 Required: False
-Position: 3
+Position: 4
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ProgressAction
+{{ Fill ProgressAction Description }}
+
+```yaml
+Type: ActionPreference
+Parameter Sets: (All)
+Aliases: proga
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -119,10 +151,10 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### System.String
+### ID
 ## OUTPUTS
 
-### System.Object
+### PSCustomObject
 ## NOTES
 
 ## RELATED LINKS

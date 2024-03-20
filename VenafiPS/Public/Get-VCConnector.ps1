@@ -1,10 +1,10 @@
 ﻿function Get-VcConnector {
     <#
     .SYNOPSIS
-    Get connector/webhook info
+    Get connector info
 
     .DESCRIPTION
-    Get 1 or all connector/webhook info
+    Get details on 1 or all connectors
 
     .PARAMETER ID
     Connector ID or name
@@ -79,7 +79,7 @@
     process {
 
         $params = @{
-            UriLeaf = 'connectors'
+            UriLeaf = 'plugins'
         }
 
         if ( $PSBoundParameters.ContainsKey('ID') ) {
@@ -91,18 +91,21 @@
                 return Get-VcConnector -All | Where-Object { $_.name -eq $ID }
             }
         }
+        else {
+            $params.Body = @{'includeDisabled' = $true }
+        }
 
         $response = Invoke-VenafiRestMethod @params
 
-        if ( $response.PSObject.Properties.Name -contains 'connectors' ) {
-            $connectors = $response | Select-Object -ExpandProperty connectors
+        if ( $response.PSObject.Properties.Name -contains 'plugins' ) {
+            $connectors = $response | Select-Object -ExpandProperty 'plugins'
         }
         else {
             $connectors = $response
         }
 
         if ( $connectors ) {
-            $connectors | Select-Object @{ 'n' = 'connectorId'; 'e' = { $_.Id } }, * -ExcludeProperty Id
+            $connectors | Select-Object @{ 'n' = 'connectorId'; 'e' = { $_.Id } }, @{ 'n' = 'connectorType'; 'e' = { $_.pluginType } }, * -ExcludeProperty Id, pluginType
         }
     }
 }
