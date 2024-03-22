@@ -295,7 +295,13 @@ function Get-VdcAttribute {
             $customField = $null
 
             if ( -not $using:NoLookup ) {
+                # parallel lookup
                 $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+
+                if ( -not $customField ) {
+                    # sequential lookup
+                    $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+                }
 
                 if ( $customField ) {
                     $params.Body.AttributeName = $customField.Guid
@@ -446,7 +452,13 @@ function Get-VdcAttribute {
                 $customField = $null
 
                 if ( -not $using:NoLookup ) {
+                    # parallel lookup
                     $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+
+                    if ( -not $customField ) {
+                        # sequential lookup
+                        $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+                    }
 
                     if ( $customField ) {
                         $params.Body.AttributeName = $customField.Guid
