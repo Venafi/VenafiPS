@@ -166,7 +166,7 @@ function Invoke-VenafiParallel {
         else {
 
             if ( ([array]$InputObject).Count -gt 1 ) {
-                Write-Warning 'Upgrade to PowerShell Core v7+ to make this function execute in parallel and be much faster!'
+                Write-Warning 'Upgrade to PowerShell v7+ to make this function execute in parallel and be much faster!'
             }
 
             # ensure no $using: vars

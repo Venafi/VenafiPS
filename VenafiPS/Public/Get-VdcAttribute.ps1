@@ -161,6 +161,22 @@ function Get-VdcAttribute {
 
     Retrieve all policy attributes for the specified policy folder and class
 
+    .EXAMPLE
+    Find-VdcCertificate | Get-VdcAttribute -Attribute Contact,'Managed By','Want Renewal' -ThrottleLimit 50
+
+    Name         : mycert
+    Path         : \VED\Policy\mycert
+    TypeName     : X509 Server Certificate
+    Guid         : 1dc31664-a9f3-407c-8bf3-1e388e90a114
+    Attribute    : {@{Name=Contact; PolicyPath=\VED\Policy; Value=local:{ab2a2e32-b412-4466-b5b5-484478a99bf4}; Locked=False; Overridden=False}, @{Name=Managed By; PolicyPath=\VED\Policy;
+                Value=Aperture; Locked=True; Overridden=False}, @{Name=Want Renewal; PolicyPath=\VED\Policy; Value=0; Locked=True; Overridden=False}}
+    Contact      : local:{ab2a2e32-b412-4466-b5b5-484478a99bf4}
+    Managed By   : Aperture
+    Want Renewal : 0
+    ...
+
+    Retrieve attributes for all certificates throttling the number of threads to 50, the default is 100
+
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcAttribute/
 
