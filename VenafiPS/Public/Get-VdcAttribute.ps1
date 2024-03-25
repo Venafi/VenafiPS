@@ -18,13 +18,13 @@ function Get-VdcAttribute {
 
     .PARAMETER Attribute
     Only retrieve the value/values for this attribute.
-    For custom fields, you provided either the Guid or Label.
+    For custom fields, you can provide either the Guid or Label.
 
     .PARAMETER Class
     Get policy attributes instead of object attributes.
-    Provide the class name to retrieve the value for.
+    Provide the class name to retrieve the value(s) for.
     If unsure of the class name, add the value through the TLSPDC UI and go to Support->Policy Attributes to find it.
-    The Attribute property will contain the path where the policy was applied.
+    The Attribute property of the return object will contain the path where the policy was applied.
 
     .PARAMETER All
     Get all object attributes or policy attributes.
@@ -35,7 +35,7 @@ function Get-VdcAttribute {
     Default functionality is to perform lookup of attributes names to see if they are custom fields or not.
     If they are, pass along the guid instead of name required by the api for custom fields.
     To override this behavior and use the attribute name as is, add -NoLookup.
-    Useful if on the off chance you have a custom field with the same name as a built-in attribute.
+    Useful if, on the off chance, you have a custom field with the same name as a built-in attribute.
     Can also be used with -All and the output will contain guids instead of looked up names.
 
     .PARAMETER ThrottleLimit
@@ -175,13 +175,7 @@ function Get-VdcAttribute {
     Want Renewal : 0
     ...
 
-    Retrieve attributes for all certificates throttling the number of threads to 50, the default is 100
-
-    .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcAttribute/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcAttribute.ps1
+    Retrieve specific attributes for all certificates.  Throttle the number of threads to 50, the default is 100
 
     .LINK
     https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findpolicy.php
