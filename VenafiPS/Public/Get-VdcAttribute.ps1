@@ -410,7 +410,7 @@ function Get-VdcAttribute {
 
     end {
 
-        # paralleism is focused on the objects, not attributes
+        # parallelism is focused on the objects, not attributes
         # used when -Attribute is provided, not -All
         Invoke-VenafiParallel -InputObject $allItems -ScriptBlock {
 
@@ -419,7 +419,7 @@ function Get-VdcAttribute {
 
             if ( $using:Class -and ($thisObject.TypeName -ne 'Policy') ) {
                 Write-Error ('You are attempting to retrieve policy attributes, but {0} is not a policy path' -f $newPath)
-                continue
+                return
             }
 
             $newAttribute = $PSItem.Attribute
