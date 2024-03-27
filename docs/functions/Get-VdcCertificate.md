@@ -50,7 +50,7 @@ Get certificate info for all certs
 
 ### EXAMPLE 3
 ```
-Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions
+Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions
 ```
 
 Get certificate info for a specific cert, including historical versions of the certificate.
