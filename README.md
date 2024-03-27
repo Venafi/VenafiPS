@@ -18,13 +18,13 @@ Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.r
 
 ## Supported Platforms
 
-VenafiPS works on PowerShell v5.1 as well as cross-platform PowerShell Core on Windows, Linux, and Mac.
+VenafiPS works on PowerShell v5.1 as well as cross-platform PowerShell on Windows, Linux, and Mac.
 
-There are a few TLSPC functions which require Sodium encryption and can only be run on PowerShell Core.  Also for those functions, on Windows, the latest C++ runtime must be installed.
+There are a few TLSPC functions which require Sodium encryption and can only be run on PowerShell v7+.  Also for those functions, on Windows, the latest C++ runtime must be installed.
 
 ## Install Module
 
-VenafiPS is published to the PowerShell Gallery.  The most recent version is listed in the badge 'powershell gallery' above and can be viewed by clicking on it.  To install the module, you need to have PowerShell installed first.  On Windows, Windows PowerShell (v5.x) will already be installed, but is recommended to install PowerShell Core.  For [Linux](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) or [macOS](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7), you will need to install PowerShell Core; follow those links for guidance.  Once PowerShell is installed, start a PowerShell prompt and execute `Install-Module -Name VenafiPS` which will install from the gallery.
+VenafiPS is published to the PowerShell Gallery.  The most recent version is listed in the badge 'powershell gallery' above and can be viewed by clicking on it.  To install the module, you need to have PowerShell installed first.  On Windows, Windows PowerShell (v5.x) will already be installed, but is recommended to install the latest version of cross-platform PowerShell.  For [Linux](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) or [macOS](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7), you will need to install PowerShell; follow those links for guidance.  Once PowerShell is installed, start a PowerShell prompt and execute `Install-Module -Name VenafiPS` which will install from the gallery.
 
 > :warning: If using an older operating system, eg. Windows Server 2016, and you receive errors downloading/installing nuget when attempting to install VenafiPS, your SSL/TLS version is most likely at the default and will not work.  Execute the following before installing the module,
 ``` powershell

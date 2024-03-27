@@ -7,7 +7,7 @@ function Search-VdcHistory {
     .DESCRIPTION
     Items in the secret store matching the key/value provided will be found and their details returned with their associated 'current' item.
     As this function may return details on many items, optional parallel processing has been implemented.
-    Be sure to use PowerShell Core, v7 or greater, to take advantage.
+    Be sure to use PowerShell v7+ to take advantage.
 
     .PARAMETER Path
     Starting path to associated current items to limit the search.

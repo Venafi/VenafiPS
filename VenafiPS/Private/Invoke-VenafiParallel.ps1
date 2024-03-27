@@ -77,9 +77,6 @@ function Invoke-VenafiParallel {
         if (-not $InputObject) { return }
 
         if ( $PSVersionTable.PSVersion.Major -ge 7 ) {
-            if ( -not $NoProgress ) {
-                Write-Progress -Activity $ProgressTitle -Status "Initializing..."
-            }
 
             if ( $env:VDC_TOKEN ) {
                 $VenafiSession = $env:VDC_TOKEN
@@ -122,6 +119,10 @@ function Invoke-VenafiParallel {
         # if we only have 1 item or limited to 1 at a time, no need for parallel
         if ( ($PSVersionTable.PSVersion.Major -ge 7) -and (([array]$InputObject).Count -gt 1) -and ($ThrottleLimit -gt 1) ) {
 
+            if ( -not $NoProgress ) {
+                Write-Progress -Activity $ProgressTitle -Status "Initializing..."
+            }
+
             $thisDir = $PSScriptRoot
             $starterSb = {
 
@@ -159,18 +160,18 @@ function Invoke-VenafiParallel {
                 }
 
             } while ($completedJobsCount -lt $job.ChildJobs.Count)
+
+            Write-Progress -Completed -Activity 'done'
         }
         else {
 
             if ( ([array]$InputObject).Count -gt 1 ) {
-                Write-Warning 'Upgrade to PowerShell Core v7+ to make this function execute in parallel and be much faster!'
+                Write-Warning 'Upgrade to PowerShell v7+ to make this function execute in parallel and be much faster!'
             }
 
             # ensure no $using: vars
             $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
         }
 
-        # close the progress bar
-        Write-Progress -Completed -Activity 'done'
     }
 }
