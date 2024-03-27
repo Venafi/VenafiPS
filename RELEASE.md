@@ -1,5 +1,2 @@
-- Add `Export-VcCertificate -PKCS12`, requires PowerShell v7.1+.  [#251](https://github.com/Venafi/VenafiPS/issues/251)
-- Add `New-VenafiSession -TimeoutSec`, the default is 0 for no timeout.  If using SecretManagement, store this with the other metadata.
-- Add support for `Invoke-VcCertificateAction -Renew -AdditionalParameters`.  The use case was renewing many certificates with a different issuer.
-- Update `Set-VdcPermission` to accept just permission switches and not require a permission object.  This assists in setting a permission for the first time for a specific id.
-- Fix `Get-VdcAttribute` and `Set-VdcAttribute` recognizing custom field guids, but not labels
+- `Get-VdcAttribute` parallel enhancements to support input objects of -Path and not just -All.  [#271](https://github.com/Venafi/VenafiPS/issues/271)
+- Add `Get-VdcAttribute -ThrottleLimit`
