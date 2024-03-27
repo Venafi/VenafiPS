@@ -7,14 +7,14 @@ Get object attributes as well as policy attributes
 
 ### Attribute (Default)
 ```
-Get-VdcAttribute -Path <String> -Attribute <String[]> [-Class <String>] [-NoLookup] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-VdcAttribute -Path <String> -Attribute <String[]> [-Class <String>] [-NoLookup] [-ThrottleLimit <Int32>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VdcAttribute -Path <String> [-Class <String>] [-All] [-NoLookup] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-VdcAttribute -Path <String> [-Class <String>] [-All] [-NoLookup] [-ThrottleLimit <Int32>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -151,6 +151,25 @@ Notification Disabled                 : 0
 
 Retrieve all policy attributes for the specified policy folder and class
 
+### EXAMPLE 8
+```
+Find-VdcCertificate | Get-VdcAttribute -Attribute Contact,'Managed By','Want Renewal' -ThrottleLimit 50
+```
+
+Name         : mycert
+Path         : \VED\Policy\mycert
+TypeName     : X509 Server Certificate
+Guid         : 1dc31664-a9f3-407c-8bf3-1e388e90a114
+Attribute    : {@{Name=Contact; PolicyPath=\VED\Policy; Value=local:{ab2a2e32-b412-4466-b5b5-484478a99bf4}; Locked=False; Overridden=False}, @{Name=Managed By; PolicyPath=\VED\Policy;
+            Value=Aperture; Locked=True; Overridden=False}, @{Name=Want Renewal; PolicyPath=\VED\Policy; Value=0; Locked=True; Overridden=False}}
+Contact      : local:{ab2a2e32-b412-4466-b5b5-484478a99bf4}
+Managed By   : Aperture
+Want Renewal : 0
+...
+
+Retrieve specific attributes for all certificates. 
+Throttle the number of threads to 50, the default is 100
+
 ## PARAMETERS
 
 ### -Path
@@ -171,7 +190,7 @@ Accept wildcard characters: False
 
 ### -Attribute
 Only retrieve the value/values for this attribute.
-For custom fields, you provided either the Guid or Label.
+For custom fields, you can provide either the Guid or Label.
 
 ```yaml
 Type: String[]
@@ -187,9 +206,9 @@ Accept wildcard characters: False
 
 ### -Class
 Get policy attributes instead of object attributes.
-Provide the class name to retrieve the value for.
+Provide the class name to retrieve the value(s) for.
 If unsure of the class name, add the value through the TLSPDC UI and go to Support-\>Policy Attributes to find it.
-The Attribute property will contain the path where the policy was applied.
+The Attribute property of the return object will contain the path where the policy was applied.
 
 ```yaml
 Type: String
@@ -224,7 +243,7 @@ Accept wildcard characters: False
 Default functionality is to perform lookup of attributes names to see if they are custom fields or not.
 If they are, pass along the guid instead of name required by the api for custom fields.
 To override this behavior and use the attribute name as is, add -NoLookup.
-Useful if on the off chance you have a custom field with the same name as a built-in attribute.
+Useful if, on the off chance, you have a custom field with the same name as a built-in attribute.
 Can also be used with -All and the output will contain guids instead of looked up names.
 
 ```yaml
@@ -235,6 +254,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -ThrottleLimit
+Limit the number of threads when running in parallel; the default is 100. 
+Applicable to PS v7+ only.
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: 100
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -284,10 +319,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## NOTES
 
 ## RELATED LINKS
-
-[http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcAttribute/](http://VenafiPS.readthedocs.io/en/latest/functions/Get-VdcAttribute/)
-
-[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcAttribute.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Get-VdcAttribute.ps1)
 
 [https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findpolicy.php](https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findpolicy.php)
 

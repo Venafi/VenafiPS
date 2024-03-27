@@ -1,3 +1,8 @@
+## 6.3.1
+- `Get-VdcAttribute` parallel enhancements to support input objects of -Path and not just -All.  [#271](https://github.com/Venafi/VenafiPS/issues/271)
+- Add `Get-VdcAttribute -ThrottleLimit`
+
+
 ## 6.3.0
 - Add `Export-VcCertificate -PKCS12`, requires PowerShell v7.1+.  [#251](https://github.com/Venafi/VenafiPS/issues/251)
 - Add `New-VenafiSession -TimeoutSec`, the default is 0 for no timeout.  If using SecretManagement, store this with the other metadata.
@@ -639,6 +644,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
