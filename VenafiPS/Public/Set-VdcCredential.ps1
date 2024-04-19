@@ -192,7 +192,7 @@ function Set-VdcCredential {
 
         # ensure the values looking to be updated are appropriate for this object type
         if ( $Values ) {
-            Write-Warning "-Values will be deprecated in a future release.  Use the specific parameters for the credential type."
+            Write-Warning "-Value will be deprecated in a future release.  Use specific parameters for the credential type instead."
 
             if ( -not $CredTypes[$thisType] ) {
                 throw "Credential type '$thisType' is not supported yet.  Submit an enhancement request."
