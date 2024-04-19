@@ -170,7 +170,7 @@ function Import-VdcCertificate {
         if ( $PSBoundParameters.ContainsKey('PrivateKeyPassword') ) {
             $params.Body.PrivateKeyPassword = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
             elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
-            elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().PrivateKeyPassword }
+            elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().Password }
             else { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
         }
 
