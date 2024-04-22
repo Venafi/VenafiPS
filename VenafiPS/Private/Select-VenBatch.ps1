@@ -4,21 +4,18 @@ function Select-VenBatch {
     Batches pipeline input. 
 
     .DESCRIPTION
-    Divides large arrays of objects into batches of consistent size or batches up pipeline input into consistently sized arrays ob objects.
-    Used to ensure that processing occurs in specific sized batches. Useful for not recieving API timouts due to sending more 
-    objects than can be processed in the connection timeout period.
-
-    Returns 
+    Batches up pipeline input into consistently sized List[T]s of objects. Used to ensure that processing occurs in specific sized batches. 
+    Useful for not recieving API timouts due to sending more objects than can be processed in the connection timeout period.
 
     .PARAMETER InputObject 
     The pipeline input objects binds to this parameter one by one.
     Do not use it directly.
 
     .PARAMETER BatchSize
-    The size of the batchs the separate input into. 
+    The size of the batches to separate the pipeline input into. 
 
     .PARAMETER BatchType
-    Type of object to batch things into. Defaults to a Powershell custom object
+    Type of object to group things into. Defaults to a Powershell custom object
 
     Valid Values: "pscustomobject", "string", "int", "guid"
 
@@ -26,7 +23,7 @@ function Select-VenBatch {
     System.Collections.Generic.List[T]
 
     .EXAMPLE
-    1..6000 | Select-VenBatch -batchsize 1000
+    1..6000 | Select-VenBatch -batchsize 1000 -BatchType string
 
     #>
 
