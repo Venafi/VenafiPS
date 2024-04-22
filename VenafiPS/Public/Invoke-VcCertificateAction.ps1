@@ -28,6 +28,10 @@ function Invoke-VcCertificateAction {
     Delete a certificate.
     As only retired certificates can be deleted, this will be performed first.
 
+    .PARAMETER BatchSize
+    How many certificates to retire per retirement API call. Useful to prevent API call timeouts. 
+    Defaults to 1000
+
     .PARAMETER AdditionalParameters
     Additional items specific to the action being taken, if needed.
     See the api documentation for appropriate items, many are in the links in this help.
@@ -119,6 +123,9 @@ function Invoke-VcCertificateAction {
 
         [Parameter(Mandatory, ParameterSetName = 'Delete')]
         [switch] $Delete,
+
+        [Parameter()]
+        [int] $BatchSize = 1000,
 
         [Parameter(ParameterSetName = 'Renew')]
         [switch] $Force,
@@ -252,58 +259,72 @@ function Invoke-VcCertificateAction {
         switch ($PSCmdLet.ParameterSetName) {
             'Retire' {
                 $params.UriLeaf = "certificates/retirement"
-                $params.Body = @{"certificateIds" = $allCerts }
-
                 if ( $AdditionalParameters ) {
                     $params.Body += $AdditionalParameters
                 }
 
-                $response = Invoke-VenafiRestMethod @params
-
-                $processedIds = $response.certificates.id
-
-                foreach ($certId in $allCerts) {
-                    [pscustomobject] @{
-                        CertificateID = $certId
-                        Success       = ($certId -in $processedIds)
+                $allCerts | Select-VenBatch -batchsize $BatchSize -BatchType string | ForEach-Object {
+                    $params.Body = @{"certificateIds" = $_ }
+    
+                    $response = Invoke-VenafiRestMethod @params
+    
+                    $processedIds = $response.certificates.id
+    
+                    foreach ($certId in $_) {
+                        [pscustomobject] @{
+                            CertificateID = $certId
+                            Success       = ($certId -in $processedIds)
+                        }
                     }
                 }
+
             }
 
             'Recover' {
                 $params.UriLeaf = "certificates/recovery"
-                $params.Body = @{"certificateIds" = $allCerts }
 
                 if ( $AdditionalParameters ) {
                     $params.Body += $AdditionalParameters
                 }
 
-                $response = Invoke-VenafiRestMethod @params
-
-                $processedIds = $response.certificates.id
-
-                foreach ($certId in $allCerts) {
-                    [pscustomobject] @{
-                        CertificateID = $certId
-                        Success       = ($certId -in $processedIds)
+                $allCerts | Select-VenBatch -batchsize $BatchSize -BatchType string | ForEach-Object {
+                    $params.Body = @{"certificateIds" = $_ }
+    
+                    $response = Invoke-VenafiRestMethod @params
+    
+                    $processedIds = $response.certificates.id
+    
+                    foreach ($certId in $_) {
+                        [pscustomobject] @{
+                            CertificateID = $certId
+                            Success       = ($certId -in $processedIds)
+                        }
                     }
                 }
             }
 
             'Validate' {
                 $params.UriLeaf = "certificates/validation"
-                $params.Body = @{"certificateIds" = $allCerts }
 
-                $response = Invoke-VenafiRestMethod @params
+                $allCerts | Select-VenBatch -batchsize $BatchSize -BatchType string | ForEach-Object {
+                    $params.Body = @{"certificateIds" = $_ }
+    
+                    $response = Invoke-VenafiRestMethod @params
+                }
+
             }
 
             'Delete' {
                 $null = $allCerts | Invoke-VcCertificateAction -Retire
 
                 $params.UriLeaf = "certificates/deletion"
-                $params.Body = @{"certificateIds" = $allCerts }
 
-                $response = Invoke-VenafiRestMethod @params
+                $allCerts | Select-VenBatch -batchsize $BatchSize -BatchType string | ForEach-Object {
+                    $params.Body = @{"certificateIds" = $_ }
+    
+                    $response = Invoke-VenafiRestMethod @params
+                }
+
             }
         }
 
