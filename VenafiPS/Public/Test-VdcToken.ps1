@@ -138,14 +138,8 @@ function Test-VdcToken {
 
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
-                if ( $VenafiSession.Version -lt [Version]::new('20', '3', '0') ) {
-                    throw 'Test-VdcToken is only supported on version 20.3 and later.'
-                }
-
-                if ( $GrantDetail.IsPresent ) {
-                    if ( $VenafiSession.Version -lt [Version]::new('20', '4', '0') ) {
-                        throw 'Test-VdcToken -GrantDetail is only supported on version 20.4 and later.'
-                    }
+                if ( $VenafiSession -isnot [VenafiSession]) {
+                    throw 'Please provide a valid object for -VenafiSession'
                 }
 
                 $params.VenafiSession = $VenafiSession
