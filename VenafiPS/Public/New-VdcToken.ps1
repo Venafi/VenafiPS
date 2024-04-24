@@ -138,6 +138,16 @@ function New-VdcToken {
         [X509Certificate] $Certificate,
 
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
+        [ValidateScript(
+            {
+                if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
+                    $true
+                }
+                else {
+                    throw 'Unsupported type.  Provide either a String, SecureString, or PSCredential.'
+                }
+            }
+        )]
         [psobject] $RefreshToken,
 
         [Parameter()]
@@ -193,10 +203,7 @@ function New-VdcToken {
             $params.Body = @{
                 client_id     = $ClientId
             }
-            $params.Body.refresh_token = if ( $RefreshToken -is [string] ) { $RefreshToken }
-            elseif ($RefreshToken -is [securestring]) { ConvertFrom-SecureString -SecureString $RefreshToken -AsPlainText }
-            elseif ($RefreshToken -is [pscredential]) { $RefreshToken.GetNetworkCredential().Password }
-            else { throw 'Unsupported type for -RefreshToken.  Provide either a String, SecureString, or PSCredential.' }
+            $params.Body.refresh_token = $RefreshToken | ConvertTo-PlaintextString
         }
         else {
             # obtain new token
