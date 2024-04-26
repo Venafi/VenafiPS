@@ -109,6 +109,7 @@ function Get-VdcCredential {
         }
 
         if ( $IncludeDetail ) {
+
             $return = $response | Select-Object -Property @{
                 'n' = 'Type'
                 'e' = { $_.Classname }
