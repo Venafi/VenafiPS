@@ -117,7 +117,7 @@ function Invoke-VenafiParallel {
         if (-not $InputObject) { return }
 
         # if we only have 1 item or limited to 1 at a time, no need for parallel
-        if ( ($PSVersionTable.PSVersion.Major -ge 7) -and (([array]$InputObject).Count -gt 1) -and ($ThrottleLimit -gt 1) ) {
+        if ( ($PSVersionTable.PSVersion.Major -ge 7) -and (([array]$InputObject).Count -gt 1) -and ($ThrottleLimit -ne 100) ) {
 
             if ( -not $NoProgress ) {
                 Write-Progress -Activity $ProgressTitle -Status "Initializing..."
@@ -165,9 +165,9 @@ function Invoke-VenafiParallel {
         }
         else {
 
-            if ( ([array]$InputObject).Count -gt 1 ) {
-                Write-Warning 'Upgrade to PowerShell v7+ to make this function execute in parallel and be much faster!'
-            }
+            # if ( ([array]$InputObject).Count -gt 1 ) {
+                # Write-Warning 'Upgrade to PowerShell v7+ to make this function execute in parallel and be much faster!'
+            # }
 
             # ensure no $using: vars
             $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
