@@ -26,9 +26,12 @@ function Set-VdcCredential {
     New certificate for a certificate credential.  Provide a Base64 encoded PKCS#12.
     A private key password is also required for -Password.
 
+    .PARAMETER CertificatePath
+    Provide a path to an existing certificate object to be used as the certificate for a certificate credential.
+
     .PARAMETER Expiration
     Expiration date in UTC for the credential.  Provide a DateTime object.
-    This can be set for all credential types.
+    This can be set for username or password credentials.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -95,15 +98,38 @@ function Set-VdcCredential {
         [Parameter(ParameterSetName = 'Password', Mandatory)]
         [Parameter(ParameterSetName = 'UsernamePassword', Mandatory)]
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [Parameter(ParameterSetName = 'CertificatePath')]
+        [ValidateScript(
+            {
+                if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
+                    $true
+                }
+                else {
+                    throw 'Unsupported type.  Provide either a String, SecureString, or PSCredential.'
+                }
+            }
+        )]
         [psobject] $Password,
 
         [Parameter(ParameterSetName = 'UsernamePassword', Mandatory)]
         [string] $Username,
 
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
-        [string] $Certificate,
+        [System.Security.Cryptography.X509Certificates.X509Certificate2] $Certificate,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'CertificatePath', Mandatory)]
+        [ValidateScript( {
+                if ( $_ | Test-TppDnPath ) {
+                    $true
+                }
+                else {
+                    throw "'$_' is not a valid DN path"
+                }
+            })]
+        [string] $CertificatePath,
+
+        [Parameter(ParameterSetName = 'Password')]
+        [Parameter(ParameterSetName = 'UsernamePassword')]
         [datetime] $Expiration,
 
         [Parameter(ParameterSetName = 'OldValue', Mandatory)]
@@ -126,10 +152,7 @@ function Set-VdcCredential {
         }
 
         if ( $PSBoundParameters.ContainsKey('Password') ) {
-            $newPassword = if ( $Password -is [string] ) { $Password }
-            elseif ($Password -is [securestring]) { ConvertFrom-SecureString -SecureString $Password -AsPlainText }
-            elseif ($Password -is [pscredential]) { $Password.GetNetworkCredential().Password }
-            else { throw 'Unsupported type for -Password.  Provide either a String, SecureString, or PSCredential.' }
+            $newPassword = $Password | ConvertTo-PlaintextString
 
             $params.Body.Values += @{
                 'Name'  = 'Password'
@@ -147,10 +170,11 @@ function Set-VdcCredential {
         }
 
         if ( $Certificate ) {
+            $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($Certificate)
             $params.Body.Values += @{
                 'Name'  = 'Certificate'
                 'Type'  = 'byte[]'
-                'Value' = $Certificate
+                'Value' = $cert.Export(1)
             }
         }
 
@@ -191,7 +215,7 @@ function Set-VdcCredential {
 
 
         # ensure the values looking to be updated are appropriate for this object type
-        if ( $Values ) {
+        if ( $Value ) {
             Write-Warning "-Value will be deprecated in a future release.  Use specific parameters for the credential type instead."
 
             if ( -not $CredTypes[$thisType] ) {
@@ -234,13 +258,25 @@ function Set-VdcCredential {
                 }
             }
 
-            if ( $params.Body.FriendlyName -ne $PSCmdlet.ParameterSetName ) {
+            if ( $PSCmdlet.ParameterSetName -notlike ('{0}*' -f $params.Body.FriendlyName) ) {
                 Write-Error "$Path : the credential type for this object, $thisType, does not match the parameters provided"
                 continue
             }
         }
 
-        $params.Body.CredentialPath = $Path
+        # certificate path workaround
+        if ( $CertificatePath ) {
+            $certParams = @{
+                Path      = $Path
+                Attribute = @{
+                    'Certificate' = $CertificatePath
+                }
+            }
+
+            Set-VdcAttribute @certParams
+            return
+        }
+
 
         if ( $PSCmdlet.ShouldProcess( $Path )) {
             $response = Invoke-VenafiRestMethod @params
