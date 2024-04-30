@@ -174,7 +174,7 @@ function Invoke-VcWorkflow {
 
                     'Discover' {
                         $triggerParams.Body.workflowName = 'discoverCertificates'
-                        $triggerParams.UriLeaf = "machineidentities/$thisID/workflows"
+                        $triggerParams.UriLeaf = "machines/$thisID/workflows"
                     }
                 }
 
