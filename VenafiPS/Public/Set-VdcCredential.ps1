@@ -5,8 +5,7 @@ function Set-VdcCredential {
 
     .DESCRIPTION
     Update values for credential objects in TLSPDC.
-    The values allowed to be updated are specific to the object type.
-    See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Credentials-FriendlyName.php for details.
+
 
     .PARAMETER Path
     The full path to the credential object
@@ -38,6 +37,8 @@ function Set-VdcCredential {
     .PARAMETER Value
     Hashtable containing the keys/values to be updated.
     This parameter will be deprecated in a future release.  Use specific parameters for the credential type.
+    The values allowed to be updated are specific to the object type.
+    See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Credentials-FriendlyName.php for details.
 
     .PARAMETER VenafiSession
     Authentication for the function.
