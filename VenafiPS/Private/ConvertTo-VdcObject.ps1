@@ -17,12 +17,7 @@ function ConvertTo-VdcObject {
         [Parameter(ParameterSetName = 'Path')]
         [Parameter(ParameterSetName = 'Guid')]
         [Parameter(Mandatory, ParameterSetName = 'All')]
-        [string] $TypeName,
-
-        [Parameter(ParameterSetName = 'Path')]
-        [Parameter(ParameterSetName = 'Guid')]
-        [Alias('Key', 'AccessToken')]
-        [psobject] $VenafiSession
+        [string] $TypeName
     )
 
     begin {

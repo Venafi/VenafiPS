@@ -93,6 +93,7 @@ function Set-VdcCredential {
 
     [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'Password')]
     [Alias('Set-TppCredential')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingUsernameAndPasswordParams', '', Justification = 'Password is used for more than just username/password credentials so a credential object is not appropriate.')]
 
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
