@@ -49,7 +49,7 @@
     Append this team to the list of owners
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(SupportsShouldProcess)]
 
     param (
 
@@ -79,9 +79,9 @@
 
         $params = @{
 
-            Method        = 'Put'
-            UriRoot       = 'outagedetection/v1'
-            Body          = @{}
+            Method  = 'Put'
+            UriRoot = 'outagedetection/v1'
+            Body    = @{}
         }
 
         switch ($PSBoundParameters.Keys ) {
@@ -144,7 +144,9 @@
             Default {}
         }
 
-        $response = Invoke-VenafiRestMethod @params
+        if ( $PSCmdlet.ShouldProcess($params.Body.name, "Update application") ) {
+            $response = Invoke-VenafiRestMethod @params
+        }
 
         if ( $PassThru ) {
             $response | ConvertTo-VaasTeam
