@@ -73,6 +73,16 @@ function Revoke-VdcToken {
         [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
+        [ValidateScript(
+            {
+                if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
+                    $true
+                }
+                else {
+                    throw 'Unsupported type.  Provide either a String, SecureString, or PSCredential.'
+                }
+            }
+        )]
         [psobject] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'VenafiPsToken', ValueFromPipeline)]
@@ -112,10 +122,7 @@ function Revoke-VdcToken {
 
                 $params.Server = $target = $AuthUrl
 
-                $accessTokenString = if ( $AccessToken -is [string] ) { $AccessToken }
-                elseif ($AccessToken -is [securestring]) { ConvertFrom-SecureString -SecureString $AccessToken -AsPlainText }
-                elseif ($AccessToken -is [pscredential]) { $AccessToken.GetNetworkCredential().Password }
-                else { throw 'Unsupported type for -AccessToken.  Provide either a String, SecureString, or PSCredential.' }
+                $accessTokenString = $AccessToken | ConvertTo-PlaintextString
 
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $accessTokenString }
             }

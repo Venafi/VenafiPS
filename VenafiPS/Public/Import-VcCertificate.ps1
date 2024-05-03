@@ -96,6 +96,16 @@ function Import-VcCertificate {
         [switch] $Pkcs8,
 
         [Parameter(Mandatory)]
+        [ValidateScript(
+            {
+                if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
+                    $true
+                }
+                else {
+                    throw 'Unsupported type.  Provide either a String, SecureString, or PSCredential.'
+                }
+            }
+        )]
         [psobject] $PrivateKeyPassword,
 
         [Parameter()]
@@ -114,10 +124,7 @@ function Import-VcCertificate {
         $vSat = Get-VcData -Type 'VSatellite' -First
         if ( -not $vSat ) { throw 'No active VSatellites were found' }
 
-        $pkPassString = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
-        elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
-        elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().Password }
-        else { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
+        $pkPassString = $PrivateKeyPassword | ConvertTo-PlaintextString
 
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 

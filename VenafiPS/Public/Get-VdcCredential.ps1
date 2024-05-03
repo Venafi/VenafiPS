@@ -11,6 +11,9 @@ function Get-VdcCredential {
     .PARAMETER Path
     The full path to the credential object
 
+    .PARAMETER IncludeDetail
+    Include metadata associated with the credential in addition to the credential itself
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -23,6 +26,7 @@ function Get-VdcCredential {
     .OUTPUTS
     Password/UsernamePassword Credential - PSCredential
     Certificate Credential - X509Certificate2
+    with IncludeDetail - PSCustomObject
 
     .EXAMPLE
     Get-VdcCredential -Path '\VED\Policy\MySecureCred'
@@ -54,6 +58,9 @@ function Get-VdcCredential {
         [String] $Path,
 
         [Parameter()]
+        [switch] $IncludeDetail,
+
+        [Parameter()]
         [psobject] $VenafiSession
     )
 
@@ -81,24 +88,52 @@ function Get-VdcCredential {
         switch ($response.Classname) {
             'Password Credential' {
                 $pw = $response.Values | Where-Object { $_.Name -eq 'Password' } | Select-Object -ExpandProperty Value
-                New-Object System.Management.Automation.PSCredential((Split-Path -Path $Path -Leaf), ($pw | ConvertTo-SecureString -AsPlainText -Force))
+                $cred = New-Object System.Management.Automation.PSCredential((Split-Path -Path $Path -Leaf), ($pw | ConvertTo-SecureString -AsPlainText -Force))
             }
 
             'Username Password Credential' {
                 $un = $response.Values | Where-Object { $_.Name -eq 'Username' } | Select-Object -ExpandProperty Value
                 $pw = $response.Values | Where-Object { $_.Name -eq 'Password' } | Select-Object -ExpandProperty Value
-                New-Object System.Management.Automation.PSCredential($un, ($pw | ConvertTo-SecureString -AsPlainText -Force))
+                $cred = New-Object System.Management.Automation.PSCredential($un, ($pw | ConvertTo-SecureString -AsPlainText -Force))
             }
 
             'Certificate Credential' {
                 $cert = $response.Values | Where-Object { $_.Name -eq 'Certificate' } | Select-Object -ExpandProperty Value
                 $pw = $response.Values | Where-Object { $_.Name -eq 'Password' } | Select-Object -ExpandProperty Value
-                [System.Security.Cryptography.X509Certificates.X509Certificate2]::new([system.convert]::FromBase64String($cert), $pw)
+                $cred = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new([system.convert]::FromBase64String($cert), $pw)
             }
 
             Default {
                 throw "Credential type '$_' is not supported yet.  Submit an enhancement request."
             }
+        }
+
+        if ( $IncludeDetail ) {
+
+            $return = $response | Select-Object -Property @{
+                'n' = 'Type'
+                'e' = { $_.Classname }
+            }, *,
+            @{
+                'n' = 'Credential'
+                'e' = { $cred }
+            },
+            @{
+                'n' = 'Contact'
+                'e' = { Get-VdcIdentity -Id $_.Contact.PrefixedUniversal }
+            } -ExcludeProperty Classname, FriendlyName, Values, Result, Contact
+
+            if ( $response.Classname -eq 'Certificate Credential' ) {
+                $return | Add-Member @{
+                    'CertificateLinkPath' = ($response.Values | Where-Object { $_.Name -eq 'Certificate DN' }).Value
+                    'Password'        = if ($pw) { ConvertTo-SecureString -String $pw -AsPlainText -Force }
+                }
+            }
+
+            $return
+        }
+        else {
+            $cred
         }
     }
 }

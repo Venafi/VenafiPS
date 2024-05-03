@@ -125,6 +125,16 @@ function Import-VdcCertificate {
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
         [ValidateNotNullOrEmpty()]
+        [ValidateScript(
+            {
+                if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
+                    $true
+                }
+                else {
+                    throw 'Unsupported type.  Provide either a String, SecureString, or PSCredential.'
+                }
+            }
+        )]
         [psobject] $PrivateKeyPassword,
 
         [Parameter()]
@@ -168,10 +178,7 @@ function Import-VdcCertificate {
         }
 
         if ( $PSBoundParameters.ContainsKey('PrivateKeyPassword') ) {
-            $params.Body.PrivateKeyPassword = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
-            elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
-            elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().PrivateKeyPassword }
-            else { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
+            $params.Body.PrivateKeyPassword = $PrivateKeyPassword | ConvertTo-PlaintextString
         }
 
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {

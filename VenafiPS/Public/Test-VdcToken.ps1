@@ -97,15 +97,27 @@ function Test-VdcToken {
         [string] $AuthServer,
 
         [Parameter(Mandatory, ParameterSetName = 'AccessToken', ValueFromPipeline)]
+        [ValidateScript(
+            {
+                if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
+                    $true
+                }
+                else {
+                    throw 'Unsupported type.  Provide either a String, SecureString, or PSCredential.'
+                }
+            }
+        )]
         [psobject] $AccessToken,
 
         [Parameter(Mandatory, ParameterSetName = 'VenafiPsToken')]
-        [ValidateSet({
+        [ValidateScript(
+            {
                 if ( -not $_.Server -or -not $_.AccessToken ) {
                     throw 'Not a valid VenafiPsToken'
                 }
                 $true
-            })]
+            }
+        )]
         [pscustomobject] $VenafiPsToken,
 
         [Parameter(Mandatory, ParameterSetName = 'VaultAccessToken')]
@@ -138,14 +150,8 @@ function Test-VdcToken {
 
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
-                if ( $VenafiSession.Version -lt [Version]::new('20', '3', '0') ) {
-                    throw 'Test-VdcToken is only supported on version 20.3 and later.'
-                }
-
-                if ( $GrantDetail.IsPresent ) {
-                    if ( $VenafiSession.Version -lt [Version]::new('20', '4', '0') ) {
-                        throw 'Test-VdcToken -GrantDetail is only supported on version 20.4 and later.'
-                    }
+                if ( $VenafiSession -isnot [VenafiSession]) {
+                    throw 'Please provide a valid object for -VenafiSession'
                 }
 
                 $params.VenafiSession = $VenafiSession
@@ -154,10 +160,7 @@ function Test-VdcToken {
             'AccessToken' {
                 $params.Server = $serverUrl
 
-                $accessTokenString = if ( $AccessToken -is [string] ) { $AccessToken }
-                elseif ($AccessToken -is [securestring]) { ConvertFrom-SecureString -SecureString $AccessToken -AsPlainText }
-                elseif ($AccessToken -is [pscredential]) { $AccessToken.GetNetworkCredential().Password }
-                else { throw 'Unsupported type for -AccessToken.  Provide either a String, SecureString, or PSCredential.' }
+                $accessTokenString = $AccessToken | ConvertTo-PlaintextString
 
                 $params.Header = @{'Authorization' = 'Bearer {0}' -f $accessTokenString }
             }

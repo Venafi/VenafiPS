@@ -88,7 +88,13 @@ function Export-VcCertificate {
                 if ($PSVersionTable.PSVersion -lt [version]'7.0') {
                     throw 'Exporting private keys is only supported on PowerShell v7.0+'
                 }
-                $true
+
+                if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
+                    $true
+                }
+                else {
+                    throw 'Unsupported type.  Provide either a String, SecureString, or PSCredential.'
+                }
             }
         )]
         [psobject] $PrivateKeyPassword,
@@ -146,10 +152,7 @@ function Export-VcCertificate {
                 FullResponse = $true
             }
 
-            $pkPassString = if ( $PrivateKeyPassword -is [string] ) { $PrivateKeyPassword }
-            elseif ($PrivateKeyPassword -is [securestring]) { ConvertFrom-SecureString -SecureString $PrivateKeyPassword -AsPlainText }
-            elseif ($PrivateKeyPassword -is [pscredential]) { $PrivateKeyPassword.GetNetworkCredential().Password }
-            else { throw 'Unsupported type for -PrivateKeyPassword.  Provide either a String, SecureString, or PSCredential.' }
+            $pkPassString = $PrivateKeyPassword | ConvertTo-PlaintextString
         }
         else {
             # no need to get the entire keystore if just getting cert/chain
