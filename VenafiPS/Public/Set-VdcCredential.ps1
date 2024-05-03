@@ -11,10 +11,6 @@ function Set-VdcCredential {
     .PARAMETER Path
     The full path to the credential object
 
-    .PARAMETER Value
-    Hashtable containing the keys/values to be updated.
-    This parameter will be deprecated in a future release.  Use specific parameters for the credential type.
-
     .PARAMETER Password
     New password for a password, username/password, or certificate credential.  Provide a string, SecureString, or PSCredential.
 
@@ -23,15 +19,25 @@ function Set-VdcCredential {
     A password is also required.
 
     .PARAMETER Certificate
-    New certificate for a certificate credential.  Provide a Base64 encoded PKCS#12.
+    PKCS #12 certificate object for a certificate credential.
+    You can provide either a certificate object or CertificatePath to a .p12 or .pfx file.
     A private key password is also required for -Password.
 
     .PARAMETER CertificatePath
-    Provide a path to an existing certificate object to be used as the certificate for a certificate credential.
+    Path to a certificate for a certificate credential.
+    You can provide either a local path to a .p12 or .pfx file or a certificate object with -Certificate.
+    A private key password is also required for -Password.
+
+    .PARAMETER CertificateLinkPath
+    Provide a path to an existing TLSPDC certificate object to be used as the certificate for a certificate credential.
 
     .PARAMETER Expiration
     Expiration date in UTC for the credential.  Provide a DateTime object.
     This can be set for username or password credentials.
+
+    .PARAMETER Value
+    Hashtable containing the keys/values to be updated.
+    This parameter will be deprecated in a future release.  Use specific parameters for the credential type.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -98,7 +104,7 @@ function Set-VdcCredential {
         [Parameter(ParameterSetName = 'Password', Mandatory)]
         [Parameter(ParameterSetName = 'UsernamePassword', Mandatory)]
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
-        [Parameter(ParameterSetName = 'CertificatePath')]
+        [Parameter(ParameterSetName = 'CertificatePath', Mandatory)]
         [ValidateScript(
             {
                 if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
@@ -115,21 +121,51 @@ function Set-VdcCredential {
         [string] $Username,
 
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
+        [ValidateScript(
+            {
+                if ( -not $_.HasPrivateKey ) {
+                    throw 'Certificate must contain a private key'
+                }
+                $true
+            }
+        )]
         [System.Security.Cryptography.X509Certificates.X509Certificate2] $Certificate,
 
-        [Parameter(ParameterSetName = 'CertificatePath', Mandatory)]
-        [ValidateScript( {
+        [Parameter(Mandatory, ParameterSetName = 'CertificatePath', ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [ValidateScript(
+            {
+                if ( -not (Test-Path -Path (Resolve-Path -Path $_) -PathType Leaf) ) {
+                    throw "'$_' is not a valid file path"
+                }
+
+                if ([System.IO.Path]::GetExtension((Resolve-Path -Path $_)) -notin '.pfx', '.p12') {
+                    throw "$_ is not a .p12 or .pfx file"
+                }
+
+                $true
+            }
+        )]
+        [String] $CertificatePath,
+
+        [Parameter(ParameterSetName = 'CertificateLinkPath', Mandatory)]
+        [ValidateScript(
+            {
                 if ( $_ | Test-TppDnPath ) {
                     $true
                 }
                 else {
                     throw "'$_' is not a valid DN path"
                 }
-            })]
-        [string] $CertificatePath,
+            }
+        )]
+        [string] $CertificateLinkPath,
 
         [Parameter(ParameterSetName = 'Password')]
         [Parameter(ParameterSetName = 'UsernamePassword')]
+        [Parameter(ParameterSetName = 'Certificate')]
+        [Parameter(ParameterSetName = 'CertificatePath')]
+        [Parameter(ParameterSetName = 'CertificateLinkPath')]
         [datetime] $Expiration,
 
         [Parameter(ParameterSetName = 'OldValue', Mandatory)]
@@ -170,11 +206,24 @@ function Set-VdcCredential {
         }
 
         if ( $Certificate ) {
-            $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($Certificate)
             $params.Body.Values += @{
                 'Name'  = 'Certificate'
                 'Type'  = 'byte[]'
-                'Value' = $cert.Export(1)
+                'Value' = [System.Convert]::ToBase64String($Certificate.Export(1))
+            }
+        }
+
+        if ( $CertificatePath ) {
+            if ($PSVersionTable.PSVersion.Major -lt 6) {
+                $cert = Get-Content $CertificatePath -Encoding Byte
+            }
+            else {
+                $cert = Get-Content $CertificatePath -AsByteStream
+            }
+            $params.Body.Values += @{
+                'Name'  = 'Certificate'
+                'Type'  = 'byte[]'
+                'Value' = [System.Convert]::ToBase64String($cert)
             }
         }
 
@@ -265,11 +314,11 @@ function Set-VdcCredential {
         }
 
         # certificate path workaround
-        if ( $CertificatePath ) {
+        if ( $CertificateLinkPath ) {
             $certParams = @{
                 Path      = $Path
                 Attribute = @{
-                    'Certificate' = $CertificatePath
+                    'Certificate' = $CertificateLinkPath
                 }
             }
 
@@ -279,6 +328,7 @@ function Set-VdcCredential {
 
 
         if ( $PSCmdlet.ShouldProcess( $Path )) {
+            $params.Body.CredentialPath = $Path
             $response = Invoke-VenafiRestMethod @params
 
             if ( $response.Result -ne 1 ) {
