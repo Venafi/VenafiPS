@@ -71,6 +71,11 @@ function Set-VdcCredential {
 
     Set a new password for a password credential and set the expiration date to 30 days from now
 
+    .EXAMPLE
+    Set-VdcCredential -Path '\VED\Policy\Certificate Credential' -CertificateLinkPath '\VED\Policy\Certificates\newcert.domain.com'
+
+    Set an existing TLSPDC certificate object as the certificate for a certificate credential
+
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Set-VdcCredential/
 
@@ -313,7 +318,7 @@ function Set-VdcCredential {
             }
         }
 
-        # certificate path workaround
+        # certificate link path workaround
         if ( $CertificateLinkPath ) {
             $certParams = @{
                 Path      = $Path
