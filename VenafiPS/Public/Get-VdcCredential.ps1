@@ -125,7 +125,7 @@ function Get-VdcCredential {
 
             if ( $response.Classname -eq 'Certificate Credential' ) {
                 $return | Add-Member @{
-                    'CertificatePath' = ($response.Values | Where-Object { $_.Name -eq 'Certificate DN' }).Value
+                    'CertificateLinkPath' = ($response.Values | Where-Object { $_.Name -eq 'Certificate DN' }).Value
                     'Password'        = if ($pw) { ConvertTo-SecureString -String $pw -AsPlainText -Force }
                 }
             }
