@@ -150,8 +150,11 @@ function Test-VdcToken {
 
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
+                if ( -not $VenafiSession ) {
+                    throw [System.ArgumentNullException] 'VenafiSession'
+                }
                 if ( $VenafiSession -isnot [VenafiSession]) {
-                    throw 'Please provide a valid object for -VenafiSession'
+                    throw [System.ArgumentException]::new('Must provide a VenafiSession object', 'VenafiSession')
                 }
 
                 $params.VenafiSession = $VenafiSession
