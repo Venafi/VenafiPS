@@ -6,8 +6,8 @@ Get credential details
 ## SYNTAX
 
 ```
-Get-VdcCredential [-Path] <String> [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-VdcCredential [-Path] <String> [-IncludeDetail] [[-VenafiSession] <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -36,6 +36,21 @@ Required: True
 Position: 1
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -IncludeDetail
+Include metadata associated with the credential in addition to the credential itself
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -82,6 +97,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### Password/UsernamePassword Credential - PSCredential
 ### Certificate Credential - X509Certificate2
+### with IncludeDetail - PSCustomObject
 ## NOTES
 
 ## RELATED LINKS
