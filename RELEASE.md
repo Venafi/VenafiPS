@@ -1,2 +1,4 @@
-- `Get-VdcAttribute` parallel enhancements to support input objects of -Path and not just -All.  [#271](https://github.com/Venafi/VenafiPS/issues/271)
-- Add `Get-VdcAttribute -ThrottleLimit`
+- Add `Get-VdcCredential -IncludeDetail` to provide additional credential information eg. expiration, path to linked certificate, and more
+- Add discrete parameters to `Set-VdcCredential` to simplify updating credentials; `-Value` will be deprecated. Add support for updating the Expiration and setting a Credential 'link' to an existing certificate in TLSPDC.
+- Update `Invoke-VcWorkflow` API endpoint  [#275](https://github.com/Venafi/VenafiPS/issues/275)
+- Fix `Test-VdcToken -VenafiSession` when the parameter value is null/empty [#274](https://github.com/Venafi/VenafiPS/issues/274)
