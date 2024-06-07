@@ -21,13 +21,13 @@
     A TLSPC key can also be provided.
 
     .INPUTS
-    CertificateId
+    ID
 
     .OUTPUTS
     PSCustomObject
 
     .EXAMPLE
-    Get-VdcCertificate -CertificateId 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+    Get-VdcCertificate -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
     Get certificate info for a specific cert
 
