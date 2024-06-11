@@ -35,13 +35,13 @@
     If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
-    CertificateId
+    ID
 
     .OUTPUTS
     PSCustomObject
 
     .EXAMPLE
-    Get-VdcCertificate -CertificateId '\ved\policy\mycert.com'
+    Get-VdcCertificate -ID '\ved\policy\mycert.com'
 
     Get certificate info for a specific cert
 
@@ -51,12 +51,12 @@
     Get certificate info for all certs
 
     .EXAMPLE
-    Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions
+    Get-VdcCertificate -ID '\ved\policy\mycert.com' -IncludePreviousVersions
 
     Get certificate info for a specific cert, including historical versions of the certificate.
 
     .EXAMPLE
-    Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions -ExcludeRevoked -ExcludeExpired
+    Get-VdcCertificate -ID '\ved\policy\mycert.com' -IncludeTppPreviousVersions -ExcludeRevoked -ExcludeExpired
 
     Get certificate info for a specific cert, including historical versions of the certificate that are not revoked or expired.
 
