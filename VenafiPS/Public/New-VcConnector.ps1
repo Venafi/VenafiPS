@@ -65,10 +65,10 @@ function New-VcConnector {
     process {
 
         $manifestObject = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
-        $connectorType = $manifestObject.pluginType
+        $manifest = $manifestObject.manifest
 
         # ensure deployment is provided which is not needed during simulator testing
-        if ( -not $manifestObject.deployment ) {
+        if ( -not $manifest.deployment ) {
             throw 'A deployment element was not found in the manifest.  See https://github.com/Venafi/vmware-avi-connector?tab=readme-ov-file#manifest for details.'
         }
 
@@ -76,12 +76,16 @@ function New-VcConnector {
             Method  = 'Post'
             UriLeaf = 'plugins'
             Body    = @{
-                manifest   = $manifestObject
-                pluginType = $connectorType
+                manifest   = $manifest
+                pluginType = $manifest.pluginType
             }
         }
 
-        if ( $PSCmdlet.ShouldProcess($manifestObject.name, 'Create connector') ) {
+        if ( $manifestObject.maintainer ) {
+            $params.Body.maintainer = $manifestObject.maintainer
+        }
+
+        if ( $PSCmdlet.ShouldProcess($manifestObject.manifest.name, 'Create connector') ) {
 
             try {
                 $response = Invoke-VenafiRestMethod @params

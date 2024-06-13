@@ -99,6 +99,7 @@
         switch ($PSCmdLet.ParameterSetName) {
             'Manifest' {
                 $manifestObject = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
+                $manifest = $manifestObject.manifest
 
                 # if connector is provided, update that specific one
                 # if not, use the name from the manifest to find the existing connector id
@@ -107,15 +108,15 @@
                     $connectorId = $ID
                 }
                 else {
-                    $thisConnector = Get-VcConnector -ID $manifestObject.name
+                    $thisConnector = Get-VcConnector -ID $manifest.name
                     if ( -not $thisConnector ) {
-                        throw ('An existing connector with the name {0} was not found' -f $manifestObject.name)
+                        throw ('An existing connector with the name {0} was not found' -f $manifest.name)
                     }
                     $connectorId = $thisConnector.connectorId
                 }
 
                 # ensure deployment is provided which is not needed during simulator testing
-                if ( -not $manifestObject.deployment ) {
+                if ( -not $manifest.deployment ) {
                     throw 'A deployment element was not found in the manifest.  See https://github.com/Venafi/vmware-avi-connector?tab=readme-ov-file#manifest for details.'
                 }
 
@@ -123,11 +124,11 @@
                     Method  = 'Patch'
                     UriLeaf = "plugins/$connectorId"
                     Body    = @{
-                        manifest = $manifestObject
+                        manifest = $manifest
                     }
                 }
 
-                if ( $PSCmdlet.ShouldProcess($manifestObject.name, 'Update connector') ) {
+                if ( $PSCmdlet.ShouldProcess($manifest.name, 'Update connector') ) {
                     $null = Invoke-VenafiRestMethod @params
                 }
             }
