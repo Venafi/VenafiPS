@@ -104,9 +104,15 @@
     }
 
     process {
-        $certIDs = Get-VcData -InputObject $Certificate -Type 'Certificate'
-        foreach ($certID in @($certIDs)) {
-            $allCerts.Add($certID)
+        if ( Test-IsGuid($Certificate) ) {
+            $allCerts.Add($Certificate)
+        }
+        else {
+            # search by name
+            $certIDs = Get-VcData -InputObject $Certificate -Type 'Certificate'
+            foreach ($certID in @($certIDs)) {
+                $allCerts.Add($certID)
+            }
         }
     }
 
