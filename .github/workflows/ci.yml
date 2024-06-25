@@ -73,7 +73,7 @@ jobs:
         run: |
           Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
           Set-PSRepository psgallery -InstallationPolicy trusted
-          Install-Module -Name Pester -RequiredVersion 5.0.4 -confirm:$false -Force
+          Install-Module -Name Pester -confirm:$false -Force
           import-module Pester
           $config = [PesterConfiguration]::Default
           $config.Run.Path = '${{ github.workspace }}/Tests'
@@ -96,7 +96,7 @@ jobs:
       run: |
         Write-host $PSVersionTable.PSVersion.Major $PSVersionTable.PSRemotingProtocolVersion.Minor
         Set-PSRepository psgallery -InstallationPolicy trusted
-        Install-Module -Name Pester -RequiredVersion 5.0.4 -Confirm:$false -Force
+        Install-Module -Name Pester -Confirm:$false -Force
         import-module Pester
         $config = [PesterConfiguration]::Default
         $config.Run.Path = '${{ github.workspace }}/Tests'

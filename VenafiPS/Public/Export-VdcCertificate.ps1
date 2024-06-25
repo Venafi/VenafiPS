@@ -1,7 +1,7 @@
 function Export-VdcCertificate {
     <#
     .SYNOPSIS
-    Expoort certificate data from TLSPDC
+    Export certificate data from TLSPDC
 
     .DESCRIPTION
     Export certificate data
