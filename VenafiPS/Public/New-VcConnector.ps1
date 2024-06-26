@@ -8,8 +8,16 @@ function New-VcConnector {
 
     .PARAMETER ManifestPath
     Path to an existing manifest.
-    Ensure the manifest has the deployment element which is not needed when testing in the simulator.
-    See https://github.com/Venafi/vmware-avi-connector?tab=readme-ov-file#manifest for details.
+    Manifest can either be directly from the simulator or a full manifest with deployment element.
+    If the manifest is from the simulator, the DeploymentImage parameter is required.
+
+    .PARAMETER DeploymentImage
+    Path to the already uploaded docker image.
+    This parameter is only to be used for a manifest directly from the simulator.
+
+    .PARAMETER Maintainer
+    Optional value to specify the organization, individual, email, location, or website responsible for maintaining the connector
+    This parameter is only to be used for a manifest directly from the simulator.
 
     .PARAMETER PassThru
     Return newly created connector object
@@ -25,22 +33,28 @@ function New-VcConnector {
     .EXAMPLE
     New-VcConnector -ManifestPath '/tmp/manifest.json'
 
-    Create a new connector
+    Create a new connector from a full manifest
 
     .EXAMPLE
     New-VcConnector -ManifestPath '/tmp/manifest.json' -PassThru
 
     Create a new connector and return the newly created connector object
 
+    .EXAMPLE
+    New-VcConnector -ManifestPath '/tmp/manifest.json' -DeploymentImage 'docker.io/venafi/connector:latest@sha256:1234567890abcdef'
+
+    Create a new connector from a manifest from the simulator
+
     .LINK
     https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins
 
     #>
 
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'FullManifest')]
 
     param (
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'FromSimulator')]
+        [Parameter(Mandatory, ParameterSetName = 'FullManifest')]
         [ValidateScript(
             {
                 if ( -not ( Test-Path $_ ) ) {
@@ -50,6 +64,12 @@ function New-VcConnector {
             }
         )]
         [string] $ManifestPath,
+
+        [Parameter(Mandatory, ParameterSetName = 'FromSimulator')]
+        [string] $DeploymentImage,
+
+        [Parameter(ParameterSetName = 'FromSimulator')]
+        [string] $Maintainer,
 
         [Parameter()]
         [switch] $PassThru,
@@ -65,27 +85,42 @@ function New-VcConnector {
     process {
 
         $manifestObject = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
-        $manifest = $manifestObject.manifest
 
-        # ensure deployment is provided which is not needed during simulator testing
-        if ( -not $manifest.deployment ) {
-            throw 'A deployment element was not found in the manifest.  See https://github.com/Venafi/vmware-avi-connector?tab=readme-ov-file#manifest for details.'
+        if ( $PSCmdlet.ParameterSetName -eq 'FromSimulator' ) {
+
+            if ( $manifestObject.manifest -or !$manifestObject.name ) {
+                throw 'This manifest is not from the simulator'
+            }
+
+            $manifestBody = @{
+                pluginType = $manifestObject.pluginType
+                manifest   = $manifestObject
+            }
+            $manifestBody.manifest | Add-Member @{'deployment' = @{
+                    image             = $DeploymentImage
+                    'executionTarget' = 'vsat'
+                }
+            }
+
+            if ( $Maintainer ) {
+                $manifestBody.maintainer = $Maintainer
+            }
+        }
+        else {
+            # full manifest with deployment details, validate we have the structure and data needed
+            if ( !$manifestObject.manifest -or !$manifestObject.manifest.deployment ) {
+                throw 'This is not the correct manifest structure.  See https://developer.venafi.com/tlsprotectcloud/reference/post-v1-plugins.'
+            }
+            $manifestBody = $manifestObject
         }
 
         $params = @{
             Method  = 'Post'
             UriLeaf = 'plugins'
-            Body    = @{
-                manifest   = $manifest
-                pluginType = $manifest.pluginType
-            }
+            Body    = $manifestBody
         }
 
-        if ( $manifestObject.maintainer ) {
-            $params.Body.maintainer = $manifestObject.maintainer
-        }
-
-        if ( $PSCmdlet.ShouldProcess($manifestObject.manifest.name, 'Create connector') ) {
+        if ( $PSCmdlet.ShouldProcess($manifestBody.manifest.name, 'Create connector') ) {
 
             try {
                 $response = Invoke-VenafiRestMethod @params
