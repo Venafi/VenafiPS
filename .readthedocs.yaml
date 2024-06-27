@@ -17,3 +17,6 @@ python:
 
 mkdocs:
   configuration: mkdocs.yml
+
+formats:
+  - pdf
