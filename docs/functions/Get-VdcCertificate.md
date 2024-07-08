@@ -36,7 +36,7 @@ Get certificate information, either all available to the api key provided or by 
 
 ### EXAMPLE 1
 ```
-Get-VdcCertificate -CertificateId '\ved\policy\mycert.com'
+Get-VdcCertificate -ID '\ved\policy\mycert.com'
 ```
 
 Get certificate info for a specific cert
@@ -50,14 +50,14 @@ Get certificate info for all certs
 
 ### EXAMPLE 3
 ```
-Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludePreviousVersions
+Get-VdcCertificate -ID '\ved\policy\mycert.com' -IncludePreviousVersions
 ```
 
 Get certificate info for a specific cert, including historical versions of the certificate.
 
 ### EXAMPLE 4
 ```
-Get-VdcCertificate -CertificateId '\ved\policy\mycert.com' -IncludeTppPreviousVersions -ExcludeRevoked -ExcludeExpired
+Get-VdcCertificate -ID '\ved\policy\mycert.com' -IncludeTppPreviousVersions -ExcludeRevoked -ExcludeExpired
 ```
 
 Get certificate info for a specific cert, including historical versions of the certificate that are not revoked or expired.
@@ -197,7 +197,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### CertificateId
+### ID
 ## OUTPUTS
 
 ### PSCustomObject

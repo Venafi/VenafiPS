@@ -40,6 +40,7 @@ nav:
     - ConvertTo-VdcPath: functions/ConvertTo-VdcPath.md
     - Export-VcCertificate: functions/Export-VcCertificate.md
     - Export-VdcCertificate: functions/Export-VdcCertificate.md
+    - Export-VdcVaultObject: functions/Export-VdcVaultObject.md
     - Find-VcCertificate: functions/Find-VcCertificate.md
     - Find-VcCertificateInstance: functions/Find-VcCertificateInstance.md
     - Find-VcCertificateRequest: functions/Find-VcCertificateRequest.md

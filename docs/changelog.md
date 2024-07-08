@@ -1,3 +1,10 @@
+## 6.4.0
+- Add `Export-VdcVaultObject` to retrieve historical certificates.  This function supports certificates, keys, and p12.  [#280](https://github.com/Venafi/VenafiPS/issues/280)
+- Add support in `New-VcConnector` for manifests from the simulator and 'full' ones which already have deployment details
+- Fix `Add-VcCertificateAssociation` when piping certificate objects, [#284](https://github.com/Venafi/VenafiPS/issues/284)
+- Fix examples in `Get-VcCertificate` and `Get-VdcCertificate` referencing old parameter names, [#279](https://github.com/Venafi/VenafiPS/issues/279)
+
+
 ## 6.3.2
 - Add `Get-VdcCredential -IncludeDetail` to provide additional credential information eg. expiration, path to linked certificate, and more
 - Add discrete parameters to `Set-VdcCredential` to simplify updating credentials; `-Value` will be deprecated. Add support for updating the Expiration and setting a Credential 'link' to an existing certificate in TLSPDC.
@@ -650,6 +657,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

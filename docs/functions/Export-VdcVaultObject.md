@@ -1,84 +1,58 @@
-# Get-VcCertificate
+# Export-VdcVaultObject
 
 ## SYNOPSIS
-Get certificate information
+Export an object from the vault
 
 ## SYNTAX
 
-### Id (Default)
 ```
-Get-VcCertificate [-ID] <String> [-IncludeVaasOwner] [-VenafiSession <PSObject>]
+Export-VdcVaultObject [-ID] <Int32> [-OutPath] <String> [[-VenafiSession] <PSObject>]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### All
-```
-Get-VcCertificate [-All] [-IncludeVaasOwner] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
-```
-
 ## DESCRIPTION
-Get certificate information, either all available to the api key provided or by id or zone.
+Export different object types from the vault.
+The currently supported types are certificate, key, and PKCS12.
+If the type is not supported, the base64 data will be returned as is.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VdcCertificate -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Export-VdcVaultObject -ID 12345 -OutPath 'c:\temp'
 ```
 
-Get certificate info for a specific cert
-
-### EXAMPLE 2
-```
-Get-VdcCertificate -All
-```
-
-Get certificate info for all certs
+Get vault object and save to a file
 
 ## PARAMETERS
 
 ### -ID
-Certificate identifier, the ID or certificate name.
+ID of the vault object to export
 
 ```yaml
-Type: String
-Parameter Sets: Id
-Aliases: certificateID
+Type: Int32
+Parameter Sets: (All)
+Aliases: VaultId
 
 Required: True
 Position: 1
-Default value: None
+Default value: 0
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -All
-Retrieve all certificates
+### -OutPath
+Folder path to save the certificate/key to. 
+The name of the file will be determined automatically.
 
 ```yaml
-Type: SwitchParameter
-Parameter Sets: All
-Aliases:
-
-Required: True
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -IncludeVaasOwner
-Retrieve extended application owner info
-
-```yaml
-Type: SwitchParameter
+Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: False
-Position: Named
-Default value: False
+Required: True
+Position: 2
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -86,7 +60,8 @@ Accept wildcard characters: False
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TLSPC key can also be provided.
+A TLSPDC token can also be provided.
+If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
 ```yaml
 Type: PSObject
@@ -94,7 +69,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 3
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -123,7 +98,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### ID
 ## OUTPUTS
 
-### PSCustomObject
+### PSCustomObject if unhandled type, otherwise saves the object to a file
 ## NOTES
 
 ## RELATED LINKS

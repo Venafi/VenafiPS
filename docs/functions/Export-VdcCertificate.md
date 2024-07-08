@@ -1,7 +1,7 @@
 # Export-VdcCertificate
 
 ## SYNOPSIS
-Expoort certificate data from TLSPDC
+Export certificate data from TLSPDC
 
 ## SYNTAX
 
