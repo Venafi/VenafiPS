@@ -1,4 +1,4 @@
-- Add `Get-VdcCredential -IncludeDetail` to provide additional credential information eg. expiration, path to linked certificate, and more
-- Add discrete parameters to `Set-VdcCredential` to simplify updating credentials; `-Value` will be deprecated. Add support for updating the Expiration and setting a Credential 'link' to an existing certificate in TLSPDC.
-- Update `Invoke-VcWorkflow` API endpoint  [#275](https://github.com/Venafi/VenafiPS/issues/275)
-- Fix `Test-VdcToken -VenafiSession` when the parameter value is null/empty [#274](https://github.com/Venafi/VenafiPS/issues/274)
+- Add `Export-VdcVaultObject` to retrieve historical certificates.  This function supports certificates, keys, and p12.  [#280](https://github.com/Venafi/VenafiPS/issues/280)
+- Add support in `New-VcConnector` for manifests from the simulator and 'full' ones which already have deployment details
+- Fix `Add-VcCertificateAssociation` when piping certificate objects, [#284](https://github.com/Venafi/VenafiPS/issues/284)
+- Fix examples in `Get-VcCertificate` and `Get-VdcCertificate` referencing old parameter names, [#279](https://github.com/Venafi/VenafiPS/issues/279)
