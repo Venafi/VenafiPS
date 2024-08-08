@@ -1,3 +1,7 @@
+## 6.4.1
+- Fix `Import-VdcCertificate -Data` failure due to being converted to an array.  [#290](https://github.com/Venafi/VenafiPS/issues/290)
+
+
 ## 6.4.0
 - Add `Export-VdcVaultObject` to retrieve historical certificates.  This function supports certificates, keys, and p12.  [#280](https://github.com/Venafi/VenafiPS/issues/280)
 - Add support in `New-VcConnector` for manifests from the simulator and 'full' ones which already have deployment details
@@ -657,6 +661,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

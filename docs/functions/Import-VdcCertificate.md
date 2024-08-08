@@ -7,28 +7,28 @@ Import one or more certificates
 
 ### ByFile (Default)
 ```
-Import-VdcCertificate -PolicyPath <String> -Path <String[]> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
+Import-VdcCertificate -PolicyPath <String> -Path <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
  [-PrivateKeyPassword <PSObject>] [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByFileWithPrivateKey
 ```
-Import-VdcCertificate -PolicyPath <String> -Path <String[]> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
+Import-VdcCertificate -PolicyPath <String> -Path <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
  -PrivateKey <String> -PrivateKeyPassword <PSObject> [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByDataWithPrivateKey
 ```
-Import-VdcCertificate -PolicyPath <String> -Data <String[]> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
+Import-VdcCertificate -PolicyPath <String> -Data <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
  -PrivateKey <String> -PrivateKeyPassword <PSObject> [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByData
 ```
-Import-VdcCertificate -PolicyPath <String> -Data <String[]> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
+Import-VdcCertificate -PolicyPath <String> -Data <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
  [-PrivateKeyPassword <PSObject>] [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
@@ -42,20 +42,24 @@ PowerShell v5 will execute sequentially and v7 will run in parallel.
 ### EXAMPLE 1
 ```
 Import-VdcCertificate -PolicyPath \ved\policy\mycerts -Path c:\www.VenafiPS.com.cer
-Import a certificate
 ```
+
+Import a certificate
 
 ### EXAMPLE 2
 ```
 gci c:\certs | Import-VdcCertificate -PolicyPath \ved\policy\mycerts
-Import multiple certificates
 ```
+
+Import multiple certificates. 
+On PS v7+, the certificates will be imported in parallel.
 
 ### EXAMPLE 3
 ```
-Import-VdcCertificate -PolicyPath mycerts -Path (gci c:\certs).FullName
-Import multiple certificates in parallel on PS v6+.  \ved\policy will be appended to the policy path.
+Import-VdcCertificate -PolicyPath mycerts -Data $certData
 ```
+
+Import a certificate from data instead of a path
 
 ## PARAMETERS
 
@@ -80,7 +84,7 @@ Path to a certificate file.
 Provide either this or -Data.
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: ByFile, ByFileWithPrivateKey
 Aliases: FullName
 
@@ -96,7 +100,7 @@ Contents of a certificate to import.
 Provide either this or -Path.
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: ByDataWithPrivateKey, ByData
 Aliases:
 
