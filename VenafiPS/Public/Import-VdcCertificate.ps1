@@ -59,15 +59,18 @@ function Import-VdcCertificate {
 
     .EXAMPLE
     Import-VdcCertificate -PolicyPath \ved\policy\mycerts -Path c:\www.VenafiPS.com.cer
+
     Import a certificate
 
     .EXAMPLE
     gci c:\certs | Import-VdcCertificate -PolicyPath \ved\policy\mycerts
-    Import multiple certificates
+
+    Import multiple certificates.  On PS v7+, the certificates will be imported in parallel.
 
     .EXAMPLE
-    Import-VdcCertificate -PolicyPath mycerts -Path (gci c:\certs).FullName
-    Import multiple certificates in parallel on PS v6+.  \ved\policy will be appended to the policy path.
+    Import-VdcCertificate -PolicyPath mycerts -Data $certData
+
+    Import a certificate from data instead of a path
 
     .INPUTS
     Path, Data
@@ -100,12 +103,12 @@ function Import-VdcCertificate {
                 }
             })]
         [Alias('FullName')]
-        [String[]] $Path,
+        [String] $Path,
 
         [Parameter(Mandatory, ParameterSetName = 'ByData', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [String[]] $Data,
+        [String] $Data,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]

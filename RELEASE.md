@@ -1,4 +1,1 @@
-- Add `Export-VdcVaultObject` to retrieve historical certificates.  This function supports certificates, keys, and p12.  [#280](https://github.com/Venafi/VenafiPS/issues/280)
-- Add support in `New-VcConnector` for manifests from the simulator and 'full' ones which already have deployment details
-- Fix `Add-VcCertificateAssociation` when piping certificate objects, [#284](https://github.com/Venafi/VenafiPS/issues/284)
-- Fix examples in `Get-VcCertificate` and `Get-VdcCertificate` referencing old parameter names, [#279](https://github.com/Venafi/VenafiPS/issues/279)
+- Fix `Import-VdcCertificate -Data` failure due to being converted to an array.  [#290](https://github.com/Venafi/VenafiPS/issues/290)
