@@ -201,7 +201,7 @@ begin {
             }
 
             # Write the output content back to the file
-            $outputContent | Join-String -Separator "`n"
+            $outputContent -join "`n"
         }
     }
 }
