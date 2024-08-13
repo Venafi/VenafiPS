@@ -163,6 +163,47 @@ begin {
             }
         }
     }
+
+    function Remove-Sig {
+
+        [CmdletBinding()]
+        param (
+            [Parameter(Mandatory, ValueFromPipeline)]
+            [string] $Path
+        )
+
+        process {
+
+            # Define start and end markers
+            $startMarker = "# SIG # Begin signature block"
+            $endMarker = "# SIG # End signature block"
+
+            # Read the file content
+            $fileContent = Get-Content $Path
+
+            # Initialize flags
+            $insideSection = $false
+            $outputContent = @()
+
+            # Process each line
+            foreach ($line in $fileContent) {
+                if ($line -match $startMarker) {
+                    $insideSection = $true
+                    continue
+                }
+                if ($line -match $endMarker) {
+                    $insideSection = $false
+                    continue
+                }
+                if (-not $insideSection) {
+                    $outputContent += $line
+                }
+            }
+
+            # Write the output content back to the file
+            $outputContent | Join-String -Separator "`n"
+        }
+    }
 }
 
 process {
@@ -179,7 +220,7 @@ process {
     $enumFiles = Get-ChildItem "$moduleRootPath\Enum"
     $classFiles = Get-ChildItem "$moduleRootPath\Classes"
 
-    $scriptCommands = Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw) -AstType $astTypes
+    $scriptCommands = @(Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw) -AstType $astTypes)
 
     $functionsToAdd = $enumsToAdd = @()
 
@@ -210,6 +251,33 @@ process {
         }
     }
 
+    $addToScript = [System.Text.StringBuilder]::new()
+
+    $null = $addToScript.AppendLine(('# Including VenafiPS code v{0}' -f $module.Module.Version.ToString()))
+
+    # add enums into script
+    foreach ($thisEnum in $enumsToAdd) {
+        $raw = Remove-Sig -Path $thisEnum.FullName
+
+        $fullEnum = "`r`n{0}`r`n`r`n" -f $raw
+        $null = $addToScript.AppendLine($fullEnum)
+    }
+
+    # add classes into script
+    # currently all are being added
+    foreach ($thisClass in $classFiles) {
+        $raw = Remove-Sig -Path $thisClass.FullName
+
+        $fullClass = "`r`n{0}`r`n`r`n" -f $raw
+        $null = $addToScript.AppendLine($fullClass)
+    }
+
+    # build the full function string and write to new script
+    foreach ($functionToAdd in $functionsToAdd) {
+        $fullFunction = "`r`n{0} {1} {{`r`n{2}`r`n}}`r`n`r`n" -f $functionToAdd.CommandType, $functionToAdd.Name, $functionToAdd.Definition
+        $null = $addToScript.AppendLine($fullFunction)
+    }
+
     $newScript = [System.Text.StringBuilder]::new($script)
 
     # add to begin block if there is one, otherwise add to end of script
@@ -217,31 +285,10 @@ process {
         $addOffset = $Script.Ast.BeginBlock.Extent.StartOffset + 1
     }
     else {
-        # $addOffset = $Script.Ast.Extent.EndScriptPosition.Offset
         $addOffset = $Script.Ast.Extent.StartScriptPosition.Offset
     }
 
-    # build the full function string and write to new script
-    foreach ($functionToAdd in $functionsToAdd) {
-        $fullFunction = "`r`n{0} {1} {{`r`n# v{2}{3}`r`n}}`r`n`r`n" -f $functionToAdd.CommandType, $functionToAdd.Name, $functionToAdd.Version, $functionToAdd.Definition
-        $null = $newScript.Insert($addOffset, $fullFunction)
-        $addOffset += $fullFunction.Length
-    }
-
-    # add enums into script
-    foreach ($thisEnum in $enumsToAdd) {
-        $fullEnum = "`r`n{0}`r`n`r`n" -f (Get-Content $thisEnum.FullName -Raw)
-        $null = $newScript.Insert($addOffset, $fullEnum)
-        $addOffset += $fullEnum.Length
-    }
-
-    # add classes into script
-    # currently all are being added
-    foreach ($thisClass in $classFiles) {
-        $fullClass = "`r`n{0}`r`n`r`n" -f (Get-Content $thisClass.FullName -Raw)
-        $null = $newScript.Insert($addOffset, $fullClass)
-        $addOffset += $fullClass.Length
-    }
+    $null = $newScript.Insert($addOffset, $addToScript.ToString())
 
     $fileExt = [System.IO.Path]::GetExtension($ScriptPath)
     $newScript | Set-Content -Path ($ScriptPath.Replace($fileExt, "-Standalone$fileExt"))
