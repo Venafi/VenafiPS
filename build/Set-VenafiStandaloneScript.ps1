@@ -207,7 +207,7 @@ begin {
 }
 
 process {
-    $astTypes = 'CommandAst', 'TypeExpressionAst'
+    $astTypes = 'CommandAst', 'TypeExpressionAst', 'ParamBlockAst', 'NamedBlockAst'
     $script = (Get-Command $scriptPath).ScriptBlock
 
     $module = Get-ModuleFunction -Module VenafiPS -Version $ModuleVersion
@@ -280,12 +280,51 @@ process {
 
     $newScript = [System.Text.StringBuilder]::new($script)
 
+    # existing script cleanup
+
+    $paramBlock = $scriptCommands | Where-Object { $_.Type -eq 'ParamBlockAst' -and $_.Parent.ToString() -eq $script.ToString() }
+
+    $fileContent = Get-Content $scriptPath
+    $addOffset = 0
+
     # add to begin block if there is one, otherwise add to end of script
     if ( $Script.Ast.BeginBlock ) {
         $addOffset = $Script.Ast.BeginBlock.Extent.StartOffset + 1
     }
+    elseif ( $paramBlock ) {
+        # param block, add after
+
+        # Initialize variables
+        $insideParamBlock = $false
+
+        # Process each line to find the end of the param block
+        for ($i = 0; $i -lt $fileContent.Length; $i++) {
+            $line = $fileContent[$i]
+            $addOffset += $line.Length + 1
+
+            if ($line -match "^param\s*\(") {
+                $insideParamBlock = $true
+            }
+
+            if ($insideParamBlock -and $line -match "\)\s*$") {
+                $insideParamBlock = $false
+                break
+            }
+        }
+    }
     else {
-        $addOffset = $Script.Ast.Extent.StartScriptPosition.Offset
+
+        # check for comments at the top of the script
+        for ($i = 0; $i -lt $fileContent.Length; $i++) {
+            $line = $fileContent[$i].Trim()
+
+            if ( $line -like '#*' -or $line -eq '' ) {
+                $addOffset += $line.Length + 1
+            }
+            else {
+                break
+            }
+        }
     }
 
     $null = $newScript.Insert($addOffset, $addToScript.ToString())
