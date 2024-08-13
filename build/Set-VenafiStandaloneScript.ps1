@@ -287,14 +287,13 @@ process {
     $fileContent = Get-Content $scriptPath
     $addOffset = 0
 
-    # add to begin block if there is one, otherwise add to end of script
+    # add to begin block if there is one
     if ( $Script.Ast.BeginBlock ) {
         $addOffset = $Script.Ast.BeginBlock.Extent.StartOffset + 1
     }
     elseif ( $paramBlock ) {
         # param block, add after
 
-        # Initialize variables
         $insideParamBlock = $false
 
         # Process each line to find the end of the param block
@@ -314,7 +313,7 @@ process {
     }
     else {
 
-        # check for comments at the top of the script
+        # check for comments and requires at the top of the script
         for ($i = 0; $i -lt $fileContent.Length; $i++) {
             $line = $fileContent[$i].Trim()
 
