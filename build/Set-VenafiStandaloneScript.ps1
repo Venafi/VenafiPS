@@ -220,7 +220,8 @@ process {
     $enumFiles = Get-ChildItem "$moduleRootPath\Enum"
     $classFiles = Get-ChildItem "$moduleRootPath\Classes"
 
-    $scriptCommands = @(Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw) -AstType $astTypes)
+    $scriptCommands = @(Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw))
+    # $scriptCommands = @(Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw) -AstType $astTypes)
 
     $functionsToAdd = $enumsToAdd = @()
 
@@ -256,7 +257,9 @@ process {
     $null = $addToScript.AppendLine(('# Including VenafiPS code v{0}' -f $module.Module.Version.ToString()))
 
     # add enums into script
-    foreach ($thisEnum in $enumsToAdd) {
+    # currently all are being added as ast isn't picking them all up
+    # eg. TppManagementType isn't picked up from Find-VdcCertificate
+    foreach ($thisEnum in $enumFiles) {
         $raw = Remove-Sig -Path $thisEnum.FullName
 
         $fullEnum = "`r`n{0}`r`n`r`n" -f $raw
@@ -282,7 +285,7 @@ process {
 
     $paramBlock = $scriptCommands | Where-Object { $_.Type -eq 'ParamBlockAst' -and $_.Parent.ToString() -eq $script.ToString() }
 
-    $fileContent = Get-Content $scriptPath
+    $fileContent = @(Get-Content $scriptPath)
     $addOffset = 0
 
     # add to begin block if there is one
@@ -346,10 +349,12 @@ process {
     $null = $newScript.Insert($addOffset, $addToScript.ToString())
 
     # existing script cleanup
-    $null = $newScript.Replace('#Requires -Modules VenafiPS', '')
+    $newScriptClean = $newScript.ToString()
+    $newScriptClean = $newScriptClean -replace '#Requires -Modules venafips', ''
+    $newScriptClean = $newScriptClean -replace 'import-module.*venafips', ''
 
     $fileExt = [System.IO.Path]::GetExtension($ScriptPath)
-    $newScript | Set-Content -Path ($ScriptPath.Replace($fileExt, "-Standalone$fileExt"))
+    $newScriptClean | Set-Content -Path ($ScriptPath.Replace($fileExt, "-Standalone$fileExt"))
 }
 
 end {
