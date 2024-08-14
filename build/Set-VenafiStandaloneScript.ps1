@@ -280,8 +280,6 @@ process {
 
     $newScript = [System.Text.StringBuilder]::new($script)
 
-    # existing script cleanup
-
     $paramBlock = $scriptCommands | Where-Object { $_.Type -eq 'ParamBlockAst' -and $_.Parent.ToString() -eq $script.ToString() }
 
     $fileContent = Get-Content $scriptPath
@@ -289,10 +287,10 @@ process {
 
     # add to begin block if there is one
     if ( $Script.Ast.BeginBlock ) {
-        $addOffset = $Script.Ast.BeginBlock.Extent.StartOffset + 1
+        $addOffset = $Script.Ast.BeginBlock.Extent.StartOffset
     }
     elseif ( $paramBlock ) {
-        # param block, add after
+        # param block exists, add after
 
         $insideParamBlock = $false
 
@@ -313,20 +311,42 @@ process {
     }
     else {
 
+        $insideCommentBlock = $false
+
         # check for comments and requires at the top of the script
         for ($i = 0; $i -lt $fileContent.Length; $i++) {
-            $line = $fileContent[$i].Trim()
+            $line = $fileContent[$i]
+            $lineTrimmed = $line.Trim()
 
-            if ( $line -like '#*' -or $line -eq '' ) {
-                $addOffset += $line.Length + 1
+            if ( $lineTrimmed -like '*<#*' ) {
+                # block comment
+                $insideCommentBlock = $true
+                $addOffset += $line.Length
+            }
+            elseif ( $lineTrimmed -like '*#>*' ) {
+                # end block comment
+                $insideCommentBlock = $false
+                $addOffset += $line.Length
+            }
+            elseif ( $lineTrimmed -like '#*' -or $lineTrimmed -eq '' ) {
+                # comment or blank line, keep going
+                $addOffset += $line.Length
+            }
+            elseif ( $insideCommentBlock ) {
+                # inside block comment, keep going
+                $addOffset += $line.Length
             }
             else {
                 break
             }
+            $addOffset += 1
         }
     }
 
     $null = $newScript.Insert($addOffset, $addToScript.ToString())
+
+    # existing script cleanup
+    $null = $newScript.Replace('#Requires -Modules VenafiPS', '')
 
     $fileExt = [System.IO.Path]::GetExtension($ScriptPath)
     $newScript | Set-Content -Path ($ScriptPath.Replace($fileExt, "-Standalone$fileExt"))
