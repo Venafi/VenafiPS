@@ -125,6 +125,7 @@ function Invoke-VcCertificateAction {
         [switch] $Delete,
 
         [Parameter()]
+        [ValidateRange(1,10000)]
         [int] $BatchSize = 1000,
 
         [Parameter(ParameterSetName = 'Renew')]
