@@ -143,15 +143,9 @@ function Invoke-VcCertificateAction {
 
     process {
 
-        $addThis = $true
-
         switch ($PSCmdlet.ParameterSetName) {
-            'Delete' {
-                $addThis = $PSCmdlet.ShouldProcess($ID, 'Delete certificate')
-            }
 
             'Renew' {
-                $addThis = $false
 
                 $out = [pscustomobject] @{
                     CertificateID = $ID
@@ -240,9 +234,11 @@ function Invoke-VcCertificateAction {
 
                 return $out
             }
-        }
 
-        if ( $addThis ) { $allCerts.Add($ID) }
+            Default {
+                $allCerts.Add($ID)
+            }
+        }
     }
 
     end {
@@ -250,6 +246,11 @@ function Invoke-VcCertificateAction {
         if ( $allCerts.Count -eq 0 ) { return }
 
         switch ($PSCmdLet.ParameterSetName) {
+
+            'Renew' {
+                # handled in Process
+            }
+
             'Retire' {
                 $params.UriLeaf = "certificates/retirement"
                 $params.Body = @{"certificateIds" = $allCerts }
@@ -258,14 +259,16 @@ function Invoke-VcCertificateAction {
                     $params.Body += $AdditionalParameters
                 }
 
-                $response = Invoke-VenafiRestMethod @params
+                if ( $PSCmdlet.ShouldProcess('', ('Retire {0} certificate(s)' -f $allCerts.Count) ) ) {
+                    $response = Invoke-VenafiRestMethod @params
 
-                $processedIds = $response.certificates.id
+                    $processedIds = $response.certificates.id
 
-                foreach ($certId in $allCerts) {
-                    [pscustomobject] @{
-                        CertificateID = $certId
-                        Success       = ($certId -in $processedIds)
+                    foreach ($certId in $allCerts) {
+                        [pscustomobject] @{
+                            CertificateID = $certId
+                            Success       = ($certId -in $processedIds)
+                        }
                     }
                 }
             }
@@ -278,14 +281,16 @@ function Invoke-VcCertificateAction {
                     $params.Body += $AdditionalParameters
                 }
 
-                $response = Invoke-VenafiRestMethod @params
+                if ( $PSCmdlet.ShouldProcess('', ('Recover {0} certificate(s)' -f $allCerts.Count) ) ) {
+                    $response = Invoke-VenafiRestMethod @params
 
-                $processedIds = $response.certificates.id
+                    $processedIds = $response.certificates.id
 
-                foreach ($certId in $allCerts) {
-                    [pscustomobject] @{
-                        CertificateID = $certId
-                        Success       = ($certId -in $processedIds)
+                    foreach ($certId in $allCerts) {
+                        [pscustomobject] @{
+                            CertificateID = $certId
+                            Success       = ($certId -in $processedIds)
+                        }
                     }
                 }
             }
@@ -294,16 +299,18 @@ function Invoke-VcCertificateAction {
                 $params.UriLeaf = "certificates/validation"
                 $params.Body = @{"certificateIds" = $allCerts }
 
-                $response = Invoke-VenafiRestMethod @params
+                $null = Invoke-VenafiRestMethod @params
             }
 
             'Delete' {
-                $null = $allCerts | Invoke-VcCertificateAction -Retire
+                if ( $PSCmdlet.ShouldProcess('', ('Retire and delete {0} certificate(s)' -f $allCerts.Count) ) ) {
+                    $null = $allCerts | Invoke-VcCertificateAction -Retire
 
-                $params.UriLeaf = "certificates/deletion"
-                $params.Body = @{"certificateIds" = $allCerts }
+                    $params.UriLeaf = "certificates/deletion"
+                    $params.Body = @{"certificateIds" = $allCerts }
 
-                $response = Invoke-VenafiRestMethod @params
+                    $response = Invoke-VenafiRestMethod @params
+                }
             }
         }
 
