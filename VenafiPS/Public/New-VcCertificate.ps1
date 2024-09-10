@@ -200,7 +200,7 @@ function New-VcCertificate {
             }
 
             1 {
-                Write-Verbose ('Found template {0}, ID: {1}' -f $thisTemplate.name, $thisTemplate.id)
+                Write-Verbose ('Found template {0}, ID: {1}' -f $thisTemplate.name, $thisTemplate.issuingTemplateId)
                 $thisTemplateID = $thisTemplate.issuingTemplateId
             }
 
