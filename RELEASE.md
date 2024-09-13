@@ -1,1 +1,1 @@
-- Fix `Import-VdcCertificate -Data` failure due to being converted to an array.  [#290](https://github.com/Venafi/VenafiPS/issues/290)
+- Add batching to `Invoke-VcCertificateAction` with progress and verbose logging.  Batches will be 1000 by default, but can be overridden with `-BatchSize`.  Also added better use of ShouldProcess.
