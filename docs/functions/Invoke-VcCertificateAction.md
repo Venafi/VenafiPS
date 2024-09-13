@@ -7,31 +7,32 @@ Perform an action against one or more certificates
 
 ### Retire
 ```
-Invoke-VcCertificateAction -ID <String> [-Retire] [-AdditionalParameters <Hashtable>]
+Invoke-VcCertificateAction -ID <String> [-Retire] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Recover
 ```
-Invoke-VcCertificateAction -ID <String> [-Recover] [-AdditionalParameters <Hashtable>]
+Invoke-VcCertificateAction -ID <String> [-Recover] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Renew
 ```
-Invoke-VcCertificateAction -ID <String> [-Renew] [-Force] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Invoke-VcCertificateAction -ID <String> [-Renew] [-BatchSize <Int32>] [-Force]
+ [-AdditionalParameters <Hashtable>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### Validate
 ```
-Invoke-VcCertificateAction -ID <String> [-Validate] [-AdditionalParameters <Hashtable>]
+Invoke-VcCertificateAction -ID <String> [-Validate] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Delete
 ```
-Invoke-VcCertificateAction -ID <String> [-Delete] [-AdditionalParameters <Hashtable>]
+Invoke-VcCertificateAction -ID <String> [-Delete] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
@@ -90,10 +91,10 @@ Only applicable to Delete.
 
 ### EXAMPLE 7
 ```
-Find-VcObject -Type Certificate -Filter @('certificateStatus','eq','retired') | Invoke-VcCertificateAction -Delete
+Find-VcObject -Type Certificate -Filter @('certificateStatus','eq','retired') | Invoke-VcCertificateAction -Delete -BatchSize 100
 ```
 
-Search for all retired certificates and delete them
+Search for all retired certificates and delete them using a non default batch size of 100
 
 ## PARAMETERS
 
@@ -186,6 +187,23 @@ Aliases:
 Required: True
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -BatchSize
+How many certificates to retire per retirement API call.
+Useful to prevent API call timeouts.
+Defaults to 1000
+
+```yaml
+Type: Int32
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: 1000
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

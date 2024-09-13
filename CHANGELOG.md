@@ -1,3 +1,7 @@
+## 6.4.2
+- Add batching to `Invoke-VcCertificateAction` with progress and verbose logging.  Batches will be 1000 by default, but can be overridden with `-BatchSize`.  Also added better use of ShouldProcess.
+
+
 ## 6.4.1
 - Fix `Import-VdcCertificate -Data` failure due to being converted to an array.  [#290](https://github.com/Venafi/VenafiPS/issues/290)
 
@@ -661,6 +665,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
