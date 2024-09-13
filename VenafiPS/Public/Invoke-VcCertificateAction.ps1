@@ -323,7 +323,7 @@ function Invoke-VcCertificateAction {
             'Delete' {
 
                 if ( $PSCmdlet.ShouldProcess('TLSPC', ('Delete {0} certificate(s) in batches of {1}' -f $allCerts.Count, $BatchSize) ) ) {
-                    $null = $allCerts | Invoke-VcCertificateAction -Retire -Confirm:$false
+                    $null = $allCerts | Invoke-VcCertificateAction -Retire -BatchSize $BatchSize -Confirm:$false
                     $allCerts | Select-VenBatch -BatchSize $BatchSize -BatchType 'string' -TotalCount $allCerts.Count | ForEach-Object {
                         $params.Body = @{"certificateIds" = $_ }
 
