@@ -19,6 +19,10 @@ function Select-VenBatch {
 
     Valid Values: "pscustomobject", "string", "int", "guid"
 
+    .PARAMETER TotalCount
+    The total number of items in the pipeline. Used to calculate progress.
+    If you do not provide this value or ProgressPreference is set to 'SilentlyContinue', no progress will be displayed.
+
     .OUTPUTS
     System.Collections.Generic.List[T]
 
@@ -37,7 +41,10 @@ function Select-VenBatch {
 
         [Parameter(Mandatory, Position = 0)]
         [ValidateSet("pscustomobject", "string", "int", "guid")]
-        [string] $BatchType = "pscustomobject"
+        [string] $BatchType = "pscustomobject",
+
+        [Parameter()]
+        [int] $TotalCount
 
     )
 
@@ -58,6 +65,14 @@ function Select-VenBatch {
         }
 
         $count = 0
+        If ($TotalCount) {
+            $progressParams = @{
+                Activity        = 'Processing batches'
+                Status          = 'Initializing'
+                PercentComplete = -1
+            }
+            Write-Progress @progressParams
+        }
     }
 
     Process {
@@ -67,7 +82,15 @@ function Select-VenBatch {
         $Batch.Enqueue($_)
 
         if ($Batch.Count -eq $BatchSize) {
+
+            If ($TotalCount) {
+                $progressParams.Status = 'Batch {0}, items {1}-{2}' -f ($count / $BatchSize), ($count - $BatchSize + 1), $count
+                [int] $percent = ($count / $TotalCount) * 100
+                $progressParams.PercentComplete = $percent
+                Write-Progress @progressParams
+            }
             'Processing batch {0}, items {1}-{2}' -f ($count / $BatchSize), ($count - $BatchSize + 1), $count | Write-Verbose
+
             , ($Batch)
             $Batch.Clear() # start next batch
         }
@@ -77,10 +100,22 @@ function Select-VenBatch {
         # process any remaining items, eg. we didn't have a full batch
         if ( $Batch.Count ) {
             $batchNum = [math]::Ceiling($count / $BatchSize)
+
+            If ($TotalCount) {
+                $progressParams.Status = 'Batch {0}, items {1}-{2}' -f $batchNum, ((($batchNum - 1) * $BatchSize) + 1), $count
+                [int] $percent = ($count / $TotalCount) * 100
+                $progressParams.PercentComplete = $percent
+                Write-Progress @progressParams
+            }
             'Processing batch {0}, items {1}-{2}' -f $batchNum, ((($batchNum - 1) * $BatchSize) + 1), $count | Write-Verbose
+
             , ($Batch)
             $Batch.Clear()
             Remove-Variable Batch
+
+            If ($TotalCount) {
+                Write-Progress -Activity 'Completed' -Completed
+            }
         }
     }
 }

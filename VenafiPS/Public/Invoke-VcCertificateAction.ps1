@@ -266,7 +266,7 @@ function Invoke-VcCertificateAction {
                 }
 
                 if ( $PSCmdlet.ShouldProcess('TLSPC', ('Retire {0} certificate(s) in batches of {1}' -f $allCerts.Count, $BatchSize) ) ) {
-                    $allCerts | Select-VenBatch -batchsize $BatchSize -BatchType string | ForEach-Object {
+                    $allCerts | Select-VenBatch -BatchSize $BatchSize -BatchType 'string' -TotalCount $allCerts.Count | ForEach-Object {
                         $params.Body = @{"certificateIds" = $_ }
 
                         $response = Invoke-VenafiRestMethod @params
@@ -291,7 +291,7 @@ function Invoke-VcCertificateAction {
                 }
 
                 if ( $PSCmdlet.ShouldProcess('TLSPC', ('Recover {0} certificate(s) in batches of {1}' -f $allCerts.Count, $BatchSize) ) ) {
-                    $allCerts | Select-VenBatch -batchsize $BatchSize -BatchType string | ForEach-Object {
+                    $allCerts | Select-VenBatch -BatchSize $BatchSize -BatchType 'string' -TotalCount $allCerts.Count | ForEach-Object {
                         $params.Body = @{"certificateIds" = $_ }
 
                         $response = Invoke-VenafiRestMethod @params
@@ -312,7 +312,7 @@ function Invoke-VcCertificateAction {
                 $params.UriLeaf = "certificates/validation"
 
                 if ( $PSCmdlet.ShouldProcess('TLSPC', ('Validate {0} certificate(s) in batches of {1}' -f $allCerts.Count, $BatchSize) ) ) {
-                    $allCerts | Select-VenBatch -batchsize $BatchSize -BatchType string | ForEach-Object {
+                    $allCerts | Select-VenBatch -BatchSize $BatchSize -BatchType 'string' -TotalCount $allCerts.Count | ForEach-Object {
                         $params.Body = @{"certificateIds" = $_ }
 
                         $null = Invoke-VenafiRestMethod @params
@@ -324,7 +324,7 @@ function Invoke-VcCertificateAction {
 
                 if ( $PSCmdlet.ShouldProcess('TLSPC', ('Delete {0} certificate(s) in batches of {1}' -f $allCerts.Count, $BatchSize) ) ) {
                     $null = $allCerts | Invoke-VcCertificateAction -Retire -Confirm:$false
-                    $allCerts | Select-VenBatch -batchsize $BatchSize -BatchType string | ForEach-Object {
+                    $allCerts | Select-VenBatch -BatchSize $BatchSize -BatchType 'string' -TotalCount $allCerts.Count | ForEach-Object {
                         $params.Body = @{"certificateIds" = $_ }
 
                         $null = Invoke-VenafiRestMethod @params
