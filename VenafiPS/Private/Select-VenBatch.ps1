@@ -44,7 +44,10 @@ function Select-VenBatch {
         [string] $BatchType = "pscustomobject",
 
         [Parameter()]
-        [int] $TotalCount
+        [int] $TotalCount,
+
+        [Parameter()]
+        [string] $Activity = 'Processing batches'
 
     )
 
@@ -67,7 +70,7 @@ function Select-VenBatch {
         $count = 0
         If ($TotalCount) {
             $progressParams = @{
-                Activity        = 'Processing batches'
+                Activity        = $Activity
                 Status          = 'Initializing'
                 PercentComplete = -1
             }
