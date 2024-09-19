@@ -153,7 +153,7 @@ function Test-VdcToken {
                 if ( -not $VenafiSession ) {
                     throw [System.ArgumentNullException] 'VenafiSession'
                 }
-                if ( $VenafiSession -isnot [VenafiSession]) {
+                if ( $VenafiSession -isnot [pscustomobject] -or -not $VenafiSession.Token ) {
                     throw [System.ArgumentException]::new('Must provide a VenafiSession object', 'VenafiSession')
                 }
 

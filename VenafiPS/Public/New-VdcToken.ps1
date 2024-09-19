@@ -165,7 +165,7 @@ function New-VdcToken {
 
                 $true
             })]
-        [VenafiSession] $VenafiSession
+        [pscustomobject] $VenafiSession
 
     )
 

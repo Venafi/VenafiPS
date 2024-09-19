@@ -15,9 +15,6 @@ function Test-VenafiSession {
     .PARAMETER Platform
     Platform, either TLSPDC or Vaas, to validate VenafiSession against.
 
-    .PARAMETER AuthType
-    Authentication type, either Key or Token, to validate VenafiSession against.
-
     .PARAMETER PassThru
     Provide the determined platform from VenafiSession
 
@@ -40,10 +37,6 @@ function Test-VenafiSession {
     Test-VenafiSession -VenafiSession $VenafiSession -Platform TLSPDC
     Test session ensuring the platform is TLSPDC
 
-    .EXAMPLE
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform TLSPDC -AuthType Token
-    Test session ensuring the platform is TLSPDC and authentication type is token
-
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
@@ -55,18 +48,12 @@ function Test-VenafiSession {
         [psobject] $VenafiSession,
 
         [Parameter(Mandatory, ParameterSetName = 'Platform')]
-        [Parameter(Mandatory, ParameterSetName = 'AuthType')]
-        # [ValidateSet('TLSPC', 'TLSPDC')]
-        [string] $Platform,
-
-        [Parameter(Mandatory, ParameterSetName = 'AuthType')]
-        [ValidateSet('Key', 'Token')]
-        [string] $AuthType
+        [string] $Platform
     )
 
     process {
-        if ( (Get-PSCallStack).Count -gt 3 -and -not $VenafiSession ) {
 
+        if ( (Get-PSCallStack).Count -gt 3 -and -not $VenafiSession ) {
             # nested function, no need to continue testing session since it was already done
             return
         }
@@ -87,35 +74,24 @@ function Test-VenafiSession {
         }
 
         switch ($VenafiSession.GetType().Name) {
-            'VenafiSession' {
-
-                if ( $PSBoundParameters.ContainsKey('Platform') ) {
-                    $newPlatform = $Platform
-                    if ( $Platform -match '^(vc|vdc)$' ) {
-                        $newPlatform = $matches[1]
-                    }
-                }
-                if ( $AuthType ) {
-                    $VenafiSession.Validate($newPlatform, $AuthType)
-                }
-                elseif ($Platform) {
-                    $VenafiSession.Validate($newPlatform)
-                }
-                else {
-                    $VenafiSession.Validate()
-                }
-
-                break
-            }
-
             'PSCustomObject' {
 
-                if ( $PSBoundParameters.ContainsKey('Platform') ) {
-                    $newPlatform = $Platform
-                    if ( $Platform -match '^(vc|vdc)$' ) {
-                        $newPlatform = $matches[1]
+                if ( -not $VenafiSession.Key -and -not $VenafiSession.Token ) {
+                    throw "You must first connect to either TLSPC or a TLSPDC server with New-VenafiSession"
+                }
+
+                # make sure the auth type and url we have match
+                # this keeps folks from calling a vaas function with a token and vice versa
+                if ( $Platform -and $Platform -ne $VenafiSession.Platform ) {
+                    throw "This function is only accessible for $Platform"
+                }
+
+                if ( $Platform -eq 'VDC' ) {
+                    if ( $VenafiSession.Token.Expires -and $VenafiSession.Token.Expires -lt (Get-Date).ToUniversalTime() ) {
+                        throw 'TLSPDC token has expired.  Execute New-VenafiSession and rerun your command.'
                     }
                 }
+    
                 # don't perform .Validate as we do above since this
                 # isn't the class, it's a converted pscustomobject
                 # for Invoke-VenafiParallel usage
@@ -147,7 +123,7 @@ function Test-VenafiSession {
             }
 
             Default {
-                throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a TLSPC key or TLSPDC token."
+                throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a TLSPC key or TLSPDC access token."
             }
         }
 

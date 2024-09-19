@@ -123,22 +123,23 @@ function Invoke-VenafiRestMethod {
         # }
 
         switch ($VenafiSession.GetType().Name) {
-            { $_ -in 'VenafiSession', 'PSCustomObject' } {
+            'PSCustomObject' {
                 $Server = $VenafiSession.Server
+                $platform = $VenafiSession.Platform
                 if ( $VenafiSession.Platform -eq 'VC' ) {
-                    $platform = 'VC'
+                    # $platform = 'VC'
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
                 }
                 else {
                     # TLSPDC
-                    if ( $VenafiSession.AuthType -eq 'Token' ) {
-                        $platform = 'TppToken'
-                        $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                    }
-                    else {
-                        $platform = 'TppKey'
-                        $auth = $VenafiSession.Key.ApiKey
-                    }
+                    # if ( $VenafiSession.AuthType -eq 'Token' ) {
+                    # $platform = 'TppToken'
+                    $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
+                    # }
+                    # else {
+                    #     $platform = 'TppKey'
+                    #     $auth = $VenafiSession.Key.ApiKey
+                    # }
                 }
                 $SkipCertificateCheck = $VenafiSession.SkipCertificateCheck
                 $params.TimeoutSec = $VenafiSession.TimeoutSec
@@ -171,7 +172,7 @@ function Invoke-VenafiRestMethod {
                     if ( $Server -notlike 'https://*') {
                         $Server = 'https://{0}' -f $Server
                     }
-                    $platform = 'TppToken'
+                    $platform = 'VDC'
                 }
             }
 
@@ -191,17 +192,17 @@ function Invoke-VenafiRestMethod {
                 }
             }
 
-            'TppToken' {
+            'VDC' {
                 $allHeaders = @{
                     'Authorization' = 'Bearer {0}' -f $auth
                 }
             }
 
-            'TppKey' {
-                $allHeaders = @{
-                    "X-Venafi-Api-Key" = $auth
-                }
-            }
+            # 'TppKey' {
+            #     $allHeaders = @{
+            #         "X-Venafi-Api-Key" = $auth
+            #     }
+            # }
 
             Default {}
         }

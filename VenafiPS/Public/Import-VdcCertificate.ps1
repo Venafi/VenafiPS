@@ -155,7 +155,7 @@ function Import-VdcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC' -AuthType 'token'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 
         $params = @{
