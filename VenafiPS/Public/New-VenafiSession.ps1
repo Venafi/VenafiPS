@@ -310,7 +310,6 @@ function New-VenafiSession {
     $newSession = [pscustomobject] @{
         Platform             = 'VDC'
         Server               = $serverUrl
-        # AuthType             = 'Token'
         TimeoutSec           = $TimeoutSec
         SkipCertificateCheck = $SkipCertificateCheck.IsPresent
     }
@@ -396,7 +395,6 @@ function New-VenafiSession {
 
             if ( $secretInfo.Metadata.Count -gt 0 ) {
                 $newSession.Server = $secretInfo.Metadata.Server
-                $newSession.Expires = $secretInfo.Metadata.Expires
                 $newSession.Token = [PSCustomObject]@{
                     Server      = $secretInfo.Metadata.AuthServer
                     AccessToken = $tokenSecret
@@ -449,7 +447,7 @@ function New-VenafiSession {
             $params.RefreshToken = $tokenSecret
 
             $newToken = New-VdcToken @params
-            $newSession.Token = $newToken
+            $newSession | Add-Member @{ 'Token' = $newToken }
             $newSession.Server = $newToken.Server
             $newSession.Token.Scope = $secretInfo.Metadata.Scope | ConvertFrom-Json
             $newSession.SkipCertificateCheck = [bool] $secretInfo.Metadata.SkipCertificateCheck
@@ -459,7 +457,6 @@ function New-VenafiSession {
         'Vc' {
             $newSession.Platform = 'VC'
             $newSession.Server = ($script:VcRegions).$VcRegion
-            # $newSession.AuthType = 'Key'
             $key = if ( $VcKey -is [string] ) { New-Object System.Management.Automation.PSCredential('VcKey', ($VcKey | ConvertTo-SecureString -AsPlainText -Force)) }
             elseif ($VcKey -is [pscredential]) { $VcKey }
             elseif ($VcKey -is [securestring]) { New-Object System.Management.Automation.PSCredential('VcKey', $VcKey) }
@@ -491,7 +488,7 @@ function New-VenafiSession {
             }
 
             $newSession.Platform = 'VC'
-            $newSession.Key = $keySecret
+            $newSession | Add-Member @{ 'Key' = $keySecret }
         }
 
         Default {
@@ -525,26 +522,25 @@ function New-VenafiSession {
             Server               = $newSession.Server
             AuthServer           = $newSession.Token.Server
             ClientId             = $newSession.Token.ClientId
-            Expires              = $newSession.Expires
             Scope                = $newSession.Token.Scope | ConvertTo-Json -Compress
             SkipCertificateCheck = [int]$newSession.SkipCertificateCheck
             TimeoutSec           = [int]$newSession.TimeoutSec
-        }    
+        }
 
         $metadata | ConvertTo-Json | Write-Verbose
 
         if ( $VaultAccessTokenName ) {
             Set-Secret -Name $VaultAccessTokenName -Secret $newSession.Token.AccessToken -Vault 'VenafiPS' -Metadata $metadata
-        }    
+        }
         else {
             if ( $newSession.Token.RefreshToken ) {
                 Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS' -Metadata $metadata
-            }    
+            }
             else {
                 Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
-            }    
-        }    
-    }    
+            }
+        }
+    }
 
     if ( $PassThru ) {
         $newSession
