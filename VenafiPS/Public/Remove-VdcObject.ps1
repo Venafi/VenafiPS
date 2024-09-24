@@ -101,7 +101,7 @@ function Remove-VdcObject {
 
             $response = Invoke-VenafiRestMethod @params
 
-            if ( $response.Result -ne [TppConfigResult]::Success ) {
+            if ( $response.Result -ne 1 ) {
                 Write-Error $response.Error
                 return
             }

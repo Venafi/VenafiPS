@@ -61,7 +61,7 @@ function ConvertTo-VdcPath {
 
         $response = Invoke-VenafiRestMethod @params
 
-        if ( $response.Result -eq [TppConfigResult]::Success ) {
+        if ( $response.Result -eq 1 ) {
             if ( $PSBoundParameters.ContainsKey('IncludeType') ) {
                 [PSCustomObject] @{
                     Path     = $response.ObjectDN

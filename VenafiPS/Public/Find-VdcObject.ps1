@@ -226,7 +226,7 @@ function Find-VdcObject {
 
                 $response = Invoke-VenafiRestMethod @params
 
-                if ( $response.Result -eq [TppConfigResult]::Success ) {
+                if ( $response.Result -eq 1 ) {
                     $response.Objects
                 }
                 else {
@@ -239,7 +239,7 @@ function Find-VdcObject {
             $response = Invoke-VenafiRestMethod @params
 
             # success for cf lookup is 0, all others are config calls and success is 1
-            if ( $response.Result -in 0, [TppConfigResult]::Success ) {
+            if ( $response.Result -in 0, 1 ) {
                 $objects = $response.Objects
             }
             else {

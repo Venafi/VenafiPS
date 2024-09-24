@@ -140,14 +140,14 @@ function New-VdcObject {
 
             $response = Invoke-VenafiRestMethod @params
 
-            switch ([enum]::GetName([TppConfigResult], $response.Result)) {
+            switch ($response.Result) {
 
-                'Success' {
+                1 {
                     Write-Verbose "Successfully created $Class at $newPath"
                     $returnObject = ConvertTo-VdcObject -Path $response.Object.DN -Guid $response.Object.Guid -TypeName $response.Object.TypeName
                 }
 
-                'ObjectDoesNotExist' {
+                400 {
                     # occurs when a parent object, anywhere in the path, is missing
 
                     # with these classes we know the parent is a policy so we can create them
@@ -174,7 +174,7 @@ function New-VdcObject {
                     }
                 }
 
-                'ObjectAlreadyExists' {
+                401 {
                     throw "$newPath already exists"
                 }
 

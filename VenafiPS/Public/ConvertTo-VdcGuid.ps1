@@ -68,7 +68,7 @@ function ConvertTo-VdcGuid {
 
         $response = Invoke-VenafiRestMethod @params
 
-        if ( $response.Result -eq [TppConfigResult]::Success ) {
+        if ( $response.Result -eq 1 ) {
             if ( $IncludeType ) {
                 [PSCustomObject] @{
                     Guid     = [Guid] $response.Guid
