@@ -200,7 +200,7 @@ function Export-VcCertificate {
 
     end {
         if ( $PrivateKeyPassword ) {
-            $currDir = $PSScriptRoot
+
             $sb = {
 
                 $out = [pscustomobject] @{
@@ -215,7 +215,7 @@ function Export-VcCertificate {
                     return $out
                 }
 
-                Import-Module (Join-Path -Path (Split-Path $using:currDir -Parent) -ChildPath 'import/PSSodium/PSSodium.psd1') -Force
+                Import-Module PSSodium -Force
 
                 $params = $PSItem.InvokeParams
 
