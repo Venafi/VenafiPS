@@ -36,11 +36,10 @@ $script:VcRegions = @{
     'us'='https://api.venafi.cloud'
     'eu'='https://api.venafi.eu'
 }
-
 $Script:VenafiSession = $null
-Export-ModuleMember -Variable VenafiSession
+$script:ThreadJobAvailable = ($null -ne (Get-Module -Name ThreadJob -ListAvailable))
 
-Export-ModuleMember -Alias * -Variable VenafiSession
+Export-ModuleMember -Alias * -Variable VenafiSession -Function *
 
 # vaas fields to ensure the values are upper case
 $script:vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
