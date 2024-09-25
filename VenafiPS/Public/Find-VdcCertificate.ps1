@@ -168,7 +168,6 @@ function Find-VdcCertificate {
     Find-VdcCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 
     Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
-    Skip is only supported on TLSPDC.
 
     .EXAMPLE
     Find-VdcCertificate -Path '\VED\Policy\My Policy'

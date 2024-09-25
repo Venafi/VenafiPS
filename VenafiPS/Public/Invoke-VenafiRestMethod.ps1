@@ -127,19 +127,11 @@ function Invoke-VenafiRestMethod {
                 $Server = $VenafiSession.Server
                 $platform = $VenafiSession.Platform
                 if ( $VenafiSession.Platform -eq 'VC' ) {
-                    # $platform = 'VC'
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
                 }
                 else {
                     # TLSPDC
-                    # if ( $VenafiSession.AuthType -eq 'Token' ) {
-                    # $platform = 'TppToken'
                     $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                    # }
-                    # else {
-                    #     $platform = 'TppKey'
-                    #     $auth = $VenafiSession.Key.ApiKey
-                    # }
                 }
                 $SkipCertificateCheck = $VenafiSession.SkipCertificateCheck
                 $params.TimeoutSec = $VenafiSession.TimeoutSec
@@ -198,12 +190,6 @@ function Invoke-VenafiRestMethod {
                 }
             }
 
-            # 'TppKey' {
-            #     $allHeaders = @{
-            #         "X-Venafi-Api-Key" = $auth
-            #     }
-            # }
-
             Default {}
         }
     }
@@ -241,6 +227,8 @@ function Invoke-VenafiRestMethod {
             Default {
                 $preJsonBody = $Body
                 $params.Body = (ConvertTo-Json $Body -Depth 20 -Compress)
+                # for special characters, we need to set the content type to utf-8
+                $params.ContentType = "application/json; charset=utf-8"
             }
         }
     }
