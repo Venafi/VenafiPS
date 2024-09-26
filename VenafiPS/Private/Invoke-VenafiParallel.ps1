@@ -19,7 +19,6 @@ function Invoke-VenafiParallel {
     Setting the value to 1 will disable multithreading.
     On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
 
-
     .PARAMETER ProgressTitle
     Message displayed on the progress bar
 
@@ -74,7 +73,7 @@ function Invoke-VenafiParallel {
 
         if (-not $InputObject) { return }
 
-        # if ThreadJob module is not available, throttle to 1 so it isn't used
+        # if ThreadJob module is not available, throttle to 1 so multithreading isn't used
         if ( $PSVersionTable.PSVersion.Major -eq 5 ) {
             if ( -not $script:ThreadJobAvailable ) {
                 $ThrottleLimit = 1

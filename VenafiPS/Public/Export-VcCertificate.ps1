@@ -138,93 +138,52 @@ function Export-VcCertificate {
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
-        $allCerts = [System.Collections.Generic.List[hashtable]]::new()
+        $allCerts = [System.Collections.Generic.List[string]]::new()
 
+        # set up the scriptblocks to be executed via invoke-venafiparallel
         if ( $PrivateKeyPassword ) {
-
-            $params = @{
-                Method       = 'Post'
-                Header       = @{ 'accept' = 'application/octet-stream' }
-                UriRoot      = 'outagedetection/v1'
-                Body         = @{
-                    'exportFormat'                = 'PEM'
-                    'encryptedKeystorePassphrase' = ''
-                    'certificateLabel'            = ''
-                }
-                FullResponse = $true
-            }
 
             $pkPassString = $PrivateKeyPassword | ConvertTo-PlaintextString
-        }
-        else {
-            # no need to get the entire keystore if just getting cert/chain
-            $params = @{
-                UriRoot      = 'outagedetection/v1'
-                Body         = @{
-                    format = 'PEM'
-                }
-                FullResponse = $true
-            }
-
-            if ( $IncludeChain ) {
-                $params.Body.chainOrder = 'EE_FIRST'
-            }
-            else {
-                $params.Body.chainOrder = 'EE_ONLY'
-            }
-        }
-
-        Initialize-PSSodium
-    }
-
-    process {
-        if ( $PrivateKeyPassword ) {
-            $params.UriLeaf = "certificates/$id/keystore"
-            $allCerts.Add(
-                @{
-                    InvokeParams       = $params
-                    ID                 = $ID
-                    PrivateKeyPassword = $pkPassString
-                }
-            )
-        }
-        else {
-            $params.UriLeaf = "certificates/$id/contents"
-            $allCerts.Add(
-                @{
-                    InvokeParams = $params
-                    ID           = $ID
-                }
-            )
-
-        }
-    }
-
-    end {
-        if ( $PrivateKeyPassword ) {
 
             $sb = {
 
+                $id = $PSItem
+                $pkPassString = $using:pkPassString
+
+                $params = @{
+                    Method       = 'Post'
+                    Header       = @{ 'accept' = 'application/octet-stream' }
+                    UriRoot      = 'outagedetection/v1'
+                    UriLeaf      = 'certificates/{0}/keystore' -f $id
+                    Body         = @{
+                        'exportFormat'                = 'PEM'
+                        'encryptedKeystorePassphrase' = ''
+                        'certificateLabel'            = ''
+                    }
+                    FullResponse = $true
+                }
+
                 $out = [pscustomobject] @{
-                    certificateId = $PSItem.ID
+                    certificateId = $id
                     error         = ''
                 }
 
-                $thisCert = Get-VcCertificate -id $PSItem.ID
+                $thisCert = Get-VcCertificate -id $id
+
+                if ( -not $thisCert ) {
+                    $out.error = 'Certificate not found'
+                    return $out
+                }
 
                 if ( -not $thisCert.dekHash ) {
                     $out.error = 'Private key not found'
                     return $out
                 }
 
+                # build the encrypted private key password
                 Import-Module PSSodium -Force
-
-                $params = $PSItem.InvokeParams
-
                 $publicKey = Invoke-VenafiRestMethod -UriLeaf "edgeencryptionkeys/$($thisCert.dekHash)" | Select-Object -ExpandProperty key
-
-                $privateKeyPasswordEnc = ConvertTo-SodiumEncryptedString -Text $PSItem.PrivateKeyPassword -PublicKey $publicKey
-
+                $privateKeyPasswordEnc = ConvertTo-SodiumEncryptedString -Text $pkPassString -PublicKey $publicKey
                 $params.Body.encryptedPrivateKeyPassphrase = $privateKeyPasswordEnc
 
                 $innerResponse = Invoke-VenafiRestMethod @params
@@ -240,7 +199,7 @@ function Export-VcCertificate {
                 }
 
                 $zipFile = '{0}.zip' -f (New-TemporaryFile)
-                $unzipPath = Join-Path -Path (Split-Path -Path $zipFile -Parent) -ChildPath $PSItem.ID
+                $unzipPath = Join-Path -Path (Split-Path -Path $zipFile -Parent) -ChildPath $id
 
                 try {
                     # always save the zip file then decide to copy to the final destination or return contents
@@ -263,9 +222,9 @@ function Export-VcCertificate {
 
                             $keyPath = $keyFile.FullName
                             $crtPath = $keyPath.Replace('.key', '.crt')
-                            $cert = [System.Security.Cryptography.X509Certificates.x509Certificate2]::CreateFromEncryptedPemFile($crtPath, $PSItem.PrivateKeyPassword, $keyPath)
+                            $cert = [System.Security.Cryptography.X509Certificates.x509Certificate2]::CreateFromEncryptedPemFile($crtPath, $pkPassString, $keyPath)
                             # export content type of 3 is for pfx
-                            $cert.Export(3, $PSItem.PrivateKeyPassword) | Set-Content -Path (Join-Path -Path $using:OutPath -ChildPath ('{0}.pfx' -f $keyFile.BaseName)) -AsByteStream
+                            $cert.Export(3, $pkPassString) | Set-Content -Path (Join-Path -Path $using:OutPath -ChildPath ('{0}.pfx' -f $keyFile.BaseName)) -AsByteStream
                         }
                         else {
                             # copy files to final desination
@@ -314,25 +273,46 @@ function Export-VcCertificate {
             }
         }
         else {
+            # no need to get the entire keystore if just getting cert/chain
+
             # cert/chain only, no private key.  different api call, better performance.
             $sb = {
+                $params = @{
+                    UriRoot      = 'outagedetection/v1'
+                    UriLeaf      = 'certificates/{0}/contents' -f $PSItem
+                    Body         = @{
+                        format = 'PEM'
+                    }
+                    FullResponse = $true
+                }
 
-                $thisCert = Get-VcCertificate -id $PSItem.ID
-
-                $params = $PSItem.InvokeParams
-                $innerResponse = Invoke-VenafiRestMethod @params
-                $certificateData = $innerResponse.Content
+                if ( $using:IncludeChain ) {
+                    $params.Body.chainOrder = 'EE_FIRST'
+                }
+                else {
+                    $params.Body.chainOrder = 'EE_ONLY'
+                }
 
                 $out = [pscustomobject] @{
-                    certificateId = $PSItem.ID
+                    certificateId = $PSItem
                     error         = if ($innerResponse.StatusCode -notin 200, 201, 202) { $innerResponse.StatusDescription }
                 }
+
+                $thisCert = Get-VcCertificate -id $PSItem
+
+                if ( -not $thisCert ) {
+                    $out.error = 'Certificate not found'
+                    return $out
+                }
+
+                $innerResponse = Invoke-VenafiRestMethod @params
+                $certificateData = $innerResponse.Content
 
                 if ( $certificateData ) {
                     if ( $using:OutPath ) {
                         $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}' -f $thisCert.certificateName, $thisCert.certificateId)
                         $null = New-Item -Path $dest -ItemType Directory -Force
-                        $outFile = Join-Path -Path $dest -ChildPath ('{0}.{1}' -f $PSItem.ID, $PSItem.InvokeParams.Body.format)
+                        $outFile = Join-Path -Path $dest -ChildPath ('{0}.{1}' -f $PSItem, $params.Body.format)
                         try {
                             $sw = [IO.StreamWriter]::new($outFile, $false, [Text.Encoding]::ASCII)
                             $sw.WriteLine($certificateData)
@@ -352,6 +332,14 @@ function Export-VcCertificate {
             }
         }
 
+        Initialize-PSSodium
+    }
+
+    process {
+        $allCerts.Add($ID)
+    }
+
+    end {
         $invokeParams = @{
             InputObject   = $allCerts
             ScriptBlock   = $sb

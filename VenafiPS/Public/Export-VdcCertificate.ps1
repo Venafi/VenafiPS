@@ -229,28 +229,18 @@ function Export-VdcCertificate {
         }
 
         $body | Write-VerboseWithSecret
-
-        # function not available in parallel jobs, use this workaround to pass it in via InputObject
-        $splitCertificateDataFunction = 'function Split-CertificateData {{ {0} }}' -f (Get-Command Split-CertificateData | Select-Object -ExpandProperty Definition)
     }
 
     process {
         $body.CertificateDN = ($Path | ConvertTo-VdcFullPath)
 
-        $allCerts.Add(
-            @{
-                Body                         = $body.Clone()
-                SplitCertificateDataFunction = $splitCertificateDataFunction
-            }
-        )
+        $allCerts.Add($body.Clone())
     }
 
     end {
         Invoke-VenafiParallel -InputObject $allCerts -ScriptBlock {
 
-            . ([scriptblock]::Create($PSItem.SplitCertificateDataFunction))
-
-            $thisBody = $PSItem.Body
+            $thisBody = $PSItem
 
             try {
                 $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody

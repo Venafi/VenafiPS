@@ -10,7 +10,7 @@
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
-Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi TLS Protect Datacenter (TLSPDC) formerly known as Trust Protection Platform and TLS Protect Cloud (TLSPC).  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue](https://github.com/Venafi/VenafiPS/issues).
+Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi TLS Protect Datacenter (TLSPDC), formerly known as Trust Protection Platform, and TLS Protect Cloud (TLSPC).  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue/enhancement](https://github.com/Venafi/VenafiPS/issues).
 
 ## Documentation
 
@@ -20,7 +20,7 @@ Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.r
 
 VenafiPS works on PowerShell v5.1 as well as cross-platform PowerShell on Windows, Linux, and Mac.
 
-There are a few TLSPC functions which require Sodium encryption and can only be run on PowerShell v7+.  Also for those functions, on Windows, the latest C++ runtime must be installed.
+There are a few TLSPC functions which require Sodium encryption.  These functions and can only be run on PowerShell v7+ and require the PSSodium module be installed from the PowerShell Gallery.  Also for those functions, on Windows, the latest C++ runtime must be installed.
 
 ## Install Module
 
@@ -30,6 +30,8 @@ VenafiPS is published to the PowerShell Gallery.  The most recent version is lis
 ``` powershell
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 ```
+
+If running on Windows with PowerShell v5, multithreading is supported with ThreadJob, a Microsoft PowerShell module.  Install this as well for increased performance.
 
 ## Usage
 
