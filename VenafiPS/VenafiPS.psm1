@@ -11,7 +11,7 @@ $script:VcRegions = @{
     'eu' = 'https://api.venafi.eu'
 }
 $Script:VenafiSession = $null
-$script:ThreadJobAvailable = ($null -ne (Get-Module -Name ThreadJob -ListAvailable))
+$script:ThreadJobAvailable = ($null -ne (Get-Module -Name Microsoft.PowerShell.ThreadJob -ListAvailable))
 $script:DevMode = $script:ModuleVersion -match 'NEW_VERSION'
 $script:ParallelImportPath = $PSCommandPath
 
@@ -434,10 +434,10 @@ if ( $script:DevMode ) {
             Try {
                 Write-Verbose ('dot sourcing {0}' -f $thisFile.FullName)
                 . $thisFile.fullname
-                if ( $folder -eq 'Public' ) {
-                    Export-ModuleMember -Function $thisFile.Basename
-                    $publicFunction += $thisFile.BaseName
-                }
+                # if ( $folder -eq 'Public' ) {
+                Export-ModuleMember -Function $thisFile.Basename
+                $publicFunction += $thisFile.BaseName
+                # }
             }
             Catch {
                 Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
