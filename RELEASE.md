@@ -1,5 +1,5 @@
 - Merge all functions into 1 psm1 module.  This yields much better performance, especially when running multithreaded.
-- Added multithreading support on PS v5 with the ThreadJob module (installed separately).  If the module isn't installed, multithreading will be disabled.  Set -ThrottleLimit to 1 to disable multithreading on PS v5 and v7.
+- Add multithreading support on PS v5 with the ThreadJob module (installed separately).  If the module isn't installed, multithreading will be disabled.  Set `-ThrottleLimit` to 1 on the functions that support it to disable multithreading on PS v5 and v7.
 - Module now available in the GitHub release.  This is helpful for those without access to PowerShell Gallery, although that is the preferred option.
 - PSSodium, needed for several TLSPC functions for encryption, is no longer directly included in the module.  Install it from the Gallery.
 - The VenafiSession class has been deprecated and replaced with a PSCustomObject equivalent

@@ -6,40 +6,16 @@ if ([Net.ServicePointManager]::SecurityProtocol.value__ -lt 3072) {
 # the new version will be replaced below during deployment
 $script:ModuleVersion = '((NEW_VERSION))'
 
-# ModuleVersion will get updated during the build and this will not run
-# this is only needed during development since all files will be merged into one psm1
-if ( $script:ModuleVersion -match 'NEW_VERSION' ) {
-    $folders = @('Enum', 'Classes', 'Public', 'Private')
-    $publicFunction = @()
-
-    foreach ( $folder in $folders) {
-
-        $files = Get-ChildItem -Path "$PSScriptRoot\$folder\*.ps1" -Recurse
-
-        Foreach ( $thisFile in $files ) {
-            Try {
-                Write-Verbose ('dot sourcing {0}' -f $thisFile.FullName)
-                . $thisFile.fullname
-                if ( $folder -eq 'Public' ) {
-                    Export-ModuleMember -Function $thisFile.Basename
-                    $publicFunction += $thisFile.BaseName
-                }
-            }
-            Catch {
-                Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
-            }
-        }
-    }
-}
-
 $script:VcRegions = @{
-    'us'='https://api.venafi.cloud'
-    'eu'='https://api.venafi.eu'
+    'us' = 'https://api.venafi.cloud'
+    'eu' = 'https://api.venafi.eu'
 }
 $Script:VenafiSession = $null
 $script:ThreadJobAvailable = ($null -ne (Get-Module -Name ThreadJob -ListAvailable))
+$script:DevMode = $script:ModuleVersion -match 'NEW_VERSION'
+$script:ParallelImportPath = if ( $script:DevMode ) { $PSCommandPath.Replace('.psm1', '.psd1') } else { $PSCommandPath }
 
-Export-ModuleMember -Alias * -Variable VenafiSession -Function *
+Export-ModuleMember -Alias * -Variable VenafiSession, venafitest -Function *
 
 # vaas fields to ensure the values are upper case
 $script:vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
@@ -169,7 +145,7 @@ $vdcPathArgCompleterSb = {
 }
 Register-ArgumentCompleter -CommandName '*-Vdc*' -ParameterName 'Path' -ScriptBlock $vdcPathArgCompleterSb
 
-$script:functionConfig=@{
+$script:functionConfig = @{
     'Add-VdcAdaptableHash'             = @{
         'TppVersion'    = ''
         'TppTokenScope' = 'restricted=manage,delete'
@@ -443,3 +419,30 @@ $script:functionConfig=@{
         'TppTokenScope' = 'any scope'
     }
 }
+
+# ModuleVersion will get updated during the build and this will not run
+# this is only needed during development since all files will be merged into one psm1
+if ( $script:DevMode ) {
+    $folders = @('Enum', 'Classes', 'Public', 'Private')
+    $publicFunction = @()
+
+    foreach ( $folder in $folders) {
+
+        $files = Get-ChildItem -Path "$PSScriptRoot\$folder\*.ps1" -Recurse
+
+        Foreach ( $thisFile in $files ) {
+            Try {
+                Write-Verbose ('dot sourcing {0}' -f $thisFile.FullName)
+                . $thisFile.fullname
+                if ( $folder -eq 'Public' ) {
+                    Export-ModuleMember -Function $thisFile.Basename
+                    $publicFunction += $thisFile.BaseName
+                }
+            }
+            Catch {
+                Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
+            }
+        }
+    }
+}
+

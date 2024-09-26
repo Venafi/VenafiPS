@@ -115,7 +115,7 @@ function Invoke-VenafiParallel {
             # import via path instead of just module name to support non-standard paths, eg. development work
 
             # PSCommandPath is the path to the module psm1
-            Import-Module $using:PSCommandPath -Force
+            Import-Module $using:script:ParallelImportPath -Force
 
             # bring in the venafi session from the calling ps session
             $script:VenafiSession = $using:VenafiSession
