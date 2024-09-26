@@ -13,9 +13,9 @@ $script:VcRegions = @{
 $Script:VenafiSession = $null
 $script:ThreadJobAvailable = ($null -ne (Get-Module -Name ThreadJob -ListAvailable))
 $script:DevMode = $script:ModuleVersion -match 'NEW_VERSION'
-$script:ParallelImportPath = if ( $script:DevMode ) { $PSCommandPath.Replace('.psm1', '.psd1') } else { $PSCommandPath }
+$script:ParallelImportPath = $PSCommandPath
 
-Export-ModuleMember -Alias * -Variable VenafiSession, venafitest -Function *
+Export-ModuleMember -Alias * -Variable VenafiSession -Function *
 
 # vaas fields to ensure the values are upper case
 $script:vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
