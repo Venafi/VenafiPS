@@ -157,10 +157,8 @@ function Invoke-VenafiParallel {
             # get latest job info
             $job | Receive-Job
 
-            if ( -not $NoProgress ) {
-                [int] $percent = ($completedJobsCount / $job.ChildJobs.Count) * 100
-                Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
-            }
+            [int] $percent = ($completedJobsCount / $job.ChildJobs.Count) * 100
+            Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
 
         } while ($completedJobsCount -lt $job.ChildJobs.Count)
 
