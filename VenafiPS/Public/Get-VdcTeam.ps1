@@ -43,7 +43,7 @@
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-GET-Teams-prefix-universal.php
     #>
 
-    [CmdletBinding()]
+    [CmdletBinding(DefaultParameterSetName = 'ID')]
     [Alias('Get-TppTeam')]
 
     param (
