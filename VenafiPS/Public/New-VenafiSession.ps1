@@ -15,7 +15,7 @@ function New-VenafiSession {
     If just the server name is provided, https:// will be appended.
 
     .PARAMETER Credential
-    Username and password used for key and token-based authentication.  Not required for integrated authentication.
+    Username and password used for token-based authentication.  Not required for integrated authentication.
 
     .PARAMETER ClientId
     Application/integration ID configured in Venafi for token-based authentication.
@@ -58,10 +58,10 @@ function New-VenafiSession {
     .PARAMETER Jwt
     JSON web token.
     Available in TLSPDC v22.4 and later.
-    Ensure jwt mapping has been configured in VCC, Access Management->JWT Mappings.
+    Ensure JWT mapping has been configured in VCC, Access Management->JWT Mappings.
 
     .PARAMETER Certificate
-    Certificate for token-based authentication
+    Certificate for TLSPDC token-based authentication
 
     .PARAMETER AuthServer
     If you host your authentication service, vedauth, is on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
@@ -95,14 +95,6 @@ function New-VenafiSession {
 
     .OUTPUTS
     VenafiSession, if -PassThru is provided
-
-    .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com
-    Create key-based session using Windows Integrated authentication
-
-    .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred
-    Create key-based session using Windows Integrated authentication
 
     .EXAMPLE
     New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
@@ -315,14 +307,24 @@ function New-VenafiSession {
         }
     }
 
-    $newSession = [VenafiSession] @{
-        Server = $serverUrl
+    $newSession = [pscustomobject] @{
+        Platform             = 'VDC'
+        Server               = $serverUrl
+        TimeoutSec           = $TimeoutSec
+        SkipCertificateCheck = $SkipCertificateCheck.IsPresent
     }
 
-    $newSession | Add-Member @{ 'TimeoutSec' = $TimeoutSec }
-    $newSession | Add-Member @{ 'SkipCertificateCheck' = $SkipCertificateCheck.IsPresent }
-
     Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
+
+    if ( $ClientId -and $ClientId -inotmatch 'venafips' ) {
+        Write-Warning 'When creating your API Integration in Venafi, please ensure the id begins with “VenafiPS-” like the example below. Be sure to adjust the scope for your specific use case.
+        {
+          "id": "VenafiPS-<USE CASE>",
+          "name": "VenafiPS for <USE CASE>",
+          "description": "This application uses the VenafiPS module to automate <USE CASE>",
+          "scope": "certificate:manage;configuration:manage"
+        }'
+    }
 
     if ( $PSBoundParameters.Keys -like 'Vault*') {
         # ensure the appropriate setup has been performed
@@ -341,15 +343,7 @@ function New-VenafiSession {
 
         { $_ -in 'KeyCredential', 'KeyIntegrated' } {
 
-            Write-Warning 'Key-based authentication is being deprecated in favor of token-based.  Get started with token authentication today, https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php.'
-
-            if ( $PsCmdlet.ParameterSetName -eq 'KeyCredential' ) {
-                $newSession.Connect($Credential)
-            }
-            else {
-                # integrated
-                $newSession.Connect($null)
-            }
+            Write-Warning 'Key-based authentication has been deprecated.  Get started with token authentication today, https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php.'
 
         }
 
@@ -378,17 +372,19 @@ function New-VenafiSession {
             }
 
             $token = New-VdcToken @params -Verbose:$isVerbose
-            $newSession.Token = $token
+            $newSession | Add-Member @{Token = $token }
         }
 
         'AccessToken' {
-            $newSession.Token = [PSCustomObject]@{
-                Server      = $authServerUrl
-                # we don't have the expiry so create one
-                # rely on the api call itself to fail if access token is invalid
-                Expires     = (Get-Date).AddMonths(12)
-                AccessToken = $null
+            $newSession | Add-Member @{'Token' = [PSCustomObject]@{
+                    Server      = $authServerUrl
+                    # we don't have the expiry so create one
+                    # rely on the api call itself to fail if access token is invalid
+                    Expires     = (Get-Date).AddMonths(12)
+                    AccessToken = $null
+                }
             }
+
             $newSession.Token.AccessToken = if ( $AccessToken -is [string] ) { New-Object System.Management.Automation.PSCredential('AccessToken', ($AccessToken | ConvertTo-SecureString -AsPlainText -Force)) }
             elseif ($AccessToken -is [pscredential]) { $AccessToken }
             elseif ($AccessToken -is [securestring]) { New-Object System.Management.Automation.PSCredential('AccessToken', $AccessToken) }
@@ -409,7 +405,6 @@ function New-VenafiSession {
 
             if ( $secretInfo.Metadata.Count -gt 0 ) {
                 $newSession.Server = $secretInfo.Metadata.Server
-                $newSession.Expires = $secretInfo.Metadata.Expires
                 $newSession.Token = [PSCustomObject]@{
                     Server      = $secretInfo.Metadata.AuthServer
                     AccessToken = $tokenSecret
@@ -436,8 +431,7 @@ function New-VenafiSession {
             else { throw 'Unsupported type for -RefreshToken.  Provide either a String, SecureString, or PSCredential.' }
 
             $newToken = New-VdcToken @params
-            $newSession.Token = $newToken
-            # $newSession.Expires = $newToken.Expires
+            $newSession | Add-Member @{ 'Token' = $newToken }
         }
 
         'VaultRefreshToken' {
@@ -463,7 +457,7 @@ function New-VenafiSession {
             $params.RefreshToken = $tokenSecret
 
             $newToken = New-VdcToken @params
-            $newSession.Token = $newToken
+            $newSession | Add-Member @{ 'Token' = $newToken }
             $newSession.Server = $newToken.Server
             $newSession.Token.Scope = $secretInfo.Metadata.Scope | ConvertFrom-Json
             $newSession.SkipCertificateCheck = [bool] $secretInfo.Metadata.SkipCertificateCheck
@@ -471,15 +465,17 @@ function New-VenafiSession {
         }
 
         'Vc' {
+            $newSession.Platform = 'VC'
             $newSession.Server = ($script:VcRegions).$VcRegion
-            $newSession.Key = if ( $VcKey -is [string] ) { New-Object System.Management.Automation.PSCredential('VcKey', ($VcKey | ConvertTo-SecureString -AsPlainText -Force)) }
+            $key = if ( $VcKey -is [string] ) { New-Object System.Management.Automation.PSCredential('VcKey', ($VcKey | ConvertTo-SecureString -AsPlainText -Force)) }
             elseif ($VcKey -is [pscredential]) { $VcKey }
             elseif ($VcKey -is [securestring]) { New-Object System.Management.Automation.PSCredential('VcKey', $VcKey) }
             else { throw 'Unsupported type for -VcKey.  Provide either a String, SecureString, or PSCredential.' }
+            $newSession | Add-Member @{ 'Key' = $key }
 
             if ( $VaultVcKeyName ) {
                 $metadata = @{
-                    Server = $newSession.Server
+                    Server     = $newSession.Server
                     TimeoutSec = [int]$newSession.TimeoutSec
                 }
                 Set-Secret -Name $VaultVcKeyName -Secret $newSession.Key -Vault 'VenafiPS' -Metadata $metadata
@@ -501,38 +497,12 @@ function New-VenafiSession {
                 throw 'Server metadata not found.  Execute New-VenafiSession -VcKey $key -VaultVcKeyName $secretName and attempt the operation again.'
             }
 
-            $newSession.Key = $keySecret
+            $newSession.Platform = 'VC'
+            $newSession | Add-Member @{ 'Key' = $keySecret }
         }
 
         Default {
             throw ('Unknown parameter set {0}' -f $PSCmdlet.ParameterSetName)
-        }
-    }
-
-    if ( $VaultAccessTokenName -or $VaultRefreshTokenName ) {
-        # save secret and all associated metadata to be retrieved later
-        $metadata = @{
-            Server               = $newSession.Server
-            AuthServer           = $newSession.Token.Server
-            ClientId             = $newSession.Token.ClientId
-            Expires              = $newSession.Expires
-            Scope                = $newSession.Token.Scope | ConvertTo-Json -Compress
-            SkipCertificateCheck = [int]$newSession.SkipCertificateCheck
-            TimeoutSec           = [int]$newSession.TimeoutSec
-        }
-
-        $metadata | ConvertTo-Json | Write-Verbose
-
-        if ( $VaultAccessTokenName ) {
-            Set-Secret -Name $VaultAccessTokenName -Secret $newSession.Token.AccessToken -Vault 'VenafiPS' -Metadata $metadata
-        }
-        else {
-            if ( $newSession.Token.RefreshToken ) {
-                Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS' -Metadata $metadata
-            }
-            else {
-                Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
-            }
         }
     }
 
@@ -553,6 +523,32 @@ function New-VenafiSession {
                         $_.Id
                     }
                 }, * -ExcludeProperty id)
+        }
+    }
+
+    if ( $VaultAccessTokenName -or $VaultRefreshTokenName ) {
+        # save secret and all associated metadata to be retrieved later
+        $metadata = @{
+            Server               = $newSession.Server
+            AuthServer           = $newSession.Token.Server
+            ClientId             = $newSession.Token.ClientId
+            Scope                = $newSession.Token.Scope | ConvertTo-Json -Compress
+            SkipCertificateCheck = [int]$newSession.SkipCertificateCheck
+            TimeoutSec           = [int]$newSession.TimeoutSec
+        }
+
+        $metadata | ConvertTo-Json | Write-Verbose
+
+        if ( $VaultAccessTokenName ) {
+            Set-Secret -Name $VaultAccessTokenName -Secret $newSession.Token.AccessToken -Vault 'VenafiPS' -Metadata $metadata
+        }
+        else {
+            if ( $newSession.Token.RefreshToken ) {
+                Set-Secret -Name $VaultRefreshTokenName -Secret $newSession.Token.RefreshToken -Vault 'VenafiPS' -Metadata $metadata
+            }
+            else {
+                Write-Warning 'Refresh token not provided by server and will not be saved in the vault'
+            }
         }
     }
 

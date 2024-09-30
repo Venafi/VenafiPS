@@ -1,50 +1,21 @@
-<#
-.SYNOPSIS
-PowerShell module to access the features of Venafi Trust Protection Platform REST API
-
-.DESCRIPTION
-Author: Greg Brownstein
-#>
-
 # Force TLS 1.2 if currently set lower
 if ([Net.ServicePointManager]::SecurityProtocol.value__ -lt 3072) {
     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 }
 
-$folders = @('Enum', 'Classes', 'Public', 'Private')
-$publicFunction = @()
-
-foreach ( $folder in $folders) {
-
-    $files = Get-ChildItem -Path "$PSScriptRoot\$folder\*.ps1" -Recurse
-
-    Foreach ( $thisFile in $files ) {
-        Try {
-            Write-Verbose ('dot sourcing {0}' -f $thisFile.FullName)
-            . $thisFile.fullname
-            if ( $folder -eq 'Public' ) {
-                Export-ModuleMember -Function $thisFile.Basename
-                $publicFunction += $thisFile.BaseName
-            }
-        }
-        Catch {
-            Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
-        }
-    }
-}
-
-$script:VcRegions = @{
-    'us'='https://api.venafi.cloud'
-    'eu'='https://api.venafi.eu'
-}
 # the new version will be replaced below during deployment
 $script:ModuleVersion = '((NEW_VERSION))'
-$script:functionConfig = ConvertFrom-Json (Get-Content "$PSScriptRoot/config/functions.json" -Raw)
 
+$script:VcRegions = @{
+    'us' = 'https://api.venafi.cloud'
+    'eu' = 'https://api.venafi.eu'
+}
 $Script:VenafiSession = $null
-Export-ModuleMember -Variable VenafiSession
+$script:ThreadJobAvailable = ($null -ne (Get-Module -Name Microsoft.PowerShell.ThreadJob -ListAvailable))
+$script:DevMode = $script:ModuleVersion -match 'NEW_VERSION'
+$script:ParallelImportPath = $PSCommandPath
 
-Export-ModuleMember -Alias * -Variable VenafiSession
+Export-ModuleMember -Alias * -Variable VenafiSession -Function *
 
 # vaas fields to ensure the values are upper case
 $script:vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
@@ -145,7 +116,7 @@ $vcGenericArgCompleterSb = {
 
 # 'Application', 'MachineType', 'IssuingTemplate', 'VSatellite', 'CertificateID' | ForEach-Object {
 'Application', 'MachineType', 'VSatellite', 'Certificate' | ForEach-Object {
-    Register-ArgumentCompleter -CommandName ($publicFunction | Where-Object { $_ -like '*-Vc*' }) -ParameterName $_ -ScriptBlock $vcGenericArgCompleterSb
+    Register-ArgumentCompleter -CommandName '*-Vc*' -ParameterName $_ -ScriptBlock $vcGenericArgCompleterSb
 }
 
 $vdcPathArgCompleterSb = {
@@ -172,4 +143,306 @@ $vdcPathArgCompleterSb = {
         }
     }
 }
-Register-ArgumentCompleter -CommandName ($publicFunction | Where-Object { $_ -like '*-Vdc*' }) -ParameterName 'Path' -ScriptBlock $vdcPathArgCompleterSb
+Register-ArgumentCompleter -CommandName '*-Vdc*' -ParameterName 'Path' -ScriptBlock $vdcPathArgCompleterSb
+
+$script:functionConfig = @{
+    'Add-VdcAdaptableHash'             = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'restricted=manage,delete'
+    }
+    'Add-VdcCertificateAssociation'    = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=manage'
+    }
+    'Add-VdcEngineFolder'              = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Add-VdcTeamMember'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Add-VdcTeamOwner'                 = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Convert-VdcObject'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'ConvertTo-VdcGuid'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'ConvertTo-VdcPath'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Export-VdcCertificate'            = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=manage'
+    }
+    'Find-VdcClient'                   = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'agent=$null'
+    }
+    'Find-VdcEngine'                   = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=$null'
+    }
+    'Find-VdcIdentity'                 = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=$null'
+    }
+    'Find-VdcObject'                   = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=$null'
+    }
+    'Find-VdcVaultId'                  = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'restricted=$null'
+    }
+    'Find-VcObject'                    = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = ''
+    }
+    'Find-VdcCertificate'              = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=$null'
+    }
+    'Get-VdcAttribute'                 = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=$null'
+    }
+    'Get-VdcClassAttribute'            = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Get-VdcCredential'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'security=manage'
+    }
+    'Get-VdcCustomField'               = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Get-VdcEngineFolder'              = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Get-VdcIdentityAttribute'         = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=$null'
+    }
+    'Get-VdcObject'                    = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Get-VdcPermission'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'security=$null'
+    }
+    'Get-VdcSystemStatus'              = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Get-VdcVersion'                   = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Get-VdcWorkflowTicket'            = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Get-VdcCertificate'               = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=$null'
+    }
+    'Get-VdcIdentity'                  = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=$null'
+    }
+    'Get-VdcTeam'                      = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Import-VdcCertificate'            = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=discover'
+    }
+    'Import-VcCertificate'             = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = ''
+    }
+    'Invoke-VdcCertificateAction'      = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=manage for Reset, Renew, Push, and Validate.  certificate=revoke for Revoke.  certificate=delete for Delete.'
+    }
+    'Move-VdcObject'                   = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'New-VdcCapiApplication'           = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'New-VdcCertificate'               = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=manage'
+    }
+    'New-VdcCustomField'               = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'New-VdcDevice'                    = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'New-VdcObject'                    = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage.  If a certificate is provided as an attribute, certificate=manage as well.'
+    }
+    'New-VdcPolicy'                    = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'New-VdcToken'                     = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'New-VcCertificate'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = ''
+    }
+    'New-VcConnector'                  = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = ''
+    }
+    'New-VenafiSession'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = ''
+    }
+    'New-VenafiTeam'                   = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Read-VenafiLog'                   = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Remove-VdcCertificate'            = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=delete.  If using KeepAssociatedApps, configuration=$null,certificate=manage as well.'
+    }
+    'Remove-VdcCertificateAssociation' = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=manage.  If using -All, configuration=$null as well.'
+    }
+    'Remove-VdcClient'                 = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'agent=delete'
+    }
+    'Remove-VdcEngineFolder'           = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=delete'
+    }
+    'Remove-VdcObject'                 = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=delete'
+    }
+    'Remove-VdcPermission'             = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'security=delete'
+    }
+    'Remove-VenafiTeam'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=delete'
+    }
+    'Remove-VenafiTeamMember'          = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Remove-VenafiTeamOwner'           = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Rename-VdcObject'                 = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Revoke-VdcCertificate'            = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'certificate=revoke'
+    }
+    'Revoke-VdcGrant'                  = @{
+        'TppVersion'    = '22.3'
+        'TppTokenScope' = 'admin=delete'
+    }
+    'Revoke-VdcToken'                  = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Search-VdcHistory'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'restricted=$null, certificate=$null'
+    }
+    'Set-VdcAttribute'                 = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=manage'
+    }
+    'Set-VdcCredential'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'security=manage'
+    }
+    'Set-VdcPermission'                = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'security=manage'
+    }
+    'Set-VdcWorkflowTicketStatus'      = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'approve with any scope'
+    }
+    'Test-VdcIdentity'                 = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=$null'
+    }
+    'Test-VdcObject'                   = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'configuration=$null'
+    }
+    'Test-VdcToken'                    = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+    'Write-VdcLog'                     = @{
+        'TppVersion'    = ''
+        'TppTokenScope' = 'any scope'
+    }
+}
+
+# ModuleVersion will get updated during the build and this will not run
+# this is only needed during development since all files will be merged into one psm1
+if ( $script:DevMode ) {
+    $folders = @('Enum', 'Classes', 'Public', 'Private')
+    $publicFunction = @()
+
+    foreach ( $folder in $folders) {
+
+        $files = Get-ChildItem -Path "$PSScriptRoot\$folder\*.ps1" -Recurse
+
+        Foreach ( $thisFile in $files ) {
+            Try {
+                Write-Verbose ('dot sourcing {0}' -f $thisFile.FullName)
+                . $thisFile.fullname
+                # if ( $folder -eq 'Public' ) {
+                Export-ModuleMember -Function $thisFile.Basename
+                $publicFunction += $thisFile.BaseName
+                # }
+            }
+            Catch {
+                Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
+            }
+        }
+    }
+}
+

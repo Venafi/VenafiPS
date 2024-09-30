@@ -123,22 +123,15 @@ function Invoke-VenafiRestMethod {
         # }
 
         switch ($VenafiSession.GetType().Name) {
-            { $_ -in 'VenafiSession', 'PSCustomObject' } {
+            'PSCustomObject' {
                 $Server = $VenafiSession.Server
+                $platform = $VenafiSession.Platform
                 if ( $VenafiSession.Platform -eq 'VC' ) {
-                    $platform = 'VC'
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
                 }
                 else {
                     # TLSPDC
-                    if ( $VenafiSession.AuthType -eq 'Token' ) {
-                        $platform = 'TppToken'
-                        $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                    }
-                    else {
-                        $platform = 'TppKey'
-                        $auth = $VenafiSession.Key.ApiKey
-                    }
+                    $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
                 }
                 $SkipCertificateCheck = $VenafiSession.SkipCertificateCheck
                 $params.TimeoutSec = $VenafiSession.TimeoutSec
@@ -171,7 +164,7 @@ function Invoke-VenafiRestMethod {
                     if ( $Server -notlike 'https://*') {
                         $Server = 'https://{0}' -f $Server
                     }
-                    $platform = 'TppToken'
+                    $platform = 'VDC'
                 }
             }
 
@@ -191,15 +184,9 @@ function Invoke-VenafiRestMethod {
                 }
             }
 
-            'TppToken' {
+            'VDC' {
                 $allHeaders = @{
                     'Authorization' = 'Bearer {0}' -f $auth
-                }
-            }
-
-            'TppKey' {
-                $allHeaders = @{
-                    "X-Venafi-Api-Key" = $auth
                 }
             }
 
@@ -240,6 +227,8 @@ function Invoke-VenafiRestMethod {
             Default {
                 $preJsonBody = $Body
                 $params.Body = (ConvertTo-Json $Body -Depth 20 -Compress)
+                # for special characters, we need to set the content type to utf-8
+                $params.ContentType = "application/json; charset=utf-8"
             }
         }
     }

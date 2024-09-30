@@ -60,7 +60,10 @@ function Export-VdcCertificate {
         - Special characters
 
     .PARAMETER ThrottleLimit
-    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
+    Limit the number of threads when running in parallel; the default is 100.
+    Setting the value to 1 will disable multithreading.
+    On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
+
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -226,28 +229,18 @@ function Export-VdcCertificate {
         }
 
         $body | Write-VerboseWithSecret
-
-        # function not available in parallel jobs, use this workaround to pass it in via InputObject
-        $splitCertificateDataFunction = 'function Split-CertificateData {{ {0} }}' -f (Get-Command Split-CertificateData | Select-Object -ExpandProperty Definition)
     }
 
     process {
         $body.CertificateDN = ($Path | ConvertTo-VdcFullPath)
 
-        $allCerts.Add(
-            @{
-                Body                         = $body.Clone()
-                SplitCertificateDataFunction = $splitCertificateDataFunction
-            }
-        )
+        $allCerts.Add($body.Clone())
     }
 
     end {
         Invoke-VenafiParallel -InputObject $allCerts -ScriptBlock {
 
-            . ([scriptblock]::Create($PSItem.SplitCertificateDataFunction))
-
-            $thisBody = $PSItem.Body
+            $thisBody = $PSItem
 
             try {
                 $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody

@@ -12,7 +12,7 @@
 RootModule = 'VenafiPS.psm1'
 
 # Version number of this module.
-ModuleVersion = '6.4.2'
+ModuleVersion = '6.5'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -57,11 +57,11 @@ PowerShellVersion = '5.1'
 # RequiredAssemblies = @()
 
 # Script files (.ps1) that are run in the caller's environment prior to importing this module.
-ScriptsToProcess = 'Classes\TppPermission.ps1', 'Classes\VenafiSession.ps1',
-               'Enum\TppCertificateStage.ps1', 'Enum\TppConfigResult.ps1',
-               'Enum\TppEventSeverity.ps1', 'Enum\TppIdentityType.ps1',
-               'Enum\TppManagementType.ps1', 'Enum\TppMetadataResult.ps1',
-               'Enum\TppSecretStoreResult.ps1', 'Enum\TppWorkflowResult.ps1'
+# ScriptsToProcess = 'Classes\TppPermission.ps1', 'Classes\VenafiSession.ps1',
+#                'Enum\TppCertificateStage.ps1', 'Enum\TppConfigResult.ps1',
+#                'Enum\TppEventSeverity.ps1', 'Enum\TppIdentityType.ps1',
+#                'Enum\TppManagementType.ps1', 'Enum\TppMetadataResult.ps1',
+#                'Enum\TppSecretStoreResult.ps1', 'Enum\TppWorkflowResult.ps1'
 
 # Type files (.ps1xml) to be loaded when importing this module
 # TypesToProcess = @()

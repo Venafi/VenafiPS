@@ -72,7 +72,7 @@ function Search-VdcHistory {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC' -AuthType 'Token'
+    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
 
     $activeVaultId = Find-VdcVaultId -Attribute $Attribute
     if ( -not $activeVaultId ) {

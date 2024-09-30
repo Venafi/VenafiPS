@@ -23,6 +23,8 @@ function Invoke-VdcCertificateAction {
     .PARAMETER Push
     Provisions the same certificate and private key to one or more devices or servers.
     The certificate must be associated with one or more Application objects.
+    By default, this will provision the certificate to all associated applications.
+    To specify a subset of applications, use the AdditionalParameter parameter as shown in the examples.
 
     .PARAMETER Validate
     Initiates SSL/TLS network validation
@@ -38,7 +40,10 @@ function Invoke-VdcCertificateAction {
     See the examples for suggestions.
 
     .PARAMETER ThrottleLimit
-    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
+    Limit the number of threads when running in parallel; the default is 100.
+    Setting the value to 1 will disable multithreading.
+    On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
+
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -69,6 +74,11 @@ function Invoke-VdcCertificateAction {
     Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Revoke -Confirm:$false | Invoke-VdcCertificateAction -Delete -Confirm:$false
 
     Chain multiple actions together
+
+    .EXAMPLE
+    Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Push -AdditionalParameter @{'PushToAll'=$false; 'ApplicationDN'=@('\VED\Policy\My folder\app.mycompany.com\app1','\VED\Policy\My folder\app.mycompany.com\app2')}
+
+    Perform a push to a subset of associated applications overwriting the default of pushing to all.
 
     .EXAMPLE
     Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameter @{'Comments'='Key compromised'; 'Reason'='3'}
@@ -210,7 +220,10 @@ function Invoke-VdcCertificateAction {
 
                 'Push' {
                     $params.UriLeaf = 'Certificates/Push'
-                    $params.Body = @{CertificateDN = $thisCert }
+                    $params.Body = @{
+                        CertificateDN = $thisCert
+                        'PushToAll'   = $true
+                    }
                 }
 
                 'Validate' {

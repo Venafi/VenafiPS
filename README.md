@@ -10,7 +10,7 @@
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
-Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi TLS Protect Datacenter (TLSPDC) formerly known as Trust Protection Platform and TLS Protect Cloud (TLSPC).  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue](https://github.com/Venafi/VenafiPS/issues).
+Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi TLS Protect Datacenter (TLSPDC), formerly known as Trust Protection Platform, and TLS Protect Cloud (TLSPC).  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue/enhancement](https://github.com/Venafi/VenafiPS/issues).
 
 ## Documentation
 
@@ -20,8 +20,6 @@ Documentation can be found at [http://VenafiPS.readthedocs.io](http://VenafiPS.r
 
 VenafiPS works on PowerShell v5.1 as well as cross-platform PowerShell on Windows, Linux, and Mac.
 
-There are a few TLSPC functions which require Sodium encryption and can only be run on PowerShell v7+.  Also for those functions, on Windows, the latest C++ runtime must be installed.
-
 ## Install Module
 
 VenafiPS is published to the PowerShell Gallery.  The most recent version is listed in the badge 'powershell gallery' above and can be viewed by clicking on it.  To install the module, you need to have PowerShell installed first.  On Windows, Windows PowerShell (v5.x) will already be installed, but is recommended to install the latest version of cross-platform PowerShell.  For [Linux](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-linux?view=powershell-7) or [macOS](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-macos?view=powershell-7), you will need to install PowerShell; follow those links for guidance.  Once PowerShell is installed, start a PowerShell prompt and execute `Install-Module -Name VenafiPS` which will install from the gallery.
@@ -30,6 +28,11 @@ VenafiPS is published to the PowerShell Gallery.  The most recent version is lis
 ``` powershell
 [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
 ```
+
+### Additional Modules
+
+- If running on Windows with PowerShell v5, multithreading is supported with [Microsoft.PowerShell.ThreadJob](https://github.com/PowerShell/ThreadJob), a Microsoft PowerShell module.  Install this for increased performance on the functions that support it.  Version 2.1.0 has been tested.
+- There are a few TLSPC functions which require Sodium encryption.  These functions require the PSSodium module be installed from the PowerShell Gallery.  Also for those functions, on Windows, the latest C++ runtime must be installed.  Version 0.4.2 has been tested.
 
 ## Usage
 

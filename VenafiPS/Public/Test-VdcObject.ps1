@@ -121,11 +121,11 @@ function Test-VdcObject {
             $response = Invoke-VenafiRestMethod @params
 
             if ( $ExistOnly ) {
-                $response.Result -eq [TppConfigResult]::Success
+                $response.Result -eq 1
             } else {
                 [PSCustomObject] @{
                     Object = $thisValue
-                    Exists = ($response.Result -eq [TppConfigResult]::Success)
+                    Exists = ($response.Result -eq 1)
                 }
             }
         }

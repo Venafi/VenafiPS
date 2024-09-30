@@ -5,8 +5,8 @@ function Invoke-VenafiParallel {
     Helper function to execute a scriptblock in parallel
 
     .DESCRIPTION
-    If using powershell v7+, execute a scriptblock in parallel with progress.
-    Otherwise, fallback to executing linearly.
+    Execute a scriptblock in parallel.
+    For PS v5, the ThreadJob module is required.
 
     .PARAMETER InputObject
     List of items to iterate over
@@ -15,13 +15,12 @@ function Invoke-VenafiParallel {
     Scriptblock to execute against the list of items
 
     .PARAMETER ThrottleLimit
-    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
+    Limit the number of threads when running in parallel; the default is 100.
+    Setting the value to 1 will disable multithreading.
+    On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
 
     .PARAMETER ProgressTitle
     Message displayed on the progress bar
-
-    .PARAMETER NoProgress
-    Do not display the progress bar
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -37,7 +36,8 @@ function Invoke-VenafiParallel {
     Only run 5 threads at a time instead of the default of 100.
 
     .EXAMPLE
-    Invoke-VenafiParallel -InputObject $myObjects -ScriptBlock { Do-Something $PSItem } -NoProgress
+    $ProgressPreference = 'SilentlyContinue'
+    Invoke-VenafiParallel -InputObject $myObjects -ScriptBlock { Do-Something $PSItem }
 
     Execute in parallel with no progress bar.
 
@@ -65,9 +65,6 @@ function Invoke-VenafiParallel {
         [string] $ProgressTitle = 'Performing action',
 
         [Parameter()]
-        [switch] $NoProgress,
-
-        [Parameter()]
         [psobject] $VenafiSession
 
     )
@@ -76,36 +73,24 @@ function Invoke-VenafiParallel {
 
         if (-not $InputObject) { return }
 
-        if ( $PSVersionTable.PSVersion.Major -ge 7 ) {
+        # if ThreadJob module is not available, throttle to 1 so multithreading isn't used
+        if ( $PSVersionTable.PSVersion.Major -eq 5 ) {
+            if ( -not $script:ThreadJobAvailable ) {
+                $ThrottleLimit = 1
+            }
+        }
 
-            if ( $env:VDC_TOKEN ) {
-                $VenafiSession = $env:VDC_TOKEN
-            }
-            elseif ( $env:VC_KEY ) {
-                $VenafiSession = $env:VC_KEY
-            }
-            elseif ($script:VenafiSessionNested) {
-                $VenafiSession = $script:VenafiSessionNested
-            }
-            elseif ( $script:VenafiSession ) {
-                $VenafiSession = $script:VenafiSession
-            }
-            else {
-                throw 'Please run New-VenafiSession or provide a TLSPC key or TLSPDC token.'
-            }
-
-            # PS classes are not thread safe, https://github.com/PowerShell/PowerShell/issues/12801
-            # so can't pass VenafiSession as is unless it's an token/key string
-            # pscustomobject are safe so convert to that
-            $vs = if ( $VenafiSession -is 'VenafiSession' ) {
-                $vsTemp = [pscustomobject]@{}
-                $VenafiSession.psobject.properties | ForEach-Object { $vsTemp | Add-Member @{$_.name = $_.value } }
-                $vsTemp
-            }
-            else {
-                # token or api key provided directly
-                $VenafiSession
-            }
+        if ( $script:VenafiSession ) {
+            $VenafiSession = $script:VenafiSession
+        }
+        elseif ($script:VenafiSessionNested) {
+            $VenafiSession = $script:VenafiSessionNested
+        }
+        elseif ( $env:VDC_TOKEN ) {
+            $VenafiSession = $env:VDC_TOKEN
+        }
+        elseif ( $env:VC_KEY ) {
+            $VenafiSession = $env:VC_KEY
         }
     }
 
@@ -116,62 +101,67 @@ function Invoke-VenafiParallel {
 
         if (-not $InputObject) { return }
 
-        # if we only have 1 item or limited to 1 at a time, no need for parallel
-        if ( ($PSVersionTable.PSVersion.Major -ge 7) -and (([array]$InputObject).Count -gt 1) -and ($ThrottleLimit -ne 100) ) {
+        # throttle to 1 = no parallel
+        if ( $ThrottleLimit -le 1 ) {
+            # ensure no $using: vars given not threaded and not needed
+            $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
+            return
+        }
 
-            if ( -not $NoProgress ) {
-                Write-Progress -Activity $ProgressTitle -Status "Initializing..."
-            }
+        # parallel processing from here down
+        $starterSb = {
 
-            $thisDir = $PSScriptRoot
-            $starterSb = {
+            # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
+            # import via path instead of just module name to support non-standard paths, eg. development work
 
-                # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
-                # import via path instead of just module name to support non-standard paths, eg. development work
+            # ParallelImportPath is set during module import
+            Import-Module $using:script:ParallelImportPath -Force
 
-                Import-Module (Join-Path -Path (Split-Path $using:thisDir -Parent) -ChildPath 'VenafiPS.psd1') -Force
-                $script:VenafiSession = $using:vs
+            # bring in the venafi session from the calling ps session
+            $script:VenafiSession = $using:VenafiSession
 
-                # bring in verbose preference from calling function
-                $VerbosePreference = $using:VerbosePreference
-            }
+            # bring in verbose preference from calling ps session
+            $VerbosePreference = $using:VerbosePreference
+        }
 
-            $newSb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
 
-            $job = $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $newSb
-
-            if ( -not $job.ChildJobs ) {
-                return
-            }
-
-            do {
-
-                # let threads run
-                Start-Sleep -Milliseconds 100
-
-                $completedJobsCount = $job.ChildJobs.Where({ $_.State -notin 'NotStarted', 'Running' }).Count
-
-                # get latest job info
-                $job | Receive-Job
-
-                if ( -not $NoProgress ) {
-                    [int] $percent = ($completedJobsCount / $job.ChildJobs.Count) * 100
-                    Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
-                }
-
-            } while ($completedJobsCount -lt $job.ChildJobs.Count)
-
-            Write-Progress -Completed -Activity 'done'
+        if ( $PSVersionTable.PSVersion.Major -eq 5 ) {
+            # Start-ThreadJob does not have any child jobs for some reason so there will be no progress and just exist
+            $sb = ([ScriptBlock]::Create($starterSb.ToString() + '$using:InputObject | % { ' + $ScriptBlock.ToString() + '}'))
+            return Start-ThreadJob -ScriptBlock $sb -ThrottleLimit $ThrottleLimit | Receive-Job -Wait -AutoRemoveJob
         }
         else {
+            $sb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
 
-            # if ( ([array]$InputObject).Count -gt 1 ) {
-                # Write-Warning 'Upgrade to PowerShell v7+ to make this function execute in parallel and be much faster!'
-            # }
-
-            # ensure no $using: vars
-            $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
+            # no progress, arguably faster
+            if ( $ProgressPreference -ne 'Continue' ) {
+                return $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $sb | Receive-Job -Wait -AutoRemoveJob
+            }
         }
 
+        Write-Progress -Activity $ProgressTitle -Status "Initializing..."
+
+        $job = $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $sb
+
+        if ( -not $job.ChildJobs ) {
+            return
+        }
+
+        do {
+
+            # let threads run
+            Start-Sleep -Seconds 0.1
+
+            $completedJobsCount = $job.ChildJobs.Where({ $_.State -notin 'NotStarted', 'Running' }).Count
+
+            # get latest job info
+            $job | Receive-Job
+
+            [int] $percent = ($completedJobsCount / $job.ChildJobs.Count) * 100
+            Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
+
+        } while ($completedJobsCount -lt $job.ChildJobs.Count)
+
+        Write-Progress -Completed -Activity 'done'
     }
 }

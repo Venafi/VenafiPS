@@ -46,7 +46,10 @@ function Import-VdcCertificate {
     See https://docs.venafi.com/Docs/currentSDK/TopNav/Content/CA/c-CA-Import-ReconciliationRules-tpp.php for a flowchart of the reconciliation algorithm.
 
     .PARAMETER ThrottleLimit
-    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
+    Limit the number of threads when running in parallel; the default is 100.
+    Setting the value to 1 will disable multithreading.
+    On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
+
 
     .PARAMETER PassThru
     Return a TppObject representing the newly imported object.
@@ -155,7 +158,7 @@ function Import-VdcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC' -AuthType 'token'
+        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 
         $params = @{

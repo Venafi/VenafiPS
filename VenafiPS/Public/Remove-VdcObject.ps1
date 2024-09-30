@@ -15,7 +15,10 @@ function Remove-VdcObject {
     Remove recursively, eg. everything within a policy folder
 
     .PARAMETER ThrottleLimit
-    Limit the number of threads when running in parallel; the default is 100.  Applicable to PS v7+ only.
+    Limit the number of threads when running in parallel; the default is 100.
+    Setting the value to 1 will disable multithreading.
+    On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
+
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -101,7 +104,7 @@ function Remove-VdcObject {
 
             $response = Invoke-VenafiRestMethod @params
 
-            if ( $response.Result -ne [TppConfigResult]::Success ) {
+            if ( $response.Result -ne 1 ) {
                 Write-Error $response.Error
                 return
             }
