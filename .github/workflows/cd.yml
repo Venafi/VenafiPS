@@ -25,7 +25,7 @@ jobs:
           # update-modulemanifest introduces whitepsace so get rid of it
           (Get-Content $manifestPath).TrimEnd() | Set-Content $manifestPath
 
-          ((Get-Content -Path $modulePath -Raw).Replace('((NEW_VERSION))', $newVersion)) | Set-Content -Path $modulePath
+          # ((Get-Content -Path $modulePath -Raw).Replace('((NEW_VERSION))', $newVersion)) | Set-Content -Path $modulePath
           "New version: $newVersion"
           # set version to be used in later steps
           "venafips_new_version=$newVersion" | Out-File -FilePath $env:GITHUB_ENV -Append
