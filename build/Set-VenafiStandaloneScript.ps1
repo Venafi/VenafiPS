@@ -163,10 +163,51 @@ begin {
             }
         }
     }
+
+    function Remove-Sig {
+
+        [CmdletBinding()]
+        param (
+            [Parameter(Mandatory, ValueFromPipeline)]
+            [string] $Path
+        )
+
+        process {
+
+            # Define start and end markers
+            $startMarker = "# SIG # Begin signature block"
+            $endMarker = "# SIG # End signature block"
+
+            # Read the file content
+            $fileContent = Get-Content $Path
+
+            # Initialize flags
+            $insideSection = $false
+            $outputContent = @()
+
+            # Process each line
+            foreach ($line in $fileContent) {
+                if ($line -match $startMarker) {
+                    $insideSection = $true
+                    continue
+                }
+                if ($line -match $endMarker) {
+                    $insideSection = $false
+                    continue
+                }
+                if (-not $insideSection) {
+                    $outputContent += $line
+                }
+            }
+
+            # Write the output content back to the file
+            $outputContent -join "`n"
+        }
+    }
 }
 
 process {
-    $astTypes = 'CommandAst', 'TypeExpressionAst'
+    $astTypes = 'CommandAst', 'TypeExpressionAst', 'ParamBlockAst', 'NamedBlockAst'
     $script = (Get-Command $scriptPath).ScriptBlock
 
     $module = Get-ModuleFunction -Module VenafiPS -Version $ModuleVersion
@@ -179,7 +220,8 @@ process {
     $enumFiles = Get-ChildItem "$moduleRootPath\Enum"
     $classFiles = Get-ChildItem "$moduleRootPath\Classes"
 
-    $scriptCommands = Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw) -AstType $astTypes
+    $scriptCommands = @(Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw))
+    # $scriptCommands = @(Get-PsOneAst -Code (Get-Content -Path $scriptPath -Raw) -AstType $astTypes)
 
     $functionsToAdd = $enumsToAdd = @()
 
@@ -210,41 +252,109 @@ process {
         }
     }
 
-    $newScript = [System.Text.StringBuilder]::new($script)
+    $addToScript = [System.Text.StringBuilder]::new()
 
-    # add to begin block if there is one, otherwise add to end of script
-    if ( $Script.Ast.BeginBlock ) {
-        $addOffset = $Script.Ast.BeginBlock.Extent.StartOffset + 1
-    }
-    else {
-        # $addOffset = $Script.Ast.Extent.EndScriptPosition.Offset
-        $addOffset = $Script.Ast.Extent.StartScriptPosition.Offset
-    }
-
-    # build the full function string and write to new script
-    foreach ($functionToAdd in $functionsToAdd) {
-        $fullFunction = "`r`n{0} {1} {{`r`n# v{2}{3}`r`n}}`r`n`r`n" -f $functionToAdd.CommandType, $functionToAdd.Name, $functionToAdd.Version, $functionToAdd.Definition
-        $null = $newScript.Insert($addOffset, $fullFunction)
-        $addOffset += $fullFunction.Length
-    }
+    $null = $addToScript.AppendLine(('# Including VenafiPS code v{0}' -f $module.Module.Version.ToString()))
 
     # add enums into script
-    foreach ($thisEnum in $enumsToAdd) {
-        $fullEnum = "`r`n{0}`r`n`r`n" -f (Get-Content $thisEnum.FullName -Raw)
-        $null = $newScript.Insert($addOffset, $fullEnum)
-        $addOffset += $fullEnum.Length
+    # currently all are being added as ast isn't picking them all up
+    # eg. TppManagementType isn't picked up from Find-VdcCertificate
+    foreach ($thisEnum in $enumFiles) {
+        $raw = Remove-Sig -Path $thisEnum.FullName
+
+        $fullEnum = "`r`n{0}`r`n`r`n" -f $raw
+        $null = $addToScript.AppendLine($fullEnum)
     }
 
     # add classes into script
     # currently all are being added
     foreach ($thisClass in $classFiles) {
-        $fullClass = "`r`n{0}`r`n`r`n" -f (Get-Content $thisClass.FullName -Raw)
-        $null = $newScript.Insert($addOffset, $fullClass)
-        $addOffset += $fullClass.Length
+        $raw = Remove-Sig -Path $thisClass.FullName
+
+        $fullClass = "`r`n{0}`r`n`r`n" -f $raw
+        $null = $addToScript.AppendLine($fullClass)
     }
 
+    # build the full function string and write to new script
+    foreach ($functionToAdd in $functionsToAdd) {
+        $fullFunction = "`r`n{0} {1} {{`r`n{2}`r`n}}`r`n`r`n" -f $functionToAdd.CommandType, $functionToAdd.Name, $functionToAdd.Definition
+        $null = $addToScript.AppendLine($fullFunction)
+    }
+
+    $newScript = [System.Text.StringBuilder]::new($script)
+
+    $paramBlock = $scriptCommands | Where-Object { $_.Type -eq 'ParamBlockAst' -and $_.Parent.ToString() -eq $script.ToString() }
+
+    $fileContent = @(Get-Content $scriptPath)
+    $addOffset = 0
+
+    # add to begin block if there is one
+    if ( $Script.Ast.BeginBlock ) {
+        $addOffset = $Script.Ast.BeginBlock.Extent.StartOffset
+    }
+    elseif ( $paramBlock ) {
+        # param block exists, add after
+
+        $insideParamBlock = $false
+
+        # Process each line to find the end of the param block
+        for ($i = 0; $i -lt $fileContent.Length; $i++) {
+            $line = $fileContent[$i]
+            $addOffset += $line.Length + 1
+
+            if ($line -match "^param\s*\(") {
+                $insideParamBlock = $true
+            }
+
+            if ($insideParamBlock -and $line -match "\)\s*$") {
+                $insideParamBlock = $false
+                break
+            }
+        }
+    }
+    else {
+
+        $insideCommentBlock = $false
+
+        # check for comments and requires at the top of the script
+        for ($i = 0; $i -lt $fileContent.Length; $i++) {
+            $line = $fileContent[$i]
+            $lineTrimmed = $line.Trim()
+
+            if ( $lineTrimmed -like '*<#*' ) {
+                # block comment
+                $insideCommentBlock = $true
+                $addOffset += $line.Length
+            }
+            elseif ( $lineTrimmed -like '*#>*' ) {
+                # end block comment
+                $insideCommentBlock = $false
+                $addOffset += $line.Length
+            }
+            elseif ( $lineTrimmed -like '#*' -or $lineTrimmed -eq '' ) {
+                # comment or blank line, keep going
+                $addOffset += $line.Length
+            }
+            elseif ( $insideCommentBlock ) {
+                # inside block comment, keep going
+                $addOffset += $line.Length
+            }
+            else {
+                break
+            }
+            $addOffset += 1
+        }
+    }
+
+    $null = $newScript.Insert($addOffset, $addToScript.ToString())
+
+    # existing script cleanup
+    $newScriptClean = $newScript.ToString()
+    $newScriptClean = $newScriptClean -replace '#Requires -Modules venafips', ''
+    $newScriptClean = $newScriptClean -replace 'import-module.*venafips', ''
+
     $fileExt = [System.IO.Path]::GetExtension($ScriptPath)
-    $newScript | Set-Content -Path ($ScriptPath.Replace($fileExt, "-Standalone$fileExt"))
+    $newScriptClean | Set-Content -Path ($ScriptPath.Replace($fileExt, "-Standalone$fileExt"))
 }
 
 end {
