@@ -96,77 +96,65 @@ Tokens and TLSPC keys can be saved in a vault for future calls.
 
 ### EXAMPLE 1
 ```
-New-VenafiSession -Server venafitpp.mycompany.com
-Create key-based session using Windows Integrated authentication
-```
-
-### EXAMPLE 2
-```
-New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred
-Create key-based session using Windows Integrated authentication
-```
-
-### EXAMPLE 3
-```
 New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
 Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 ```
 
-### EXAMPLE 4
+### EXAMPLE 2
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -ClientId MyApp -Scope @{'certificate'='manage'}
 Create token-based session
 ```
 
-### EXAMPLE 5
+### EXAMPLE 3
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -Certificate $myCert -ClientId MyApp -Scope @{'certificate'='manage'}
 Create token-based session using a client certificate
 ```
 
-### EXAMPLE 6
+### EXAMPLE 4
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
 Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 ```
 
-### EXAMPLE 7
+### EXAMPLE 5
 ```
 $sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
 Create session and return the session object instead of setting to script scope variable
 ```
 
-### EXAMPLE 8
+### EXAMPLE 6
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $accessCred
 Create session using an access token obtained outside this module
 ```
 
-### EXAMPLE 9
+### EXAMPLE 7
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp
 Create session using a refresh token
 ```
 
-### EXAMPLE 10
+### EXAMPLE 8
 ```
 New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh
 Create session using a refresh token and store the newly created refresh token in the vault
 ```
 
-### EXAMPLE 11
+### EXAMPLE 9
 ```
 New-VenafiSession -VcKey $cred
 Create session against TLSPC
 ```
 
-### EXAMPLE 12
+### EXAMPLE 10
 ```
 New-VenafiSession -VcKey $cred -VcRegion 'eu'
 Create session against TLSPC in EU region
 ```
 
-### EXAMPLE 13
+### EXAMPLE 11
 ```
 New-VenafiSession -VaultVcKeyName vaas-key
 Create session against TLSPC with a key stored in a vault
@@ -204,7 +192,7 @@ Accept wildcard characters: False
 ```
 
 ### -Credential
-Username and password used for key and token-based authentication. 
+Username and password used for token-based authentication. 
 Not required for integrated authentication.
 
 ```yaml
@@ -333,7 +321,7 @@ Accept wildcard characters: False
 ### -Jwt
 JSON web token.
 Available in TLSPDC v22.4 and later.
-Ensure jwt mapping has been configured in VCC, Access Management-\>JWT Mappings.
+Ensure JWT mapping has been configured in VCC, Access Management-\>JWT Mappings.
 
 ```yaml
 Type: String
@@ -348,7 +336,7 @@ Accept wildcard characters: False
 ```
 
 ### -Certificate
-Certificate for token-based authentication
+Certificate for TLSPDC token-based authentication
 
 ```yaml
 Type: X509Certificate

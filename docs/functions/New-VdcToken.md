@@ -38,8 +38,8 @@ New-VdcToken -AuthServer <String> -ClientId <String> -Scope <Hashtable> -Credent
 
 ### RefreshSession
 ```
-New-VdcToken [-SkipCertificateCheck] -VenafiSession <VenafiSession> [-ProgressAction <ActionPreference>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+New-VdcToken [-SkipCertificateCheck] -VenafiSession <PSObject> [-ProgressAction <ActionPreference>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -235,7 +235,7 @@ Accept wildcard characters: False
 VenafiSession object created from New-VenafiSession method.
 
 ```yaml
-Type: VenafiSession
+Type: PSObject
 Parameter Sets: RefreshSession
 Aliases:
 

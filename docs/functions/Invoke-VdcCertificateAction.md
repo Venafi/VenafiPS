@@ -82,6 +82,13 @@ Chain multiple actions together
 
 ### EXAMPLE 4
 ```
+Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Push -AdditionalParameter @{'PushToAll'=$false; 'ApplicationDN'=@('\VED\Policy\My folder\app.mycompany.com\app1','\VED\Policy\My folder\app.mycompany.com\app2')}
+```
+
+Perform a push to a subset of associated applications overwriting the default of pushing to all.
+
+### EXAMPLE 5
+```
 Invoke-VdcCertificateAction -Path '\VED\Policy\My folder\app.mycompany.com' -Revoke -AdditionalParameter @{'Comments'='Key compromised'; 'Reason'='3'}
 ```
 
@@ -165,6 +172,8 @@ Accept wildcard characters: False
 ### -Push
 Provisions the same certificate and private key to one or more devices or servers.
 The certificate must be associated with one or more Application objects.
+By default, this will provision the certificate to all associated applications.
+To specify a subset of applications, use the AdditionalParameter parameter as shown in the examples.
 
 ```yaml
 Type: SwitchParameter
@@ -240,8 +249,10 @@ Accept wildcard characters: False
 ```
 
 ### -ThrottleLimit
-Limit the number of threads when running in parallel; the default is 100. 
-Applicable to PS v7+ only.
+Limit the number of threads when running in parallel; the default is 100.
+Setting the value to 1 will disable multithreading.
+On PS v5 the ThreadJob module is required. 
+If not found, multithreading will be disabled.
 
 ```yaml
 Type: Int32

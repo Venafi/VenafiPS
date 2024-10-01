@@ -5,7 +5,7 @@ Get team info
 
 ## SYNTAX
 
-### ID
+### ID (Default)
 ```
 Get-VdcTeam [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]

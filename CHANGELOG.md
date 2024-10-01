@@ -1,3 +1,12 @@
+## 6.5.0
+- Merge all functions into 1 psm1 module.  This yields much better performance, especially when running multithreaded.
+- Add multithreading support on PS v5 with the Microsoft.PowerShell.ThreadJob module (installed separately).  If the module isn't installed, multithreading will be disabled.  Set `-ThrottleLimit` to 1 on the functions that support it to disable multithreading on PS v5 and v7.
+- Module now available in the GitHub release.  This is helpful for those without access to PowerShell Gallery, although that is the preferred option.
+- PSSodium, needed for several TLSPC functions for encryption, is no longer directly included in the module.  Install it from the Gallery.
+- The VenafiSession class has been deprecated and replaced with a PSCustomObject equivalent
+- Key based authentication on TLSPDC has been deprecated
+- Default `Invoke-VdcCertificateAction -Push` to push to all applications and added an example to override and push to specific applications
+
 ## 6.4.2
 - Add batching to `Invoke-VcCertificateAction` with progress and verbose logging.  Batches will be 1000 by default, but can be overridden with `-BatchSize`.  Also added better use of ShouldProcess.
 
@@ -665,6 +674,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
