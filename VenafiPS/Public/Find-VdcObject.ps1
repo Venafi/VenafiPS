@@ -41,69 +41,6 @@ function Find-VdcObject {
     A TLSPDC token can also be provided.
     If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
-    .INPUTS
-    Path
-
-    .OUTPUTS
-    TppObject
-
-    .EXAMPLE
-    Find-VdcObject
-    Get all objects recursively starting from \ved\policy
-
-    .EXAMPLE
-    Find-VdcObject -Path '\VED\Policy\certificates'
-    Get all objects in the root of a specific folder
-
-    .EXAMPLE
-    Find-VdcObject -Path '\VED\Policy\My Folder' -Recursive
-    Get all objects in a folder and subfolders
-
-    .EXAMPLE
-    Find-VdcObject -Path '\VED\Policy' -Pattern '*test*'
-    Get items in a specific folder filtering the path
-
-    .EXAMPLE
-    Find-VdcObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
-    Get objects of a specific type
-
-    .EXAMPLE
-    Find-VdcObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-    Get all objects of a specific type where the path is of a specific pattern
-
-    .EXAMPLE
-    Find-VdcObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-    Get objects for multiple types
-
-    .EXAMPLE
-    Find-VdcObject -Pattern 'f5'
-    Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
-
-    .EXAMPLE
-    Find-VdcObject -Attribute 'Description' -Pattern 'awesome'
-    Find objects where the specific attribute matches the pattern
-
-    .EXAMPLE
-    Find-VdcObject -Attribute 'Environment' -Pattern 'Development'
-
-    Find objects where a custom field value matches the pattern.
-    By default, the attribute will be checked against the current list of custom fields.
-
-    .EXAMPLE
-    Find-VdcObject -Attribute 'Description' -Pattern 'duplicate' -NoLookup
-
-    Bypass custom field lookup and force Attribute to be treated as a built-in attribute.
-    Useful if there are conflicting custom field and built-in attribute names and you want to force the lookup against built-in.
-
-    .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php
-
-    .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php
-
-    .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php
-
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'FindByPath')]

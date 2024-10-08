@@ -36,7 +36,8 @@ function ConvertTo-VdcGuid {
         [ValidateScript( {
                 if ( $_ | Test-TppDnPath ) {
                     $true
-                } else {
+                }
+                else {
                     throw "'$_' is not a valid DN path"
                 }
             })]
@@ -54,9 +55,9 @@ function ConvertTo-VdcGuid {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
 
         $params = @{
-            Method     = 'Post'
-            UriLeaf    = 'config/DnToGuid'
-            Body       = @{
+            Method  = 'Post'
+            UriLeaf = 'config/DnToGuid'
+            Body    = @{
                 ObjectDN = ''
             }
         }
@@ -68,17 +69,31 @@ function ConvertTo-VdcGuid {
 
         $response = Invoke-VenafiRestMethod @params
 
-        if ( $response.Result -eq 1 ) {
-            if ( $IncludeType ) {
-                [PSCustomObject] @{
-                    Guid     = [Guid] $response.Guid
-                    TypeName = $response.ClassName
+        switch ($resonse.Result) {
+            1 {
+                # success
+                if ( $IncludeType ) {
+                    [PSCustomObject] @{
+                        Guid     = [Guid] $response.Guid
+                        TypeName = $response.ClassName
+                    }
                 }
-            } else {
-                [Guid] $response.Guid
+                else {
+                    [Guid] $response.Guid
+                }
             }
-        } else {
-            throw $response.Error
+
+            7 {
+                throw [System.UnauthorizedAccessException]::new($response.Error)
+            }
+
+            400 {
+                throw [System.Management.Automation.ItemNotFoundException]::new($response.Error)
+            }
+
+            Default {
+                throw $response.Error
+            }
         }
     }
 }
