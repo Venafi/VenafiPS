@@ -126,7 +126,14 @@ Accept wildcard characters: False
 Filter against object paths.
 If the Attribute parameter is provided, this will filter against an object's attribute/custom field values instead of the path.
 
-
+Follow the below rules:
+- To list DNs that include an asterisk (*) or question mark (?), prepend two backslashes.
+For example, *.MyCompany.net treats the asterisk as a literal character and returns only certificates with DNs that match *.MyCompany.net.
+- To list DNs with a wildcard character, append a question mark (?).
+For example, "test_?.mycompany.net" counts test_1.MyCompany.net and test_2.MyCompany.net but not test12.MyCompany.net.
+- To list DNs with similar names, prepend an asterisk.
+For example, *est.MyCompany.net, counts Test.MyCompany.net and West.MyCompany.net.
+You can also use both literals and wildcards in a pattern.
 
 ```yaml
 Type: String
