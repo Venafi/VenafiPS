@@ -1,5 +1,5 @@
 function Find-VdcObject {
-     <#
+<#
     .SYNOPSIS
     Search for identity details
 
@@ -49,41 +49,26 @@ function Find-VdcObject {
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
+    [CmdletBinding()]
+    [Alias('Find-TppIdentity')]
 
     param (
-        [Parameter(ParameterSetName = 'FindByPath', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'FindByClass', ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Parameter(ParameterSetName = 'FindByPattern', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipeline)]
         [ValidateNotNullOrEmpty()]
-        [Alias('DN')]
-        [String] $Path = '\ved\policy',
+        [String[]] $Name,
 
-        [Parameter(Mandatory, ParameterSetName = 'FindByPattern')]
-        [Parameter(ParameterSetName = 'FindByClass')]
-        [Parameter(Mandatory, ParameterSetName = 'FindByAttribute')]
-        [ValidateNotNull()]
-        [AllowEmptyString()]
-        [String] $Pattern,
+        [Parameter()]
+        [Alias('Limit')]
+        [int] $First = 500,
 
-        [Parameter(Mandatory, ParameterSetName = 'FindByClass')]
-        [ValidateNotNullOrEmpty()]
-        [Alias('TypeName')]
-        [String[]] $Class,
+        [Parameter(ParameterSetName = 'Find')]
+        [Switch] $IncludeUsers,
 
-        [Parameter(Mandatory, ParameterSetName = 'FindByAttribute')]
-        [ValidateNotNullOrEmpty()]
-        [Alias('AttributeName')]
-        [String[]] $Attribute,
+        [Parameter(ParameterSetName = 'Find')]
+        [Switch] $IncludeSecurityGroups,
 
-        [Parameter(ParameterSetName = 'FindByPath')]
-        [Parameter(ParameterSetName = 'FindByClass')]
-        [Parameter(ParameterSetName = 'FindByPattern')]
-        [Alias('r')]
-        [switch] $Recursive,
-
-        [Parameter(ParameterSetName = 'FindByAttribute')]
-        [switch] $NoLookup,
+        [Parameter(ParameterSetName = 'Find')]
+        [Switch] $IncludeDistributionGroups,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -91,100 +76,46 @@ function Find-VdcObject {
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+
+        $identityType = 0
+        # determine settings to use
+        if ( $PSBoundParameters.ContainsKey('IncludeUsers') ) {
+            $identityType += [TppIdentityType]::User
+        }
+        if ( $PSBoundParameters.ContainsKey('IncludeSecurityGroups') ) {
+            $identityType += [TppIdentityType]::SecurityGroups
+        }
+        if ( $PSBoundParameters.ContainsKey('IncludeDistributionGroups') ) {
+            $identityType += [TppIdentityType]::DistributionGroups
+        }
+
+        # if no types to include were provided, include all
+        if ( $identityType -eq 0 ) {
+            $identityType = [TppIdentityType]::User + [TppIdentityType]::SecurityGroups + [TppIdentityType]::DistributionGroups
+        }
+
+        $params = @{
+            Method  = 'Post'
+            UriLeaf = 'Identity/Browse'
+            Body    = @{
+                Filter       = 'placeholder'
+                Limit        = $First
+                IdentityType = $identityType
+            }
+        }
     }
 
     process {
 
-        $params = @{
-            Method = 'Post'
-            Body   = @{
-                'ObjectDN' = $Path | ConvertTo-VdcFullPath
-            }
+        $response = $Name.ForEach{
+            $params.Body.Filter = $_
+            Invoke-VenafiRestMethod @params
         }
 
-        Switch ($PsCmdlet.ParameterSetName) {
+        $ids = $response.Identities
 
-            'FindByAttribute' {
-
-                $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $Attribute[0] -or $_.Guid -eq $Attribute[0] }
-
-                # if attribute isn't a custom field or user doesn't want to perform a cf lookup for a conflicting attrib/cf name, perform standard find object
-                if ( $NoLookup -or (-not $customField) ) {
-
-                    $params.UriLeaf = 'config/find'
-                    $params.Body = @{
-                        AttributeNames = $Attribute
-                    }
-                }
-                else {
-                    # cf found
-                    $params.UriLeaf = 'Metadata/Find'
-                    $params.Body = @{
-                        ItemGuid = $customField.Guid
-                        Value    = $Pattern
-                    }
-                }
-            }
-
-            { $_ -in 'FindByPath', 'FindByPattern', 'FindByClass' } {
-                # if a path wasn't provided, default to recursive enumeration of \ved\policy
-                if ( -not $PSBoundParameters.ContainsKey('Path') ) {
-                    $params.Body.Recursive = 'true'
-                }
-            }
-
-            { $_ -in 'FindByPath', 'FindByPattern' } {
-                $params.UriLeaf = 'config/enumerate'
-            }
-
-            'FindByClass' {
-                $params.UriLeaf = 'config/FindObjectsOfClass'
-            }
-
-        }
-
-        # pattern is not used by custom field lookup
-        if ( $PSBoundParameters.ContainsKey('Pattern') -and ($params.UriLeaf -ne 'Metadata/Find') ) {
-            $params.Body.Pattern = $Pattern
-        }
-
-        if ( $PSBoundParameters.ContainsKey('Recursive') ) {
-            $params.Body.Recursive = 'true'
-        }
-
-        if ( $PSBoundParameters.ContainsKey('Class') ) {
-            # the rest api doesn't have the ability to search for multiple classes and path at the same time
-            # loop through classes to get around this
-            $params.Body.Class = ''
-            $objects = $Class.ForEach{
-                $thisClass = $_
-                $params.Body.Class = $thisClass
-
-                $response = Invoke-VenafiRestMethod @params
-
-                if ( $response.Result -eq 1 ) {
-                    $response.Objects
-                }
-                else {
-                    Write-Error ('Retrieval of class {0} failed with error {1}' -f $thisClass, $response.Error)
-                    Continue
-                }
-            }
-        }
-        else {
-            $response = Invoke-VenafiRestMethod @params
-
-            # success for cf lookup is 0, all others are config calls and success is 1
-            if ( $response.Result -in 0, 1 ) {
-                $objects = $response.Objects
-            }
-            else {
-                Write-Error $response.Error
-            }
-        }
-
-        foreach ($object in $objects) {
-            ConvertTo-VdcObject -Path $object.DN -Guid $object.Guid -TypeName $object.TypeName
+        if ( $ids ) {
+            $ids | ConvertTo-VdcIdentity
         }
     }
 }
