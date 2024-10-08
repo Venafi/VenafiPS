@@ -10,7 +10,7 @@
 [![PowerShell Gallery Version](https://img.shields.io/powershellgallery/v/VenafiPS?style=plastic)](https://www.powershellgallery.com/packages/VenafiPS)
 ![PowerShell Gallery](https://img.shields.io/powershellgallery/dt/VenafiPS?style=plastic)
 
-Welcome to VenafiPS.  Here you will find a PowerShell module to automate Venafi TLS Protect Datacenter (TLSPDC), formerly known as Trust Protection Platform, and TLS Protect Cloud (TLSPC).  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue/enhancement](https://github.com/Venafi/VenafiPS/issues).
+Welcome to VenafiPS (where the PS stands for PowerShell, not Professional Services :smiley:).  Here you will find a PowerShell module to automate Venafi TLS Protect Datacenter (TLSPDC), formerly known as Trust Protection Platform, and TLS Protect Cloud (TLSPC).  Please let us know how you are using this module and what we can do to make it better!  Ask questions or feel free to [submit an issue/enhancement](https://github.com/Venafi/VenafiPS/issues).
 
 ## Documentation
 
