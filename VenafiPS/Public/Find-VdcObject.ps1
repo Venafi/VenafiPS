@@ -1,39 +1,26 @@
 function Find-VdcObject {
-    <#
+     <#
     .SYNOPSIS
-    Find objects by path, class, or pattern
+    Search for identity details
 
     .DESCRIPTION
-    Find objects by path, class, or pattern.
+    Returns information about individual identity, group identity, or distribution groups from a local or non-local provider such as Active Directory.
+    You can specify individual identity types to search for or all
 
-    .PARAMETER Path
-    The path to start our search.  The default is \ved\policy.
+    .PARAMETER Name
+    The individual identity, group identity, or distribution group name to search for
 
-    .PARAMETER Class
-    1 or more classes/types to search for
+    .PARAMETER First
+    First how many items are returned, the default is 500, but is limited by the provider.
 
-    .PARAMETER Pattern
-    Filter against object paths.
-    If the Attribute parameter is provided, this will filter against an object's attribute/custom field values instead of the path.
+    .PARAMETER IncludeUsers
+    Include user identity type in search
 
-    Follow the below rules:
-    - To list DNs that include an asterisk (*) or question mark (?), prepend two backslashes (\\). For example, \\*.MyCompany.net treats the asterisk as a literal character and returns only certificates with DNs that match *.MyCompany.net.
-    - To list DNs with a wildcard character, append a question mark (?). For example, "test_?.mycompany.net" counts test_1.MyCompany.net and test_2.MyCompany.net but not test12.MyCompany.net.
-    - To list DNs with similar names, prepend an asterisk. For example, *est.MyCompany.net, counts Test.MyCompany.net and West.MyCompany.net.
-    You can also use both literals and wildcards in a pattern.
+    .PARAMETER IncludeSecurityGroups
+    Include security group identity type in search
 
-    .PARAMETER Attribute
-    A list of attribute names to limit the search against.  Only valid when searching by pattern.
-    A custom field name can also be provided.
-
-    .PARAMETER Recursive
-    Searches the subordinates of the object specified in Path.
-
-    .PARAMETER NoLookup
-    Default functionality when finding by Attribute is to perform a lookup to see if they are custom fields or not.
-    If they are, pass along the guid instead of name required by the api for custom fields.
-    To override this behavior and use the attribute name as is, add -NoLookup.
-    Useful if on the off chance you have a custom field with the same name as a built-in attribute.
+    .PARAMETER IncludeDistributionGroups
+    Include distribution group identity type in search
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -41,6 +28,25 @@ function Find-VdcObject {
     A TLSPDC token can also be provided.
     If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
+    .INPUTS
+    Name
+
+    .OUTPUTS
+    PSCustomObject with the following properties:
+        Name
+        ID
+        Path
+
+    .EXAMPLE
+    Find-VdcIdentity -Name 'greg' -IncludeUsers
+    Find only user identities with the name greg
+
+    .EXAMPLE
+    'greg', 'brownstein' | Find-VdcIdentity
+    Find all identity types with the name greg and brownstein
+
+    .LINK
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Identity-Browse.php
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'FindByPath')]
