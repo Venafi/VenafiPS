@@ -107,7 +107,7 @@ Useful if there are conflicting custom field and built-in attribute names and yo
 ## PARAMETERS
 
 ### -Path
-The path to start our search. 
+The path to start our search.
 The default is \ved\policy.
 
 ```yaml
@@ -175,7 +175,7 @@ Accept wildcard characters: False
 ```
 
 ### -Attribute
-A list of attribute names to limit the search against. 
+A list of attribute names to limit the search against.
 Only valid when searching by pattern.
 A custom field name can also be provided.
 
@@ -270,13 +270,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcObject/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcObject/)
-
-[https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcObject.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcObject.ps1)
-
-[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php)
-
-[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-findobjectsofclass.php)
-
-[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-enumerate.php)
 
