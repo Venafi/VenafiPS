@@ -76,7 +76,7 @@ function Find-VdcObject {
     Get objects for multiple types
 
     .EXAMPLE
-    Find-VdcObject -Pattern '*f5*'
+    Find-VdcObject -Pattern 'f5'
     Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
 
     .EXAMPLE
@@ -94,12 +94,6 @@ function Find-VdcObject {
 
     Bypass custom field lookup and force Attribute to be treated as a built-in attribute.
     Useful if there are conflicting custom field and built-in attribute names and you want to force the lookup against built-in.
-
-    .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcObject/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcObject.ps1
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Config-find.php
