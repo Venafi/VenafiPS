@@ -4,8 +4,7 @@ BeforeAll {
 }
 Describe 'ExportedFunctions' {
     BeforeAll {
-        $ps1FileNames = Get-ChildItem -Path "$($moduleInfo | Where-Object{$_.name -eq 'venafips'} | Select-Object -exp modulebase)\Public\*.ps1" -Exclude *tests.ps1, *profile.ps1 |
-        Select-Object -ExpandProperty BaseName
+        $ps1FileNames = Get-ChildItem -Path "$($moduleInfo | Where-Object{$_.name -eq 'venafips'} | Select-Object -exp modulebase)\Public\*.ps1" -Exclude *tests.ps1, *profile.ps1 | Select-Object -ExpandProperty BaseName
 
         $exportedFunctions = Get-Command -Module $moduleInfo.Name -CommandType Function | Select-Object -ExpandProperty Name
     }
