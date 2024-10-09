@@ -1,3 +1,8 @@
+## 6.5.1
+- Fix Find-VdcObject documentation page not building, [#302](https://github.com/Venafi/VenafiPS/issues/302)
+- Rebranding post CyberArk acquisition
+- Add specific exception types when working with invalid paths or access issues on VDC objects
+
 ## 6.5.0
 - Merge all functions into 1 psm1 module.  This yields much better performance, especially when running multithreaded.
 - Add multithreading support on PS v5 with the Microsoft.PowerShell.ThreadJob module (installed separately).  If the module isn't installed, multithreading will be disabled.  Set `-ThrottleLimit` to 1 on the functions that support it to disable multithreading on PS v5 and v7.
@@ -674,6 +679,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
