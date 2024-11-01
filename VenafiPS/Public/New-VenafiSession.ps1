@@ -187,6 +187,24 @@ function New-VenafiSession {
         [Parameter(ParameterSetName = 'VaultAccessToken')]
         [Parameter(ParameterSetName = 'VaultRefreshToken')]
         [Alias('ServerUrl', 'Url')]
+        [ValidateScript(
+            {
+                $validateMe = if ( $_ -notlike 'https://*') {
+                    'https://{0}' -f $_
+                }
+                else {
+                    $_
+                }
+
+                try {
+                    $null = [System.Uri]::new($validateMe)
+                    $true
+                }
+                catch {
+                    throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
+                }
+            }
+        )]
         [string] $Server,
 
         [Parameter(Mandatory, ParameterSetName = 'KeyCredential')]
@@ -243,11 +261,20 @@ function New-VenafiSession {
         [Parameter(ParameterSetName = 'TokenIntegrated')]
         [Parameter(ParameterSetName = 'TokenCertificate')]
         [Parameter(ParameterSetName = 'RefreshToken')]
-        [ValidateScript( {
-                if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
-                    $true
+        [ValidateScript(
+            {
+                $validateMe = if ( $_ -notlike 'https://*') {
+                    'https://{0}' -f $_
                 }
                 else {
+                    $_
+                }
+
+                try {
+                    $null = [System.Uri]::new($validateMe)
+                    $true
+                }
+                catch {
                     throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
                 }
             }
