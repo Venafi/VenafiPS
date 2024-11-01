@@ -1,3 +1,2 @@
-- Fix Find-VdcObject documentation page not building, [#302](https://github.com/Venafi/VenafiPS/issues/302)
-- Rebranding post CyberArk acquisition
-- Add specific exception types when working with invalid paths or access issues on VDC objects
+- Add `Set-VcCertificate`.  This replaces `Add-VcCertificateAssociation` to set the applications associated with a certificate.  Certificate tagging is now supported, both add and replace.
+- Add support for URL port during TLSPDC token operations, [#305](https://github.com/Venafi/VenafiPS/issues/305)
