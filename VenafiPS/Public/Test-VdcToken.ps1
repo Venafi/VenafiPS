@@ -84,11 +84,20 @@ function Test-VdcToken {
     param (
         [Parameter(Mandatory, ParameterSetName = 'AccessToken')]
         [Parameter(ParameterSetName = 'VaultAccessToken')]
-        [ValidateScript( {
-                if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
-                    $true
+        [ValidateScript(
+            {
+                $validateMe = if ( $_ -notlike 'https://*') {
+                    'https://{0}' -f $_
                 }
                 else {
+                    $_
+                }
+
+                try {
+                    $null = [System.Uri]::new($validateMe)
+                    $true
+                }
+                catch {
                     throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
                 }
             }

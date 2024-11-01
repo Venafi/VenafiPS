@@ -62,7 +62,7 @@
     param (
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Alias('CertificateID')]
+        [Alias('certificateID')]
         [string] $Certificate,
 
         [Parameter(Mandatory)]
@@ -81,12 +81,14 @@
     )
 
     begin {
+
+        Write-Warning 'This function will soon be deprecated. Use Set-VcCertificate instead.'
+
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         $apps = $Application | Get-VcData -Type 'Application'
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Patch'
             UriRoot       = 'outagedetection/v1'
             UriLeaf       = 'applications/certificates'

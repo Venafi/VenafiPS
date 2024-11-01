@@ -99,11 +99,20 @@ function New-VdcToken {
         [Parameter(ParameterSetName = 'Certificate', Mandatory)]
         [Parameter(ParameterSetName = 'Jwt', Mandatory)]
         [Parameter(ParameterSetName = 'RefreshToken', Mandatory)]
-        [ValidateScript( {
-                if ( $_ -match '^(https?:\/\/)?(((?!-))(xn--|_{1,1})?[a-z0-9-]{0,61}[a-z0-9]{1,1}\.)*(xn--)?([a-z0-9][a-z0-9\-]{0,60}|[a-z0-9-]{1,30}\.[a-z]{2,})$' ) {
-                    $true
+        [ValidateScript(
+            {
+                $validateMe = if ( $_ -notlike 'https://*') {
+                    'https://{0}' -f $_
                 }
                 else {
+                    $_
+                }
+
+                try {
+                    $null = [System.Uri]::new($validateMe)
+                    $true
+                }
+                catch {
                     throw 'Please enter a valid server, https://venafi.company.com or venafi.company.com'
                 }
             }
@@ -201,7 +210,7 @@ function New-VdcToken {
         if ( $PsCmdlet.ParameterSetName -eq 'RefreshToken' ) {
             $params.UriLeaf = 'authorize/token'
             $params.Body = @{
-                client_id     = $ClientId
+                client_id = $ClientId
             }
             $params.Body.refresh_token = $RefreshToken | ConvertTo-PlaintextString
         }
