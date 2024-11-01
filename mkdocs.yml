@@ -128,6 +128,7 @@ nav:
     - Revoke-VdcToken: functions/Revoke-VdcToken.md
     - Search-VdcHistory: functions/Search-VdcHistory.md
     - Set-VcApplication: functions/Set-VcApplication.md
+    - Set-VcCertificate: functions/Set-VcCertificate.md
     - Set-VcConnector: functions/Set-VcConnector.md
     - Set-VcTeam: functions/Set-VcTeam.md
     - Set-VdcAttribute: functions/Set-VdcAttribute.md

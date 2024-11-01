@@ -1,3 +1,7 @@
+## 6.5.2
+- Add `Set-VcCertificate`.  This replaces `Add-VcCertificateAssociation` to set the applications associated with a certificate.  Certificate tagging is now supported, both add and replace.
+- Add support for URL port during TLSPDC token operations, [#305](https://github.com/Venafi/VenafiPS/issues/305)
+
 ## 6.5.1
 - Fix Find-VdcObject documentation page not building, [#302](https://github.com/Venafi/VenafiPS/issues/302)
 - Rebranding post CyberArk acquisition
@@ -679,6 +683,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

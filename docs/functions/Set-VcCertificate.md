@@ -1,19 +1,26 @@
-# Add-VcCertificateAssociation
+# Set-VcCertificate
 
 ## SYNOPSIS
-Associate certificates with applications
+Update a certificate
 
 ## SYNTAX
 
+### Application (Default)
 ```
-Add-VcCertificateAssociation [-Certificate] <String> [-Application] <String[]> [-NoOverwrite] [-PassThru]
- [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Set-VcCertificate -Certificate <String> -Application <String[]> [-NoOverwrite] [-PassThru]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### Tag
+```
+Set-VcCertificate -Certificate <String> -Tag <String[]> [-NoOverwrite] [-PassThru] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Associate one or more certificates with one or more applications.
-The associated applications can either replace or be added to existing.
-By default, applications will be replaced.
+Associate one or more certificates with one or more applications or tags.
+The associated applications/tags can either replace or be added to existing.
+By default, applications/tags will be replaced.
 
 ## EXAMPLES
 
@@ -40,10 +47,31 @@ Associate multiple certificates to 1 application by name
 
 ### EXAMPLE 4
 ```
+Add-VcCertificateAssociation -Certificate '7ac56ec0-2017-11ee-9417-a17dd25b82f9' -Tag 'MyTagName'
+```
+
+Associate a certificate to a tag
+
+### EXAMPLE 5
+```
+Add-VcCertificateAssociation -Certificate '7ac56ec0-2017-11ee-9417-a17dd25b82f9' -Tag 'MyTagName:MyTagValue'
+```
+
+Associate a certificate to a tag name/value pair
+
+### EXAMPLE 6
+```
+Add-VcCertificateAssociation -Certificate '7ac56ec0-2017-11ee-9417-a17dd25b82f9' -Tag 'Tag1', 'MyTagName:MyTagValue'
+```
+
+Associate a certificate to multiple tags
+
+### EXAMPLE 7
+```
 Add-VcCertificateAssociation -Certificate 'www.barron.com' -Application '96fc9310-67ec-11eb-a8a7-794fe75a8e6f' -NoOverwrite
 ```
 
-Associate a certificate, by name, to another application, keeping the existing
+Associate a certificate, by name, to an additonal application, keeping the existing application in place
 
 ## PARAMETERS
 
@@ -59,7 +87,7 @@ Parameter Sets: (All)
 Aliases: certificateID
 
 Required: True
-Position: 1
+Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
 Accept wildcard characters: False
@@ -71,18 +99,34 @@ Tab completion can be used for a list of application names.
 
 ```yaml
 Type: String[]
-Parameter Sets: (All)
-Aliases: ApplicationID
+Parameter Sets: Application
+Aliases: applicationID
 
 Required: True
-Position: 2
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Tag
+One of more tag names or name/value pairs.
+To specify a name/value pair, use the format 'name:value'.
+
+```yaml
+Type: String[]
+Parameter Sets: Tag
+Aliases:
+
+Required: True
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
 ### -NoOverwrite
-Append to existing applications as opposed to overwriting
+Append to existing as opposed to overwriting
 
 ```yaml
 Type: SwitchParameter
@@ -122,7 +166,7 @@ Parameter Sets: (All)
 Aliases: Key
 
 Required: False
-Position: 3
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
