@@ -1,4 +1,11 @@
 function Get-VcData {
+
+    <#
+    .SYNOPSIS
+        Helper function to get data from Venafi Cloud
+    #>
+
+
     [CmdletBinding(DefaultParameterSetName = 'ID')]
     param (
         [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ID', Position = '0')]
@@ -8,7 +15,7 @@ function Get-VcData {
         [string] $InputObject,
 
         [parameter(Mandatory)]
-        [ValidateSet('Application', 'MachineType', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team')]
+        [ValidateSet('Application', 'MachineType', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag')]
         [string] $Type,
 
         # [parameter()]
@@ -25,7 +32,10 @@ function Get-VcData {
         [switch] $First,
 
         [parameter()]
-        [switch] $FailOnMultiple
+        [switch] $FailOnMultiple,
+
+        [parameter()]
+        [switch] $FailOnNotFound
     )
 
     begin {
@@ -33,6 +43,11 @@ function Get-VcData {
     }
 
     process {
+
+        # if we already have a guid, just return it
+        if ( $PSCmdlet.ParameterSetName -eq 'ID' -and (Test-IsGuid($InputObject)) ) {
+            return $InputObject
+        }
 
         switch ($Type) {
             'Application' {
@@ -103,10 +118,38 @@ function Get-VcData {
             'Certificate' {
                 $thisObject = Find-VcCertificate -Name $InputObject
             }
+
+            'Machine' {
+                $thisObject = Find-VcMachine -Name $InputObject
+            }
+
+            'Tag' {
+                try {
+
+                    $tag = Invoke-VenafiRestMethod -UriLeaf "tags/$InputObject" |
+                    Select-Object -Property @{'n' = 'tagId'; 'e' = { $_.Id } }, @{'n' = 'values'; 'e' = { $null } }, * -ExcludeProperty id
+
+                    if ( $tag ) {
+                        $values = Invoke-VenafiRestMethod -UriLeaf "tags/$($tag.name)/values"
+                        if ( $values.values ) {
+                            $tag.values = ($values.values | Select-Object id, value)
+                        }
+                    }
+
+                    $thisObject = $tag
+                }
+                catch {
+                    $thisObject = $null
+                }
+            }
         }
 
         if ( $FailOnMultiple -and @($thisObject).Count -gt 1 ) {
             throw "Multiple $Type found"
+        }
+
+        if ( $FailOnNotFound -and -not $thisObject ) {
+            throw "'$InputObject' of type $Type not found"
         }
 
         switch ($PSCmdlet.ParameterSetName) {
@@ -121,7 +164,9 @@ function Get-VcData {
             }
 
             'Name' {
-
+                switch ($Type) {
+                    'Tag' { $thisObject.name }
+                }
             }
 
             'Object' {
