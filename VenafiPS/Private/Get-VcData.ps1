@@ -126,13 +126,31 @@ function Get-VcData {
             'Tag' {
                 try {
 
-                    $tag = Invoke-VenafiRestMethod -UriLeaf "tags/$InputObject" |
+                    if ( $InputObject.Contains(':') ) {
+                        $tagName, $tagValue = $InputObject.Split(':')
+                    }
+                    else {
+                        $tagName = $InputObject
+                    }
+                    $tag = Invoke-VenafiRestMethod -UriLeaf "tags/$tagName" |
                     Select-Object -Property @{'n' = 'tagId'; 'e' = { $_.Id } }, @{'n' = 'values'; 'e' = { $null } }, * -ExcludeProperty id
 
                     if ( $tag ) {
                         $values = Invoke-VenafiRestMethod -UriLeaf "tags/$($tag.name)/values"
+
                         if ( $values.values ) {
-                            $tag.values = ($values.values | Select-Object id, value)
+                            $tag.values = ($values.values | Select-Object id, @{'n' = 'name'; 'e' = { $_.value } })
+
+                            # make sure the value, if provided, is valid
+                            if ( $tagValue -and $tagValue -notin $tag.values.name ) {
+                                $tag = $null
+                            }
+                        }
+                        else {
+                            if ( $tagValue ) {
+                                # the tag name exists, but the value does not
+                                $tag = $null
+                            }
                         }
                     }
 
@@ -165,7 +183,7 @@ function Get-VcData {
 
             'Name' {
                 switch ($Type) {
-                    'Tag' { $thisObject.name }
+                    'Tag' { $InputObject }
                 }
             }
 
