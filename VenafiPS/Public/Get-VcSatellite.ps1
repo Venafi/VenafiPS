@@ -70,7 +70,7 @@
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
         [Alias('vsatelliteId', 'ID')]
         [string] $VSatellite,
 
@@ -86,27 +86,25 @@
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        $allKeys = Invoke-VenafiRestMethod -UriLeaf 'edgeencryptionkeys' | Select-Object -ExpandProperty encryptionKeys
     }
 
     process {
-
-        $allKeys = Invoke-VenafiRestMethod -UriLeaf 'edgeencryptionkeys' | Select-Object -ExpandProperty encryptionKeys
-
         if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
             $response = Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeinstances
         }
         else {
-            if ( Test-IsGuid($ID) ) {
-                $guid = [guid] $ID
+            if ( Test-IsGuid($VSatellite) ) {
+                $guid = [guid] $VSatellite
                 $response = Invoke-VenafiRestMethod -UriLeaf ('edgeinstances/{0}' -f $guid.ToString())
             }
             else {
                 # get all and match by name since another method doesn't exist
-                return Get-VcSatellite -All | Where-Object { $_.name -eq $ID }
+                $response = Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeinstances | Where-Object { $_.name -eq $VSatellite }
             }
         }
 
-        if ( -not $response ) { continue }
+        if ( -not $response ) { return }
 
         $out = $response | Select-Object @{'n' = 'vsatelliteId'; 'e' = { $_.Id } },
         @{
@@ -128,7 +126,7 @@
             $out | Select-Object *, @{
                 'n' = 'workers'
                 'e' = {
-                    Get-VcSatelliteWorker -VSatelliteID $_.vsatelliteId
+                    Get-VcSatelliteWorker -VSatellite $_.vsatelliteId
                 }
             }
         }
