@@ -12,6 +12,9 @@
     .PARAMETER All
     Get all VSatellites
 
+    .PARAMETER IncludeWorkers
+    Include VSatellite workers in the output
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -56,6 +59,10 @@
 
     Get all VSatellites
 
+    .EXAMPLE
+    Get-VcSatellite -All -IncludeWorkers
+
+    Get all VSatellites and include workers
     #>
 
     [CmdletBinding()]
@@ -64,11 +71,14 @@
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('vsatelliteId')]
-        [string] $ID,
+        [Alias('vsatelliteId', 'ID')]
+        [string] $VSatellite,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
+
+        [Parameter()]
+        [switch] $IncludeWorkers,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -98,7 +108,7 @@
 
         if ( -not $response ) { continue }
 
-        $response | Select-Object @{'n' = 'vsatelliteId'; 'e' = { $_.Id } },
+        $out = $response | Select-Object @{'n' = 'vsatelliteId'; 'e' = { $_.Id } },
         @{
             'n' = 'encryptionKey'
             'e' = {
@@ -113,5 +123,17 @@
                                 ($allKeys | Where-Object { $_.id -eq $thisId }).KeyAlgorithm
             }
         }, * -ExcludeProperty Id
+
+        if ( $IncludeWorkers ) {
+            $out | Select-Object *, @{
+                'n' = 'workers'
+                'e' = {
+                    Get-VcSatelliteWorker -VSatelliteID $_.vsatelliteId
+                }
+            }
+        }
+        else {
+            $out
+        }
     }
 }

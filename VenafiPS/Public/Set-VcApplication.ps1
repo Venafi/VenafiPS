@@ -64,6 +64,9 @@
         [string[]] $TeamOwner,
 
         [Parameter()]
+        [string[]] $IssuingTemplate,
+
+        [Parameter()]
         [switch] $NoOverwrite,
 
         [Parameter()]
@@ -94,11 +97,11 @@
 
     process {
 
-        $thisApp = Get-VcApplication -ID $ID
+        $thisApp = Get-VcApplication -ID $Application
 
         if ( -not $thisApp ) {
             # process the next one in the pipeline if we don't have a valid ID this time
-            Write-Error "Application $ID does not exist"
+            Write-Error "Application $Application does not exist"
             Continue
         }
 
@@ -136,12 +139,33 @@
                     }
                 }
 
-                if ( $NoOverwrite ) {
+                if ( $NoOverwrite -and $thisApp.ownerIdsAndTypes ) {
                     $params.Body.ownerIdsAndTypes += $thisApp.ownerIdsAndTypes
                 }
             }
 
-            Default {}
+            'IssuingTemplate' {
+                if ( $NoOverwrite -and $thisApp.issuingTemplate ) {
+                    $newT = $thisApp.issuingTemplate
+                } else {
+                    $newT = @{}
+                }
+
+                foreach ($template in $IssuingTemplate ) {
+                    $t = Get-VcIssuingTemplate -ID $template
+                    if ( $t ) {
+                        $newT[$t.name] = $t.issuingTemplateId
+                    }
+                    else {
+                        Write-Error "Issuing template $template does not exist"
+                    }
+                }
+
+                if ( $newT.Count -gt 0 ) {
+                    $params.Body.certificateIssuingTemplateAliasIdMap = $newT
+
+                }
+            }
         }
 
         if ( $PSCmdlet.ShouldProcess($params.Body.name, "Update application") ) {
