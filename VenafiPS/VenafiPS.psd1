@@ -108,7 +108,7 @@ FunctionsToExport = 'Add-VcCertificateAssociation', 'Add-VcTeamMember', 'Add-VcT
                'Set-VcConnector', 'Set-VcTeam', 'Set-VdcAttribute',
                'Set-VdcCredential', 'Set-VdcPermission',
                'Set-VdcWorkflowTicketStatus', 'Test-VdcIdentity', 'Test-VdcObject',
-               'Test-VdcToken', 'Write-VdcLog', 'Set-VcCertificate'
+               'Test-VdcToken', 'Write-VdcLog', 'Set-VcCertificate', 'Get-VcSatelliteWorker', 'Remove-VcSatelliteWorker'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()
