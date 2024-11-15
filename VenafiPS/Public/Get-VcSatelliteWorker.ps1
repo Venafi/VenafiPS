@@ -12,8 +12,8 @@
     .PARAMETER All
     Get all VSatellite workers
 
-    .PARAMETER VSatelliteID
-    Get workers associated with a specific VSatellite
+    .PARAMETER VSatellite
+    Get workers associated with a specific VSatellite, specify either VSatellite ID or name
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -42,7 +42,7 @@
     Get all VSatellite workers
 
     .EXAMPLE
-    Get-VcSatelliteWorker -VSatelliteID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f3'
+    Get-VcSatelliteWorker -VSatellite 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f3'
 
     Get all workers associated with a specific VSatellite
 
@@ -84,15 +84,17 @@
             }
 
             'VSatellite' {
+                # limit workers retrieved by the vsat they are associated with
+                
+                # if the value is a guid, we can look up the vsat directly otherwise get all and search by name
                 $vsatelliteId = if ( Test-IsGuid($VSatellite) ) {
                     $guid = [guid] $VSatellite
                     $guid.ToString()
                 }
                 else {
-                    # get all and match by name since another method doesn't exist
-                    Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeInstances | Where-Object { $_.name -eq $VSatellite } | Select-Object -exp id
+                    Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeInstances | Where-Object { $_.name -eq $VSatellite } | Select-Object -ExpandProperty id
                 }
-                # $vsatelliteID = Get-VcSatellite -VSatellite $VSatellite | Select-Object -ExpandProperty vsatelliteId
+                
                 $response = Invoke-VenafiRestMethod -UriLeaf 'edgeworkers' -Body @{'edgeInstanceId' = $vsatelliteID } | Select-Object -ExpandProperty edgeWorkers
             }
         }

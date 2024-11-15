@@ -6,7 +6,7 @@
     .DESCRIPTION
     Get 1 or more VSatellites.  Encyption key and algorithm will be included.
 
-    .PARAMETER ID
+    .PARAMETER VSatellite
     VSatellite ID or name
 
     .PARAMETER All
@@ -94,12 +94,12 @@
             $response = Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeinstances
         }
         else {
+            # if the value is a guid, we can look up the vsat directly otherwise get all and search by name
             if ( Test-IsGuid($VSatellite) ) {
                 $guid = [guid] $VSatellite
                 $response = Invoke-VenafiRestMethod -UriLeaf ('edgeinstances/{0}' -f $guid.ToString())
             }
             else {
-                # get all and match by name since another method doesn't exist
                 $response = Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeinstances | Where-Object { $_.name -eq $VSatellite }
             }
         }
