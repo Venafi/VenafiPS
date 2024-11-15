@@ -54,7 +54,7 @@
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
         [Alias('vsatelliteWorkerId')]
-        [string] $ID,
+        [guid] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
@@ -94,7 +94,7 @@
                 else {
                     Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeInstances | Where-Object { $_.name -eq $VSatellite } | Select-Object -ExpandProperty id
                 }
-                
+
                 $response = Invoke-VenafiRestMethod -UriLeaf 'edgeworkers' -Body @{'edgeInstanceId' = $vsatelliteID } | Select-Object -ExpandProperty edgeWorkers
             }
         }

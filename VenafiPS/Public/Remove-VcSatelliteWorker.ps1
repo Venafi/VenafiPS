@@ -28,7 +28,7 @@
     Remove a worker bypassing the confirmation prompt
 
     .EXAMPLE
-    Get-VcSatelliteWorker -VSatelliteID 'My vsat1' | Remove-VcSatelliteWorker
+    Get-VcSatelliteWorker -VSatellite 'My vsat1' | Remove-VcSatelliteWorker
 
     Remove all workers associated with a specific vsatellite
     #>
@@ -39,7 +39,7 @@
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Alias('vsatelliteWorkerId')]
-        [string] $ID,
+        [guid] $ID,
 
         [Parameter()]
         [psobject] $VenafiSession
