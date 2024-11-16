@@ -6,11 +6,14 @@
     .DESCRIPTION
     Get 1 or more VSatellites.  Encyption key and algorithm will be included.
 
-    .PARAMETER ID
+    .PARAMETER VSatellite
     VSatellite ID or name
 
     .PARAMETER All
     Get all VSatellites
+
+    .PARAMETER IncludeWorkers
+    Include VSatellite workers in the output
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -56,6 +59,10 @@
 
     Get all VSatellites
 
+    .EXAMPLE
+    Get-VcSatellite -All -IncludeWorkers
+
+    Get all VSatellites and include workers
     #>
 
     [CmdletBinding()]
@@ -63,12 +70,15 @@
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('vsatelliteId')]
-        [string] $ID,
+        [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName)]
+        [Alias('vsatelliteId', 'ID')]
+        [string] $VSatellite,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
+
+        [Parameter()]
+        [switch] $IncludeWorkers,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -76,29 +86,27 @@
 
     begin {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        $allKeys = Invoke-VenafiRestMethod -UriLeaf 'edgeencryptionkeys' | Select-Object -ExpandProperty encryptionKeys
     }
 
     process {
-
-        $allKeys = Invoke-VenafiRestMethod -UriLeaf 'edgeencryptionkeys' | Select-Object -ExpandProperty encryptionKeys
-
         if ( $PSCmdlet.ParameterSetName -eq 'All' ) {
             $response = Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeinstances
         }
         else {
-            if ( Test-IsGuid($ID) ) {
-                $guid = [guid] $ID
+            # if the value is a guid, we can look up the vsat directly otherwise get all and search by name
+            if ( Test-IsGuid($VSatellite) ) {
+                $guid = [guid] $VSatellite
                 $response = Invoke-VenafiRestMethod -UriLeaf ('edgeinstances/{0}' -f $guid.ToString())
             }
             else {
-                # get all and match by name since another method doesn't exist
-                return Get-VcSatellite -All | Where-Object { $_.name -eq $ID }
+                $response = Invoke-VenafiRestMethod -UriLeaf 'edgeinstances' | Select-Object -ExpandProperty edgeinstances | Where-Object { $_.name -eq $VSatellite }
             }
         }
 
-        if ( -not $response ) { continue }
+        if ( -not $response ) { return }
 
-        $response | Select-Object @{'n' = 'vsatelliteId'; 'e' = { $_.Id } },
+        $out = $response | Select-Object @{'n' = 'vsatelliteId'; 'e' = { $_.Id } },
         @{
             'n' = 'encryptionKey'
             'e' = {
@@ -113,5 +121,17 @@
                                 ($allKeys | Where-Object { $_.id -eq $thisId }).KeyAlgorithm
             }
         }, * -ExcludeProperty Id
+
+        if ( $IncludeWorkers ) {
+            $out | Select-Object *, @{
+                'n' = 'workers'
+                'e' = {
+                    Get-VcSatelliteWorker -VSatellite $_.vsatelliteId
+                }
+            }
+        }
+        else {
+            $out
+        }
     }
 }

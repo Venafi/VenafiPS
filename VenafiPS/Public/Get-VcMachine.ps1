@@ -6,7 +6,7 @@
     .DESCRIPTION
     Get machine details for 1 or all.
 
-    .PARAMETER ID
+    .PARAMETER Machine
     Machine ID or name
 
     .PARAMETER All
@@ -23,10 +23,10 @@
     A TLSPC key can also provided.
 
     .INPUTS
-    ID
+    Machine
 
     .EXAMPLE
-    Get-VcMachine -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+    Get-VcMachine -Machine 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
     machineId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
     companyId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
@@ -47,7 +47,7 @@
     Get a single machine by ID
 
     .EXAMPLE
-    Get-VcMachine -ID 'MyCitrix'
+    Get-VcMachine -Machine 'MyCitrix'
 
     Get a single machine by name.  The name is case sensitive.
 
@@ -102,8 +102,8 @@
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('machineId')]
-        [string] $ID,
+        [Alias('machineId', 'ID')]
+        [string] $Machine,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
@@ -137,9 +137,9 @@
             }
         }
         else {
-            if ( Test-IsGuid($ID) ) {
+            if ( Test-IsGuid($Machine) ) {
                 try {
-                    $response = Invoke-VenafiRestMethod -UriLeaf ('machines/{0}' -f $ID)
+                    $response = Invoke-VenafiRestMethod -UriLeaf ('machines/{0}' -f $Machine)
                 }
                 catch {
                     if ( $_.Exception.Response.StatusCode.value__ -eq 404 ) {
@@ -153,7 +153,7 @@
             }
             else {
                 # no lookup by name directly.  search for it and then get details
-                Find-VcObject -Type 'Machine' -Name $ID | Get-VcMachine
+                Find-VcObject -Type 'Machine' -Name $Machine | Get-VcMachine
             }
 
             if ( $response ) {

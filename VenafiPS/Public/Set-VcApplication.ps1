@@ -4,10 +4,10 @@
     Update an existing application
 
     .DESCRIPTION
-    Update name or team owners of an existing applications.
+    Update details of existing applications.
     Additional properties will be available in the future.
 
-    .PARAMETER ID
+    .PARAMETER Application
     The application to update.  Specify either ID or name.
 
     .PARAMETER Name
@@ -15,6 +15,9 @@
 
     .PARAMETER TeamOwner
     Associate a team as an owner of this application
+
+    .PARAMETER IssuingTemplate
+    Associate one or more issuing templates by ID or name
 
     .PARAMETER NoOverwrite
     Append to existing details as opposed to overwriting
@@ -47,6 +50,11 @@
     Set-VcApplication -ID 'MyApp' -TeamOwner 'GreatTeam' -NoOverwrite
 
     Append this team to the list of owners
+
+    .EXAMPLE
+    Set-VcApplication -ID 'MyApp' -IssuingTemplate 'Template1', 'Template2'
+
+    Update the templates associated with application.  This will overwrite any existing templates configured.
     #>
 
     [CmdletBinding(SupportsShouldProcess)]
@@ -62,6 +70,9 @@
 
         [Parameter()]
         [string[]] $TeamOwner,
+
+        [Parameter()]
+        [string[]] $IssuingTemplate,
 
         [Parameter()]
         [switch] $NoOverwrite,
@@ -94,11 +105,11 @@
 
     process {
 
-        $thisApp = Get-VcApplication -ID $ID
+        $thisApp = Get-VcApplication -Application $Application
 
         if ( -not $thisApp ) {
             # process the next one in the pipeline if we don't have a valid ID this time
-            Write-Error "Application $ID does not exist"
+            Write-Error "Application $Application does not exist"
             Continue
         }
 
@@ -136,12 +147,36 @@
                     }
                 }
 
-                if ( $NoOverwrite ) {
+                if ( $NoOverwrite -and $thisApp.ownerIdsAndTypes ) {
                     $params.Body.ownerIdsAndTypes += $thisApp.ownerIdsAndTypes
                 }
             }
 
-            Default {}
+            'IssuingTemplate' {
+                $newT = @{}
+                # grab existing templates as our starting point if we're not overwriting
+                # issuingTempate is of type PSNoteProperty so we need to iterate and add to hashtable
+                if ( $NoOverwrite -and $thisApp.issuingTemplate ) {
+                    $thisApp.issuingTemplate | ForEach-Object {
+                        $newT[$_.name] = $_.issuingTemplateId
+                    }
+                }
+
+                foreach ($template in $IssuingTemplate ) {
+                    $t = Get-VcIssuingTemplate -IssuingTemplate $template
+                    if ( $t ) {
+                        $newT[$t.name] = $t.issuingTemplateId
+                    }
+                    else {
+                        Write-Error "Issuing template $template does not exist"
+                    }
+                }
+
+                if ( $newT.Count -gt 0 ) {
+                    $params.Body.certificateIssuingTemplateAliasIdMap = $newT
+
+                }
+            }
         }
 
         if ( $PSCmdlet.ShouldProcess($params.Body.name, "Update application") ) {
