@@ -4,8 +4,8 @@ function Invoke-VcCertificateAction {
     Perform an action against one or more certificates
 
     .DESCRIPTION
-    One stop shop for basic certificate actions.
-    You can Retire, Recover, Renew, Validate, or Delete.
+    One stop shop for certificate actions.
+    You can Retire, Recover, Renew, Validate, Provision, or Delete.
 
     .PARAMETER ID
     ID of the certificate
@@ -28,9 +28,13 @@ function Invoke-VcCertificateAction {
     Delete a certificate.
     As only retired certificates can be deleted, this will be performed first.
 
+    .PARAMETER Provision
+    Provision a certificate to all associated machine identities.
+
     .PARAMETER BatchSize
     How many certificates to retire per retirement API call. Useful to prevent API call timeouts.
-    Defaults to 1000
+    Defaults to 1000.
+    Not applicable to Renew or Provision.
 
     .PARAMETER AdditionalParameters
     Additional items specific to the action being taken, if needed.
@@ -106,7 +110,7 @@ function Invoke-VcCertificateAction {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [Alias('CertificateID')]
+        [Alias('certificateID')]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'Retire')]
@@ -124,7 +128,13 @@ function Invoke-VcCertificateAction {
         [Parameter(Mandatory, ParameterSetName = 'Delete')]
         [switch] $Delete,
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Provision')]
+        [switch] $Provision,
+
+        [Parameter(ParameterSetName = 'Retire')]
+        [Parameter(ParameterSetName = 'Recover')]
+        [Parameter(ParameterSetName = 'Validate')]
+        [Parameter(ParameterSetName = 'Delete')]
         [ValidateRange(1, 10000)]
         [int] $BatchSize = 1000,
 
@@ -152,6 +162,12 @@ function Invoke-VcCertificateAction {
     process {
 
         switch ($PSCmdlet.ParameterSetName) {
+            'Provision' {
+                # get all machine identities associated with certificate
+                $mi = Find-VcMachineIdentity -Filter @('certificateId', 'eq', $ID) | Select-Object -Property machineIdentityId
+                $mi | Invoke-VcWorkflow -Workflow 'Provision'
+            }
+
             'Renew' {
 
                 $out = [pscustomobject] @{

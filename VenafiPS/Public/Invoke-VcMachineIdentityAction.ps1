@@ -1,4 +1,4 @@
-function Invoke-VcWorkflow {
+function Invoke-VcMachineAction {
     <#
     .SYNOPSIS
     Start a machine or machine identity workflow
@@ -73,13 +73,14 @@ function Invoke-VcWorkflow {
     [Alias('Invoke-VaasWorkflow')]
 
     param (
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
-        [Alias('machineID', 'machineIdentityID')]
-        [string] $ID,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName, ParameterSetName='MachineIdentity')]
+        [string] $MachineIdentityId,
 
         [Parameter()]
-        [ValidateSet('Test', 'GetConfig', 'Provision', 'Discover')]
-        [string] $Workflow = 'Test',
+        [switch]
+        [Parameter(Mandatory)]
+        [ValidateSet('Provision', 'Discover')]
+        [string] $Action,
 
         [Parameter()]
         [int32] $ThrottleLimit = 100,
@@ -94,7 +95,7 @@ function Invoke-VcWorkflow {
     }
 
     process {
-        $allIDs.Add($ID)
+        $ID | Invoke-VcWorkflow -Workflow $Action
     }
 
     end {

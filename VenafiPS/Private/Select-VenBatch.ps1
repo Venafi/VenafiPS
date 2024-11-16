@@ -39,7 +39,7 @@ function Select-VenBatch {
         [Parameter(Mandatory)]
         [int] $BatchSize,
 
-        [Parameter(Mandatory, Position = 0)]
+        [Parameter(Position = 0)]
         [ValidateSet("pscustomobject", "string", "int", "guid")]
         [string] $BatchType = "pscustomobject",
 
