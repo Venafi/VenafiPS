@@ -4,9 +4,9 @@
     Get issuing template info
 
     .DESCRIPTION
-    Get 1 or more issuing templates
+    Get 1 or more issuing template details
 
-    .PARAMETER ID
+    .PARAMETER IssuingTemplate
     Issuing template ID or name
 
     .PARAMETER All
@@ -21,7 +21,7 @@
     ID
 
     .EXAMPLE
-    Get-VcIssuingTemplate -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+    Get-VcIssuingTemplate -IssuingTemplate 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
     issuingTemplateId                   : 0a19eaf2-b22b-11ea-a1eb-a37c69eabd4e
     companyId                           : 09b24f81-b22b-11ea-91f3-ebd6dea5452f
@@ -57,7 +57,7 @@
     Get a single object by ID
 
     .EXAMPLE
-    Get-VcIssuingTemplate -ID 'MyTemplate'
+    Get-VcIssuingTemplate -IssuingTemplate 'MyTemplate'
 
     Get a single object by name.  The name is case sensitive.
 
@@ -74,8 +74,8 @@
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('issuingTemplateId')]
-        [string] $ID,
+        [Alias('issuingTemplateId', 'ID')]
+        [string] $IssuingTemplate,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
@@ -94,13 +94,13 @@
             UriLeaf = 'certificateissuingtemplates'
         }
 
-        if ( $PSBoundParameters.ContainsKey('ID') ) {
-            if ( Test-IsGuid($ID) ) {
-                $params.UriLeaf += "/{0}" -f $ID
+        if ( $PSBoundParameters.ContainsKey('IssuingTemplate') ) {
+            if ( Test-IsGuid($IssuingTemplate) ) {
+                $params.UriLeaf += "/{0}" -f $IssuingTemplate
             }
             else {
                 # search by name
-                return Get-VcIssuingTemplate -All | Where-Object { $_.name -eq $ID }
+                return Get-VcIssuingTemplate -All | Where-Object { $_.name -eq $IssuingTemplate }
             }
         }
 
