@@ -50,6 +50,11 @@
     Set-VcApplication -ID 'MyApp' -TeamOwner 'GreatTeam' -NoOverwrite
 
     Append this team to the list of owners
+
+    .EXAMPLE
+    Set-VcApplication -ID 'MyApp' -IssuingTemplate 'Template1', 'Template2'
+
+    Update the templates associated with application.  This will overwrite any existing templates configured.
     #>
 
     [CmdletBinding(SupportsShouldProcess)]
