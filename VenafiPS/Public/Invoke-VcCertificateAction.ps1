@@ -111,7 +111,7 @@ function Invoke-VcCertificateAction {
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [Alias('certificateID')]
-        [string] $ID,
+        [guid] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'Retire')]
         [switch] $Retire,
@@ -129,6 +129,7 @@ function Invoke-VcCertificateAction {
         [switch] $Delete,
 
         [Parameter(Mandatory, ParameterSetName = 'Provision')]
+        [Parameter(ParameterSetName = 'Renew')]
         [switch] $Provision,
 
         [Parameter(ParameterSetName = 'Retire')]
@@ -157,6 +158,7 @@ function Invoke-VcCertificateAction {
         }
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
+        Write-Verbose $PSCmdlet.ParameterSetName
     }
 
     process {
@@ -164,7 +166,14 @@ function Invoke-VcCertificateAction {
         switch ($PSCmdlet.ParameterSetName) {
             'Provision' {
                 # get all machine identities associated with certificate
-                $mi = Find-VcMachineIdentity -Filter @('certificateId', 'eq', $ID) | Select-Object -Property machineIdentityId
+                # since ID is a guid, ensure its converted to string otherwise Find will think it's another filter
+                $mi = Find-VcMachineIdentity -Filter @('certificateId', 'eq', $ID.ToString()) | Select-Object -ExpandProperty machineIdentityId
+
+                if ( -not $mi ) {
+                    throw "No machine identities found for certificate ID $ID"
+                }
+
+                Write-Verbose ('Provisioning certificate ID {0} to machine identities {1}' -f $ID, ($mi -join ','))
                 $mi | Invoke-VcWorkflow -Workflow 'Provision'
             }
 
@@ -213,7 +222,13 @@ function Invoke-VcCertificateAction {
                     }
                 }
 
+                if ( -not $thisCert.certificateRequestId ) {
+                    $out.Error = 'An initial certificate request could not be found.  This is required to renew a certificate.'
+                    return $out
+                }
+
                 $thisCertRequest = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificaterequests/$($thisCert.certificateRequestId)"
+
                 $renewParams = @{
                     existingCertificateId        = $ID
                     certificateIssuingTemplateId = $thisCertRequest.certificateIssuingTemplateId
@@ -248,7 +263,15 @@ function Invoke-VcCertificateAction {
                 }
 
                 try {
-                    $null = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
+                    $renewResponse = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
+                    $out | Add-Member @{'renew' = $renewResponse }
+
+                    if ( $Provision ) {
+                        $newCertId = $renewResponse.certificateRequests.certificateIds[0]
+                        Write-Verbose "Renew was successful, now provisioning certificate ID $newCertId"
+                        $null = Invoke-VcCertificateAction -ID $newCertId -Provision
+                    }
+
                     $out.Success = $true
                 }
                 catch {

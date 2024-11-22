@@ -544,7 +544,7 @@ function New-VenafiSession {
     else {
 
         $newSession | Add-Member @{
-            User = (Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession | Select-Object -ExpandProperty user | Select-Object @{
+            User = (Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession -ErrorAction SilentlyContinue | Select-Object -ExpandProperty user | Select-Object @{
                     'n' = 'userId'
                     'e' = {
                         $_.Id
