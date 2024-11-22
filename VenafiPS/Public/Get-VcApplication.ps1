@@ -6,7 +6,7 @@
     .DESCRIPTION
     Get 1 or more applications.
 
-    .PARAMETER ID
+    .PARAMETER Application
     Application ID or name
 
     .PARAMETER All
@@ -21,7 +21,7 @@
     ID
 
     .EXAMPLE
-    Get-VcApplication -ApplicationID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+    Get-VcApplication -Application 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 
     applicationId              : 96fc9310-67ec-11eb-a8a7-794fe75a8e6f
     certificateIssuingTemplate : @{Name=MyTemplate; id=7fb6af20-b22e-11ea-9a24-930fb5d2b247}
@@ -39,7 +39,7 @@
     Get a single object by ID
 
     .EXAMPLE
-    Get-VcApplication -ID 'My Awesome App'
+    Get-VcApplication -Application 'My Awesome App'
 
     Get a single object by name.  The name is case sensitive.
 
@@ -56,8 +56,8 @@
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipeline, ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('applicationId')]
-        [string] $ID,
+        [Alias('applicationId', 'ID')]
+        [string] $Application,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
@@ -77,13 +77,13 @@
             UriLeaf = 'applications'
         }
 
-        if ( $PSBoundParameters.ContainsKey('ID') ) {
-            if ( Test-IsGuid($ID) ) {
-                $params.UriLeaf += "/{0}" -f $ID
+        if ( $PSBoundParameters.ContainsKey('Application') ) {
+            if ( Test-IsGuid($Application) ) {
+                $params.UriLeaf += "/{0}" -f $Application
             }
             else {
                 # search by name
-                $params.UriLeaf += "/name/$ID"
+                $params.UriLeaf += "/name/$Application"
             }
         }
 

@@ -4,8 +4,8 @@ function Invoke-VcCertificateAction {
     Perform an action against one or more certificates
 
     .DESCRIPTION
-    One stop shop for basic certificate actions.
-    You can Retire, Recover, Renew, Validate, or Delete.
+    One stop shop for certificate actions.
+    You can Retire, Recover, Renew, Validate, Provision, or Delete.
 
     .PARAMETER ID
     ID of the certificate
@@ -28,9 +28,13 @@ function Invoke-VcCertificateAction {
     Delete a certificate.
     As only retired certificates can be deleted, this will be performed first.
 
+    .PARAMETER Provision
+    Provision a certificate to all associated machine identities.
+
     .PARAMETER BatchSize
     How many certificates to retire per retirement API call. Useful to prevent API call timeouts.
-    Defaults to 1000
+    Defaults to 1000.
+    Not applicable to Renew or Provision.
 
     .PARAMETER AdditionalParameters
     Additional items specific to the action being taken, if needed.
@@ -106,8 +110,8 @@ function Invoke-VcCertificateAction {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [Alias('CertificateID')]
-        [string] $ID,
+        [Alias('certificateID')]
+        [guid] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'Retire')]
         [switch] $Retire,
@@ -124,7 +128,14 @@ function Invoke-VcCertificateAction {
         [Parameter(Mandatory, ParameterSetName = 'Delete')]
         [switch] $Delete,
 
-        [Parameter()]
+        [Parameter(Mandatory, ParameterSetName = 'Provision')]
+        [Parameter(ParameterSetName = 'Renew')]
+        [switch] $Provision,
+
+        [Parameter(ParameterSetName = 'Retire')]
+        [Parameter(ParameterSetName = 'Recover')]
+        [Parameter(ParameterSetName = 'Validate')]
+        [Parameter(ParameterSetName = 'Delete')]
         [ValidateRange(1, 10000)]
         [int] $BatchSize = 1000,
 
@@ -147,31 +158,45 @@ function Invoke-VcCertificateAction {
         }
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
+        Write-Verbose $PSCmdlet.ParameterSetName
     }
 
     process {
 
         switch ($PSCmdlet.ParameterSetName) {
+            'Provision' {
+                # get all machine identities associated with certificate
+                # since ID is a guid, ensure its converted to string otherwise Find will think it's another filter
+                $mi = Find-VcMachineIdentity -Filter @('certificateId', 'eq', $ID.ToString()) | Select-Object -ExpandProperty machineIdentityId
+
+                if ( -not $mi ) {
+                    throw "No machine identities found for certificate ID $ID"
+                }
+
+                Write-Verbose ('Provisioning certificate ID {0} to machine identities {1}' -f $ID, ($mi -join ','))
+                $mi | Invoke-VcWorkflow -Workflow 'Provision'
+            }
+
             'Renew' {
 
                 $out = [pscustomobject] @{
-                    CertificateID = $ID
-                    Success       = $false
-                    Error         = $null
+                    oldCertificateId = $ID
+                    success          = $false
+                    error            = $null
                 }
 
                 $thisCert = Get-VcCertificate -ID $ID
 
                 # only current certs can be renewed
                 if ( $thisCert.versionType -ne 'CURRENT' ) {
-                    $out.Error = 'Only certificates with a versionType of CURRENT can be renewed'
+                    $out.error = 'Only certificates with a versionType of CURRENT can be renewed'
                     return $out
                 }
 
                 # multiple CN certs are supported by tlspc, but the request/renew api does not support it
                 if ( $thisCert.subjectCN.count -gt 1 ) {
                     if ( -not $Force ) {
-                        $out.Error = 'The certificate you are trying to renew has more than 1 common name.  You can either use -Force to automatically choose the first common name or utilize a different process to renew.'
+                        $out.error = 'The certificate you are trying to renew has more than 1 common name.  You can either use -Force to automatically choose the first common name or utilize a different process to renew.'
                         return $out
                     }
                 }
@@ -191,13 +216,19 @@ function Invoke-VcCertificateAction {
                             $thisAppId = $AdditionalParameters.Application
                         }
                         else {
-                            $out.Error = 'Multiple applications associated, {0}.  Only 1 application can be renewed at a time.  Rerun Invoke-VcCertificateAction and add ''-AdditionalParameter @{{''Application''=''application id''}}'' and provide the actual id you would like to renew.' -f (($thisCert.application | ForEach-Object { '{0} ({1})' -f $_.name, $_.applicationId }) -join ',')
+                            $out.error = 'Multiple applications associated, {0}.  Only 1 application can be renewed at a time.  Rerun Invoke-VcCertificateAction and add ''-AdditionalParameter @{{''Application''=''application id''}}'' and provide the actual id you would like to renew.' -f (($thisCert.application | ForEach-Object { '{0} ({1})' -f $_.name, $_.applicationId }) -join ',')
                             return $out
                         }
                     }
                 }
 
+                if ( -not $thisCert.certificateRequestId ) {
+                    $out.error = 'An initial certificate request could not be found.  This is required to renew a certificate.'
+                    return $out
+                }
+
                 $thisCertRequest = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificaterequests/$($thisCert.certificateRequestId)"
+
                 $renewParams = @{
                     existingCertificateId        = $ID
                     certificateIssuingTemplateId = $thisCertRequest.certificateIssuingTemplateId
@@ -232,11 +263,27 @@ function Invoke-VcCertificateAction {
                 }
 
                 try {
-                    $null = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
-                    $out.Success = $true
+                    $renewResponse = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
+                    $newCertId = $renewResponse.certificateRequests.certificateIds[0]
+                    $out | Add-Member @{
+                        'renew'         = $renewResponse
+                        'certificateID' = $newCertId
+                    }   
+
+                    if ( $Provision ) {
+                        Write-Verbose "Renew was successful, now provisioning certificate ID $newCertId"
+
+                        # wait a few seconds for machine identities to be reassociated with the new certificate
+                        Start-Sleep -Seconds 5
+
+                        $provisionResponse = Invoke-VcCertificateAction -ID $newCertId -Provision
+                        $out | Add-Member @{'provision' = $provisionResponse }
+                    }
+
+                    $out.success = $true
                 }
                 catch {
-                    $out.Error = $_
+                    $out.error = $_
                 }
 
                 return $out

@@ -12,7 +12,7 @@
 RootModule = 'VenafiPS.psm1'
 
 # Version number of this module.
-ModuleVersion = '6.5.2'
+ModuleVersion = '6.6'
 
 # Supported PSEditions
 # CompatiblePSEditions = @()
@@ -108,7 +108,7 @@ FunctionsToExport = 'Add-VcCertificateAssociation', 'Add-VcTeamMember', 'Add-VcT
                'Set-VcConnector', 'Set-VcTeam', 'Set-VdcAttribute',
                'Set-VdcCredential', 'Set-VdcPermission',
                'Set-VdcWorkflowTicketStatus', 'Test-VdcIdentity', 'Test-VdcObject',
-               'Test-VdcToken', 'Write-VdcLog', 'Set-VcCertificate'
+               'Test-VdcToken', 'Write-VdcLog', 'Set-VcCertificate', 'Get-VcSatelliteWorker', 'Remove-VcSatelliteWorker'
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
 CmdletsToExport = @()

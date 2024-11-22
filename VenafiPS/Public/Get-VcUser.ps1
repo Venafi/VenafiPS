@@ -6,7 +6,7 @@ function Get-VcUser {
     .DESCRIPTION
     Returns user information for TLSPC.
 
-    .PARAMETER ID
+    .PARAMETER User
     Either be the user id (guid) or username which is the email address.
 
     .PARAMETER Me
@@ -74,8 +74,8 @@ function Get-VcUser {
     param (
         [Parameter(Mandatory, ParameterSetName = 'Id', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [Alias('userId', 'owningUser', 'owningUsers', 'owningUserId')]
-        [String[]] $ID,
+        [Alias('userId', 'owningUser', 'owningUsers', 'owningUserId', 'ID')]
+        [String] $User,
 
         [Parameter(Mandatory, ParameterSetName = 'Me')]
         [Switch] $Me,
@@ -95,24 +95,14 @@ function Get-VcUser {
 
         Switch ($PsCmdlet.ParameterSetName)	{
             'Id' {
-                if ( $ID.Count -gt 1 ) {
-                    foreach ($teamId in $ID) {
-                        Get-VcUser -ID $teamId
-                    }
-                }
-                else {
-                    $thisID = $ID[0]
-                }
-
                 # can search by user id (guid) or username
-                try {
-                    $guid = [guid] $thisID
+                if ( Test-IsGuid($User) ) {
+                    $guid = [guid] $User
                     $response = Invoke-VenafiRestMethod -UriLeaf ('users/{0}' -f $guid.ToString())
                 }
-                catch {
-                    $response = Invoke-VenafiRestMethod -UriLeaf "users/username/$thisID" | Select-Object -ExpandProperty users
+                else {
+                    $response = Invoke-VenafiRestMethod -UriLeaf "users/username/$User" | Select-Object -ExpandProperty users
                 }
-
             }
 
             'Me' {

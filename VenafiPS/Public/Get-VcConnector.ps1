@@ -6,7 +6,7 @@
     .DESCRIPTION
     Get details on 1 or all connectors
 
-    .PARAMETER ID
+    .PARAMETER Connector
     Connector ID or name
 
     .PARAMETER All
@@ -21,7 +21,7 @@
     ID
 
     .EXAMPLE
-    Get-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
+    Get-VcConnector -Connector 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
 
     {
         "connectorId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
@@ -45,7 +45,7 @@
     Get a single object by ID
 
     .EXAMPLE
-    Get-VcConnector -ID 'My Connector'
+    Get-VcConnector -Connector 'My Connector'
 
     Get a single object by name.  The name is case sensitive.
 
@@ -62,8 +62,8 @@
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('connectorId')]
-        [string] $ID,
+        [Alias('connectorId', 'ID')]
+        [string] $Connector,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
@@ -82,13 +82,13 @@
             UriLeaf = 'plugins'
         }
 
-        if ( $PSBoundParameters.ContainsKey('ID') ) {
-            if ( Test-IsGuid($ID) ) {
-                $params.UriLeaf += "/{0}" -f $ID
+        if ( $PSBoundParameters.ContainsKey('Connector') ) {
+            if ( Test-IsGuid($Connector) ) {
+                $params.UriLeaf += "/{0}" -f $Connector
             }
             else {
                 # search by name
-                return Get-VcConnector -All | Where-Object { $_.name -eq $ID }
+                return Get-VcConnector -All | Where-Object { $_.name -eq $Connector }
             }
         }
         else {

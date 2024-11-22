@@ -42,7 +42,7 @@
     param (
 
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('certificateID')]
+        [Alias('certificateId')]
         [string] $ID,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
