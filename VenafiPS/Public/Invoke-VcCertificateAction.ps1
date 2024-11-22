@@ -264,12 +264,13 @@ function Invoke-VcCertificateAction {
 
                 try {
                     $renewResponse = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
-                    $out | Add-Member @{'renew' = $renewResponse }
+                    $out | Add-Member @{'Renew' = $renewResponse }
 
                     if ( $Provision ) {
                         $newCertId = $renewResponse.certificateRequests.certificateIds[0]
                         Write-Verbose "Renew was successful, now provisioning certificate ID $newCertId"
-                        $null = Invoke-VcCertificateAction -ID $newCertId -Provision
+                        $provisionResponse = Invoke-VcCertificateAction -ID $newCertId -Provision
+                        $out | Add-Member @{'Provision' = $provisionResponse }
                     }
 
                     $out.Success = $true
