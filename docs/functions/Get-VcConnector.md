@@ -7,7 +7,7 @@ Get connector info
 
 ### ID (Default)
 ```
-Get-VcConnector [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+Get-VcConnector [-Connector] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -23,7 +23,7 @@ Get details on 1 or all connectors
 
 ### EXAMPLE 1
 ```
-Get-VcConnector -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
+Get-VcConnector -Connector 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
 ```
 
 {
@@ -49,7 +49,7 @@ Get a single object by ID
 
 ### EXAMPLE 2
 ```
-Get-VcConnector -ID 'My Connector'
+Get-VcConnector -Connector 'My Connector'
 ```
 
 Get a single object by name. 
@@ -64,13 +64,13 @@ Get all connectors
 
 ## PARAMETERS
 
-### -ID
+### -Connector
 Connector ID or name
 
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: connectorId
+Aliases: connectorId, ID
 
 Required: True
 Position: 1

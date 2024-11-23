@@ -7,8 +7,8 @@ Get issuing template info
 
 ### ID (Default)
 ```
-Get-VcIssuingTemplate [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-VcIssuingTemplate [-IssuingTemplate] <String> [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
@@ -18,13 +18,13 @@ Get-VcIssuingTemplate [-All] [-VenafiSession <PSObject>] [-ProgressAction <Actio
 ```
 
 ## DESCRIPTION
-Get 1 or more issuing templates
+Get 1 or more issuing template details
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VcIssuingTemplate -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get-VcIssuingTemplate -IssuingTemplate 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
 issuingTemplateId                   : 0a19eaf2-b22b-11ea-a1eb-a37c69eabd4e
@@ -62,7 +62,7 @@ Get a single object by ID
 
 ### EXAMPLE 2
 ```
-Get-VcIssuingTemplate -ID 'MyTemplate'
+Get-VcIssuingTemplate -IssuingTemplate 'MyTemplate'
 ```
 
 Get a single object by name. 
@@ -77,13 +77,13 @@ Get all issuing templates
 
 ## PARAMETERS
 
-### -ID
+### -IssuingTemplate
 Issuing template ID or name
 
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: issuingTemplateId
+Aliases: issuingTemplateId, ID
 
 Required: True
 Position: 1

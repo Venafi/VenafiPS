@@ -7,7 +7,7 @@ Get user details
 
 ### Id (Default)
 ```
-Get-VcUser -ID <String[]> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-VcUser -User <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Me
@@ -55,13 +55,13 @@ Get all users
 
 ## PARAMETERS
 
-### -ID
+### -User
 Either be the user id (guid) or username which is the email address.
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: Id
-Aliases: userId, owningUser, owningUsers, owningUserId
+Aliases: userId, owningUser, owningUsers, owningUserId, ID
 
 Required: True
 Position: Named

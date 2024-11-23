@@ -24,14 +24,14 @@ Retrieve info on 1 or all.
 
 ### EXAMPLE 1
 ```
-Get-VcTeam -ID 'MyTeam'
+Get-VcTeam -Team 'MyTeam'
 ```
 
 Get info for a team by name
 
 ### EXAMPLE 2
 ```
-Get-VcTeam -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get-VcTeam -Team 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
 Get info for a team by id
@@ -46,7 +46,7 @@ Get info for all teams
 ## PARAMETERS
 
 ### -Team
-{{ Fill Team Description }}
+Team name or guid.
 
 ```yaml
 Type: String[]

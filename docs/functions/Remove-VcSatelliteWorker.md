@@ -1,50 +1,50 @@
-# Get-VcCertificate
+# Remove-VcSatelliteWorker
 
 ## SYNOPSIS
-Get certificate information
+Remove a vsatellite worker
 
 ## SYNTAX
 
-### Id (Default)
 ```
-Get-VcCertificate [-ID] <String> [-IncludeVaasOwner] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
-```
-
-### All
-```
-Get-VcCertificate [-All] [-IncludeVaasOwner] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Remove-VcSatelliteWorker [-ID] <Guid> [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>]
+ [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get certificate information, either all available to the api key provided or by id or zone.
+Remove a vsatellite worker from TLSPC
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VdcCertificate -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Remove-VcSatelliteWorker -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
-Get certificate info for a specific cert
+Remove a worker
 
 ### EXAMPLE 2
 ```
-Get-VdcCertificate -All
+Remove-VcSatelliteWorker -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Confirm:$false
 ```
 
-Get certificate info for all certs
+Remove a worker bypassing the confirmation prompt
+
+### EXAMPLE 3
+```
+Get-VcSatelliteWorker -VSatellite 'My vsat1' | Remove-VcSatelliteWorker
+```
+
+Remove all workers associated with a specific vsatellite
 
 ## PARAMETERS
 
 ### -ID
-Certificate identifier, the ID or certificate name.
+Worker ID
 
 ```yaml
-Type: String
-Parameter Sets: Id
-Aliases: certificateId
+Type: Guid
+Parameter Sets: (All)
+Aliases: vsatelliteWorkerId
 
 Required: True
 Position: 1
@@ -53,45 +53,46 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -All
-Retrieve all certificates
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: All
-Aliases:
-
-Required: True
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-### -IncludeVaasOwner
-Retrieve extended application owner info
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TLSPC key can also be provided.
+A TLSPC key can also provided.
 
 ```yaml
 Type: PSObject
 Parameter Sets: (All)
 Aliases:
+
+Required: False
+Position: 2
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -WhatIf
+Shows what would happen if the cmdlet runs.
+The cmdlet is not run.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: wi
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Confirm
+Prompts you for confirmation before running the cmdlet.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases: cf
 
 Required: False
 Position: Named
@@ -123,7 +124,6 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### ID
 ## OUTPUTS
 
-### PSCustomObject
 ## NOTES
 
 ## RELATED LINKS

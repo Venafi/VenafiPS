@@ -7,13 +7,14 @@ Get VSatellite info
 
 ### ID
 ```
-Get-VcSatellite [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-VcSatellite -VSatellite <String> [-IncludeWorkers] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcSatellite [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-VcSatellite [-All] [-IncludeWorkers] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -65,18 +66,25 @@ Get-VcSatellite -All
 
 Get all VSatellites
 
+### EXAMPLE 4
+```
+Get-VcSatellite -All -IncludeWorkers
+```
+
+Get all VSatellites and include workers
+
 ## PARAMETERS
 
-### -ID
+### -VSatellite
 VSatellite ID or name
 
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: vsatelliteId
+Aliases: vsatelliteId, ID
 
 Required: True
-Position: 1
+Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
@@ -91,6 +99,21 @@ Parameter Sets: All
 Aliases:
 
 Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IncludeWorkers
+Include VSatellite workers in the output
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
 Position: Named
 Default value: False
 Accept pipeline input: False

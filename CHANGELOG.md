@@ -1,3 +1,10 @@
+## 6.6.0
+- Add `Get-VcSatelliteWorker`, either all, by id or all workers associated with a specific satellite
+- Add `Remove-VcSatelliteWorker`, you guessed it...removes vsat workers
+- Add `Get-VcSatellite -IncludeWorkers` to get vsats and their associated workers in one call.
+- Add `Invoke-VcCertificateAction -Provision` to push a certificate to associated machine identities.  You can also use `-Renew -Provision` together and it will renew and then provision the new certificate.
+- Add `Set-VcApplication -IssuingTemplate` to add one or more issuing templates to an application.  It will overwrite by default or use `-NoOverwrite` to append.
+
 ## 6.5.2
 - Add `Set-VcCertificate`.  This replaces `Add-VcCertificateAssociation` to set the applications associated with a certificate.  Certificate tagging is now supported, both add and replace.
 - Add support for URL port during TLSPDC token operations, [#305](https://github.com/Venafi/VenafiPS/issues/305)
@@ -683,6 +690,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

@@ -60,6 +60,7 @@ nav:
     - Get-VcMachine: functions/Get-VcMachine.md
     - Get-VcMachineIdentity: functions/Get-VcMachineIdentity.md
     - Get-VcSatellite: functions/Get-VcSatellite.md
+    - Get-VcSatelliteWorker: functions/Get-VcSatelliteWorker.md
     - Get-VcTag: functions/Get-VcTag.md
     - Get-VcTeam: functions/Get-VcTeam.md
     - Get-VcUser: functions/Get-VcUser.md
@@ -109,6 +110,7 @@ nav:
     - Remove-VcIssuingTemplate: functions/Remove-VcIssuingTemplate.md
     - Remove-VcMachine: functions/Remove-VcMachine.md
     - Remove-VcMachineIdentity: functions/Remove-VcMachineIdentity.md
+    - Remove-VcSatelliteWorker: functions/Remove-VcSatelliteWorker.md
     - Remove-VcTag: functions/Remove-VcTag.md
     - Remove-VcTeam: functions/Remove-VcTeam.md
     - Remove-VcTeamMember: functions/Remove-VcTeamMember.md

@@ -7,7 +7,7 @@ Get application info
 
 ### ID (Default)
 ```
-Get-VcApplication [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+Get-VcApplication [-Application] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -23,7 +23,7 @@ Get 1 or more applications.
 
 ### EXAMPLE 1
 ```
-Get-VcApplication -ApplicationID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get-VcApplication -Application 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
 applicationId              : 96fc9310-67ec-11eb-a8a7-794fe75a8e6f
@@ -43,7 +43,7 @@ Get a single object by ID
 
 ### EXAMPLE 2
 ```
-Get-VcApplication -ID 'My Awesome App'
+Get-VcApplication -Application 'My Awesome App'
 ```
 
 Get a single object by name. 
@@ -58,13 +58,13 @@ Get all applications
 
 ## PARAMETERS
 
-### -ID
+### -Application
 Application ID or name
 
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: applicationId
+Aliases: applicationId, ID
 
 Required: True
 Position: 1

@@ -7,7 +7,7 @@ Get machine details
 
 ### ID (Default)
 ```
-Get-VcMachine [-ID] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+Get-VcMachine [-Machine] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -24,7 +24,7 @@ Get machine details for 1 or all.
 
 ### EXAMPLE 1
 ```
-Get-VcMachine -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get-VcMachine -Machine 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
 machineId              : cf7cfdc0-2b2a-11ee-9546-5136c4b21504
@@ -47,7 +47,7 @@ Get a single machine by ID
 
 ### EXAMPLE 2
 ```
-Get-VcMachine -ID 'MyCitrix'
+Get-VcMachine -Machine 'MyCitrix'
 ```
 
 Get a single machine by name. 
@@ -103,13 +103,13 @@ Use PowerShell v7+ to perform this in parallel and speed things up.
 
 ## PARAMETERS
 
-### -ID
+### -Machine
 Machine ID or name
 
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases: machineId
+Aliases: machineId, ID
 
 Required: True
 Position: 1
@@ -187,7 +187,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### ID
+### Machine
 ## OUTPUTS
 
 ## NOTES

@@ -6,13 +6,13 @@ Update an existing application
 ## SYNTAX
 
 ```
-Set-VcApplication [-Application] <String> [[-Name] <String>] [[-TeamOwner] <String[]>] [-NoOverwrite]
- [-PassThru] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+Set-VcApplication [-Application] <String> [[-Name] <String>] [[-TeamOwner] <String[]>]
+ [[-IssuingTemplate] <String[]>] [-NoOverwrite] [-PassThru] [[-VenafiSession] <PSObject>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Update name or team owners of an existing applications.
+Update details of existing applications.
 Additional properties will be available in the future.
 
 ## EXAMPLES
@@ -38,10 +38,19 @@ Set-VcApplication -ID 'MyApp' -TeamOwner 'GreatTeam' -NoOverwrite
 
 Append this team to the list of owners
 
+### EXAMPLE 4
+```
+Set-VcApplication -ID 'MyApp' -IssuingTemplate 'Template1', 'Template2'
+```
+
+Update the templates associated with application. 
+This will overwrite any existing templates configured.
+
 ## PARAMETERS
 
 ### -Application
-{{ Fill Application Description }}
+The application to update. 
+Specify either ID or name.
 
 ```yaml
 Type: String
@@ -80,6 +89,21 @@ Aliases:
 
 Required: False
 Position: 3
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IssuingTemplate
+Associate one or more issuing templates by ID or name
+
+```yaml
+Type: String[]
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 4
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -126,7 +150,7 @@ Parameter Sets: (All)
 Aliases: Key
 
 Required: False
-Position: 4
+Position: 5
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

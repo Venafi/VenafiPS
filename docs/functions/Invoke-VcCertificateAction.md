@@ -7,38 +7,43 @@ Perform an action against one or more certificates
 
 ### Retire
 ```
-Invoke-VcCertificateAction -ID <String> [-Retire] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
+Invoke-VcCertificateAction -ID <Guid> [-Retire] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Recover
 ```
-Invoke-VcCertificateAction -ID <String> [-Recover] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
+Invoke-VcCertificateAction -ID <Guid> [-Recover] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Renew
 ```
-Invoke-VcCertificateAction -ID <String> [-Renew] [-BatchSize <Int32>] [-Force]
- [-AdditionalParameters <Hashtable>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf]
- [-Confirm] [<CommonParameters>]
+Invoke-VcCertificateAction -ID <Guid> [-Renew] [-Provision] [-Force] [-AdditionalParameters <Hashtable>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Validate
 ```
-Invoke-VcCertificateAction -ID <String> [-Validate] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
+Invoke-VcCertificateAction -ID <Guid> [-Validate] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ### Delete
 ```
-Invoke-VcCertificateAction -ID <String> [-Delete] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
+Invoke-VcCertificateAction -ID <Guid> [-Delete] [-BatchSize <Int32>] [-AdditionalParameters <Hashtable>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### Provision
+```
+Invoke-VcCertificateAction -ID <Guid> [-Provision] [-AdditionalParameters <Hashtable>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-One stop shop for basic certificate actions.
-You can Retire, Recover, Renew, Validate, or Delete.
+One stop shop for certificate actions.
+You can Retire, Recover, Renew, Validate, Provision, or Delete.
 
 ## EXAMPLES
 
@@ -102,9 +107,9 @@ Search for all retired certificates and delete them using a non default batch si
 ID of the certificate
 
 ```yaml
-Type: String
+Type: Guid
 Parameter Sets: (All)
-Aliases: CertificateID
+Aliases: certificateID
 
 Required: True
 Position: Named
@@ -191,14 +196,42 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Provision
+Provision a certificate to all associated machine identities.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Renew
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Provision
+Aliases:
+
+Required: True
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -BatchSize
 How many certificates to retire per retirement API call.
 Useful to prevent API call timeouts.
-Defaults to 1000
+Defaults to 1000.
+Not applicable to Renew or Provision.
 
 ```yaml
 Type: Int32
-Parameter Sets: (All)
+Parameter Sets: Retire, Recover, Validate, Delete
 Aliases:
 
 Required: False
