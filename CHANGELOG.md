@@ -1,3 +1,7 @@
+## 6.6.1
+- Fix bogus error during `New-VcMachineCommonKeystore` [#304](https://github.com/Venafi/VenafiPS/issues/304)
+- Update VC machine creation components due to API deprecation
+
 ## 6.6.0
 - Add `Get-VcSatelliteWorker`, either all, by id or all workers associated with a specific satellite
 - Add `Remove-VcSatelliteWorker`, you guessed it...removes vsat workers
@@ -690,6 +694,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

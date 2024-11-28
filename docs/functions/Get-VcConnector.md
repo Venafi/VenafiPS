@@ -17,37 +17,11 @@ Get-VcConnector [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPrefe
 ```
 
 ## DESCRIPTION
-Get details on 1 or all connectors
+Get details on 1 or all connectors associated with your tenant
 
 ## EXAMPLES
 
 ### EXAMPLE 1
-```
-Get-VcConnector -Connector 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
-```
-
-{
-    "connectorId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
-    "name": "ServiceNow-expiry,
-    "properties": {
-        "connectorKind": "WEBHOOK",
-        "filter": {
-            "filterType": "EXPIRATION",
-            "applicationIds": \[\]
-        },
-        "target": {
-            "type": "generic",
-            "connection": {
-                "secret": "MySecret",
-                "url": "https://instance.service-now.com/api/company/endpoint"
-            }
-        }
-    }
-}
-
-Get a single object by ID
-
-### EXAMPLE 2
 ```
 Get-VcConnector -Connector 'My Connector'
 ```
@@ -55,7 +29,7 @@ Get-VcConnector -Connector 'My Connector'
 Get a single object by name. 
 The name is case sensitive.
 
-### EXAMPLE 3
+### EXAMPLE 2
 ```
 Get-VcConnector -All
 ```
@@ -131,7 +105,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### ID
+### Connector
 ## OUTPUTS
 
 ## NOTES
