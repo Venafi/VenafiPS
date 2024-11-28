@@ -15,12 +15,8 @@ function Get-VcData {
         [string] $InputObject,
 
         [parameter(Mandatory)]
-        [ValidateSet('Application', 'MachineType', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag')]
+        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'MachinePlugin', 'CaPlugin', 'TppPlugin')]
         [string] $Type,
-
-        # [parameter()]
-        # [ValidateSet('InputObject', 'Name', 'Object', 'First')]
-        # [string] $OutType = 'InputObject',
 
         [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
         [switch] $Name,
@@ -44,7 +40,7 @@ function Get-VcData {
 
     process {
 
-        # if we already have a guid, just return it
+        # if we already have a guid and are just looking for the ID, return it
         if ( $PSCmdlet.ParameterSetName -eq 'ID' -and (Test-IsGuid($InputObject)) ) {
             return $InputObject
         }
@@ -98,7 +94,9 @@ function Get-VcData {
                 $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.teamId }
             }
 
-            'MachineType' {
+            { $_ -match 'Plugin$' } {
+                # for machine, ca, tpp, etc plugins
+
                 # if ( -not $script:vcMachineType ) {
                 #     $script:vcMachineType = Invoke-VenafiRestMethod -UriLeaf 'machinetypes' |
                 #     Select-Object -ExpandProperty machineTypes |
@@ -108,11 +106,13 @@ function Get-VcData {
                 # $allObject = $script:vcMachineType
                 # $thisObject = $script:vcMachineType | Where-Object { $InputObject -in $_.machineType, $_.machineTypeId }
 
-                $allObject = Invoke-VenafiRestMethod -UriLeaf 'machinetypes' |
-                Select-Object -ExpandProperty machineTypes |
-                Select-Object -Property @{'n' = 'machineTypeId'; 'e' = { $_.Id } }, * -ExcludeProperty id |
-                Sort-Object -Property machineType
-                $thisObject = $allObject | Where-Object { $InputObject -in $_.machineType, $_.machineTypeId }
+                $pluginType = $_.Replace('Plugin', '').ToUpper()
+                
+                $allObject = Invoke-VenafiRestMethod -UriLeaf "plugins?pluginType=$pluginType" |
+                Select-Object -ExpandProperty plugins |
+                Select-Object -Property @{'n' = ('{0}Id' -f $Type); 'e' = { $_.Id } }, * -ExcludeProperty id
+
+                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.('{0}Id' -f $Type) }
             }
 
             'Certificate' {

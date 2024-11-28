@@ -15,7 +15,7 @@ function New-VcMachine {
 
     .PARAMETER MachineType
     Machine type by either ID or name, eg. 'Citrix ADC'.
-    A list can be found by create a new session and executing $VenafiSession.MachineType.
+    Get a list of available types by running `Get-VcConnector -All` and looking for connectorType is MACHINE.
 
     .PARAMETER VSatellite
     ID or name of a vsatellite.
@@ -110,7 +110,7 @@ function New-VcMachine {
     .NOTES
     To see a full list of tab-completion options, be sure to set the Tab option, Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete.
 
-    This function requires the use of sodium encryption.
+    This function requires the use of sodium encryption via PSSodium, https://github.com/TylerLeonhardt/PSSodium, to be installed.
     .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
     On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
@@ -176,21 +176,22 @@ function New-VcMachine {
         Initialize-PSSodium
 
         $allMachines = [System.Collections.Generic.List[hashtable]]::new()
-
-        if ( $Credential ) {
-            if ( $MachineType -in 'c1521d80-db7a-11ec-b79a-f3ded6c9808c', 'Microsoft IIS' ) { throw 'To create IIS machines, please use New-VcMachineIis' }
-            if ( $MachineType -in '575389b0-e6be-11ec-9172-d3c56ea8bcf6', 'Common Keystore (PEM, JKS, PKCS#12)' ) { throw 'To create Common Keystore machines, please use New-VcMachineCommonKeystore' }
-        }
     }
 
     process {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        $thisMachineType = Get-VcData -InputObject $MachineType -Type 'MachineType' -Object
+        $thisMachineType = Get-VcData -InputObject $MachineType -Type 'MachinePlugin' -Object
         if ( -not $thisMachineType ) {
             Write-Error "'$MachineType' is not a valid machine type id or name"
             return
+        }
+
+        if ( $PSCmdlet.ParameterSetName -eq 'BasicMachine' ) {
+            if ( $thisMachineType.name -in 'Microsoft IIS', 'Common Keystore (PEM, JKS, PKCS#12)' ) {
+                throw 'To create IIS or Common Keystore machines, please use the dedicated function.'
+            }
         }
 
         $ownerId = Get-VcData -InputObject $Owner -Type 'Team'
@@ -242,8 +243,7 @@ function New-VcMachine {
             name              = $Name
             edgeInstanceId    = $thisEdgeInstanceId
             dekId             = $thisDekId
-            machineTypeId     = $thisMachineType.machineTypeId
-            pluginId          = $thisMachineType.pluginId
+            pluginId          = $thisMachineType.machinePluginId
             owningTeamId      = $ownerId
             connectionDetails = $thisConnectionDetail
         }

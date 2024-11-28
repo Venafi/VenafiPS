@@ -83,7 +83,7 @@ $vcGenericArgCompleterSb = {
 
         'MachineType' {
             if ( -not $script:vcMachineType ) {
-                $script:vcMachineType = Invoke-VenafiRestMethod -UriLeaf 'machinetypes' |
+                $script:vcMachineType = Invoke-VenafiRestMethod -UriLeaf 'plugins?pluginType=MACHINE' |
                 Select-Object -ExpandProperty machineTypes |
                 Select-Object -Property @{'n' = 'machineTypeId'; 'e' = { $_.Id } }, * -ExcludeProperty id |
                 Sort-Object -Property machineType

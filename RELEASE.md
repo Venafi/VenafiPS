@@ -1,5 +1,2 @@
-- Add `Get-VcSatelliteWorker`, either all, by id or all workers associated with a specific satellite
-- Add `Remove-VcSatelliteWorker`, you guessed it...removes vsat workers
-- Add `Get-VcSatellite -IncludeWorkers` to get vsats and their associated workers in one call.
-- Add `Invoke-VcCertificateAction -Provision` to push a certificate to associated machine identities.  You can also use `-Renew -Provision` together and it will renew and then provision the new certificate.
-- Add `Set-VcApplication -IssuingTemplate` to add one or more issuing templates to an application.  It will overwrite by default or use `-NoOverwrite` to append.
+- Fix bogus error during `New-VcMachineCommonKeystore` [#304](https://github.com/Venafi/VenafiPS/issues/304)
+- Update VC machine creation components due to API deprecation
