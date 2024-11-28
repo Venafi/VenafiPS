@@ -4,7 +4,7 @@
     Get connector info
 
     .DESCRIPTION
-    Get details on 1 or all connectors
+    Get details on 1 or all connectors associated with your tenant
 
     .PARAMETER Connector
     Connector ID or name
@@ -18,31 +18,7 @@
     A TLSPC key can also provided.
 
     .INPUTS
-    ID
-
-    .EXAMPLE
-    Get-VcConnector -Connector 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' | ConvertTo-Json
-
-    {
-        "connectorId": "a7ddd210-0a39-11ee-8763-134b935c90aa",
-        "name": "ServiceNow-expiry,
-        "properties": {
-            "connectorKind": "WEBHOOK",
-            "filter": {
-                "filterType": "EXPIRATION",
-                "applicationIds": []
-            },
-            "target": {
-                "type": "generic",
-                "connection": {
-                    "secret": "MySecret",
-                    "url": "https://instance.service-now.com/api/company/endpoint"
-                }
-            }
-        }
-    }
-
-    Get a single object by ID
+    Connector
 
     .EXAMPLE
     Get-VcConnector -Connector 'My Connector'
@@ -92,6 +68,7 @@
             }
         }
         else {
+            # getting all by default excludes disabled connectors so let's include them
             $params.Body = @{'includeDisabled' = $true }
         }
 

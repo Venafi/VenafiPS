@@ -140,6 +140,7 @@
             if ( Test-IsGuid($Machine) ) {
                 try {
                     $response = Invoke-VenafiRestMethod -UriLeaf ('machines/{0}' -f $Machine)
+                    $response | Select-Object @{ 'n' = 'machineId'; 'e' = { $_.Id } }, * -ExcludeProperty Id
                 }
                 catch {
                     if ( $_.Exception.Response.StatusCode.value__ -eq 404 ) {
@@ -155,11 +156,6 @@
                 # no lookup by name directly.  search for it and then get details
                 Find-VcObject -Type 'Machine' -Name $Machine | Get-VcMachine
             }
-
-            if ( $response ) {
-                $response | Select-Object @{ 'n' = 'machineId'; 'e' = { $_.Id } }, * -ExcludeProperty Id
-            }
         }
-
     }
 }
