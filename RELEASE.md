@@ -1,2 +1,1 @@
-- Fix bogus error during `New-VcMachineCommonKeystore` [#304](https://github.com/Venafi/VenafiPS/issues/304)
-- Update VC machine creation components due to API deprecation
+- Fix `Find-VdcCertificate -CountOnly` error [#309](https://github.com/Venafi/VenafiPS/issues/309)
