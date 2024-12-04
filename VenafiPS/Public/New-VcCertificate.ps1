@@ -48,7 +48,7 @@ function New-VcCertificate {
 
     .PARAMETER ValidUntil
     Date at which the certificate becomes invalid.
-    The day and hour will be set, but not to the minute level.
+    The day and hour will be set and not to the minute level.
 
     .PARAMETER PassThru
     Return the certificate request.
@@ -175,38 +175,14 @@ function New-VcCertificate {
         Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
 
         # validation
-        $allApps = Get-VcApplication -All
-
-        $thisApp = $allApps | Where-Object { $_.Name -like $Application -or $_.applicationId -eq $Application }
-        switch (@($thisApp).Count) {
-            0 {
-                throw ('Application not found.  Valid applications are {0}.' -f ($allApps.name -join ', '))
-            }
-
-            1 {
-                Write-Verbose ('Found application {0}, ID: {1}' -f $thisApp.name, $thisApp.applicationId)
-                $thisAppID = $thisApp.applicationId
-            }
-
-            Default {
-                throw ('More than 1 application found that matches {0}: {1}' -f $Application, ($thisApp.name -join ', '))
-            }
+        $thisApp = Get-VcApplication -Application $Application
+        if ( -not $thisApp ) {
+            throw "Application $Application does not exist"
         }
 
-        $thisTemplate = $thisApp.issuingTemplate | Where-Object { $_.Name -like $IssuingTemplate -or $_.issuingTemplateId -eq $IssuingTemplate }
-        switch (@($thisTemplate).Count) {
-            0 {
-                throw ('Issuing template not found or not valid for this application.  Valid templates are {0}.' -f ($thisApp.certificateIssuingTemplate.name -join ', '))
-            }
-
-            1 {
-                Write-Verbose ('Found template {0}, ID: {1}' -f $thisTemplate.name, $thisTemplate.id)
-                $thisTemplateID = $thisTemplate.issuingTemplateId
-            }
-
-            Default {
-                throw ('More than 1 issuing template found that matches {0}: {1}' -f $IssuingTemplate, ($thisTemplate.name -join ', '))
-            }
+        $thisTemplate = Get-VcIssuingTemplate -IssuingTemplate $IssuingTemplate
+        if ( -not $thisTemplate ) {
+            throw "Issuing template $IssuingTemplate does not exist"
         }
 
         if ( $ValidUntil ) {
@@ -217,7 +193,7 @@ function New-VcCertificate {
             # end date not provided, use default from template
             $validity = $thisTemplate.product.validityPeriod
         }
-        
+
         $params = @{
 
             Method  = 'Post'
@@ -225,8 +201,8 @@ function New-VcCertificate {
             UriLeaf = 'certificaterequests'
             Body    = @{
                 isVaaSGenerated              = $true
-                applicationId                = $thisAppID
-                certificateIssuingTemplateId = $thisTemplateID
+                applicationId                = $thisApp.applicationId
+                certificateIssuingTemplateId = $thisTemplate.issuingTemplateId
                 validityPeriod               = $validity
             }
         }
