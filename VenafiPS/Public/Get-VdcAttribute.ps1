@@ -222,7 +222,7 @@ function Get-VdcAttribute {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $newAttribute = $Attribute
         if ( $All -and $Class ) {

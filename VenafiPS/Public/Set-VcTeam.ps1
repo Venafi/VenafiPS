@@ -119,7 +119,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
             VenafiSession = $VenafiSession
@@ -148,11 +148,7 @@
 
     process {
 
-        $thisID = Get-VcData -InputObject $Team -Type 'Team' -Object
-        if ( -not $thisID ) {
-            Write-Error "Team '$Team' does not exist"
-            return
-        }
+        $thisID = Get-VcData -InputObject $Team -Type 'Team' -Object -FailOnNotFound
 
         if ( $NoOverwrite -and $thisID.userMatchingRules ) {
             $params.Body.userMatchingRules += $thisID.userMatchingRules

@@ -69,7 +69,7 @@ PowerShellVersion = '5.1'
 # NestedModules = @()
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
-FunctionsToExport = 'Add-VcCertificateAssociation', 'Add-VcTeamMember', 'Add-VcTeamOwner',
+FunctionsToExport = 'Add-VcTeamMember', 'Add-VcTeamOwner',
                'Add-VdcAdaptableHash', 'Add-VdcCertificateAssociation',
                'Add-VdcEngineFolder', 'Add-VdcTeamMember', 'Add-VdcTeamOwner',
                'Convert-VdcObject', 'ConvertTo-VdcGuid', 'ConvertTo-VdcPath',

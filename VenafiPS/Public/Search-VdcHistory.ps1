@@ -72,7 +72,7 @@ function Search-VdcHistory {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     $activeVaultId = Find-VdcVaultId -Attribute $Attribute
     if ( -not $activeVaultId ) {

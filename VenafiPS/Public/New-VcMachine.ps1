@@ -61,9 +61,11 @@ function New-VcMachine {
     Setting the value to 1 will disable multithreading.
     On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
 
-
     .PARAMETER PassThru
     Return newly created object
+
+    .PARAMETER Force
+    Force installation of PSSodium if not already installed
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -166,14 +168,17 @@ function New-VcMachine {
         [switch] $PassThru,
 
         [Parameter()]
+        [switch] $Force,
+
+        [Parameter()]
         [psobject] $VenafiSession
     )
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
-        Initialize-PSSodium
+        Initialize-PSSodium -Force:$Force
 
         $allMachines = [System.Collections.Generic.List[hashtable]]::new()
     }

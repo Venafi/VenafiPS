@@ -82,7 +82,7 @@ function Move-VdcObject {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         # determine if target is a policy or other object
         # if policy, we'll need to append the object name in the process block when moving

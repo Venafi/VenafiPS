@@ -66,7 +66,7 @@ function Rename-VdcObject {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     $params = @{
 

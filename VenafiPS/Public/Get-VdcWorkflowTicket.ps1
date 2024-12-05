@@ -83,7 +83,7 @@ function Get-VdcWorkflowTicket {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
         Write-Verbose ("Parameter set {0}" -f $PsCmdlet.ParameterSetName)
     }
 

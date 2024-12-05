@@ -106,7 +106,7 @@ function New-VdcObject {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     if ( $PushCertificate -and (-not $Attribute.Certificate) ) {
         Write-Warning 'A ''Certificate'' key containing the certificate path must be provided for Attribute when using PushCertificate, eg. -Attribute @{''Certificate''=''\Ved\Policy\mycert.com''}.  Certificate provisioning will not take place.'

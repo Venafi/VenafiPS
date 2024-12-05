@@ -136,7 +136,7 @@ function Write-VdcLog {
         throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.  -EventGroup will be deprecated in a future release.'
     }
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     # the event id is the group id coupled with the event id
     $fullEventId = "$CustomEventGroup$EventId"

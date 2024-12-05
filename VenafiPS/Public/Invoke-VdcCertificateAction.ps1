@@ -155,7 +155,7 @@ function Invoke-VdcCertificateAction {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
     }

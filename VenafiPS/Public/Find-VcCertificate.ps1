@@ -223,7 +223,7 @@ function Find-VcCertificate {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     $apps = [System.Collections.Generic.List[object]]::new()
     $appOwners = [System.Collections.Generic.List[object]]::new()
@@ -260,10 +260,7 @@ function Find-VcCertificate {
                 'CN' { $null = $newFilter.Add(@('subjectCN', 'FIND', $CN)) }
                 'Issuer' { $null = $newFilter.Add(@('issuerCN', 'FIND', $Issuer)) }
                 'Application' {
-                    $appId = Get-VcData -InputObject $Application -Type 'Application'
-                    if ( -not $appId ) {
-                        throw "Application '$Application' does not exist"
-                    }
+                    $appId = Get-VcData -InputObject $Application -Type 'Application' -FailOnNotFound
                     $newFilter.Add(@('applicationIds', 'MATCH', $appId ))
                 }
                 'Tag' {
