@@ -100,6 +100,7 @@ function Test-VenafiSession {
                         throw 'TLSPDC token provided, but VDC_SERVER environment variable was not found'
                     }
                 }
+                break
             }
 
             Default {

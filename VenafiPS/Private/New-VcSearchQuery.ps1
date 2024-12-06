@@ -102,6 +102,7 @@ function New-VcSearchQuery {
                     switch ($thisItem[2].GetType().Name) {
                         'DateTime' {
                             $newOperand.Add('value', ($thisItem[2] | ConvertTo-UtcIso8601))
+                            break
                         }
 
                         'String' {
@@ -111,6 +112,7 @@ function New-VcSearchQuery {
                                 $newValue = $thisItem[2].ToUpper()
                             }
                             $newOperand.Add('value', $newValue)
+                            break
                         }
 
                         Default {
@@ -164,6 +166,7 @@ function New-VcSearchQuery {
                             'field'     = if ($thisOrderCased) { $thisOrderCased } else { $thisOrder }
                             'direction' = 'ASC'
                         }
+                        break
                     }
 
                     'HashTable' {
@@ -177,6 +180,7 @@ function New-VcSearchQuery {
                             'field'     = if ($thisOrderCased) { $thisOrderCased } else { $thisOrder.Keys[0] }
                             'direction' = $thisOrder.Values[0].ToUpper()
                         }
+                        break
                     }
 
                     Default {

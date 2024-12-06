@@ -81,14 +81,17 @@ function ConvertTo-VdcGuid {
                 else {
                     [Guid] $response.Guid
                 }
+                break
             }
 
             7 {
                 throw [System.UnauthorizedAccessException]::new($response.Error)
+                break
             }
 
             400 {
                 throw [System.Management.Automation.ItemNotFoundException]::new($response.Error)
+                break
             }
 
             Default {

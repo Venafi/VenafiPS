@@ -89,10 +89,10 @@ function Find-VcCertificateInstance {
         $newFilter.Add('AND')
 
         switch ($PSBoundParameters.Keys) {
-            'HostName' { $null = $newFilter.Add(@('hostname', 'FIND', $HostName)) }
-            'IpAddress' { $null = $newFilter.Add(@('ipAddress', 'EQ', $IpAddress.IPAddressToString)) }
-            'Port' { $null = $newFilter.Add(@('port', 'EQ', $Port.ToString())) }
-            'Status' { $null = $newFilter.Add(@('deploymentStatus', 'EQ', $Status.ToUpper())) }
+            'HostName' { $null = $newFilter.Add(@('hostname', 'FIND', $HostName)) ; break}
+            'IpAddress' { $null = $newFilter.Add(@('ipAddress', 'EQ', $IpAddress.IPAddressToString)) ; break}
+            'Port' { $null = $newFilter.Add(@('port', 'EQ', $Port.ToString())) ; break}
+            'Status' { $null = $newFilter.Add(@('deploymentStatus', 'EQ', $Status.ToUpper())) ; break}
         }
 
         if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }

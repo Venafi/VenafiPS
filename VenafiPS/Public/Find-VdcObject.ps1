@@ -188,6 +188,7 @@ function Find-VdcObject {
                         Value    = $Pattern
                     }
                 }
+                break
             }
 
             { $_ -in 'FindByPath', 'FindByPattern', 'FindByClass' } {
@@ -195,14 +196,17 @@ function Find-VdcObject {
                 if ( -not $PSBoundParameters.ContainsKey('Path') ) {
                     $params.Body.Recursive = 'true'
                 }
+                break
             }
 
             { $_ -in 'FindByPath', 'FindByPattern' } {
                 $params.UriLeaf = 'config/enumerate'
+                break
             }
 
             'FindByClass' {
                 $params.UriLeaf = 'config/FindObjectsOfClass'
+                break
             }
 
         }
