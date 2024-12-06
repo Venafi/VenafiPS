@@ -48,7 +48,7 @@ function New-VcCertificate {
 
     .PARAMETER ValidUntil
     Date at which the certificate becomes invalid.
-    The day and hour will be set and not to the minute level.
+    Days and hours are supported, not minutes.
 
     .PARAMETER PassThru
     Return the certificate request.
@@ -161,7 +161,7 @@ function New-VcCertificate {
                 }
             }
         )]
-        [DateTime] $ValidUntil,
+        [DateTime] $ValidUntil = (Get-Date).AddDays(90),
 
         [Parameter()]
         [switch] $PassThru,
@@ -185,14 +185,8 @@ function New-VcCertificate {
             throw "Issuing template $IssuingTemplate does not exist"
         }
 
-        if ( $ValidUntil ) {
-            $span = New-TimeSpan -Start (Get-Date) -End $ValidUntil
-            $validity = 'P{0}DT{1}H' -f $span.Days, $span.Hours
-        }
-        else {
-            # end date not provided, use default from template
-            $validity = $thisTemplate.product.validityPeriod
-        }
+        $span = New-TimeSpan -Start (Get-Date) -End $ValidUntil
+        $validity = 'P{0}DT{1}H' -f $span.Days, $span.Hours
 
         $params = @{
 
