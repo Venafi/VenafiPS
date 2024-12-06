@@ -79,6 +79,7 @@ function Export-VcCertificate {
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'PEM')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Converting to a secure string, its already plaintext')]
 
     param (
 
