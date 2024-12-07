@@ -13,7 +13,7 @@ function Initialize-PSSodium {
     # Check if the module is installed
     if ( -not (Get-Module PSSodium -ListAvailable) ) {
         if ( $Force ) {
-            Install-Module -Name PSSodium -Force
+            Install-Module -Name PSSodium -Force -RequiredVersion '0.4.2'
         }
         else {
             throw 'The PSSodium module is not installed.  Add -Force for the module to be automatically installed.'
