@@ -8,10 +8,9 @@ function Get-VcData {
 
     [CmdletBinding(DefaultParameterSetName = 'ID')]
     param (
-        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ID', Position = '0')]
-        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name', Position = '0')]
-        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Object', Position = '0')]
-        [AllowEmptyString()]
+        [parameter(ValueFromPipeline, ParameterSetName = 'ID', Position = '0')]
+        [parameter(ValueFromPipeline, ParameterSetName = 'Name', Position = '0')]
+        [parameter(ValueFromPipeline, ParameterSetName = 'Object', Position = '0')]
         [string] $InputObject,
 
         [parameter(Mandatory)]
@@ -35,7 +34,7 @@ function Get-VcData {
     )
 
     begin {
-
+        $idNameQuery = 'query MyQuery {{ {0} {{ nodes {{ id name }} }} }}'
     }
 
     process {
@@ -45,67 +44,47 @@ function Get-VcData {
             return $InputObject
         }
 
-        switch ($Type) {
-            'Application' {
-
-                # if ( -not $script:vcApplication ) {
-                # $script:vcApplication = Get-VcApplication -All | Sort-Object -Property name
-                # }
-
-                # $allObject = $script:vcApplication
-                # $thisObject = $script:vcApplication | Where-Object { $InputObject -in $_.name, $_.applicationId }
-
-                $allObject = Get-VcApplication -All | Sort-Object -Property name
-                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.applicationId }
+        if ( $PSCmdlet.ParameterSetName -in 'ID', 'Name' ) {
+            switch ($Type) {
+                { $_ -in 'Application', 'Team' } {
+                    $gqltype = '{0}s' -f $Type.ToLower()
+                    $allObject = (Invoke-VcGraphQL -Query ($idNameQuery -f $gqltype)).$gqltype.nodes
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.id }
+                    break
+                }
             }
+        }
+        else {
+            # object or first
+            switch ($Type) {
+                'Application' {
+                    $allObject = Get-VcApplication -All
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.applicationId }
+                    break
+                }
+                'Team' {
+                    $allObject = Get-VcTeam -All | Sort-Object -Property name
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.teamId }
+                    break
+                }
+            }
+        }
 
+        switch ($Type) {
             'VSatellite' {
-
-                # if ( -not $script:vcVSatellite ) {
-                #     $script:vcVSatellite = Get-VcSatellite -All | Sort-Object -Property name
-                # }
-
-                # $allObject = $script:vcVSatellite
-                # $thisObject = $script:vcVSatellite | Where-Object { $InputObject -in $_.name, $_.vsatelliteId }
-
                 $allObject = Get-VcSatellite -All | Where-Object { $_.edgeStatus -eq 'ACTIVE' } | Sort-Object -Property name
                 $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.vsatelliteId }
+                break
             }
 
             'IssuingTemplate' {
-                # if ( -not $script:vcIssuingTemplate ) {
-                #     $script:vcIssuingTemplate = Get-VcIssuingTemplate -All | Sort-Object -Property name
-                # }
-                # $allObject = $script:vcIssuingTemplate
-                # $thisObject = $script:vcIssuingTemplate | Where-Object { $InputObject -in $_.name, $_.issuingTemplateId }
-
                 $allObject = Get-VcIssuingTemplate -All | Sort-Object -Property name
                 $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.issuingTemplateId }
-            }
-
-            'Team' {
-                # if ( -not $script:vcTeam ) {
-                #     $script:vcTeam = Get-VcTeam -All | Sort-Object -Property name
-                # }
-                # $allObject = $script:vcTeam
-                # $thisObject = $script:vcTeam | Where-Object { $InputObject -in $_.name, $_.teamId }
-
-                $allObject = Get-VcTeam -All | Sort-Object -Property name
-                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.teamId }
+                break
             }
 
             { $_ -match 'Plugin$' } {
                 # for machine, ca, tpp, etc plugins
-
-                # if ( -not $script:vcMachineType ) {
-                #     $script:vcMachineType = Invoke-VenafiRestMethod -UriLeaf 'machinetypes' |
-                #     Select-Object -ExpandProperty machineTypes |
-                #     Select-Object -Property @{'n' = 'machineTypeId'; 'e' = { $_.Id } }, * -ExcludeProperty id |
-                #     Sort-Object -Property machineType
-                # }
-                # $allObject = $script:vcMachineType
-                # $thisObject = $script:vcMachineType | Where-Object { $InputObject -in $_.machineType, $_.machineTypeId }
-
                 $pluginType = $_.Replace('Plugin', '').ToUpper()
                 
                 $allObject = Invoke-VenafiRestMethod -UriLeaf "plugins?pluginType=$pluginType" |
@@ -113,14 +92,17 @@ function Get-VcData {
                 Select-Object -Property @{'n' = ('{0}Id' -f $Type); 'e' = { $_.Id } }, * -ExcludeProperty id
 
                 $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.('{0}Id' -f $Type) }
+                break
             }
 
             'Certificate' {
                 $thisObject = Find-VcCertificate -Name $InputObject
+                break
             }
 
             'Machine' {
                 $thisObject = Find-VcMachine -Name $InputObject
+                break
             }
 
             'Tag' {
@@ -159,40 +141,61 @@ function Get-VcData {
                 catch {
                     $thisObject = $null
                 }
+                break
             }
         }
 
-        if ( $FailOnMultiple -and @($thisObject).Count -gt 1 ) {
+        $returnObject = if ( $InputObject ) {
+            $thisObject
+        }
+        else {
+            $allObject
+        }
+        
+        if ( $FailOnMultiple -and @($returnObject).Count -gt 1 ) {
             throw "Multiple $Type found"
         }
 
-        if ( $FailOnNotFound -and -not $thisObject ) {
+        if ( $FailOnNotFound -and -not $returnObject ) {
             throw "'$InputObject' of type $Type not found"
         }
 
         switch ($PSCmdlet.ParameterSetName) {
             'ID' {
-                if ( $thisObject ) {
-                    $thisObject."$("$Type")id"
+                if ( $returnObject ) {
+                    if ( $returnObject.id ) {
+                        # for the new graphql queries
+                        $returnObject.id
+                    }
+                    else {
+                        $returnObject."$("$Type")id"
+                    }
                 }
                 else {
                     return $null
                 }
 
+                break
             }
 
             'Name' {
                 switch ($Type) {
                     'Tag' { $InputObject }
+                    { $_ -in 'Application', 'Team' } {
+                        $returnObject.name
+                    }
                 }
+                break
             }
 
             'Object' {
-                $thisObject
+                $returnObject
+                break
             }
 
             'First' {
-                $allObject | Select-Object -First 1
+                $returnObject | Select-Object -First 1
+                break
             }
         }
     }

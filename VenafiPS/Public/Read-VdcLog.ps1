@@ -135,7 +135,7 @@ function Read-VdcLog {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
             VenafiSession = $VenafiSession

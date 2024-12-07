@@ -42,7 +42,7 @@ function Get-VdcSystemStatus {
 
     Write-Warning "Possible bug with Venafi TLSPDC API causing this to fail"
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     $params = @{
 

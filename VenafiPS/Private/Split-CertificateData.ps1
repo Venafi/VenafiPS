@@ -1,4 +1,10 @@
 function Split-CertificateData {
+
+    <#
+    .SYNOPSIS
+        Convert PEM data into its cert, key, and chain parts
+    #>
+    
     [CmdletBinding()]
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]

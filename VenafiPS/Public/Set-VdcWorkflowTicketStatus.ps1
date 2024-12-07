@@ -101,7 +101,7 @@ function Set-VdcWorkflowTicketStatus {
             }
         }
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
     }
 
     process {

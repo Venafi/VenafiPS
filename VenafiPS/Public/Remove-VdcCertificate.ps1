@@ -84,7 +84,7 @@ function Remove-VdcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
         $allCerts = [System.Collections.Generic.List[string]]::new()
 
         # use in shouldprocess messaging below

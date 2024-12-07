@@ -47,7 +47,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
         $allObjects = [System.Collections.Generic.List[object]]::new()
     }
 

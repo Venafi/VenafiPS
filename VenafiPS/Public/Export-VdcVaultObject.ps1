@@ -58,7 +58,7 @@ function Export-VdcVaultObject {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
     }
 
     process {

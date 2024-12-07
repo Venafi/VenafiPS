@@ -85,7 +85,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
         $allKeys = Invoke-VenafiRestMethod -UriLeaf 'edgeencryptionkeys' | Select-Object -ExpandProperty encryptionKeys
     }
 

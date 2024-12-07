@@ -6,59 +6,39 @@ function Test-VenafiSession {
     .DESCRIPTION
     Validate authentication session from New-VenafiSession, a TLSPC key, or TLSPDC token.
 
-    .PARAMETER VenafiSession
-    Authentication for the function.
-    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token or TLSPC key can also provided.
-    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
-
-    .PARAMETER Platform
-    Platform, either TLSPDC or Vaas, to validate VenafiSession against.
-
-    .PARAMETER PassThru
-    Provide the determined platform from VenafiSession
-
-    .OUTPUTS
-    String - if PassThru provided
+    .PARAMETER InvocationInfo
+    InvocationInfo from calling function
 
     .EXAMPLE
-    Test-VenafiSession -VenafiSession $VenafiSession
-    Test a session
-
-    .EXAMPLE
-    Test-VenafiSession -VenafiSession $VenafiSession -PassThru
-    Test a session and return the platform type found
-
-    .EXAMPLE
-    Test-VenafiSession -VenafiSession $key
-    Test a TLSPC key
-
-    .EXAMPLE
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform TLSPDC
-    Test session ensuring the platform is TLSPDC
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [CmdletBinding()]
 
     param (
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [AllowNull()]
-        [Alias('Key', 'AccessToken')]
-        [psobject] $VenafiSession,
-
-        [Parameter(Mandatory, ParameterSetName = 'Platform')]
-        [string] $Platform
+        [Parameter(Mandatory, Position = 0)]
+        [System.Management.Automation.InvocationInfo] $InvocationInfo
     )
 
     process {
 
-        if ( (Get-PSCallStack).Count -gt 3 -and -not $VenafiSession ) {
+        if ( (Get-PSCallStack).Count -gt 3 -and -not $InvocationInfo.BoundParameters['VenafiSession'] ) {
             # nested function, no need to continue testing session since it was already done
             return
         }
 
-        if ( -not $VenafiSession ) {
+        $Platform = if ( $InvocationInfo.MyCommand -match '-Vc' ) {
+            'VC'
+        }
+        elseif ($InvocationInfo.MyCommand -match '-Vdc') {
+            'VDC'
+        }
+        
+        if ( $InvocationInfo.BoundParameters['VenafiSession'] ) {
+            $VenafiSession = $InvocationInfo.BoundParameters['VenafiSession']
+        }
+        else {
             if ( $env:VDC_TOKEN ) {
                 $VenafiSession = $env:VDC_TOKEN
             }
@@ -83,7 +63,7 @@ function Test-VenafiSession {
                 # make sure the auth type and url we have match
                 # this keeps folks from calling a vaas function with a token and vice versa
                 if ( $Platform -and $Platform -ne $VenafiSession.Platform ) {
-                    throw "This function is only accessible for $Platform"
+                    throw ('{0} is only accessible for {1}' -f $InvocationInfo.InvocationName, $Platform)
                 }
 
                 if ( $Platform -eq 'VDC' ) {
@@ -120,6 +100,7 @@ function Test-VenafiSession {
                         throw 'TLSPDC token provided, but VDC_SERVER environment variable was not found'
                     }
                 }
+                break
             }
 
             Default {
@@ -127,17 +108,7 @@ function Test-VenafiSession {
             }
         }
 
-        # at entry function call, not nested, set the temp variables
-        # if ( $script:VenafiSessionNested ) {
-        #     # append/update existing
-        #     ($script:VenafiSessionNested).$($VenafiSession.Platform) = $VenafiSession
-        # }
-        # else {
-        #     $script:VenafiSessionNested = @{
-        #         $($VenafiSession.Platform) = $VenafiSession
-        #     }
-        # }
         $script:VenafiSessionNested = $VenafiSession
-        $script:PlatformNested = $Platform
+        # $script:PlatformNested = $Platform
     }
 }

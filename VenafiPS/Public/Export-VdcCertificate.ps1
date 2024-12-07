@@ -110,6 +110,7 @@ function Export-VdcCertificate {
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Base64')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Converting to a secure string, its already plaintext')]
 
     param (
 
@@ -196,7 +197,7 @@ function Export-VdcCertificate {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 
@@ -212,7 +213,7 @@ function Export-VdcCertificate {
         $body.IncludePrivateKey = $PSBoundParameters.ContainsKey('PrivateKeyPassword')
 
         if ( $body.IncludePrivateKey ) {
-            $body.Password = $PrivateKeyPassword  | ConvertTo-PlaintextString
+            $body.Password = $PrivateKeyPassword | ConvertTo-PlaintextString
         }
 
         if ( $PSBoundParameters.ContainsKey('KeystorePassword') ) {
@@ -269,9 +270,20 @@ function Export-VdcCertificate {
                 }
             }
 
-            $out = $innerResponse | Select-Object Filename, Format, @{
+            $out = $innerResponse | Select-Object Filename, @{
                 n = 'Path'
                 e = { $thisBody.CertificateDN }
+            },
+            @{
+                'n' = 'Format'
+                'e' = {
+                    # standardize the format for pkcs8 and pkcs12 across tlspdc and tlspc
+                    switch ($thisBody.Format) {
+                        'Base64 (PKCS#8)' { 'PKCS8' }
+                        'PKCS #12' { 'PKCS12' }
+                        Default { $_ }
+                    }
+                }
             },
             @{
                 n = 'Error'
@@ -335,13 +347,22 @@ function Export-VdcCertificate {
                         $out | Add-Member @{'CertPem' = $splitData.CertPem }
 
                         if ( $thisBody.IncludePrivateKey ) {
-                            $out | Add-Member @{'KeyPem' = $splitData.KeyPem }
+                            $out | Add-Member @{
+                                'KeyPem' = $splitData.KeyPem
+                            }
                         }
 
                         if ( $thisBody.IncludeChain -and $splitData.ChainPem ) {
                             $out | Add-Member @{'ChainPem' = $splitData.ChainPem }
                         }
                     }
+
+                    if ( $thisBody.IncludePrivateKey ) {
+                        $out | Add-Member @{
+                            'PrivateKeyPasswordCredential' = (New-Object System.Management.Automation.PSCredential('unused', ($thisBody.Password | ConvertTo-SecureString -AsPlainText -Force)))
+                        }
+                    }
+
                 }
             }
 

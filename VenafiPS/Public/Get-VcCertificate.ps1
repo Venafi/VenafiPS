@@ -57,7 +57,7 @@
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $appOwners = [System.Collections.Generic.List[object]]::new()
 

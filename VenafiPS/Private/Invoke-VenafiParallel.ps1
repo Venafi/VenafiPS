@@ -80,7 +80,10 @@ function Invoke-VenafiParallel {
             }
         }
 
-        if ( $script:VenafiSession ) {
+        if ( $VenafiSession ) {
+            # session provided directly, use it
+        }
+        elseif ( $script:VenafiSession ) {
             $VenafiSession = $script:VenafiSession
         }
         elseif ($script:VenafiSessionNested) {

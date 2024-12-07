@@ -75,7 +75,7 @@ function Find-VdcIdentity {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $identityType = 0
         # determine settings to use

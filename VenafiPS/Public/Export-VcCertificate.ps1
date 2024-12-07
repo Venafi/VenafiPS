@@ -25,13 +25,16 @@ function Export-VcCertificate {
     In the case of PKCS12, the file will be saved to the root of the folder.
 
     .PARAMETER PKCS12
-    Export the certificate and private key in PKCS12 format.
+    Export the certificate and private key in PKCS12 format.  The default is PEM.
     Requires PowerShell v7.1+.
 
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 100.
     Setting the value to 1 will disable multithreading.
     On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
+
+    .PARAMETER Force
+    Force installation of PSSodium if not already installed
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -70,12 +73,13 @@ function Export-VcCertificate {
     Get certificate data with the certificate chain included.
 
     .NOTES
-    This function requires the use of sodium encryption.
+    This function requires PSSodium.  Install it from the PSGallery or use -Force to automatically install.
     PS v7.1+ is required.
     On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'PEM')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Converting to a secure string, its already plaintext')]
 
     param (
 
@@ -105,7 +109,7 @@ function Export-VcCertificate {
         [switch] $IncludeChain,
 
         [Parameter(ParameterSetName = 'PEM')]
-        [Parameter(ParameterSetName = 'PKCS12', Mandatory)]
+        [Parameter(ParameterSetName = 'PKCS12')]
         [ValidateNotNullOrEmpty()]
         [ValidateScript( {
                 if (Test-Path $_ -PathType Container) {
@@ -121,7 +125,7 @@ function Export-VcCertificate {
         [ValidateScript(
             {
                 if ($PSVersionTable.PSVersion -lt [version]'7.1') {
-                    throw 'Exporting in PKCS#12 foramt is only supported on PowerShell v7.1+'
+                    throw 'Exporting in PKCS#12 format is only supported on PowerShell v7.1+'
                 }
                 $true
             }
@@ -132,13 +136,18 @@ function Export-VcCertificate {
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [switch] $Force,
+
+        [Parameter()]
         [psobject] $VenafiSession
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
+        Initialize-PSSodium -Force:$Force
 
         $allCerts = [System.Collections.Generic.List[string]]::new()
+        $pset = $PSCmdlet.ParameterSetName
 
         # set up the scriptblocks to be executed via invoke-venafiparallel
         if ( $PrivateKeyPassword ) {
@@ -156,7 +165,7 @@ function Export-VcCertificate {
                     UriRoot      = 'outagedetection/v1'
                     UriLeaf      = 'certificates/{0}/keystore' -f $id
                     Body         = @{
-                        'exportFormat'                = 'PEM'
+                        'exportFormat'                = $using:pset
                         'encryptedKeystorePassphrase' = ''
                         'certificateLabel'            = ''
                     }
@@ -166,6 +175,7 @@ function Export-VcCertificate {
                 $out = [pscustomobject] @{
                     certificateId = $id
                     error         = ''
+                    format        = $using:pset
                 }
 
                 $thisCert = Get-VcCertificate -id $id
@@ -197,6 +207,25 @@ function Export-VcCertificate {
                     $out.error = 'No certificate data received'
                     return $out
                 }
+
+                # pkcs12 is a byte array of a pfx file so its easy to handle
+                if ( $using:pset -eq 'PKCS12' ) {
+                    if ( $using:OutPath ) {
+                        $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}.pfx' -f $thisCert.certificateName, $thisCert.certificateId)
+                        [IO.File]::WriteAllBytes($dest, $innerResponse.Content)
+                        $out | Add-Member @{'outPath' = $dest }
+                    }
+                    else {
+                        # return contents
+                        $out | Add-Member @{ 'certificateData' = [System.Convert]::ToBase64String($innerResponse.Content) }
+                        if ( $pkPassString ) {
+                            $out | Add-Member @{ 'privateKeyPasswordCredential' = (New-Object System.Management.Automation.PSCredential('unused', ($pkPassString | ConvertTo-SecureString -AsPlainText -Force))) }
+                        }
+                    }
+                    return $out
+                }
+                
+                # pem format returns a byte array of a zip file so lots more processing to do
 
                 $zipFile = '{0}.zip' -f (New-TemporaryFile)
                 $unzipPath = Join-Path -Path (Split-Path -Path $zipFile -Parent) -ChildPath $id
@@ -331,8 +360,6 @@ function Export-VcCertificate {
                 $out
             }
         }
-
-        Initialize-PSSodium
     }
 
     process {
@@ -340,6 +367,10 @@ function Export-VcCertificate {
     }
 
     end {
+        if ( $allCerts.Count -eq 0 ) {
+            return
+        }
+
         $invokeParams = @{
             InputObject   = $allCerts
             ScriptBlock   = $sb

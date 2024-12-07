@@ -77,9 +77,11 @@ function New-VcMachineCommonKeystore {
     Setting the value to 1 will disable multithreading.
     On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
 
-
     .PARAMETER PassThru
     Return newly created object
+
+    .PARAMETER Force
+    Force installation of PSSodium if not already installed
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -182,17 +184,20 @@ function New-VcMachineCommonKeystore {
         [switch] $PassThru,
 
         [Parameter()]
+        [switch] $Force,
+
+        [Parameter()]
         [psobject] $VenafiSession
     )
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $allMachines = [System.Collections.Generic.List[pscustomobject]]::new()
         $machineTypeId = Get-VcData -InputObject 'Common KeyStore (PEM, JKS, PKCS#12)' -Type 'MachinePlugin'
 
-        Initialize-PSSodium
+        Initialize-PSSodium -Force:$Force
     }
 
     process {

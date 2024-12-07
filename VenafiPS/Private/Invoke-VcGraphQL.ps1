@@ -1,46 +1,11 @@
-function Invoke-VenafiRestMethod {
+function Invoke-VcGraphQL {
     <#
     .SYNOPSIS
-    Ability to execute REST API calls which don't exist in a dedicated function yet
-
-    .DESCRIPTION
-    Ability to execute REST API calls which don't exist in a dedicated function yet
-
-    .PARAMETER VenafiSession
-    VenafiSession object from New-VenafiSession.
-    For typical calls to New-VenafiSession, the object will be stored as a session object named $VenafiSession.
-    Otherwise, if -PassThru was used, provide the resulting object.
-
-    .PARAMETER Method
-    API method, either get, post, patch, put or delete.
-
-    .PARAMETER UriLeaf
-    Path to the api endpoint excluding the base url and site, eg. certificates/import
-
-    .PARAMETER Header
-    Optional additional headers.  The authorization header will be included automatically.
-
-    .PARAMETER Body
-    Optional body to pass to the endpoint
-
-    .INPUTS
-    None
-
-    .OUTPUTS
-    PSCustomObject
-
-    .EXAMPLE
-    Invoke-VenafiRestMethod -Method Delete -UriLeaf 'Discovery/{1345311e-83c5-4945-9b4b-1da0a17c45c6}'
-    Api call
-
-    .EXAMPLE
-    Invoke-VenafiRestMethod -Method Post -UriLeaf 'Certificates/Revoke' -Body @{'CertificateDN'='\ved\policy\mycert.com'}
-    Api call with optional payload
+    Execute a GraphQL query against the Venafi Cloud API
 
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Session')]
-    [Alias('Invoke-TppRestMethod')]
 
     param (
         [Parameter(ParameterSetName = 'Session')]
@@ -61,22 +26,17 @@ function Invoke-VenafiRestMethod {
         [X509Certificate] $Certificate,
 
         [Parameter()]
-        [ValidateSet("Get", "Post", "Patch", "Put", "Delete", 'Head')]
-        [String] $Method = 'Get',
-
-        [Parameter()]
-        [String] $UriRoot = 'vedsdk',
-
-        # [Parameter(Mandatory)]
-        # [ValidateNotNullOrEmpty()]
-        [Parameter()]
-        [String] $UriLeaf,
+        [ValidateSet('Post')]
+        [String] $Method = 'Post',
 
         [Parameter()]
         [hashtable] $Header,
 
+        [Parameter(Mandatory)]
+        [string] $Query,
+
         [Parameter()]
-        [Hashtable] $Body,
+        [hashtable] $Variables,
 
         [Parameter()]
         [switch] $FullResponse,
@@ -98,12 +58,7 @@ function Invoke-VenafiRestMethod {
 
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
 
-        # if ( -not $VenafiSession ) {
-        if ( $env:VDC_TOKEN ) {
-            $VenafiSession = $env:VDC_TOKEN
-            Write-Verbose 'Using TLSPDC token environment variable'
-        }
-        elseif ( $env:VC_KEY ) {
+        if ( $env:VC_KEY ) {
             $VenafiSession = $env:VC_KEY
             Write-Verbose 'Using TLSPC key environment variable'
         }
@@ -121,19 +76,11 @@ function Invoke-VenafiRestMethod {
         else {
             throw 'Please run New-VenafiSession or provide a TLSPC key or TLSPDC token.'
         }
-        # }
 
         switch ($VenafiSession.GetType().Name) {
             'PSCustomObject' {
                 $Server = $VenafiSession.Server
-                $platform = $VenafiSession.Platform
-                if ( $VenafiSession.Platform -eq 'VC' ) {
-                    $auth = $VenafiSession.Key.GetNetworkCredential().password
-                }
-                else {
-                    # TLSPDC
-                    $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
-                }
+                $auth = $VenafiSession.Key.GetNetworkCredential().password
                 $SkipCertificateCheck = $VenafiSession.SkipCertificateCheck
                 $params.TimeoutSec = $VenafiSession.TimeoutSec
                 break
@@ -142,30 +89,15 @@ function Invoke-VenafiRestMethod {
             'String' {
                 $auth = $VenafiSession
 
-                if ( Test-IsGuid($VenafiSession) ) {
-                    if ( $env:VC_SERVER ) {
-                        $Server = $env:VC_SERVER
-                    }
-                    else {
-                        # default to US region
-                        $Server = ($script:VcRegions).'us'
-                    }
-                    if ( $Server -notlike 'https://*') {
-                        $Server = 'https://{0}' -f $Server
-                    }
-                    $platform = 'VC'
+                if ( $env:VC_SERVER ) {
+                    $Server = $env:VC_SERVER
                 }
                 else {
-                    # TLSPDC access token
-                    # get server from environment variable
-                    if ( -not $env:VDC_SERVER ) {
-                        throw 'VDC_SERVER environment variable was not found'
-                    }
-                    $Server = $env:VDC_SERVER
-                    if ( $Server -notlike 'https://*') {
-                        $Server = 'https://{0}' -f $Server
-                    }
-                    $platform = 'VDC'
+                    # default to US region
+                    $Server = ($script:VcRegions).'us'
+                }
+                if ( $Server -notlike 'https://*') {
+                    $Server = 'https://{0}' -f $Server
                 }
             }
 
@@ -174,32 +106,12 @@ function Invoke-VenafiRestMethod {
             }
         }
 
-        # set auth
-        switch ($platform) {
-            'VC' {
-                $allHeaders = @{
-                    "tppl-api-key" = $auth
-                }
-                if ( -not $PSBoundParameters.ContainsKey('UriRoot') ) {
-                    $UriRoot = 'v1'
-                }
-            }
-
-            'VDC' {
-                $allHeaders = @{
-                    'Authorization' = 'Bearer {0}' -f $auth
-                }
-            }
-
-            Default {}
+        $allHeaders = @{
+            "tppl-api-key" = $auth
         }
     }
 
-    if ( $UriRoot -eq 'graphql' ) {
-        $params.Uri = "$Server/graphql"
-    } else {
-        $params.Uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
-    }
+    $params.Uri = "$Server/graphql"
 
     # append any headers passed in
     if ( $Header ) { $allHeaders += $Header }
@@ -215,28 +127,12 @@ function Invoke-VenafiRestMethod {
         $params.Add('UseDefaultCredentials', $true)
     }
 
-    if ( $Body ) {
-        switch ($Method.ToLower()) {
-            'head' {
-                # a head method requires the params be provided as a query string, not body
-                # invoke-webrequest does not do this so we have to build the string manually
-                $newUri = New-HttpQueryString -Uri $params.Uri -QueryParameter $Body
-                $params.Uri = $newUri
-                $params.Body = $null
-            }
-
-            'get' {
-                $params.Body = $Body
-            }
-
-            Default {
-                $preJsonBody = $Body
-                $params.Body = (ConvertTo-Json $Body -Depth 20 -Compress)
-                # for special characters, we need to set the content type to utf-8
-                $params.ContentType = "application/json; charset=utf-8"
-            }
-        }
+    $body = @{'query' = $Query }
+    if ( $Variables ) {
+        $body['variables'] = $Variables
     }
+    $params.Body = (ConvertTo-Json $body -Depth 20 -Compress)
+    $params.ContentType = "application/json; charset=utf-8"
 
     if ( $preJsonBody ) {
         $paramsToWrite = $params.Clone()
@@ -294,21 +190,21 @@ function Invoke-VenafiRestMethod {
                 $permMsg = ''
 
                 # get scope details for tpp
-                if ( $platform -ne 'VC' ) {
-                    $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
-                    $callingFunctionScope = ($script:functionConfig).$callingFunction.TppTokenScope
-                    if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of '$callingFunctionScope'." }
+                # if ( $platform -ne 'VC' ) {
+                $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
+                $callingFunctionScope = ($script:functionConfig).$callingFunction.TppTokenScope
+                if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of '$callingFunctionScope'." }
 
-                    $rejectedScope = Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ([^.]+)'
+                $rejectedScope = Select-String -InputObject $originalError.ErrorDetails.Message -Pattern 'Grant rejected scope ([^.]+)'
 
-                    if ( $rejectedScope.Matches.Groups.Count -gt 1 ) {
-                        $permMsg += ("  The current scope of {0} is insufficient." -f $rejectedScope.Matches.Groups[1].Value.Replace('\u0027', "'"))
-                    }
-                    $permMsg += '  Call New-VenafiSession with the correct scope.'
+                if ( $rejectedScope.Matches.Groups.Count -gt 1 ) {
+                    $permMsg += ("  The current scope of {0} is insufficient." -f $rejectedScope.Matches.Groups[1].Value.Replace('\u0027', "'"))
                 }
-                else {
-                    $permMsg = $originalError.ErrorDetails.Message
-                }
+                $permMsg += '  Call New-VenafiSession with the correct scope.'
+                # }
+                # else {
+                #     $permMsg = $originalError.ErrorDetails.Message
+                # }
 
 
                 throw $permMsg
@@ -350,7 +246,7 @@ function Invoke-VenafiRestMethod {
     else {
         if ( $response.Content ) {
             try {
-                $response.Content | ConvertFrom-Json
+                $response.Content | ConvertFrom-Json | Select-Object -ExpandProperty 'data'
             }
             catch {
                 throw ('Invalid JSON response {0}' -f $response.Content)
