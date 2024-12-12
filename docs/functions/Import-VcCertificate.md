@@ -7,19 +7,26 @@
 
 ### ByFile (Default)
 ```
-Import-VcCertificate -Path <String> -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>]
+Import-VcCertificate -FilePath <String> [-ThrottleLimit <Int32>] [-Force] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### Format
+```
+Import-VcCertificate -Data <String> -Format <String> -PrivateKeyPasswordCredential <PSCredential>
+ [-ThrottleLimit <Int32>] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
+```
+
+### PKCS8
+```
+Import-VcCertificate -Data <String> [-PKCS8] -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>] [-Force]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### Pkcs8
+### PKCS12
 ```
-Import-VcCertificate -Data <String> [-Pkcs8] -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
-```
-
-### Pkcs12
-```
-Import-VcCertificate -Data <String> [-Pkcs12] -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>]
+Import-VcCertificate -Data <String> [-PKCS12] -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>] [-Force]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
@@ -42,8 +49,8 @@ PS C:\> {{ Add example code here }}
 
 ```yaml
 Type: String
-Parameter Sets: Pkcs8, Pkcs12
-Aliases: CertificateData
+Parameter Sets: Format, PKCS8, PKCS12
+Aliases: certificateData
 
 Required: True
 Position: Named
@@ -52,8 +59,8 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -Path
-{{ Fill Path Description }}
+### -FilePath
+{{ Fill FilePath Description }}
 
 ```yaml
 Type: String
@@ -67,12 +74,43 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -Pkcs12
-{{ Fill Pkcs12 Description }}
+### -Force
+{{ Fill Force Description }}
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Pkcs12
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Format
+{{ Fill Format Description }}
+
+```yaml
+Type: String
+Parameter Sets: Format
+Aliases:
+Accepted values: PKCS8, PKCS12
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -PKCS12
+{{ Fill PKCS12 Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: PKCS12
 Aliases:
 
 Required: True
@@ -82,12 +120,12 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Pkcs8
-{{ Fill Pkcs8 Description }}
+### -PKCS8
+{{ Fill PKCS8 Description }}
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Pkcs8
+Parameter Sets: PKCS8
 Aliases:
 
 Required: True
@@ -102,13 +140,28 @@ Accept wildcard characters: False
 
 ```yaml
 Type: PSObject
-Parameter Sets: (All)
+Parameter Sets: PKCS8, PKCS12
 Aliases:
 
 Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -PrivateKeyPasswordCredential
+{{ Fill PrivateKeyPasswordCredential Description }}
+
+```yaml
+Type: PSCredential
+Parameter Sets: Format
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -163,6 +216,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.String
+### System.Management.Automation.PSCredential
 ## OUTPUTS
 
 ### System.Object

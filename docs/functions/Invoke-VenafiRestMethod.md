@@ -7,7 +7,7 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 
 ### Session (Default)
 ```
-Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot <String>] -UriLeaf <String>
+Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot <String>] [-UriLeaf <String>]
  [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
@@ -15,7 +15,7 @@ Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot
 ### URL
 ```
 Invoke-VenafiRestMethod -Server <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
- [-Method <String>] [-UriRoot <String>] -UriLeaf <String> [-Header <Hashtable>] [-Body <Hashtable>]
+ [-Method <String>] [-UriRoot <String>] [-UriLeaf <String>] [-Header <Hashtable>] [-Body <Hashtable>]
  [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
@@ -140,7 +140,7 @@ Type: String
 Parameter Sets: (All)
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False

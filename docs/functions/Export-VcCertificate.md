@@ -8,13 +8,15 @@ Export certificate data from TLSPC
 ### PEM (Default)
 ```
 Export-VcCertificate -ID <String> [-PrivateKeyPassword <PSObject>] [-IncludeChain] [-OutPath <String>]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-ThrottleLimit <Int32>] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ### PKCS12
 ```
-Export-VcCertificate -ID <String> -PrivateKeyPassword <PSObject> -OutPath <String> [-PKCS12]
- [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Export-VcCertificate -ID <String> -PrivateKeyPassword <PSObject> [-OutPath <String>] [-PKCS12]
+ [-ThrottleLimit <Int32>] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -130,7 +132,7 @@ In the case of PKCS12, the file will be saved to the root of the folder.
 
 ```yaml
 Type: String
-Parameter Sets: PEM
+Parameter Sets: (All)
 Aliases:
 
 Required: False
@@ -140,20 +142,9 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-```yaml
-Type: String
-Parameter Sets: PKCS12
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -PKCS12
-Export the certificate and private key in PKCS12 format.
+Export the certificate and private key in PKCS12 format. 
+The default is PEM.
 Requires PowerShell v7.1+.
 
 ```yaml
@@ -182,6 +173,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: 100
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Force installation of PSSodium if not already installed
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -228,7 +234,8 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### PSCustomObject
 ## NOTES
-This function requires the use of sodium encryption.
+This function requires PSSodium. 
+Install it from the PSGallery or use -Force to automatically install.
 PS v7.1+ is required.
 On Windows, the latest Visual C++ redist must be installed. 
 See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.

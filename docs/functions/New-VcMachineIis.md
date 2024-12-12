@@ -9,7 +9,7 @@
 ```
 New-VcMachineIis -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
  -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-Port <Int32>] [-UseTls]
- [-SkipCertificateCheck] [-NoVerify] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
+ [-SkipCertificateCheck] [-NoVerify] [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
@@ -18,7 +18,7 @@ New-VcMachineIis -Name <String> [-VSatellite <String>] -Owner <String> [-Hostnam
 New-VcMachineIis -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
  -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-Port <Int32>] [-UseTls]
  [-SkipCertificateCheck] -DomainName <String> -KeyDistributionCenter <String> -SPN <String> [-NoVerify]
- [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -63,6 +63,21 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -Force
+{{ Fill Force Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

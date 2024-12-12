@@ -260,7 +260,7 @@ Accept wildcard characters: False
 
 ### -ValidUntil
 Date at which the certificate becomes invalid.
-Days and hours are supported, not minutes.
+The day and hour will be set and not to the minute level.
 
 ```yaml
 Type: DateTime
@@ -269,7 +269,7 @@ Aliases:
 
 Required: False
 Position: Named
-Default value: (Get-Date).AddDays(90)
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

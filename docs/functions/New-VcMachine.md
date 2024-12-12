@@ -9,14 +9,14 @@
 ```
 New-VcMachine -Name <String> -MachineType <String> -VSatellite <String> -Owner <String> [-Tag <String[]>]
  [-Status <String>] -ConnectionDetail <Hashtable> -DekID <String> [-NoVerify] [-ThrottleLimit <Int32>]
- [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### BasicMachine
 ```
 New-VcMachine -Name <String> -MachineType <String> [-VSatellite <String>] -Owner <String> [-Tag <String[]>]
  [-Status <String>] [-Hostname <String>] -Credential <PSCredential> [-Port <String>] [-NoVerify]
- [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -76,6 +76,21 @@ Required: True
 Position: Named
 Default value: None
 Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -Force
+{{ Fill Force Description }}
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

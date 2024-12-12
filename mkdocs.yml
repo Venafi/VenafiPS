@@ -27,7 +27,6 @@ nav:
   - Home: index.md
   - Changelog: changelog.md
   - Functions:
-    - Add-VcCertificateAssociation: functions/Add-VcCertificateAssociation.md
     - Add-VcTeamMember: functions/Add-VcTeamMember.md
     - Add-VcTeamOwner: functions/Add-VcTeamOwner.md
     - Add-VdcAdaptableHash: functions/Add-VdcAdaptableHash.md
@@ -131,6 +130,7 @@ nav:
     - Search-VdcHistory: functions/Search-VdcHistory.md
     - Set-VcApplication: functions/Set-VcApplication.md
     - Set-VcCertificate: functions/Set-VcCertificate.md
+    - Set-VcCertificateRequest: functions/Set-VcCertificateRequest.md
     - Set-VcConnector: functions/Set-VcConnector.md
     - Set-VcTeam: functions/Set-VcTeam.md
     - Set-VdcAttribute: functions/Set-VdcAttribute.md
