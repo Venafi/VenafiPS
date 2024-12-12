@@ -172,7 +172,7 @@ function New-VcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         # validation
         $thisApp = Get-VcApplication -Application $Application

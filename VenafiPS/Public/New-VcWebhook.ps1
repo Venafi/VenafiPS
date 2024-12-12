@@ -104,7 +104,7 @@ function New-VcWebhook {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         # validate inputs
         $at = Invoke-VenafiRestMethod -UriLeaf 'activitytypes'

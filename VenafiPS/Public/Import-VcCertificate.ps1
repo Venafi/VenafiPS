@@ -6,24 +6,35 @@ function Import-VcCertificate {
     .DESCRIPTION
     Import one or more certificates and their private keys.  Currently PKCS #8 and PKCS #12 (.pfx or .p12) are supported.
 
-    .PARAMETER Path
+    .PARAMETER FilePath
     Path to a certificate file.  Provide either this or -Data.
 
     .PARAMETER Data
     Contents of a certificate/key to import.  Provide either this or -Path.
 
-    .PARAMETER Pkcs8
+    .PARAMETER PKCS8
     Provided -Data is in PKCS #8 format
 
-    .PARAMETER Pkcs12
+    .PARAMETER PKCS12
     Provided -Data is in PKCS #12 format
+
+    .PARAMETER Format
+    Specify the format provided in -Data.
+    This will replace -PKCS8 and -PKCS12 in a future release.
 
     .PARAMETER PrivateKeyPassword
     Password the private key was encrypted with
 
+    .PARAMETER PrivateKeyPasswordCredential
+    Password the private key was encrypted with, in PSCredential type.
+    This is used with -Format to pipe from Export-VcCertificate.
+
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 10.  Applicable to PS v7+ only.
     100 keystores will be imported at a time so it's less important to have a very high throttle limit.
+
+    .PARAMETER Force
+    Force installation of PSSodium if not already installed
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -36,21 +47,24 @@ function Import-VcCertificate {
     Import a certificate/key
 
     .EXAMPLE
-    $p12 = Export-VdcCertificate -Path '\ved\policy\my.cert.com' -Pkcs12 -PrivateKeyPassword 'myPassw0rd!'
-    $p12 | Import-VcCertificate -Pkcs12 -PrivateKeyPassword 'myPassw0rd!' -VenafiSession $vaas_key
+    Export-VdcCertificate -Path '\ved\policy\my.cert.com' -Pkcs12 -PrivateKeyPassword 'myPassw0rd!' | Import-VcCertificate -VenafiSession $vaas_key
 
     Export from TLSPDC and import into TLSPC.
     As $VenafiSession can only point to one platform at a time, in this case TLSPDC, the session needs to be overridden for the import.
 
     .EXAMPLE
-    $p12 = Find-VdcCertificate -Path '\ved\policy\certs' -Recursive | Export-VdcCertificate -Pkcs12 -PrivateKeyPassword 'myPassw0rd!'
-    $p12 | Import-VcCertificate -Pkcs12 -PrivateKeyPassword 'myPassw0rd!' -VenafiSession $vaas_key
+    Find-VdcCertificate -Path '\ved\policy\certs' -Recursive | Export-VdcCertificate -Pkcs12 -PrivateKeyPassword 'myPassw0rd!' | Import-VcCertificate -VenafiSession $vaas_key
 
     Bulk export from TLSPDC and import into TLSPC.
     As $VenafiSession can only point to one platform at a time, in this case TLSPDC, the session needs to be overridden for the import.
 
+    .EXAMPLE
+    Find-VcCertificate | Export-VcCertificate -PrivateKeyPassword 'secretPassword#' -PKCS12 | Import-VcCertificate -VenafiSession $tenant2_key
+
+    Export from 1 TLSPC tenant and import to another
+
     .INPUTS
-    Path, Data
+    FilePath, Data
 
     .LINK
     https://developer.venafi.com/tlsprotectcloud/reference/certificates_import
@@ -80,22 +94,28 @@ function Import-VcCertificate {
                 $true
             })]
         [Alias('FullName', 'CertificatePath')]
-        [String] $Path,
+        [String] $FilePath,
 
-        [Parameter(Mandatory, ParameterSetName = 'Pkcs12', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName = 'Pkcs8', ValueFromPipelineByPropertyName)]
-        [AllowNull()]
-        [AllowEmptyString()]
-        [Alias('CertificateData')]
+        [Parameter(Mandatory, ParameterSetName = 'PKCS12', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'PKCS8', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Format', ValueFromPipelineByPropertyName)]
+        # [AllowNull()]
+        # [AllowEmptyString()]
+        [Alias('certificateData')]
         [String] $Data,
 
-        [Parameter(Mandatory, ParameterSetName = 'Pkcs12')]
-        [switch] $Pkcs12,
+        [Parameter(Mandatory, ParameterSetName = 'PKCS8')]
+        [switch] $PKCS8,
 
-        [Parameter(Mandatory, ParameterSetName = 'Pkcs8')]
-        [switch] $Pkcs8,
+        [Parameter(Mandatory, ParameterSetName = 'PKCS12')]
+        [switch] $PKCS12,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'Format', ValueFromPipelineByPropertyName)]
+        [ValidateSet('PKCS8', 'PKCS12')]
+        [String] $Format,
+
+        [Parameter(Mandatory, ParameterSetName = 'PKCS8')]
+        [Parameter(Mandatory, ParameterSetName = 'PKCS12')]
         [ValidateScript(
             {
                 if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
@@ -108,8 +128,14 @@ function Import-VcCertificate {
         )]
         [psobject] $PrivateKeyPassword,
 
+        [Parameter(Mandatory, ParameterSetName = 'Format', ValueFromPipelineByPropertyName)]
+        [pscredential] $PrivateKeyPasswordCredential,
+        
         [Parameter()]
         [int32] $ThrottleLimit = 10,
+
+        [Parameter()]
+        [switch] $Force,
 
         [Parameter()]
         [psobject] $VenafiSession
@@ -117,23 +143,25 @@ function Import-VcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
-        Initialize-PSSodium
+        Initialize-PSSodium -Force:$Force
 
         $vSat = Get-VcData -Type 'VSatellite' -First
         if ( -not $vSat ) { throw 'No active VSatellites were found' }
-
-        $pkPassString = $PrivateKeyPassword | ConvertTo-PlaintextString
+        
+        if ( $PrivateKeyPassword ) {
+            $pkPassString = ConvertTo-PlaintextString -InputObject $PrivateKeyPassword
+        }
 
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
-
+        
     }
-
+    
     process {
 
-        if ( $PSBoundParameters.ContainsKey('Path') ) {
-            $thisCertPath = Resolve-Path -Path $Path
+        if ( $PSCmdlet.ParameterSetName -eq 'ByFile' ) {
+            $thisCertPath = Resolve-Path -Path $FilePath
 
             switch ([System.IO.Path]::GetExtension($thisCertPath)) {
                 { $_ -in '.pfx', '.p12' } { $format = 'Pkcs12' }
@@ -157,15 +185,24 @@ function Import-VcCertificate {
             if ( $Data ) {
 
                 $addMe = @{
-                    'Format' = $PSCmdlet.ParameterSetName
+                    'Format' = ''
                 }
 
-                switch ($PSCmdlet.ParameterSetName) {
-                    'Pkcs12' {
+                if ( $Format ) {
+                    $addMe.Format = $Format
+                    # privatekeypasswordcredential might have been provided via pipeline so this must be in process block
+                    $pkPassString = ConvertTo-PlaintextString -InputObject $PrivateKeyPasswordCredential
+                }
+                else {
+                    $addMe.Format = $PSCmdlet.ParameterSetName
+                }
+
+                switch ($addMe.Format) {
+                    'PKCS12' {
                         $addMe.'CertData' = $Data -replace "`r|`n|-----BEGIN CERTIFICATE-----|-----END CERTIFICATE-----"
                     }
 
-                    'Pkcs8' {
+                    'PKCS8' {
                         $splitData = Split-CertificateData -CertificateData $Data
                         $addMe.CertPem = $splitData.CertPem
                         if ( $splitData.KeyPem ) { $addMe.KeyPem = $splitData.KeyPem }
@@ -179,6 +216,8 @@ function Import-VcCertificate {
     }
 
     end {
+        if ( $allCerts.Count -eq 0 ) { return }
+
         $importList = [System.Collections.Generic.List[hashtable]]::new()
 
         $dekEncryptedPassword = ConvertTo-SodiumEncryptedString -Text $pkPassString -PublicKey $vSat.encryptionKey
@@ -200,14 +239,14 @@ function Import-VcCertificate {
 
             $keystores = foreach ($thisCert in $allCerts[$i..($i + 99)]) {
                 switch ($allCerts[$i].Format) {
-                    'Pkcs12' {
+                    'PKCS12' {
                         @{
                             'pkcs12Keystore'       = $thisCert.CertData
                             'dekEncryptedPassword' = $dekEncryptedPassword
                         }
                     }
 
-                    'Pkcs8' {
+                    'PKCS8' {
                         $thisKeystore = @{
                             'certificate'          = $thisCert.CertPem
                             'dekEncryptedPassword' = $dekEncryptedPassword
@@ -228,7 +267,7 @@ function Import-VcCertificate {
             $requestResponse = Invoke-VenafiRestMethod @params
             do {
                 Write-Verbose "checking job status for id $($requestResponse.id)"
-                $jobResponse = invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificates/imports/$($requestResponse.id)"
+                $jobResponse = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificates/imports/$($requestResponse.id)"
                 Start-Sleep 2
             } until (
                 $jobResponse.status -in 'COMPLETED', 'FAILED'
@@ -248,6 +287,7 @@ function Import-VcCertificate {
             ScriptBlock   = $sb
             ThrottleLimit = $ThrottleLimit
             ProgressTitle = 'Importing certificates'
+            VenafiSession = $VenafiSession
         }
         $invokeResponse = Invoke-VenafiParallel @invokeParams
 

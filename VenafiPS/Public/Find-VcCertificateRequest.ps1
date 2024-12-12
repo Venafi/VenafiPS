@@ -18,7 +18,7 @@ function Find-VcCertificateRequest {
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
     .PARAMETER Status
-    Request status, either ISSUED or FAILED
+    Request status, one of 'NEW', 'PENDING', 'PENDING_APPROVAL', 'PENDING_FINAL_APPROVAL', 'REJECTED_APPROVAL', 'REQUESTED', 'ISSUED', 'REJECTED', 'CANCELLED', 'REVOKED', 'FAILED', 'DELETED'
 
     .PARAMETER KeyLength
     Certificate key length
@@ -40,7 +40,7 @@ function Find-VcCertificateRequest {
     param (
 
         [Parameter(ParameterSetName = 'All')]
-        [ValidateSet('ISSUED', 'FAILED')]
+        [ValidateSet('NEW', 'PENDING', 'PENDING_APPROVAL', 'PENDING_FINAL_APPROVAL', 'REJECTED_APPROVAL', 'REQUESTED', 'ISSUED', 'REJECTED', 'CANCELLED', 'REVOKED', 'FAILED', 'DELETED')]
         [string] $Status,
 
         [Parameter(ParameterSetName = 'All')]
@@ -59,7 +59,7 @@ function Find-VcCertificateRequest {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     $params = @{
         Type = 'CertificateRequest'

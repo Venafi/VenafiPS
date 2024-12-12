@@ -210,7 +210,7 @@ function New-VdcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         if ( $PSBoundParameters.ContainsKey('SubjectAltName') ) {
 

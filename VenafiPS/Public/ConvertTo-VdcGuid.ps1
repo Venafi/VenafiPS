@@ -52,7 +52,7 @@ function ConvertTo-VdcGuid {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
             Method  = 'Post'
@@ -81,14 +81,17 @@ function ConvertTo-VdcGuid {
                 else {
                     [Guid] $response.Guid
                 }
+                break
             }
 
             7 {
                 throw [System.UnauthorizedAccessException]::new($response.Error)
+                break
             }
 
             400 {
                 throw [System.Management.Automation.ItemNotFoundException]::new($response.Error)
+                break
             }
 
             Default {

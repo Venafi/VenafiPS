@@ -101,7 +101,7 @@
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $certs = [System.Collections.Generic.List[string]]::new()
 

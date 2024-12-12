@@ -76,7 +76,7 @@ function Remove-VdcEngineFolder {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC' -Verbose:$false
+        Test-VenafiSession $PSCmdlet.MyInvocation -Verbose:$false
 
         $params = @{
 

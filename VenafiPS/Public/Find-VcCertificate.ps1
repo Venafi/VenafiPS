@@ -223,7 +223,7 @@ function Find-VcCertificate {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     $apps = [System.Collections.Generic.List[object]]::new()
     $appOwners = [System.Collections.Generic.List[object]]::new()
@@ -238,6 +238,7 @@ function Find-VcCertificate {
     switch ($PSCmdlet.ParameterSetName) {
         'Filter' {
             $params.Filter = $Filter
+            break
         }
 
         'All' {
@@ -245,37 +246,39 @@ function Find-VcCertificate {
             $newFilter.Add('AND')
 
             switch ($PSBoundParameters.Keys) {
-                'Name' { $null = $newFilter.Add(@('certificateName', 'FIND', $Name)) }
-                'KeyLength' { $null = $newFilter.Add(@('keyStrength', 'EQ', $KeyLength.ToString())) }
-                'Serial' { $null = $newFilter.Add(@('serialNumber', 'EQ', $Serial)) }
-                'Fingerprint' { $null = $newFilter.Add(@('fingerprint', 'EQ', $Fingerprint)) }
-                'IsSelfSigned' { $null = $newFilter.Add(@('selfSigned', 'EQ', $IsSelfSigned.IsPresent.ToString())) }
-                'Version' { $null = $newFilter.Add(@('versionType', 'EQ', $Version)) }
+                'Name' { $null = $newFilter.Add(@('certificateName', 'FIND', $Name)) ; break}
+                'KeyLength' { $null = $newFilter.Add(@('keyStrength', 'EQ', $KeyLength.ToString())) ; break}
+                'Serial' { $null = $newFilter.Add(@('serialNumber', 'EQ', $Serial)) ; break}
+                'Fingerprint' { $null = $newFilter.Add(@('fingerprint', 'EQ', $Fingerprint)) ; break}
+                'IsSelfSigned' { $null = $newFilter.Add(@('selfSigned', 'EQ', $IsSelfSigned.IsPresent.ToString())) ; break}
+                'Version' { $null = $newFilter.Add(@('versionType', 'EQ', $Version)) ; break}
                 'Status' {
                     $null = $newFilter.Add(@('certificateStatus', 'MATCH', $Status.ToUpper()))
+                    break
                 }
-                'ExpireBefore' { $null = $newFilter.Add(@('validityEnd', 'LTE', $ExpireBefore)) }
-                'ExpireAfter' { $null = $newFilter.Add(@('validityEnd', 'GTE', $ExpireAfter)) }
-                'SanDns' { $null = $newFilter.Add(@('subjectAlternativeNameDns', 'FIND', $SanDns)) }
-                'CN' { $null = $newFilter.Add(@('subjectCN', 'FIND', $CN)) }
-                'Issuer' { $null = $newFilter.Add(@('issuerCN', 'FIND', $Issuer)) }
+                'ExpireBefore' { $null = $newFilter.Add(@('validityEnd', 'LTE', $ExpireBefore)) ; break}
+                'ExpireAfter' { $null = $newFilter.Add(@('validityEnd', 'GTE', $ExpireAfter)) ; break}
+                'SanDns' { $null = $newFilter.Add(@('subjectAlternativeNameDns', 'FIND', $SanDns)) ; break}
+                'CN' { $null = $newFilter.Add(@('subjectCN', 'FIND', $CN)) ; break}
+                'Issuer' { $null = $newFilter.Add(@('issuerCN', 'FIND', $Issuer)) ; break}
                 'Application' {
-                    $appId = Get-VcData -InputObject $Application -Type 'Application'
-                    if ( -not $appId ) {
-                        throw "Application '$Application' does not exist"
-                    }
+                    $appId = Get-VcData -InputObject $Application -Type 'Application' -FailOnNotFound
                     $newFilter.Add(@('applicationIds', 'MATCH', $appId ))
+                    break
                 }
                 'Tag' {
                     $null = $newFilter.Add(@('tags', 'MATCH', $Tag))
+                    break
                 }
             }
 
             if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
+            break
         }
 
         'SavedSearch' {
             $params.SavedSearchName = $SavedSearchName
+            break
         }
     }
 

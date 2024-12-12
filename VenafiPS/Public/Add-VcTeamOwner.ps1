@@ -45,7 +45,7 @@
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
             Method = 'Post'
@@ -57,7 +57,7 @@
 
     process {
 
-        $params.UriLeaf = 'teams/{0}/owners' -f (Get-VcData -InputObject $Team -Type 'Team')
+        $params.UriLeaf = 'teams/{0}/owners' -f (Get-VcData -InputObject $Team -Type 'Team' -FailOnNotFound)
 
         $null = Invoke-VenafiRestMethod @params
     }

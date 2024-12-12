@@ -158,7 +158,7 @@ function Import-VdcCertificate {
 
     begin {
 
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VDC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 
         $params = @{

@@ -108,7 +108,7 @@ function Find-VcObject {
         [psobject] $VenafiSession
     )
 
-    Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+    Test-VenafiSession $PSCmdlet.MyInvocation
 
     $objectData = @{
         'Certificate'         = @{

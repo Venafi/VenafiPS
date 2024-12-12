@@ -46,7 +46,7 @@ function Remove-VcSatelliteWorker {
     )
 
     begin {
-        Test-VenafiSession -VenafiSession $VenafiSession -Platform 'VC'
+        Test-VenafiSession $PSCmdlet.MyInvocation
     }
 
     process {
