@@ -1,1 +1,11 @@
+- Add `Set-VcCertificateRequest` to approve requests.  Optionally, use `-Wait` for the certificate to be issued and certificate details to be available.
+- Add `Initialize-PSSodium -Force` to force installation of the module if it doesn't exist.  This is used by the new parameters `Export-VcCertificate -Force`, `Import-VcCertificate -Force`, `New-VcMachine -Force`, `New-VcMachineCommonKeystore -Force`, and `New-VcMachineIis -Force`.
+- Update `New-VcCertificate` to retrieve default validity date from the issuing template instead of a set 90 days
 - Fix `Find-VdcCertificate -CountOnly` error [#309](https://github.com/Venafi/VenafiPS/issues/309)
+- Updates to better facilitate moving certificates/keys between environments.
+  - Update `Export-VcCertificate -PKCS12` to allow exporting to base64 in addition to a file.
+  - Add standard names for Format in return objects in TLSPC and TLSPDC.
+  - Add PrivateKeyPasswordCredential in return objects to keep from having to provide again further down the pipeline
+- Add `Invoke-VcGraphQL` for queries and mutations.  This isn't used for too much as of now, but the framework is here for when it's needed.
+- Update `Get-VcData` to use `Invoke-VcGraphQL` for Application and Team id and names.  Quite often we are just converting names into IDs so graphql should give us a performance bump as opposed to the REST api.
+- Deprecated `Add-VcCertificateAssociation`
