@@ -7,11 +7,12 @@ function New-VcCertificate {
     Create certificate request from automated secure keypair details or CSR
 
     .PARAMETER Application
-    Application name (wildcards supported) or id to associate this certificate.
+    Application name or id to associate this certificate with.
 
     .PARAMETER IssuingTemplate
-    Issuing template name (wildcards supported) or id to use.
-    The template must be available with the selected Application.
+    Issuing template id, name, or alias.
+    The template must be associated with the provided Application.
+    If the application has only one template, this parameter is optional.
 
     .PARAMETER Csr
     CSR in PKCS#10 format which conforms to the rules of the issuing template
@@ -69,6 +70,11 @@ function New-VcCertificate {
     New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com'
 
     Create certificate
+
+    .EXAMPLE
+    New-VcCertificate -Application 'MyApp' -CommonName 'app.mycert.com'
+
+    Create certificate with the template associated with the application
 
     .EXAMPLE
     New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
