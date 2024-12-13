@@ -1,3 +1,7 @@
+## 6.7.1
+- Update `New-VcCertificate -IssuingTemplate` to allow an alias to be provided, [#313](https://github.com/Venafi/VenafiPS/issues/313).  `-IssuingTemplate` is now also optional if the application only has 1 associated template.
+- Add `Set-VcCertificateRequest -RejectReason` to specify a reason for rejection.  The default is 'Rejection processed by VenafiPS'.
+
 ## 6.7.0
 - Add `Set-VcCertificateRequest` to approve requests.  Optionally, use `-Wait` for the certificate to be issued and certificate details to be available.
 - Add `Initialize-PSSodium -Force` to force installation of the module if it doesn't exist.  This is used by the new parameters `Export-VcCertificate -Force`, `Import-VcCertificate -Force`, `New-VcMachine -Force`, `New-VcMachineCommonKeystore -Force`, and `New-VcMachineIis -Force`.
@@ -708,6 +712,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

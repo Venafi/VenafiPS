@@ -6,8 +6,8 @@ Update an existing application
 ## SYNTAX
 
 ```
-Set-VcCertificateRequest -ID <String> [-Approve] [-Wait] [-PassThru] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Set-VcCertificateRequest -ID <String> [-Approve] [-RejectReason <String>] [-Wait] [-PassThru]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -32,12 +32,19 @@ Reject a request
 
 ### EXAMPLE 3
 ```
+Set-VcCertificateRequest -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Approve:$false -RejectReason 'not needed'
+```
+
+Reject a request with a specific reason
+
+### EXAMPLE 4
+```
 Set-VcCertificateRequest -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Approve -Wait
 ```
 
 Approve a request and wait for the certificate request to finish processing
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 Set-VcCertificateRequest -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Approve -Wait -PassThru
 ```
@@ -45,7 +52,7 @@ Set-VcCertificateRequest -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Approve -Wa
 Approve a request and wait for the certificate request to finish processing.
 Once finished, return the resulting object which contains the newly created certificate details.
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 Find-VcCertificateRequest -Status PENDING_APPROVAL | Set-VcCertificateRequest -Approve
 ```
@@ -56,7 +63,7 @@ Use the Find filter to narrow the scope of requests found.
 ## PARAMETERS
 
 ### -ID
-{{ Fill ID Description }}
+The certificate request id to process.
 
 ```yaml
 Type: String
@@ -81,6 +88,22 @@ Aliases:
 Required: True
 Position: Named
 Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -RejectReason
+In the case of rejection, provide a reason.
+The default will be 'reject'.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: Rejection processed by VenafiPS
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
