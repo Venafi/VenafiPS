@@ -181,21 +181,19 @@ function New-VcCertificate {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         # validation
-        $thisApp = Get-VcData -Type Application -InputObject $Application -Object
-        if ( -not $thisApp ) {
-            throw "Application $Application does not exist"
+        $thisApp = Get-VcData -Type Application -InputObject $Application -Object -FailOnNotFound
+
+        if ( $thisApp.issuingTemplate.Count -eq 0 ) {
+            throw 'No templates associated with this application'
         }
 
         if ( -not $IssuingTemplate ) {
             # issuing template not provided, see if the app has one
             switch ($thisApp.issuingTemplate.Count) {
-                0 {
-                    throw 'No templates associated with this application'
-                }
-
                 1 {
                     # there is only one template, use it
                     $thisTemplateId = $thisApp.issuingTemplate[0].issuingTemplateId
+                    break
                 }
 
                 Default {
