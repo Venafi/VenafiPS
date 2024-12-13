@@ -81,7 +81,7 @@
         [switch] $Approve,
 
         [Parameter(ParameterSetName = 'Approval')]
-        [string] $RejectReason = 'Reject',
+        [string] $RejectReason = 'Rejection processed by VenafiPS',
 
         [Parameter(ParameterSetName = 'Approval')]
         [switch] $Wait,
