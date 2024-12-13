@@ -7,11 +7,15 @@
     Update details of existing applications.
     Additional properties will be available in the future.
 
-    .PARAMETER CertificateRequestId
+    .PARAMETER ID
     The certificate request id to process.
 
     .PARAMETER Approve
     Provide the switch to approve a request
+
+    .PARAMETER RejectReason
+    In the case of rejection, provide a reason.
+    The default will be 'reject'.
 
     .PARAMETER Wait
     Wait for the certificate request to either be issued or fail.
@@ -43,6 +47,11 @@
     Reject a request
 
     .EXAMPLE
+    Set-VcCertificateRequest -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Approve:$false -RejectReason 'not needed'
+
+    Reject a request with a specific reason
+
+    .EXAMPLE
     Set-VcCertificateRequest -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Approve -Wait
 
     Approve a request and wait for the certificate request to finish processing
@@ -72,6 +81,9 @@
         [switch] $Approve,
 
         [Parameter(ParameterSetName = 'Approval')]
+        [string] $RejectReason = 'Rejection processed by VenafiPS',
+
+        [Parameter(ParameterSetName = 'Approval')]
         [switch] $Wait,
 
         [Parameter()]
@@ -96,11 +108,15 @@
                 UriLeaf = 'certificaterequests/{0}/approval/{1}' -f $ID, $decision
             }
 
+            if ( -not $Approval ) {
+                $params.Body = @{'reason' = $RejectReason }
+            }
+            
             if ( $PSCmdlet.ShouldProcess($ID, "$decision certificate request") ) {
                 $response = Invoke-VenafiRestMethod @params
             }
     
-            if ( $Wait ) {
+            if ( $Approve -and $Wait ) {
                 Write-Verbose 'Request approved, waiting for a status of either issued or failed'
                 do {
                     Start-Sleep -Seconds 1
@@ -110,6 +126,7 @@
                     $response.status -in 'ISSUED', 'FAILED'
                 )
             }
+
             if ( $PassThru ) {
                 $response
             }

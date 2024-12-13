@@ -7,11 +7,12 @@ function New-VcCertificate {
     Create certificate request from automated secure keypair details or CSR
 
     .PARAMETER Application
-    Application name (wildcards supported) or id to associate this certificate.
+    Application name or id to associate this certificate with.
 
     .PARAMETER IssuingTemplate
-    Issuing template name (wildcards supported) or id to use.
-    The template must be available with the selected Application.
+    Issuing template id, name, or alias.
+    The template must be associated with the provided Application.
+    If the application has only one template, this parameter is optional.
 
     .PARAMETER Csr
     CSR in PKCS#10 format which conforms to the rules of the issuing template
@@ -71,6 +72,11 @@ function New-VcCertificate {
     Create certificate
 
     .EXAMPLE
+    New-VcCertificate -Application 'MyApp' -CommonName 'app.mycert.com'
+
+    Create certificate with the template associated with the application
+
+    .EXAMPLE
     New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
 
     Create certificate with optional SAN data
@@ -103,7 +109,7 @@ function New-VcCertificate {
         [Parameter(Mandatory)]
         [String] $Application,
 
-        [Parameter(Mandatory)]
+        [Parameter()]
         [String] $IssuingTemplate,
 
         [Parameter(ParameterSetName = 'Csr', Mandatory)]
@@ -175,14 +181,37 @@ function New-VcCertificate {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         # validation
-        $thisApp = Get-VcApplication -Application $Application
-        if ( -not $thisApp ) {
-            throw "Application $Application does not exist"
+        $thisApp = Get-VcData -Type Application -InputObject $Application -Object -FailOnNotFound
+
+        if ( $thisApp.issuingTemplate.Count -eq 0 ) {
+            throw 'No templates associated with this application'
         }
 
-        $thisTemplate = Get-VcIssuingTemplate -IssuingTemplate $IssuingTemplate
-        if ( -not $thisTemplate ) {
-            throw "Issuing template $IssuingTemplate does not exist"
+        if ( -not $IssuingTemplate ) {
+            # issuing template not provided, see if the app has one
+            switch ($thisApp.issuingTemplate.Count) {
+                1 {
+                    # there is only one template, use it
+                    $thisTemplate = Get-VcData -Type IssuingTemplate -InputObject $thisApp.issuingTemplate[0].issuingTemplateId -Object
+                    break
+                }
+
+                Default {
+                    throw 'IssuingTemplate is required when the application has more than 1 template associated'
+                }
+            }
+        }
+        else {
+            # template provided, check if name or alias or id
+            if ( $IssuingTemplate -in $thisApp.issuingTemplate.name ) {
+                # name is an alias, get template
+                $templateId = $thisApp.issuingTemplate | Where-Object { $_.name -eq $IssuingTemplate } | Select-Object -ExpandProperty issuingTemplateId
+                $thisTemplate = Get-VcData -Type IssuingTemplate -InputObject $templateId -Object
+            }
+            else {
+                # lookup provided value, name or id
+                $thisTemplate = Get-VcData -Type IssuingTemplate -InputObject $IssuingTemplate -Object -FailOnNotFound
+            }
         }
 
         if ( $ValidUntil ) {

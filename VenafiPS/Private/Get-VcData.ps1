@@ -157,7 +157,7 @@ function Get-VcData {
         }
 
         if ( $FailOnNotFound -and -not $returnObject ) {
-            throw "'$InputObject' of type $Type not found"
+            throw "$Type '$InputObject' not found"
         }
 
         switch ($PSCmdlet.ParameterSetName) {
