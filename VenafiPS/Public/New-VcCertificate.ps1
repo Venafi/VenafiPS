@@ -103,7 +103,7 @@ function New-VcCertificate {
         [Parameter(Mandatory)]
         [String] $Application,
 
-        [Parameter(Mandatory)]
+        [Parameter()]
         [String] $IssuingTemplate,
 
         [Parameter(ParameterSetName = 'Csr', Mandatory)]
@@ -175,14 +175,38 @@ function New-VcCertificate {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         # validation
-        $thisApp = Get-VcApplication -Application $Application
+        $thisApp = Get-VcData -Type Application -InputObject $Application -Object
         if ( -not $thisApp ) {
             throw "Application $Application does not exist"
         }
 
-        $thisTemplate = Get-VcIssuingTemplate -IssuingTemplate $IssuingTemplate
-        if ( -not $thisTemplate ) {
-            throw "Issuing template $IssuingTemplate does not exist"
+        if ( -not $IssuingTemplate ) {
+            # issuing template not provided, see if the app has one
+            switch ($thisApp.issuingTemplate.Count) {
+                0 {
+                    throw 'No templates associated with this application'
+                }
+
+                1 {
+                    # there is only one template, use it
+                    $thisTemplateId = $thisApp.issuingTemplate[0].issuingTemplateId
+                }
+
+                Default {
+                    throw 'IssuingTemplate is required when the application has more than 1 template associated'
+                }
+            }
+        }
+        else {
+            # template provided, check if name or alias or id
+            if ( $IssuingTemplate -in $thisApp.issuingTemplate.name ) {
+                # name is an alias, get template id from app
+                $thisTemplateId = $thisApp.issuingTemplate | Where-Object { $_.name -eq $IssuingTemplate } | Select-Object -ExpandProperty issuingTemplateId
+            }
+            else {
+                # lookup provided value, name or id
+                $thisTemplateId = Get-VcData -Type IssuingTemplate -InputObject $IssuingTemplate -FailOnNotFound
+            }
         }
 
         if ( $ValidUntil ) {
@@ -202,7 +226,7 @@ function New-VcCertificate {
             Body    = @{
                 isVaaSGenerated              = $true
                 applicationId                = $thisApp.applicationId
-                certificateIssuingTemplateId = $thisTemplate.issuingTemplateId
+                certificateIssuingTemplateId = $thisTemplateId
                 validityPeriod               = $validity
             }
         }
