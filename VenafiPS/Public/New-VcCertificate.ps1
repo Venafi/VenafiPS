@@ -192,7 +192,7 @@ function New-VcCertificate {
             switch ($thisApp.issuingTemplate.Count) {
                 1 {
                     # there is only one template, use it
-                    $thisTemplateId = $thisApp.issuingTemplate[0].issuingTemplateId
+                    $thisTemplate = Get-VcData -Type IssuingTemplate -InputObject $thisApp.issuingTemplate[0].issuingTemplateId -Object
                     break
                 }
 
@@ -204,12 +204,13 @@ function New-VcCertificate {
         else {
             # template provided, check if name or alias or id
             if ( $IssuingTemplate -in $thisApp.issuingTemplate.name ) {
-                # name is an alias, get template id from app
-                $thisTemplateId = $thisApp.issuingTemplate | Where-Object { $_.name -eq $IssuingTemplate } | Select-Object -ExpandProperty issuingTemplateId
+                # name is an alias, get template
+                $templateId = $thisApp.issuingTemplate | Where-Object { $_.name -eq $IssuingTemplate } | Select-Object -ExpandProperty issuingTemplateId
+                $thisTemplate = Get-VcData -Type IssuingTemplate -InputObject $templateId -Object
             }
             else {
                 # lookup provided value, name or id
-                $thisTemplateId = Get-VcData -Type IssuingTemplate -InputObject $IssuingTemplate -FailOnNotFound
+                $thisTemplate = Get-VcData -Type IssuingTemplate -InputObject $IssuingTemplate -Object -FailOnNotFound
             }
         }
 
@@ -230,7 +231,7 @@ function New-VcCertificate {
             Body    = @{
                 isVaaSGenerated              = $true
                 applicationId                = $thisApp.applicationId
-                certificateIssuingTemplateId = $thisTemplateId
+                certificateIssuingTemplateId = $thisTemplate.issuingTemplateId
                 validityPeriod               = $validity
             }
         }
