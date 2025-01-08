@@ -184,7 +184,7 @@ function Import-VdcCertificate {
         }
 
         if ( $PSBoundParameters.ContainsKey('PrivateKeyPassword') ) {
-            $params.Body.PrivateKeyPassword = $PrivateKeyPassword | ConvertTo-PlaintextString
+            $params.Body.Password = $PrivateKeyPassword | ConvertTo-PlaintextString
         }
 
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
@@ -207,10 +207,10 @@ function Import-VdcCertificate {
 
             $certData = $PSItem.Data
             if ( $PSItem.Path ) {
-                if ((([System.IO.Path]::GetExtension($PSItem.Path)) -in '.pfx', '.p12') -and $PSItem.InvokeParams.Body.PrivateKeyPassword ) {
+                if ((([System.IO.Path]::GetExtension($PSItem.Path)) -in '.pfx', '.p12') -and $PSItem.InvokeParams.Body.Password ) {
 
                     # tpp won't accept a p12 and password so use this workaround to decrypt first
-                    $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($PSItem.Path, $PSItem.InvokeParams.Body.PrivateKeyPassword, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
+                    $cert = [System.Security.Cryptography.X509Certificates.X509Certificate2]::new($PSItem.Path, $PSItem.InvokeParams.Body.Password, [System.Security.Cryptography.X509Certificates.X509KeyStorageFlags]::Exportable)
                     $certData = [System.Convert]::ToBase64String( $cert.Export([System.Security.Cryptography.X509Certificates.X509ContentType]::Pkcs12))
 
                 }
