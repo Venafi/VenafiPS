@@ -1,2 +1,2 @@
-- Update `New-VcCertificate -IssuingTemplate` to allow an alias to be provided, [#313](https://github.com/Venafi/VenafiPS/issues/313).  `-IssuingTemplate` is now also optional if the application only has 1 associated template.
-- Add `Set-VcCertificateRequest -RejectReason` to specify a reason for rejection.  The default is 'Rejection processed by VenafiPS'.
+- Fix API parameter in `Import-VdcCertificate`, [#316](https://github.com/Venafi/VenafiPS/issues/316)
+- Fix Invalid JSON response in `Find-VdcObject`, [#318](https://github.com/Venafi/VenafiPS/issues/318)
