@@ -191,7 +191,8 @@ function Find-VdcObject {
                 break
             }
 
-            { $_ -in 'FindByPath', 'FindByPattern', 'FindByClass' } {
+            { $_ -in 'FindByPath', 'FindByPattern' } {
+                $params.UriLeaf = 'config/enumerate'
                 # if a path wasn't provided, default to recursive enumeration of \ved\policy
                 if ( -not $PSBoundParameters.ContainsKey('Path') ) {
                     $params.Body.Recursive = 'true'
@@ -199,16 +200,14 @@ function Find-VdcObject {
                 break
             }
 
-            { $_ -in 'FindByPath', 'FindByPattern' } {
-                $params.UriLeaf = 'config/enumerate'
-                break
-            }
-
             'FindByClass' {
                 $params.UriLeaf = 'config/FindObjectsOfClass'
+                # if a path wasn't provided, default to recursive enumeration of \ved\policy
+                if ( -not $PSBoundParameters.ContainsKey('Path') ) {
+                    $params.Body.Recursive = 'true'
+                }
                 break
             }
-
         }
 
         # pattern is not used by custom field lookup
