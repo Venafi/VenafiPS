@@ -1,2 +1,3 @@
-- Fix API parameter in `Import-VdcCertificate`, [#316](https://github.com/Venafi/VenafiPS/issues/316)
-- Fix Invalid JSON response in `Find-VdcObject`, [#318](https://github.com/Venafi/VenafiPS/issues/318)
+- Add ability to import all certificates from a folder with `Import-VcCertificate -Path`
+- Fix parameter set issue where `-PrivateKeyPassword` could not be provided with `Import-VcCertificate -Path`
+- Fix [#315](https://github.com/Venafi/VenafiPS/issues/315), appending certificate id to exported file name
