@@ -18,9 +18,11 @@ function Split-CertificateData {
 
     process {
         if ( $CertificateData -match '-----BEGIN' ) {
+            # we got base64 surrounded by headers and footers
             $pemLines = $CertificateData.Split("`n")
         }
         else {
+            # we got just base64 data
             $pemLines = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($CertificateData)).Split("`n")
         }
 
