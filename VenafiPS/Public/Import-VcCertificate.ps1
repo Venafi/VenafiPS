@@ -4,10 +4,11 @@ function Import-VcCertificate {
     Import one or more certificates
 
     .DESCRIPTION
-    Import one or more certificates and their private keys.  Currently PKCS #8 and PKCS #12 (.pfx or .p12) are supported.
+    Import one or more certificates and their private keys.
+    Currently PKCS #8 (.pem) and PKCS #12 (.pfx or .p12) are supported.
 
-    .PARAMETER FilePath
-    Path to a certificate file.  Provide either this or -Data.
+    .PARAMETER Path
+    Path to a certificate file or folder with multiple certificates.  Provide either this or -Data.
 
     .PARAMETER Data
     Contents of a certificate/key to import.  Provide either this or -Path.
@@ -64,7 +65,7 @@ function Import-VcCertificate {
     Export from 1 TLSPC tenant and import to another
 
     .INPUTS
-    FilePath, Data
+    Data
 
     .LINK
     https://developer.venafi.com/tlsprotectcloud/reference/certificates_import
@@ -80,21 +81,10 @@ function Import-VcCertificate {
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'ByFile', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'ByFile')]
         [ValidateNotNullOrEmpty()]
-        [ValidateScript( {
-                if ( -not (Test-Path -Path (Resolve-Path -Path $_) -PathType Leaf) ) {
-                    throw "'$_' is not a valid file path"
-                }
-
-                if ([System.IO.Path]::GetExtension((Resolve-Path -Path $_)) -notin '.pfx', '.p12') {
-                    throw "$_ is not a .p12 or .pfx file"
-                }
-
-                $true
-            })]
-        [Alias('FullName', 'CertificatePath')]
-        [String] $FilePath,
+        [Alias('FullName', 'CertificatePath', 'FilePath')]
+        [String] $Path,
 
         [Parameter(Mandatory, ParameterSetName = 'PKCS12', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'PKCS8', ValueFromPipelineByPropertyName)]
@@ -116,6 +106,7 @@ function Import-VcCertificate {
 
         [Parameter(Mandatory, ParameterSetName = 'PKCS8')]
         [Parameter(Mandatory, ParameterSetName = 'PKCS12')]
+        [Parameter(Mandatory, ParameterSetName = 'ByFile')]
         [ValidateScript(
             {
                 if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
@@ -161,24 +152,56 @@ function Import-VcCertificate {
     process {
 
         if ( $PSCmdlet.ParameterSetName -eq 'ByFile' ) {
-            $thisCertPath = Resolve-Path -Path $FilePath
-
-            switch ([System.IO.Path]::GetExtension($thisCertPath)) {
-                { $_ -in '.pfx', '.p12' } { $format = 'Pkcs12' }
-            }
-
-            if ($PSVersionTable.PSVersion.Major -lt 6) {
-                $cert = Get-Content $thisCertPath -Encoding Byte
+            $resolvedPath = Resolve-Path -Path $Path -ErrorAction Stop
+            $files = if (Test-Path -Path $resolvedPath -PathType Container) {
+                Get-ChildItem -Path $resolvedPath -File | Select-Object -ExpandProperty FullName
             }
             else {
-                $cert = Get-Content $thisCertPath -AsByteStream
+                @($resolvedPath)
             }
+            
+            foreach ($file in $files) {
+               
+                Write-Verbose "Processing $file"
 
-            $allCerts.Add(@{
-                    'CertData' = [System.Convert]::ToBase64String($cert)
-                    'Format'   = $format
+                switch ([System.IO.Path]::GetExtension($file)) {
+                    { $_ -in '.pfx', '.p12' } {
+                        if ($PSVersionTable.PSVersion.Major -lt 6) {
+                            $cert = Get-Content $file -Encoding Byte
+                        }
+                        else {
+                            $cert = Get-Content $file -AsByteStream
+                        }
+
+                        $allCerts.Add(@{
+                                'CertData' = [System.Convert]::ToBase64String($cert)
+                                'Format'   = 'PKCS12'
+                            }
+                        )
+                    }
+
+                    '.pem' {
+                        $split = Split-CertificateData -CertificateData (Get-Content $file -Raw)
+
+                        # we need the private key so check for it in the pem
+                        if ( $split.KeyPem ) {
+                            $allCerts.Add(@{
+                                    'CertPem' = $split.CertPem
+                                    'KeyPem'  = $split.KeyPem
+                                    'Format'  = 'PKCS8'
+                                }
+                            )
+                        }
+                        else {
+                            Write-Error "Private key not found in $file"
+                        }
+                    }
+    
+                    default {
+                        Write-Verbose "$file is not a Pkcs8 or Pkcs12 certificate"
+                    }
                 }
-            )
+            }
         }
         else {
             # check if Data exists since we allow null/empty in case piping from another function and data is not there
@@ -205,7 +228,13 @@ function Import-VcCertificate {
                     'PKCS8' {
                         $splitData = Split-CertificateData -CertificateData $Data
                         $addMe.CertPem = $splitData.CertPem
-                        if ( $splitData.KeyPem ) { $addMe.KeyPem = $splitData.KeyPem }
+                        if ( $splitData.KeyPem ) {
+                            $addMe.KeyPem = $splitData.KeyPem
+                        }
+                        else {
+                            Write-Error "Private key not found in provided data"
+                            return
+                        }
                     }
                 }
 
@@ -217,6 +246,9 @@ function Import-VcCertificate {
 
     end {
         if ( $allCerts.Count -eq 0 ) { return }
+
+        Write-Verbose ('Importing {0} certificates' -f $allCerts.Count)
+        Write-Verbose ($allCerts | ConvertTo-Json)
 
         $importList = [System.Collections.Generic.List[hashtable]]::new()
 
@@ -238,7 +270,7 @@ function Import-VcCertificate {
             }
 
             $keystores = foreach ($thisCert in $allCerts[$i..($i + 99)]) {
-                switch ($allCerts[$i].Format) {
+                switch ($thisCert.Format) {
                     'PKCS12' {
                         @{
                             'pkcs12Keystore'       = $thisCert.CertData

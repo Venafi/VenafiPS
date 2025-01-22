@@ -17,7 +17,12 @@ function Split-CertificateData {
     }
 
     process {
-        $pemLines = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($CertificateData)).Split("`n")
+        if ( $CertificateData -match '-----BEGIN' ) {
+            $pemLines = $CertificateData.Split("`n")
+        }
+        else {
+            $pemLines = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($CertificateData)).Split("`n")
+        }
 
         $certPem = @()
 
