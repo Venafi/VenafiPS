@@ -1,3 +1,8 @@
+## 6.7.3
+- Add ability to import all certificates from a folder with `Import-VcCertificate -Path`
+- Fix parameter set issue where `-PrivateKeyPassword` could not be provided with `Import-VcCertificate -Path`
+- Fix [#315](https://github.com/Venafi/VenafiPS/issues/315), appending certificate id to exported file name
+
 ## 6.7.2
 - Fix API parameter in `Import-VdcCertificate`, [#316](https://github.com/Venafi/VenafiPS/issues/316)
 - Fix Invalid JSON response in `Find-VdcObject`, [#318](https://github.com/Venafi/VenafiPS/issues/318)
@@ -717,6 +722,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

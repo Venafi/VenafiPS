@@ -7,8 +7,8 @@
 
 ### ByFile (Default)
 ```
-Import-VcCertificate -FilePath <String> [-ThrottleLimit <Int32>] [-Force] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Import-VcCertificate -Path <String> -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>] [-Force]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Format
@@ -51,21 +51,6 @@ PS C:\> {{ Add example code here }}
 Type: String
 Parameter Sets: Format, PKCS8, PKCS12
 Aliases: certificateData
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: True (ByPropertyName)
-Accept wildcard characters: False
-```
-
-### -FilePath
-{{ Fill FilePath Description }}
-
-```yaml
-Type: String
-Parameter Sets: ByFile
-Aliases: FullName, CertificatePath
 
 Required: True
 Position: Named
@@ -135,12 +120,27 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Path
+{{ Fill Path Description }}
+
+```yaml
+Type: String
+Parameter Sets: ByFile
+Aliases: FullName, CertificatePath, FilePath
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -PrivateKeyPassword
 {{ Fill PrivateKeyPassword Description }}
 
 ```yaml
 Type: PSObject
-Parameter Sets: PKCS8, PKCS12
+Parameter Sets: ByFile, PKCS8, PKCS12
 Aliases:
 
 Required: True
