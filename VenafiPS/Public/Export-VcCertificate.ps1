@@ -211,7 +211,7 @@ function Export-VcCertificate {
                 # pkcs12 is a byte array of a pfx file so its easy to handle
                 if ( $using:pset -eq 'PKCS12' ) {
                     if ( $using:OutPath ) {
-                        $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}.pfx' -f $thisCert.certificateName, $thisCert.certificateId)
+                        $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}.pfx' -f $thisCert.certificateName)
                         [IO.File]::WriteAllBytes($dest, $innerResponse.Content)
                         $out | Add-Member @{'outPath' = $dest }
                     }
@@ -339,7 +339,7 @@ function Export-VcCertificate {
 
                 if ( $certificateData ) {
                     if ( $using:OutPath ) {
-                        $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}' -f $thisCert.certificateName, $thisCert.certificateId)
+                        $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath $thisCert.certificateName
                         $null = New-Item -Path $dest -ItemType Directory -Force
                         $outFile = Join-Path -Path $dest -ChildPath ('{0}.{1}' -f $PSItem, $params.Body.format)
                         try {
