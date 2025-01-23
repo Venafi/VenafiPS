@@ -240,6 +240,6 @@ function Import-VdcCertificate {
             catch {
                 Write-Error $_
             }
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Importing certificates'
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Importing certificates' -VenafiSession $VenafiSession
     }
 }

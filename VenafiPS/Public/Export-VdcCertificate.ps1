@@ -368,6 +368,6 @@ function Export-VdcCertificate {
 
             $out
 
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Exporting certificates'
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Exporting certificates' -VenafiSession $VenafiSession
     }
 }
