@@ -32,7 +32,7 @@ function Find-VcCertificate {
     Search for certificates expiring after a certain date.
     Use with -ExpireBefore for a defined start and end.
 
-    .PARAMETER Version
+    .PARAMETER VersionType
     Search by version type.  Valid values include CURRENT and OLD.
 
     .PARAMETER SanDns
@@ -171,6 +171,9 @@ function Find-VcCertificate {
         [switch] $IsSelfSigned,
 
         [Parameter(ParameterSetName = 'All')]
+        [switch] $IsExpired,
+
+        [Parameter(ParameterSetName = 'All')]
         [ValidateSet('ACTIVE', 'RETIRED', 'DELETED')]
         [string[]] $Status,
 
@@ -182,7 +185,8 @@ function Find-VcCertificate {
 
         [Parameter(ParameterSetName = 'All')]
         [ValidateSet('CURRENT', 'OLD')]
-        [string] $Version,
+        [Alias('Version')]
+        [string] $VersionType,
 
         [Parameter(ParameterSetName = 'All')]
         [string] $SanDns,
@@ -246,34 +250,34 @@ function Find-VcCertificate {
             $newFilter.Add('AND')
 
             switch ($PSBoundParameters.Keys) {
-                'Name' { $null = $newFilter.Add(@('certificateName', 'FIND', $Name)) ; break}
-                'KeyLength' { $null = $newFilter.Add(@('keyStrength', 'EQ', $KeyLength.ToString())) ; break}
-                'Serial' { $null = $newFilter.Add(@('serialNumber', 'EQ', $Serial)) ; break}
-                'Fingerprint' { $null = $newFilter.Add(@('fingerprint', 'EQ', $Fingerprint)) ; break}
-                'IsSelfSigned' { $null = $newFilter.Add(@('selfSigned', 'EQ', $IsSelfSigned.IsPresent.ToString())) ; break}
-                'Version' { $null = $newFilter.Add(@('versionType', 'EQ', $Version)) ; break}
+                'Name' { $null = $newFilter.Add(@('certificateName', 'FIND', $Name)) }
+                'KeyLength' { $null = $newFilter.Add(@('keyStrength', 'EQ', $KeyLength.ToString())) }
+                'Serial' { $null = $newFilter.Add(@('serialNumber', 'EQ', $Serial)) }
+                'Fingerprint' { $null = $newFilter.Add(@('fingerprint', 'EQ', $Fingerprint)) }
+                'IsSelfSigned' { $null = $newFilter.Add(@('selfSigned', 'EQ', $IsSelfSigned.IsPresent.ToString())) }
+                'IsExpired' {
+                    $null = $newFilter.Add(@('validityEnd', 'LTE', (Get-Date)))
+                    $params.Order = @{'validityEnd' = 'desc' }
+                }
+                'VersionType' { $null = $newFilter.Add(@('versionType', 'MATCH', $VersionType)) }
                 'Status' {
                     $null = $newFilter.Add(@('certificateStatus', 'MATCH', $Status.ToUpper()))
-                    break
                 }
-                'ExpireBefore' { $null = $newFilter.Add(@('validityEnd', 'LTE', $ExpireBefore)) ; break}
-                'ExpireAfter' { $null = $newFilter.Add(@('validityEnd', 'GTE', $ExpireAfter)) ; break}
-                'SanDns' { $null = $newFilter.Add(@('subjectAlternativeNameDns', 'FIND', $SanDns)) ; break}
-                'CN' { $null = $newFilter.Add(@('subjectCN', 'FIND', $CN)) ; break}
-                'Issuer' { $null = $newFilter.Add(@('issuerCN', 'FIND', $Issuer)) ; break}
+                'ExpireBefore' { $null = $newFilter.Add(@('validityEnd', 'LTE', $ExpireBefore)) }
+                'ExpireAfter' { $null = $newFilter.Add(@('validityEnd', 'GTE', $ExpireAfter)) }
+                'SanDns' { $null = $newFilter.Add(@('subjectAlternativeNameDns', 'FIND', $SanDns)) }
+                'CN' { $null = $newFilter.Add(@('subjectCN', 'FIND', $CN)) }
+                'Issuer' { $null = $newFilter.Add(@('issuerCN', 'FIND', $Issuer)) }
                 'Application' {
                     $appId = Get-VcData -InputObject $Application -Type 'Application' -FailOnNotFound
                     $newFilter.Add(@('applicationIds', 'MATCH', $appId ))
-                    break
                 }
                 'Tag' {
                     $null = $newFilter.Add(@('tags', 'MATCH', $Tag))
-                    break
                 }
             }
 
             if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
-            break
         }
 
         'SavedSearch' {
@@ -281,7 +285,6 @@ function Find-VcCertificate {
             break
         }
     }
-
     $response = Find-VcObject @params
 
     $response | Select-Object *,
