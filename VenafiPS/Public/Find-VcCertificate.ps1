@@ -21,6 +21,11 @@ function Find-VcCertificate {
     .PARAMETER IsSelfSigned
     Search for only self signed certificates
 
+    .PARAMETER IsExpired
+    Search for only expired certificates.
+    This will search for only certificates that are expired including active, retired, current, old, etc.
+    Be sure to use other parameters if you want to filter even further.
+    
     .PARAMETER Status
     Search by one or more certificate statuses.  Valid values include ACTIVE, RETIRED, and DELETED.
 
