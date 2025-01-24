@@ -187,7 +187,7 @@ function Import-VcCertificate {
                     }
 
                     { $_ -in '.pem', '.cer', '.crt' } {
-                        $split = Split-CertificateData -CertificateData (Get-Content $file -Raw)
+                        $split = Split-CertificateData -InputObject (Get-Content $file -Raw)
 
                         if ( $split.KeyPem ) {
                             $allCerts.Add(@{
@@ -239,7 +239,7 @@ function Import-VcCertificate {
                     # X509 and PKCS8 both use Base64, but 'Base64' is how tlspdc refers to x509
                     # this allows us to pipe from tlspdc to tlspc
                     { $_ -in 'PKCS8', 'X509', 'Base64' } {
-                        $splitData = Split-CertificateData -CertificateData $Data
+                        $splitData = Split-CertificateData -InputObject $Data
 
                         if ( $splitData.KeyPem ) {
                             $addMe.CertPem = $splitData.CertPem

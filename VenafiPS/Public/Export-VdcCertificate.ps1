@@ -293,7 +293,7 @@ function Export-VdcCertificate {
             if ( $innerResponse.CertificateData ) {
 
                 if ( $thisBody.Format -in 'Base64', 'Base64 (PKCS#8)' ) {
-                    $splitData = Split-CertificateData -CertificateData $innerResponse.CertificateData
+                    $splitData = Split-CertificateData -InputObject $innerResponse.CertificateData
                 }
 
                 if ( $using:OutPath ) {
