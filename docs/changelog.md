@@ -1,3 +1,10 @@
+## 6.7.4
+- Add support for X509 (.pem, .cer, and .crt) to `Import-VcCertificate`.  Both by path and by data are supported.  Pull in a folder full of certificates or pipe from either TLSPDC or another TLSPC tenant.
+- Add `Find-VcCertificate -IsExpired`
+- Better support for exporting and importing certificates between TLSPDC and TLSPC via pipeline
+- Fix bug with `New-VcSearchQuery` when a specific number of filters were provided
+
+
 ## 6.7.3
 - Add ability to import all certificates from a folder with `Import-VcCertificate -Path`
 - Fix parameter set issue where `-PrivateKeyPassword` could not be provided with `Import-VcCertificate -Path`
@@ -722,6 +729,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

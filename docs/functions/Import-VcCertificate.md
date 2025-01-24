@@ -7,15 +7,14 @@
 
 ### ByFile (Default)
 ```
-Import-VcCertificate -Path <String> -PrivateKeyPassword <PSObject> [-ThrottleLimit <Int32>] [-Force]
+Import-VcCertificate -Path <String> [-PrivateKeyPassword <PSObject>] [-ThrottleLimit <Int32>] [-Force]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Format
 ```
-Import-VcCertificate -Data <String> -Format <String> -PrivateKeyPasswordCredential <PSCredential>
- [-ThrottleLimit <Int32>] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Import-VcCertificate -Data <String> -Format <String> [-PrivateKeyPassword <PSObject>] [-ThrottleLimit <Int32>]
+ [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### PKCS8
@@ -81,7 +80,6 @@ Accept wildcard characters: False
 Type: String
 Parameter Sets: Format
 Aliases:
-Accepted values: PKCS8, PKCS12
 
 Required: True
 Position: Named
@@ -140,28 +138,37 @@ Accept wildcard characters: False
 
 ```yaml
 Type: PSObject
-Parameter Sets: ByFile, PKCS8, PKCS12
+Parameter Sets: ByFile
 Aliases:
 
-Required: True
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -PrivateKeyPasswordCredential
-{{ Fill PrivateKeyPasswordCredential Description }}
+```yaml
+Type: PSObject
+Parameter Sets: Format
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
 
 ```yaml
-Type: PSCredential
-Parameter Sets: Format
+Type: PSObject
+Parameter Sets: PKCS8, PKCS12
 Aliases:
 
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: True (ByPropertyName)
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
@@ -216,7 +223,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ## INPUTS
 
 ### System.String
-### System.Management.Automation.PSCredential
+### System.Management.Automation.PSObject
 ## OUTPUTS
 
 ### System.Object

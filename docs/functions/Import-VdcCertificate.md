@@ -61,6 +61,15 @@ Import-VdcCertificate -PolicyPath mycerts -Data $certData
 
 Import a certificate from data instead of a path
 
+### EXAMPLE 4
+```
+$sess = New-VenafiSession -Server venafi.mycompany.com -Credential $cred -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'} -PassThru
+Find-VcCertificate -VersionType CURRENT | Export-VcCertificate -PrivateKeyPassword 'myPassword!' -PKCS12 | Import-VdcCertificate -PolicyPath 'certificates' -VenafiSession $sess
+```
+
+Export 1 or more certificates from TLSPC and import to TLSPDC. 
+Note the use of 2 sessions at once where the TLSPDC session is stored in a variable.
+
 ## PARAMETERS
 
 ### -PolicyPath
@@ -102,7 +111,7 @@ Provide either this or -Path.
 ```yaml
 Type: String
 Parameter Sets: ByDataWithPrivateKey, ByData
-Aliases:
+Aliases: CertificateData
 
 Required: True
 Position: Named
@@ -170,7 +179,7 @@ You can either provide a String, SecureString, or PSCredential.
 
 ```yaml
 Type: PSObject
-Parameter Sets: ByFile, ByData
+Parameter Sets: ByFile
 Aliases:
 
 Required: False
@@ -182,10 +191,34 @@ Accept wildcard characters: False
 
 ```yaml
 Type: PSObject
-Parameter Sets: ByFileWithPrivateKey, ByDataWithPrivateKey
+Parameter Sets: ByFileWithPrivateKey
 Aliases:
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: PSObject
+Parameter Sets: ByDataWithPrivateKey
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: PSObject
+Parameter Sets: ByData
+Aliases:
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -287,7 +320,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Path, Data
 ## OUTPUTS
 
-### TppObject, if PassThru provided
+### PSCustomObject, if PassThru provided
 ## NOTES
 
 ## RELATED LINKS

@@ -8,10 +8,10 @@ Find certificates in TLSPC
 ### All (Default)
 ```
 Find-VcCertificate [-Name <String>] [-KeyLength <Int32>] [-Serial <String>] [-Fingerprint <String>]
- [-IsSelfSigned] [-Status <String[]>] [-ExpireBefore <DateTime>] [-ExpireAfter <DateTime>] [-Version <String>]
- [-SanDns <String>] [-Application <String>] [-Tag <String[]>] [-CN <String>] [-Issuer <String>]
- [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-IsSelfSigned] [-IsExpired] [-Status <String[]>] [-ExpireBefore <DateTime>] [-ExpireAfter <DateTime>]
+ [-VersionType <String>] [-SanDns <String>] [-Application <String>] [-Tag <String[]>] [-CN <String>]
+ [-Issuer <String>] [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### Filter
@@ -174,6 +174,23 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -IsExpired
+Search for only expired certificates.
+This will search for only certificates that are expired including active, retired, current, old, etc.
+Be sure to use other parameters if you want to filter even further.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: All
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -Status
 Search by one or more certificate statuses. 
 Valid values include ACTIVE, RETIRED, and DELETED.
@@ -222,14 +239,14 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Version
+### -VersionType
 Search by version type. 
 Valid values include CURRENT and OLD.
 
 ```yaml
 Type: String
 Parameter Sets: All
-Aliases:
+Aliases: Version
 
 Required: False
 Position: Named

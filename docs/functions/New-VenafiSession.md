@@ -96,69 +96,80 @@ Tokens and TLSPC keys can be saved in a vault for future calls.
 
 ### EXAMPLE 1
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
-Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
+New-VenafiSession -Server venafi.mycompany.com -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
 ```
+
+Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 
 ### EXAMPLE 2
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -ClientId MyApp -Scope @{'certificate'='manage'}
-Create token-based session
+New-VenafiSession -Server venafi.mycompany.com -Credential $cred -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
 ```
+
+Create token-based session
 
 ### EXAMPLE 3
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -Certificate $myCert -ClientId MyApp -Scope @{'certificate'='manage'}
-Create token-based session using a client certificate
+New-VenafiSession -Server venafi.mycompany.com -Certificate $myCert -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
 ```
+
+Create token-based session using a client certificate
 
 ### EXAMPLE 4
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
-Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
+New-VenafiSession -Server venafi.mycompany.com -AuthServer tppauth.mycompany.com -ClientId VenafiPS-MyApp -Credential $cred
 ```
+
+Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 
 ### EXAMPLE 5
 ```
-$sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
-Create session and return the session object instead of setting to script scope variable
+$sess = New-VenafiSession -Server venafi.mycompany.com -Credential $cred -PassThru
 ```
+
+Create session and return the session object instead of setting to script scope variable
 
 ### EXAMPLE 6
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $accessCred
-Create session using an access token obtained outside this module
+New-VenafiSession -Server venafi.mycompany.com -AccessToken $accessCred
 ```
+
+Create session using an access token obtained outside this module
 
 ### EXAMPLE 7
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp
-Create session using a refresh token
+New-VenafiSession -Server venafi.mycompany.com -RefreshToken $refreshCred -ClientId VenafiPS-MyApp
 ```
+
+Create session using a refresh token
 
 ### EXAMPLE 8
 ```
-New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh
-Create session using a refresh token and store the newly created refresh token in the vault
+New-VenafiSession -Server venafi.mycompany.com -RefreshToken $refreshCred -ClientId VenafiPS-MyApp -VaultRefreshTokenName TppRefresh
 ```
+
+Create session using a refresh token and store the newly created refresh token in the vault
 
 ### EXAMPLE 9
 ```
 New-VenafiSession -VcKey $cred
-Create session against TLSPC
 ```
+
+Create session against TLSPC
 
 ### EXAMPLE 10
 ```
 New-VenafiSession -VcKey $cred -VcRegion 'eu'
-Create session against TLSPC in EU region
 ```
+
+Create session against TLSPC in EU region
 
 ### EXAMPLE 11
 ```
 New-VenafiSession -VaultVcKeyName vaas-key
-Create session against TLSPC with a key stored in a vault
 ```
+
+Create session against TLSPC with a key stored in a vault
 
 ## PARAMETERS
 

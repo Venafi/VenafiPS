@@ -145,6 +145,7 @@ Accept wildcard characters: False
 ### -PKCS12
 Export the certificate and private key in PKCS12 format. 
 The default is PEM.
+This is the preferred approach if directly importing into VDC or another VC tenant.
 Requires PowerShell v7.1+.
 
 ```yaml
