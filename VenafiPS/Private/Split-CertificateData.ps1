@@ -9,7 +9,8 @@ function Split-CertificateData {
     param (
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
-        [String] $CertificateData
+        [Alias('CertificateData')]
+        [String] $InputObject
     )
 
     begin {
@@ -17,13 +18,13 @@ function Split-CertificateData {
     }
 
     process {
-        if ( $CertificateData -match '-----BEGIN' ) {
+        if ( $InputObject -match '-----BEGIN' ) {
             # we got base64 surrounded by headers and footers
-            $pemLines = $CertificateData.Split("`n")
+            $pemLines = $InputObject.Split("`n")
         }
         else {
             # we got just base64 data
-            $pemLines = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($CertificateData)).Split("`n")
+            $pemLines = [System.Text.Encoding]::ASCII.GetString([System.Convert]::FromBase64String($InputObject)).Split("`n")
         }
 
         $certPem = @()

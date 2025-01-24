@@ -97,47 +97,58 @@ function New-VenafiSession {
     VenafiSession, if -PassThru is provided
 
     .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -ClientId MyApp -Scope @{'certificate'='manage'}
+    New-VenafiSession -Server venafi.mycompany.com -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
+    
     Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 
     .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -ClientId MyApp -Scope @{'certificate'='manage'}
+    New-VenafiSession -Server venafi.mycompany.com -Credential $cred -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
+    
     Create token-based session
 
     .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -Certificate $myCert -ClientId MyApp -Scope @{'certificate'='manage'}
+    New-VenafiSession -Server venafi.mycompany.com -Certificate $myCert -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
+    
     Create token-based session using a client certificate
 
     .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -AuthServer tppauth.mycompany.com -ClientId MyApp -Credential $cred
+    New-VenafiSession -Server venafi.mycompany.com -AuthServer tppauth.mycompany.com -ClientId VenafiPS-MyApp -Credential $cred
+    
     Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 
     .EXAMPLE
-    $sess = New-VenafiSession -Server venafitpp.mycompany.com -Credential $cred -PassThru
+    $sess = New-VenafiSession -Server venafi.mycompany.com -Credential $cred -PassThru
+
     Create session and return the session object instead of setting to script scope variable
 
     .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -AccessToken $accessCred
+    New-VenafiSession -Server venafi.mycompany.com -AccessToken $accessCred
+    
     Create session using an access token obtained outside this module
 
     .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp
+    New-VenafiSession -Server venafi.mycompany.com -RefreshToken $refreshCred -ClientId VenafiPS-MyApp
+    
     Create session using a refresh token
 
     .EXAMPLE
-    New-VenafiSession -Server venafitpp.mycompany.com -RefreshToken $refreshCred -ClientId MyApp -VaultRefreshTokenName TppRefresh
+    New-VenafiSession -Server venafi.mycompany.com -RefreshToken $refreshCred -ClientId VenafiPS-MyApp -VaultRefreshTokenName TppRefresh
+    
     Create session using a refresh token and store the newly created refresh token in the vault
 
     .EXAMPLE
     New-VenafiSession -VcKey $cred
+    
     Create session against TLSPC
 
     .EXAMPLE
     New-VenafiSession -VcKey $cred -VcRegion 'eu'
+    
     Create session against TLSPC in EU region
 
     .EXAMPLE
     New-VenafiSession -VaultVcKeyName vaas-key
+    
     Create session against TLSPC with a key stored in a vault
 
     .LINK

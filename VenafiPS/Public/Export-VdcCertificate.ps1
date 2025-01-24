@@ -293,7 +293,7 @@ function Export-VdcCertificate {
             if ( $innerResponse.CertificateData ) {
 
                 if ( $thisBody.Format -in 'Base64', 'Base64 (PKCS#8)' ) {
-                    $splitData = Split-CertificateData -CertificateData $innerResponse.CertificateData
+                    $splitData = Split-CertificateData -InputObject $innerResponse.CertificateData
                 }
 
                 if ( $using:OutPath ) {
@@ -359,7 +359,7 @@ function Export-VdcCertificate {
 
                     if ( $thisBody.IncludePrivateKey ) {
                         $out | Add-Member @{
-                            'PrivateKeyPasswordCredential' = (New-Object System.Management.Automation.PSCredential('unused', ($thisBody.Password | ConvertTo-SecureString -AsPlainText -Force)))
+                            'PrivateKeyPassword' = (New-Object System.Management.Automation.PSCredential('unused', ($thisBody.Password | ConvertTo-SecureString -AsPlainText -Force)))
                         }
                     }
 
@@ -368,6 +368,6 @@ function Export-VdcCertificate {
 
             $out
 
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Exporting certificates'
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Exporting certificates' -VenafiSession $VenafiSession
     }
 }

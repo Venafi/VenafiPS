@@ -50,7 +50,6 @@ function Import-VdcCertificate {
     Setting the value to 1 will disable multithreading.
     On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
 
-
     .PARAMETER PassThru
     Return a TppObject representing the newly imported object.
 
@@ -75,11 +74,18 @@ function Import-VdcCertificate {
 
     Import a certificate from data instead of a path
 
+    .EXAMPLE
+    New-VenafiSession -VcKey <api_key>
+    $sess = New-VenafiSession -Server venafi.mycompany.com -Credential $cred -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'} -PassThru
+    Find-VcCertificate -VersionType CURRENT | Export-VcCertificate -PrivateKeyPassword 'myPassword!' -PKCS12 | Import-VdcCertificate -PolicyPath 'certificates' -VenafiSession $sess
+
+    Export 1 or more certificates from TLSPC and import to TLSPDC.  Note the use of 2 sessions at once where the TLSPDC session is stored in a variable.
+
     .INPUTS
     Path, Data
 
     .OUTPUTS
-    TppObject, if PassThru provided
+    PSCustomObject, if PassThru provided
 
     .LINK
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Import.php
@@ -111,6 +117,7 @@ function Import-VdcCertificate {
         [Parameter(Mandatory, ParameterSetName = 'ByData', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
+        [Alias('CertificateData')]
         [String] $Data,
 
         [Parameter()]
@@ -127,9 +134,9 @@ function Import-VdcCertificate {
         [String] $PrivateKey,
 
         [Parameter(ParameterSetName = 'ByFile')]
-        [Parameter(ParameterSetName = 'ByData')]
+        [Parameter(ParameterSetName = 'ByData', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey')]
-        [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey')]
+        [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [ValidateScript(
             {
@@ -183,16 +190,24 @@ function Import-VdcCertificate {
             $params.Body.ObjectName = $Name
         }
 
-        if ( $PSBoundParameters.ContainsKey('PrivateKeyPassword') ) {
-            $params.Body.Password = $PrivateKeyPassword | ConvertTo-PlaintextString
-        }
-
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
             $params.Body.PrivateKeyData = $PrivateKey
         }
     }
-
+    
     process {
+        Write-Debug ('paramset={0}' -f $PSCmdlet.ParameterSetName)
+
+        if ( $PSBoundParameters.ContainsKey('PrivateKeyPassword') ) {
+            $params.Body.Password = $PrivateKeyPassword | ConvertTo-PlaintextString
+        }
+        else {
+            # password not provided for this pipeline object
+            if ( $params.Body.ContainsKey('Password') ) {
+                $params.Body.Remove('Password')
+            }
+        }
+
         $allCerts.Add(
             @{
                 InvokeParams = $params
@@ -240,6 +255,6 @@ function Import-VdcCertificate {
             catch {
                 Write-Error $_
             }
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Importing certificates'
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Importing certificates' -VenafiSession $VenafiSession
     }
 }

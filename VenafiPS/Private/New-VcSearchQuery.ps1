@@ -76,8 +76,7 @@ function New-VcSearchQuery {
             # if so, pull it off the list and process the rest
             if ($Filter[0] -is 'String' -and $Filter[0] -in 'AND', 'OR') {
                 $operator = $Filter[0].ToUpper()
-                $loopFilter = $Filter | Select-Object -Skip 1
-                $loopFilter = @(, $loopFilter)
+                $loopFilter.RemoveAt(0)
             }
 
             $operands = foreach ($thisItem in $loopFilter) {
