@@ -1,3 +1,4 @@
-- Add ability to import all certificates from a folder with `Import-VcCertificate -Path`
-- Fix parameter set issue where `-PrivateKeyPassword` could not be provided with `Import-VcCertificate -Path`
-- Fix [#315](https://github.com/Venafi/VenafiPS/issues/315), appending certificate id to exported file name
+- Add support for X509 (.pem, .cer, and .crt) to `Import-VcCertificate`.  Both by path and by data are supported.  Pull in a folder full of certificates or pipe from either TLSPDC or another TLSPC tenant.
+- Add `Find-VcCertificate -IsExpired`
+- Better support for exporting and importing certificates between TLSPDC and TLSPC via pipeline
+- Fix bug with `New-VcSearchQuery` when a specific number of filters were provided
