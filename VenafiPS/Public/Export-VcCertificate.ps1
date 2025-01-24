@@ -26,6 +26,7 @@ function Export-VcCertificate {
 
     .PARAMETER PKCS12
     Export the certificate and private key in PKCS12 format.  The default is PEM.
+    This is the preferred approach if directly importing into VDC or another VC tenant.
     Requires PowerShell v7.1+.
 
     .PARAMETER ThrottleLimit
@@ -219,7 +220,7 @@ function Export-VcCertificate {
                         # return contents
                         $out | Add-Member @{ 'certificateData' = [System.Convert]::ToBase64String($innerResponse.Content) }
                         if ( $pkPassString ) {
-                            $out | Add-Member @{ 'privateKeyPasswordCredential' = (New-Object System.Management.Automation.PSCredential('unused', ($pkPassString | ConvertTo-SecureString -AsPlainText -Force))) }
+                            $out | Add-Member @{ 'privateKeyPassword' = (New-Object System.Management.Automation.PSCredential('unused', ($pkPassString | ConvertTo-SecureString -AsPlainText -Force))) }
                         }
                     }
                     return $out
@@ -242,6 +243,7 @@ function Export-VcCertificate {
                     if ( $using:OutPath ) {
 
                         if ( $using:PKCS12 ) {
+                            # create pkcs12 from crt and key
                             $keyFile = Get-ChildItem -Path $unzipPath -Filter '*.key'
 
                             if ( $keyFile.Count -ne 1 ) {
@@ -256,8 +258,8 @@ function Export-VcCertificate {
                             $cert.Export(3, $pkPassString) | Set-Content -Path (Join-Path -Path $using:OutPath -ChildPath ('{0}.pfx' -f $keyFile.BaseName)) -AsByteStream
                         }
                         else {
-                            # copy files to final desination
-                            $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath ('{0}-{1}' -f $thisCert.certificateName, $thisCert.certificateId)
+                            # copy files from zip to final desination since they are already in pem format
+                            $dest = Join-Path -Path (Resolve-Path -Path $using:OutPath) -ChildPath $thisCert.certificateName
                             $null = New-Item -Path $dest -ItemType Directory -Force
                             $unzipFiles | Copy-Item -Destination $dest -Force
                             $out | Add-Member @{'outPath' = $dest }
@@ -271,24 +273,11 @@ function Export-VcCertificate {
                             }
                             { $_.Name.EndsWith('root-last.pem') } {
 
-                                $certPem = @()
-
-                                $pemLines = Get-Content -Path $_.FullName
-                                for ($i = 0; $i -lt $pemLines.Count; $i++) {
-                                    if ($pemLines[$i].Contains('-----BEGIN')) {
-                                        $iStart = $i
-                                        continue
-                                    }
-                                    if ($pemLines[$i].Contains('-----END')) {
-                                        $thisPemLines = $pemLines[$iStart..$i]
-                                        $certPem += $thisPemLines -join "`n"
-                                        continue
-                                    }
-                                }
-
-                                $out | Add-Member @{'CertPem' = $certPem[0] }
+                                $pem = Split-CertificateData -InputObject (Get-Content -Path $_.FullName -Raw)
+                                
+                                $out | Add-Member @{'CertPem' = $pem.CertPem }
                                 if ( $using:IncludeChain ) {
-                                    $out | Add-Member @{'ChainPem' = $certPem[1..($certPem.Count - 1)] }
+                                    $out | Add-Member @{'ChainPem' = $pem.ChainPem }
                                 }
                             }
                         }

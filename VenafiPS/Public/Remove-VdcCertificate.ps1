@@ -67,7 +67,7 @@ function Remove-VdcCertificate {
                     $true
                 }
                 else {
-                    throw "'$_' is not a valid DN path"
+                    throw "'$_' is not a valid path"
                 }
             })]
         [Alias('DN', 'CertificateDN')]
@@ -114,6 +114,6 @@ function Remove-VdcCertificate {
             }
 
             $null = Invoke-VenafiRestMethod -Method Delete -UriLeaf "Certificates/$guid"
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Deleting certificates'
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Deleting certificates' -VenafiSession $VenafiSession
     }
 }

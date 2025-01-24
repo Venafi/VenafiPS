@@ -359,7 +359,7 @@ function Export-VdcCertificate {
 
                     if ( $thisBody.IncludePrivateKey ) {
                         $out | Add-Member @{
-                            'PrivateKeyPasswordCredential' = (New-Object System.Management.Automation.PSCredential('unused', ($thisBody.Password | ConvertTo-SecureString -AsPlainText -Force)))
+                            'PrivateKeyPassword' = (New-Object System.Management.Automation.PSCredential('unused', ($thisBody.Password | ConvertTo-SecureString -AsPlainText -Force)))
                         }
                     }
 

@@ -32,10 +32,6 @@ function Import-VcCertificate {
     .PARAMETER PrivateKeyPassword
     Password the private key was encrypted with
 
-    .PARAMETER PrivateKeyPasswordCredential
-    Password the private key was encrypted with, in PSCredential type.
-    This is used with -Format to pipe from Export-VcCertificate.
-
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 10.  Applicable to PS v7+ only.
     100 keystores will be imported at a time so it's less important to have a very high throttle limit.
@@ -68,7 +64,8 @@ function Import-VcCertificate {
     .EXAMPLE
     Find-VcCertificate | Export-VcCertificate -PrivateKeyPassword 'secretPassword#' -PKCS12 | Import-VcCertificate -VenafiSession $tenant2_key
 
-    Export from 1 TLSPC tenant and import to another
+    Export from 1 TLSPC tenant and import to another.
+    This assumes New-VenafiSession has been run for the source tenant.
 
     .INPUTS
     Data
@@ -112,6 +109,7 @@ function Import-VcCertificate {
         [Parameter(Mandatory, ParameterSetName = 'PKCS8')]
         [Parameter(Mandatory, ParameterSetName = 'PKCS12')]
         [Parameter(ParameterSetName = 'ByFile')]
+        [Parameter(ParameterSetName = 'Format', ValueFromPipelineByPropertyName)]
         [ValidateScript(
             {
                 if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
@@ -124,9 +122,6 @@ function Import-VcCertificate {
         )]
         [psobject] $PrivateKeyPassword,
 
-        [Parameter(ParameterSetName = 'Format', ValueFromPipelineByPropertyName)]
-        [pscredential] $PrivateKeyPasswordCredential,
-        
         [Parameter()]
         [int32] $ThrottleLimit = 10,
 
@@ -226,9 +221,9 @@ function Import-VcCertificate {
 
                 if ( $Format ) {
                     $addMe.Format = $Format
-                    # privatekeypasswordcredential might have been provided via pipeline so this must be in process block
-                    if ( $PrivateKeyPasswordCredential ) {
-                        $pkPassString = ConvertTo-PlaintextString -InputObject $PrivateKeyPasswordCredential
+                    # privatekeypassword might have been provided via pipeline so this must be in process block
+                    if ( $PrivateKeyPassword ) {
+                        $pkPassString = ConvertTo-PlaintextString -InputObject $PrivateKeyPassword
                     }
                 }
                 else {
@@ -242,6 +237,7 @@ function Import-VcCertificate {
                     }
 
                     # X509 and PKCS8 both use Base64, but 'Base64' is how tlspdc refers to x509
+                    # this allows us to pipe from tlspdc to tlspc
                     { $_ -in 'PKCS8', 'X509', 'Base64' } {
                         $splitData = Split-CertificateData -CertificateData $Data
 
