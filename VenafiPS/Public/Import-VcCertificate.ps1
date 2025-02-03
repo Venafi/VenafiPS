@@ -79,7 +79,7 @@ function Import-VcCertificate {
     On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
 
     Non keystore imports, just certs no keys, will override the blocklist by default.
-    To override this behavior, set the environment variable VC_ENABLE_BLOCKLIST to 'true'.
+    To honor the blocklist, set the environment variable VC_ENABLE_BLOCKLIST to 'true'.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ByFile')]
@@ -92,7 +92,7 @@ function Import-VcCertificate {
         [Alias('FullName', 'CertificatePath', 'FilePath')]
         [String] $Path,
 
-        [Parameter(Mandatory, ParameterSetName = 'PKCS12', ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'PKCS12', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'PKCS8', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'Format', ValueFromPipelineByPropertyName)]
         [Alias('certificateData')]
@@ -276,7 +276,7 @@ function Import-VcCertificate {
             $importList = [System.Collections.Generic.List[hashtable]]::new()
 
             if ( -not $pkPassString ) {
-                throw 'When importing certificates with private keys, -PrivateKeyPassword is required.'
+                throw [System.ArgumentNullException]::new('PrivateKeyPassword', 'When importing certificates with private keys, a private key password is required.')
             }
 
             $dekEncryptedPassword = ConvertTo-SodiumEncryptedString -Text $pkPassString -PublicKey $vSat.encryptionKey
@@ -330,7 +330,7 @@ function Import-VcCertificate {
                     }
                     catch {
                         if ( $_.Exception.StatusCode -eq 500 -and $_.ErrorDetails.Message -match 'Unexpected error encountered' ) {
-                            # issue in api where returns a 500 even though it hasn't actually failed
+                            # issue in api where it returns a 500 even though it hasn't actually failed
                             # perhaps it takes longer for the import process to get started and provide a 'processing' state
                             Write-Verbose ('import id: {0}, status: no status yet' -f $requestResponse.id)
                         }
@@ -387,7 +387,7 @@ function Import-VcCertificate {
     
                 $importCertPayload = foreach ($thisCert in $allNoKeyCerts[$i..($i + 99)]) {
                     @{
-                        'certificate'  = $thisCert.CertPem
+                        'certificate' = $thisCert.CertPem
                     }
                 }
     
