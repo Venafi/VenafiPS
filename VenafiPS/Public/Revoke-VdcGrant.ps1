@@ -42,7 +42,7 @@ function Revoke-VdcGrant {
     https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-VdcGrant.ps1
 
     .LINK
-    https://doc.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-oauth-revokegrants.htm
+    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-oauth-revokegrants.php
 
     #>
 

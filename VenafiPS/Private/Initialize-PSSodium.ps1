@@ -16,7 +16,7 @@ function Initialize-PSSodium {
             Install-Module -Name PSSodium -Force -RequiredVersion '0.4.2'
         }
         else {
-            throw 'The PSSodium module is not installed.  Add -Force for the module to be automatically installed.'
+            throw 'The PSSodium module is not installed.  Add -Force for the module to be automatically installed or install from the PowerShell Gallery.'
         }
     }
 
