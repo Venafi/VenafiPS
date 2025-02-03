@@ -23,6 +23,10 @@ function Test-VenafiSession {
 
     process {
 
+        # moving the functionality into Get-VenafiSession which will be called by
+        # the Invoke functions
+        return
+        
         if ( (Get-PSCallStack).Count -gt 3 -and -not $InvocationInfo.BoundParameters['VenafiSession'] ) {
             # nested function, no need to continue testing session since it was already done
             return
@@ -108,7 +112,7 @@ function Test-VenafiSession {
             }
         }
 
-        $script:VenafiSessionNested = $VenafiSession
+        # $script:VenafiSessionNested = $VenafiSession
         # $script:PlatformNested = $Platform
     }
 }

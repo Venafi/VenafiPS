@@ -156,18 +156,12 @@ function Test-VdcToken {
 
     process {
 
-        Write-Verbose ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
+        Write-Debug ('Parameter set: {0}' -f $PSCmdlet.ParameterSetName)
 
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
-                if ( -not $VenafiSession ) {
-                    throw [System.ArgumentNullException] 'VenafiSession'
-                }
-                if ( $VenafiSession -isnot [pscustomobject] -or -not $VenafiSession.Token ) {
-                    throw [System.ArgumentException]::new('Must provide a VenafiSession object', 'VenafiSession')
-                }
 
-                $params.VenafiSession = $VenafiSession
+                $params.VenafiSession = (Get-VenafiSession)
             }
 
             'AccessToken' {

@@ -95,33 +95,10 @@ function Invoke-VenafiRestMethod {
         TimeoutSec      = $TimeoutSec
     }
 
-
+    # default parameter set, no explicit session will come here
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
 
-        # if ( -not $VenafiSession ) {
-        if ( $env:VDC_TOKEN ) {
-            $VenafiSession = $env:VDC_TOKEN
-            Write-Verbose 'Using TLSPDC token environment variable'
-        }
-        elseif ( $env:VC_KEY ) {
-            $VenafiSession = $env:VC_KEY
-            Write-Verbose 'Using TLSPC key environment variable'
-        }
-        elseif ( $PSBoundParameters.VenafiSession ) {
-            Write-Verbose 'Using session provided'
-        }
-        elseif ($script:VenafiSessionNested) {
-            $VenafiSession = $script:VenafiSessionNested
-            Write-Verbose 'Using nested session'
-        }
-        elseif ( $script:VenafiSession ) {
-            $VenafiSession = $script:VenafiSession
-            Write-Verbose 'Using script session'
-        }
-        else {
-            throw 'Please run New-VenafiSession or provide a TLSPC key or TLSPDC token.'
-        }
-        # }
+        $VenafiSession = Get-VenafiSession
 
         switch ($VenafiSession.GetType().Name) {
             'PSCustomObject' {
@@ -197,7 +174,8 @@ function Invoke-VenafiRestMethod {
 
     if ( $UriRoot -eq 'graphql' ) {
         $params.Uri = "$Server/graphql"
-    } else {
+    }
+    else {
         $params.Uri = '{0}/{1}/{2}' -f $Server, $UriRoot, $UriLeaf
     }
 

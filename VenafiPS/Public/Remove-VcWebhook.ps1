@@ -1,4 +1,4 @@
-function Remove-VcWebhook {
+﻿function Remove-VcWebhook {
     <#
     .SYNOPSIS
     Remove a webhook
@@ -56,6 +56,6 @@ function Remove-VcWebhook {
     end {
         Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
             $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "connectors/$PSItem"
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit
     }
 }

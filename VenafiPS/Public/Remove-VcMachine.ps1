@@ -1,4 +1,4 @@
-function Remove-VcMachine {
+﻿function Remove-VcMachine {
     <#
     .SYNOPSIS
     Remove a machine
@@ -56,6 +56,6 @@ function Remove-VcMachine {
     end {
         Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
             $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "machines/$PSItem"
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit
     }
 }

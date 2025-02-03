@@ -1,4 +1,4 @@
-function Remove-VcIssuingTemplate {
+﻿function Remove-VcIssuingTemplate {
     <#
     .SYNOPSIS
     Remove a issuing template
@@ -56,6 +56,6 @@ function Remove-VcIssuingTemplate {
     end {
         Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
             $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "certificateissuingtemplates/$PSItem"
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit
     }
 }

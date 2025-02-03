@@ -1,4 +1,4 @@
-function Remove-VcTag {
+﻿function Remove-VcTag {
     <#
     .SYNOPSIS
     Remove a tag
@@ -56,6 +56,6 @@ function Remove-VcTag {
     end {
         Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
             $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "tags/$PSItem"
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit
     }
 }

@@ -1,4 +1,4 @@
-function Remove-VcTeam {
+﻿function Remove-VcTeam {
     <#
     .SYNOPSIS
     Remove a team
@@ -56,6 +56,6 @@ function Remove-VcTeam {
     end {
         Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
             $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "teams/$PSItem"
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit
     }
 }

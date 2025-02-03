@@ -1,4 +1,4 @@
-function Remove-VcMachineIdentity {
+﻿function Remove-VcMachineIdentity {
     <#
     .SYNOPSIS
     Remove a machine identity
@@ -56,6 +56,6 @@ function Remove-VcMachineIdentity {
     end {
         Invoke-VenafiParallel -InputObject $allObjects -ScriptBlock {
             $null = Invoke-VenafiRestMethod -Method 'Delete' -UriLeaf "machineidentities/$PSItem"
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit
     }
 }
