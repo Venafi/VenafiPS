@@ -257,9 +257,12 @@ function Export-VdcCertificate {
                             throw $_
                         }
 
+                        # it could be we just don't have a private key so get just the cert
                         $thisBody.IncludePrivateKey = $false
                         $thisBody.Password = $null
                         $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+                    } else {
+                        throw $_
                     }
                 }
                 catch {
@@ -271,7 +274,7 @@ function Export-VdcCertificate {
                 }
             }
 
-            $out = $innerResponse | Select-Object Filename, @{
+            $out = $innerResponse | Select-Object @{
                 n = 'Path'
                 e = { $thisBody.CertificateDN }
             },
@@ -289,7 +292,12 @@ function Export-VdcCertificate {
             @{
                 n = 'Error'
                 e = { $_.Status }
-            }, CertificateData
+            }, 
+            @{
+                n = 'PolicyPath'
+                e = { $thisBody.CertificateDN.Substring(0, $thisBody.CertificateDN.LastIndexOf('\')) }
+            },
+            CertificateData
 
             if ( $innerResponse.CertificateData ) {
 
@@ -369,6 +377,6 @@ function Export-VdcCertificate {
 
             $out
 
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Exporting certificates' -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Exporting certificates'
     }
 }

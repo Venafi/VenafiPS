@@ -45,13 +45,16 @@ function Import-VdcCertificate {
     Archive the unused certificate, even if it is the imported certificate, to the History tab.
     See https://docs.venafi.com/Docs/currentSDK/TopNav/Content/CA/c-CA-Import-ReconciliationRules-tpp.php for a flowchart of the reconciliation algorithm.
 
+    .PARAMETER Force
+    Force the policy path to be created if it doesn't exist
+
     .PARAMETER ThrottleLimit
     Limit the number of threads when running in parallel; the default is 100.
     Setting the value to 1 will disable multithreading.
     On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
 
     .PARAMETER PassThru
-    Return a TppObject representing the newly imported object.
+    Return the newly imported object.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -91,14 +94,10 @@ function Import-VdcCertificate {
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Import.php
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'ByFile')]
+    [CmdletBinding(DefaultParameterSetName = 'ByData', SupportsShouldProcess)]
     [Alias('Import-TppCertificate')]
 
     param (
-
-        [Parameter(Mandatory)]
-        [ValidateNotNullOrEmpty()]
-        [String] $PolicyPath,
 
         [Parameter(Mandatory, ParameterSetName = 'ByFile', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'ByFileWithPrivateKey', ValueFromPipelineByPropertyName)]
@@ -108,18 +107,22 @@ function Import-VdcCertificate {
                     $true
                 }
                 else {
-                    throw "'$_' is not a valid path"
+                    throw "'$_' is not a valid file path"
                 }
             })]
-        [Alias('FullName')]
         [String] $Path,
-
+        
         [Parameter(Mandatory, ParameterSetName = 'ByData', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [Alias('CertificateData')]
         [String] $Data,
+        
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [ValidateNotNullOrEmpty()]
+        [String] $PolicyPath,
 
+        [Alias('FullName')]
         [Parameter()]
         [ValidateNotNullOrEmpty()]
         [String] $Name,
@@ -154,12 +157,16 @@ function Import-VdcCertificate {
         [switch] $Reconcile,
 
         [Parameter()]
+        [switch] $Force,
+
+        [Parameter()]
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -167,45 +174,55 @@ function Import-VdcCertificate {
 
         Test-VenafiSession $PSCmdlet.MyInvocation
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
-
-        $params = @{
-
-            Method  = 'Post'
-            UriLeaf = 'certificates/import'
-            Body    = @{
-                PolicyDN = $PolicyPath | ConvertTo-VdcFullPath
-            }
-        }
-
+        
         if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {
             $updatedAttribute = @($EnrollmentAttribute.GetEnumerator() | ForEach-Object { @{'Name' = $_.name; 'Value' = $_.value } })
+        }
+    }
+
+    process {
+    
+        Write-Debug ('paramset={0}' -f $PSCmdlet.ParameterSetName)
+
+        $params = @{
+            Method  = 'Post'
+            UriLeaf = 'certificates/import'
+            Body    = @{}
+        }
+    
+        if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {
             $params.Body.CASpecificAttributes = $updatedAttribute
         }
-
+    
         if ( $Reconcile ) {
             $params.Body.Reconcile = 'true'
         }
-
+    
         if ( $PSBoundParameters.ContainsKey('Name') ) {
             $params.Body.ObjectName = $Name
         }
-
+    
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
             $params.Body.PrivateKeyData = $PrivateKey
         }
-    }
-    
-    process {
-        Write-Debug ('paramset={0}' -f $PSCmdlet.ParameterSetName)
+
+        # check if the policy path exists and if we should create it
+        $fullPolicyPath = $PolicyPath | ConvertTo-VdcFullPath
+        if ( -not (Test-VdcObject -Path $fullPolicyPath -ExistOnly) ) {
+            if ( $Force ) {
+                Write-Verbose "Creating policy path $fullPolicyPath"
+                New-VdcPolicy -Path $fullPolicyPath -Force
+            }
+            else {
+                Write-Error "Cannot import to $fullPolicyPath as it does not exist.  To create the policy folder, add -Force."
+                return
+            }
+        }
+
+        $params.Body.PolicyDN = $fullPolicyPath
 
         if ( $PSBoundParameters.ContainsKey('PrivateKeyPassword') ) {
             $params.Body.Password = $PrivateKeyPassword | ConvertTo-PlaintextString
-        }
-        else {
-            # password not provided for this pipeline object
-            if ( $params.Body.ContainsKey('Password') ) {
-                $params.Body.Remove('Password')
-            }
         }
 
         $allCerts.Add(
@@ -239,7 +256,6 @@ function Import-VdcCertificate {
                     }
                     $certData = [System.Convert]::ToBase64String($cert)
                 }
-
             }
 
             $params = $PSItem.InvokeParams
@@ -248,13 +264,16 @@ function Import-VdcCertificate {
             try {
                 $response = Invoke-VenafiRestMethod @params
 
+                Write-Verbose ('Imported certificate, path: {0}, guid: {1}' -f $response.CertificateDN, $response.Guid)
+
                 if ( $using:PassThru ) {
                     Get-VdcObject -Guid $response.Guid.trim('{}')
                 }
             }
             catch {
+                # write error but continue with next item
                 Write-Error $_
             }
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Importing certificates' -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Importing certificates'
     }
 }
