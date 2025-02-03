@@ -171,6 +171,7 @@ function New-VcMachine {
         [switch] $Force,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -286,7 +287,7 @@ function New-VcMachine {
                     'e' = { $workflowResponse | Select-Object Success, Error, WorkflowID }
                 }, * -ExcludeProperty id
             }
-        } -ThrottleLimit $ThrottleLimit -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit
 
         if ( $PassThru ) {
             $response

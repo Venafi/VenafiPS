@@ -86,6 +86,7 @@ function Add-VdcAdaptableHash {
         [string] $FilePath,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

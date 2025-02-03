@@ -1,4 +1,4 @@
-﻿function Remove-VcMachineIdentity {
+function Remove-VcMachineIdentity {
     <#
     .SYNOPSIS
     Remove a machine identity
@@ -38,6 +38,7 @@
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

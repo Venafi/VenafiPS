@@ -72,6 +72,7 @@ function Convert-VdcObject {
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

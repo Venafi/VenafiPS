@@ -58,6 +58,7 @@
         [switch] $All,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [Alias('Key', 'AccessToken')]
         [psobject] $VenafiSession
     )

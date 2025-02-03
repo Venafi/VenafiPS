@@ -58,6 +58,7 @@ function Get-VdcObject {
         [guid[]] $Guid,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

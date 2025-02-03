@@ -103,6 +103,7 @@ function New-VdcDevice {
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

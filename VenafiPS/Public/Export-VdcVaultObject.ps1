@@ -54,6 +54,7 @@ function Export-VdcVaultObject {
         [String] $OutPath,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

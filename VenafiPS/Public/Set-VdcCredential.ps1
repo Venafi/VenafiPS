@@ -179,6 +179,7 @@ function Set-VdcCredential {
         [hashtable] $Value,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

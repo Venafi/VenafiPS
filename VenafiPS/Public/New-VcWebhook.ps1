@@ -100,6 +100,7 @@ function New-VcWebhook {
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

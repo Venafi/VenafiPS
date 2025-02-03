@@ -140,6 +140,7 @@ function Export-VcCertificate {
         [switch] $Force,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

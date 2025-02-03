@@ -48,6 +48,7 @@ function ConvertTo-VdcGuid {
         [switch] $IncludeType,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

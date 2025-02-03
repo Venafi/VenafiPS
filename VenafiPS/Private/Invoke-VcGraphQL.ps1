@@ -9,7 +9,7 @@ function Invoke-VcGraphQL {
 
     param (
         [Parameter(ParameterSetName = 'Session')]
-        [AllowNull()]
+        [ValidateNotNullOrEmpty()]
         [Alias('Key', 'AccessToken')]
         [psobject] $VenafiSession,
 

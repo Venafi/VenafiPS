@@ -165,6 +165,7 @@ function New-VcMachineIis {
         [switch] $Force,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

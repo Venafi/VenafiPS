@@ -187,6 +187,7 @@ function New-VcMachineCommonKeystore {
         [switch] $Force,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

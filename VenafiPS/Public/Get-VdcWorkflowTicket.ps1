@@ -79,6 +79,7 @@ function Get-VdcWorkflowTicket {
         [String[]] $Path,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

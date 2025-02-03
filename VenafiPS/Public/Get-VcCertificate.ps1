@@ -52,6 +52,7 @@
         [switch] $IncludeVaasOwner,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

@@ -39,6 +39,7 @@ function Get-VdcVersion {
 
     param (
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

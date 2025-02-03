@@ -63,6 +63,7 @@ function Find-VcMachine {
         [int] $First,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

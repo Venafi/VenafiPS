@@ -103,6 +103,7 @@ function New-VdcObject {
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

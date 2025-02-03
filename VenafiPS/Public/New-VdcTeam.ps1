@@ -101,6 +101,7 @@
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

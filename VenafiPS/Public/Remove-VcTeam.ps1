@@ -1,4 +1,4 @@
-﻿function Remove-VcTeam {
+function Remove-VcTeam {
     <#
     .SYNOPSIS
     Remove a team
@@ -38,6 +38,7 @@
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

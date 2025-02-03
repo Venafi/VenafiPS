@@ -56,6 +56,7 @@ function Find-VcCertificateRequest {
         [int] $First,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

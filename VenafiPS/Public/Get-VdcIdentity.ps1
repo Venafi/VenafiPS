@@ -103,6 +103,7 @@ function Get-VdcIdentity {
         [Switch] $IncludeMembers,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

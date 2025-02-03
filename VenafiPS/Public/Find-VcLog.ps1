@@ -105,6 +105,7 @@ function Find-VcLog {
         [int] $First,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

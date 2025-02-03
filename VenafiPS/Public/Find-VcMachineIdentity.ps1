@@ -50,6 +50,7 @@ function Find-VcMachineIdentity {
         [int] $First,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

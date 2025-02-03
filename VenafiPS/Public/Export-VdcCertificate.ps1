@@ -193,6 +193,7 @@ function Export-VdcCertificate {
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

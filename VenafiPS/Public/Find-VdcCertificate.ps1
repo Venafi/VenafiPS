@@ -377,6 +377,7 @@ function Find-VdcCertificate {
         [Switch] $CountOnly,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

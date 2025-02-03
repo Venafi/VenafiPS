@@ -1,4 +1,4 @@
-﻿function Remove-VcApplication {
+function Remove-VcApplication {
     <#
     .SYNOPSIS
     Remove a application
@@ -38,6 +38,7 @@
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

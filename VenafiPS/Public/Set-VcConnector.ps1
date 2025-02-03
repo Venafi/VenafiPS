@@ -87,6 +87,7 @@
         [switch] $Disable,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

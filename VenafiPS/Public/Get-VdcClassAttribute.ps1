@@ -21,6 +21,7 @@ function Get-VdcClassAttribute {
         [string] $ClassName,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

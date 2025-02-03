@@ -1,4 +1,4 @@
-﻿function Remove-VcMachine {
+function Remove-VcMachine {
     <#
     .SYNOPSIS
     Remove a machine
@@ -38,6 +38,7 @@
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

@@ -46,6 +46,7 @@ function Find-VdcVaultId {
         [hashtable] $Attribute,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

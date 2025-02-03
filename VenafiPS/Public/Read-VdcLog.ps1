@@ -130,6 +130,7 @@ function Read-VdcLog {
         [int] $First,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

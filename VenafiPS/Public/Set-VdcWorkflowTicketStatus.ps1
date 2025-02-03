@@ -78,6 +78,7 @@ function Set-VdcWorkflowTicketStatus {
         [DateTime] $ScheduledStop,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

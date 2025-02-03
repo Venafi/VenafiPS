@@ -136,7 +136,8 @@ function Test-VdcToken {
         [switch] $GrantDetail,
 
         [Parameter(ParameterSetName = 'Session')]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [ValidateNotNullOrEmpty()]
+        [psobject] $VenafiSession
     )
 
     begin {

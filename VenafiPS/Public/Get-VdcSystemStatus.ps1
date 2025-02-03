@@ -37,6 +37,7 @@ function Get-VdcSystemStatus {
 
     param (
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

@@ -146,6 +146,7 @@ function Invoke-VcCertificateAction {
         [hashtable] $AdditionalParameters,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

@@ -229,6 +229,7 @@ function Find-VcCertificate {
         [int] $First,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

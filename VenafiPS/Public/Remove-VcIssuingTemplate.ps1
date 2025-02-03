@@ -1,4 +1,4 @@
-﻿function Remove-VcIssuingTemplate {
+function Remove-VcIssuingTemplate {
     <#
     .SYNOPSIS
     Remove a issuing template
@@ -38,6 +38,7 @@
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

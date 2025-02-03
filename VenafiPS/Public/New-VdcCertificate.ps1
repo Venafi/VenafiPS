@@ -205,6 +205,7 @@ function New-VdcCertificate {
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

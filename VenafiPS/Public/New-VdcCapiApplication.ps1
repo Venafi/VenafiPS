@@ -197,6 +197,7 @@ function New-VdcCapiApplication {
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

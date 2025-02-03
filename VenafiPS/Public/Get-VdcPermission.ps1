@@ -152,6 +152,7 @@
         [switch] $Explicit,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

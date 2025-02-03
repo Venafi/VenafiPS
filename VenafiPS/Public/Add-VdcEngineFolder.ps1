@@ -57,6 +57,7 @@ function Add-VdcEngineFolder {
         [String[]] $FolderPath,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

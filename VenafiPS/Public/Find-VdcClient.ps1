@@ -50,6 +50,7 @@ function Find-VdcClient {
         [String] $ClientType,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

@@ -150,6 +150,7 @@ function Find-VdcObject {
         [switch] $NoLookup,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

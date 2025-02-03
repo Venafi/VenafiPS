@@ -65,6 +65,7 @@ function Test-VdcIdentity {
         [Switch] $ExistOnly,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

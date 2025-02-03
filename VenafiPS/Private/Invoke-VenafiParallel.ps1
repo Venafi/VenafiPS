@@ -65,6 +65,7 @@ function Invoke-VenafiParallel {
         [string] $ProgressTitle = 'Performing action',
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
 
     )

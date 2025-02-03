@@ -61,6 +61,7 @@ function Get-VdcCredential {
         [switch] $IncludeDetail,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

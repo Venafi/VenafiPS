@@ -132,6 +132,7 @@ function Set-VdcAttribute {
         [switch] $NoOverwrite,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

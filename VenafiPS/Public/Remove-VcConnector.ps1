@@ -43,6 +43,7 @@
         [string] $ID,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

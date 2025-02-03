@@ -90,6 +90,7 @@ function Remove-VdcCertificateAssociation {
         [switch] $All,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

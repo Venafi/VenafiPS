@@ -42,6 +42,7 @@
         [string[]] $Owner,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

@@ -1,4 +1,4 @@
-﻿function Remove-VcWebhook {
+function Remove-VcWebhook {
     <#
     .SYNOPSIS
     Remove a webhook
@@ -38,6 +38,7 @@
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
