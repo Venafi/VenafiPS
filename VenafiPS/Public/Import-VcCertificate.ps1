@@ -323,9 +323,23 @@ function Import-VcCertificate {
                 $params = $PSItem
     
                 $requestResponse = Invoke-VenafiRestMethod @params
+
                 do {
-                    Write-Verbose "checking job status for id $($requestResponse.id)"
+                    try {
                     $jobResponse = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificates/imports/$($requestResponse.id)"
+Write-Verbose ('import id: {0}, status: {1}' -f $requestResponse.id, $jobResponse.status)
+                    }
+                    catch {
+                        if ( $_.Exception.StatusCode -eq 500 -and $_.ErrorDetails.Message -match 'Unexpected error encountered' ) {
+                            # issue in api where returns a 500 even though it hasn't actually failed
+                            # perhaps it takes longer for the import process to get started and provide a 'processing' state
+                            Write-Verbose ('import id: {0}, status: no status yet' -f $requestResponse.id)
+                        }
+                        else {
+                            throw $_
+                        }
+                    }
+                    
                     Start-Sleep 2
                 } until (
                     $jobResponse.status -in 'COMPLETED', 'FAILED'
