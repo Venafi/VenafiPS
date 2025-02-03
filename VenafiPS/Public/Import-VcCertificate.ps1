@@ -9,7 +9,7 @@ function Import-VcCertificate {
 
     .PARAMETER Path
     Path to a certificate file or folder with multiple certificates.
-    Wildcard extensions are also supported, eg. /my/path/*.pfx.
+    Wildcards are also supported, eg. /my/path/*.pfx.
     Provide either this or -Data.
 
     .PARAMETER Data
@@ -77,6 +77,9 @@ function Import-VcCertificate {
     This function requires the use of sodium encryption.
     .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
     On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
+
+    Non keystore imports, just certs no keys, will override the blocklist by default.
+    To override this behavior, set the environment variable VC_ENABLE_BLOCKLIST to 'true'.
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ByFile')]
@@ -89,11 +92,9 @@ function Import-VcCertificate {
         [Alias('FullName', 'CertificatePath', 'FilePath')]
         [String] $Path,
 
-        [Parameter(Mandatory, ParameterSetName = 'PKCS12', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'PKCS12', ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'PKCS8', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'Format', ValueFromPipelineByPropertyName)]
-        # [AllowNull()]
-        # [AllowEmptyString()]
         [Alias('certificateData')]
         [String] $Data,
 
@@ -129,6 +130,7 @@ function Import-VcCertificate {
         [switch] $Force,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -258,10 +260,8 @@ function Import-VcCertificate {
                         Write-Error "Unknown format '$_'"
                     }
                 }
-
             }
         }
-
     }
 
     end {
@@ -286,14 +286,13 @@ function Import-VcCertificate {
             for ($i = 0; $i -lt $allCerts.Count; $i += 100) {
     
                 $params = @{
-                    Method        = 'POST'
-                    UriRoot       = 'outagedetection/v1'
-                    UriLeaf       = 'certificates/imports'
-                    Body          = @{
+                    Method  = 'POST'
+                    UriRoot = 'outagedetection/v1'
+                    UriLeaf = 'certificates/imports'
+                    Body    = @{
                         'edgeInstanceId'  = $vSat.vsatelliteId
                         'encryptionKeyId' = $vSat.encryptionKeyId
                     }
-                    VenafiSession = $VenafiSession
                 }
     
                 $keystores = foreach ($thisCert in $allCerts[$i..($i + 99)]) {
@@ -326,8 +325,8 @@ function Import-VcCertificate {
 
                 do {
                     try {
-                    $jobResponse = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificates/imports/$($requestResponse.id)"
-Write-Verbose ('import id: {0}, status: {1}' -f $requestResponse.id, $jobResponse.status)
+                        $jobResponse = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf "certificates/imports/$($requestResponse.id)"
+                        Write-Verbose ('import id: {0}, status: {1}' -f $requestResponse.id, $jobResponse.status)
                     }
                     catch {
                         if ( $_.Exception.StatusCode -eq 500 -and $_.ErrorDetails.Message -match 'Unexpected error encountered' ) {
@@ -359,7 +358,6 @@ Write-Verbose ('import id: {0}, status: {1}' -f $requestResponse.id, $jobRespons
                 ScriptBlock   = $sb
                 ThrottleLimit = $ThrottleLimit
                 ProgressTitle = 'Importing certificates with private keys'
-                VenafiSession = $VenafiSession
             }
             $invokeResponse = Invoke-VenafiParallel @invokeParams
     
@@ -371,21 +369,26 @@ Write-Verbose ('import id: {0}, status: {1}' -f $requestResponse.id, $jobRespons
 
             Write-Debug ($allNoKeyCerts | ConvertTo-Json)
             $importList = [System.Collections.Generic.List[hashtable]]::new()
+            $bl = -not ($env:VC_ENABLE_BLOCKLIST -eq 'true')
 
             # rebuild invoke params as the payload can contain multiple keys at once
             # max 100 certs and keys at a time
             for ($i = 0; $i -lt $allNoKeyCerts.Count; $i += 100) {
     
                 $params = @{
-                    Method        = 'POST'
-                    UriRoot       = 'outagedetection/v1'
-                    UriLeaf       = 'certificates'
-                    Body          = @{}
-                    VenafiSession = $VenafiSession
+                    Method  = 'POST'
+                    UriRoot = 'outagedetection/v1'
+                    UriLeaf = 'certificates'
+                    Body    = @{
+                        # default to true unless the environment variable is set
+                        overrideBlocklist = $bl
+                    }
                 }
     
                 $importCertPayload = foreach ($thisCert in $allNoKeyCerts[$i..($i + 99)]) {
-                    @{ 'certificate' = $thisCert.CertPem }
+                    @{
+                        'certificate'  = $thisCert.CertPem
+                    }
                 }
     
                 $params.Body.certificates = @($importCertPayload)
@@ -402,7 +405,6 @@ Write-Verbose ('import id: {0}, status: {1}' -f $requestResponse.id, $jobRespons
                 ScriptBlock   = $sb
                 ThrottleLimit = $ThrottleLimit
                 ProgressTitle = 'Importing certificates without private keys'
-                VenafiSession = $VenafiSession
             }
             $invokeNoKeyResponse = Invoke-VenafiParallel @invokeParams
     
