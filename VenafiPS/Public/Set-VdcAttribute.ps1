@@ -13,6 +13,7 @@ function Set-VdcAttribute {
     .PARAMETER Attribute
     Hashtable with names and values to be set.
     If setting a custom field, you can use either the name or guid as the key.
+    If using a custom field name, you must have created a session with New-VenafiSession and not just a TLSPDC token.
     To clear a value overwriting policy, set the value to $null.
 
     .PARAMETER Class
@@ -71,6 +72,16 @@ function Set-VdcAttribute {
     Set-VdcAttribute -Path '\VED\Policy\My Folder' -Class 'X509 Certificate' -Attribute @{'Notification Disabled'='0'} -Lock
 
     Set a policy attribute and lock the value
+
+    .EXAMPLE
+    Set-VdcAttribute -Path '\VED\Policy\app.company.com' -Attribute @{'X509 SubjectAltName IPAddress'='1.2.3.4'; 'X509 SubjectAltName DNS'='me.x.com'}
+
+    Update SAN field(s).  The SAN key names are:
+    - X509 SubjectAltName DNS
+    - X509 SubjectAltName IPAddress
+    - X509 SubjectAltName OtherName UPN
+    - X509 SubjectAltName RFC822
+    - X509 SubjectAltName URI
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Set-VdcAttribute/
