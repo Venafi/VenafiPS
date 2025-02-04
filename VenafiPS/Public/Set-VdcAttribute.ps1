@@ -140,8 +140,7 @@ function Set-VdcAttribute {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
-
-            Method        = 'Post'
+            Method = 'Post'
         }
 
         $baseFields = @()
@@ -168,8 +167,8 @@ function Set-VdcAttribute {
             $customFieldError = $null
 
             $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $thisKey -or $_.Guid -eq $thisKey }
-            Write-Verbose ('found custom field {0} - {1}' -f $customField.DN, $customField|ConvertTo-Json)
             if ( $customField ) {
+                Write-Verbose ('found custom field {0} - {1}' -f $customField.DN, $customField | ConvertTo-Json)
                 if ( -not $BypassValidation ) {
                     switch ( $customField.Type.ToString() ) {
                         '1' {

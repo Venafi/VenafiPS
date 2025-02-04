@@ -69,7 +69,6 @@ function Get-VdcCredential {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
             UriLeaf       = 'Credentials/Retrieve'
             Body          = @{}

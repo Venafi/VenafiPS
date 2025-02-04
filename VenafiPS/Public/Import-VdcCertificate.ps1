@@ -94,7 +94,7 @@ function Import-VdcCertificate {
     https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Certificates-Import.php
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'ByData', SupportsShouldProcess)]
+    [CmdletBinding(DefaultParameterSetName = 'ByData')]
     [Alias('Import-TppCertificate')]
 
     param (

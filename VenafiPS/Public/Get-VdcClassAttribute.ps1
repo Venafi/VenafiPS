@@ -36,7 +36,6 @@ function Get-VdcClassAttribute {
         Write-Verbose "Processing $ClassName"
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
             UriLeaf       = 'configschema/class'
             Body          = @{

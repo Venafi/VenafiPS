@@ -366,7 +366,6 @@ function Export-VcCertificate {
             ScriptBlock   = $sb
             ThrottleLimit = $ThrottleLimit
             ProgressTitle = 'Exporting certificates'
-            VenafiSession = $VenafiSession
         }
         Invoke-VenafiParallel @invokeParams
     }

@@ -161,7 +161,6 @@ function New-VcApplication {
         }
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
             UriRoot       = 'outagedetection/v1'
             UriLeaf       = 'applications'

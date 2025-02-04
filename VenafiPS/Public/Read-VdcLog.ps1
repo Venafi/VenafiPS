@@ -139,7 +139,6 @@ function Read-VdcLog {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Get'
             UriLeaf       = 'Log/'
             Body          = @{ }

@@ -123,7 +123,6 @@
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Patch'
             Body          = @{}
         }
