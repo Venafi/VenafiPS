@@ -37,7 +37,7 @@ function Import-VcCertificate {
     100 keystores will be imported at a time so it's less important to have a very high throttle limit.
 
     .PARAMETER Force
-    Force installation of PSSodium if not already installed
+    Force installation of PSSodium if not already installed.  This is required for the import of keys.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -74,8 +74,8 @@ function Import-VcCertificate {
     https://developer.venafi.com/tlsprotectcloud/reference/certificates_import
 
     .NOTES
-    This function requires the use of sodium encryption.
-    .net standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
+    This function requires the use of sodium encryption via the PSSodium PowerShell module.
+    Dotnet standard 2.0 or greater is required via PS Core (recommended) or supporting .net runtime.
     On Windows, the latest Visual C++ redist must be installed.  See https://learn.microsoft.com/en-us/cpp/windows/latest-supported-vc-redist.
 
     Non keystore imports, just certs no keys, will override the blocklist by default.
