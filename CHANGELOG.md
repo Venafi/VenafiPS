@@ -1,3 +1,12 @@
+## 6.8.0
+- Add `Get-VenafiSession` to centralize session management.  For nested and/or piped functions, pull the session from the call stack.
+- Add _PolicyPath_ to `Export-VdcCertificate` output and `Import-VdcCertificate -PolicyPath`.  This allows the imported certificate to be created in the same policy folder.  This could be used to synchronize across environments for example.  The addition of `Import-VdcCertificate -Force` will cause a policy path to be created if it does not already exist; policy subfolders are supported as well.
+- Add `Import-VcCertificate` blocklist functionality.  Override the blocklist by default and honor the blocklist if the environment variable _VC_ENABLE_BLOCKLIST_ is set to true.
+- Fix VC import failure with a large number of keystores, [#322](https://github.com/Venafi/VenafiPS/issues/322)
+- Hide _dekEncryptedPassword_ from verbose output
+- Remove _Filename_ from `Export-VdcCertificate` when outputting data and not writing to a file
+
+
 ## 6.7.4
 - Add support for X509 (.pem, .cer, and .crt) to `Import-VcCertificate`.  Both by path and by data are supported.  Pull in a folder full of certificates or pipe from either TLSPDC or another TLSPC tenant.
 - Add `Find-VcCertificate -IsExpired`
@@ -729,6 +738,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

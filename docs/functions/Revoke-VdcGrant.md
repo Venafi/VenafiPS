@@ -113,5 +113,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 [https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-VdcGrant.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Revoke-VdcGrant.ps1)
 
-[https://doc.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-oauth-revokegrants.htm](https://doc.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-oauth-revokegrants.htm)
+[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-oauth-revokegrants.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-oauth-revokegrants.php)
 

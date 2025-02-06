@@ -5,32 +5,32 @@ Import one or more certificates
 
 ## SYNTAX
 
-### ByFile (Default)
+### ByData (Default)
 ```
-Import-VdcCertificate -PolicyPath <String> -Path <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
- [-PrivateKeyPassword <PSObject>] [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Import-VdcCertificate -Data <String> -PolicyPath <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
+ [-PrivateKeyPassword <PSObject>] [-Reconcile] [-Force] [-ThrottleLimit <Int32>] [-PassThru]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByFileWithPrivateKey
 ```
-Import-VdcCertificate -PolicyPath <String> -Path <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
- -PrivateKey <String> -PrivateKeyPassword <PSObject> [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru]
+Import-VdcCertificate -Path <String> -PolicyPath <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
+ -PrivateKey <String> -PrivateKeyPassword <PSObject> [-Reconcile] [-Force] [-ThrottleLimit <Int32>] [-PassThru]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### ByFile
+```
+Import-VdcCertificate -Path <String> -PolicyPath <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
+ [-PrivateKeyPassword <PSObject>] [-Reconcile] [-Force] [-ThrottleLimit <Int32>] [-PassThru]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### ByDataWithPrivateKey
 ```
-Import-VdcCertificate -PolicyPath <String> -Data <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
- -PrivateKey <String> -PrivateKeyPassword <PSObject> [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru]
+Import-VdcCertificate -Data <String> -PolicyPath <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
+ -PrivateKey <String> -PrivateKeyPassword <PSObject> [-Reconcile] [-Force] [-ThrottleLimit <Int32>] [-PassThru]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
-```
-
-### ByData
-```
-Import-VdcCertificate -PolicyPath <String> -Data <String> [-Name <String>] [-EnrollmentAttribute <Hashtable>]
- [-PrivateKeyPassword <PSObject>] [-Reconcile] [-ThrottleLimit <Int32>] [-PassThru] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -72,30 +72,14 @@ Note the use of 2 sessions at once where the TLSPDC session is stored in a varia
 
 ## PARAMETERS
 
-### -PolicyPath
-Policy path to import the certificate to.
-\ved\policy is prepended if not provided.
-
-```yaml
-Type: String
-Parameter Sets: (All)
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -Path
 Path to a certificate file. 
 Provide either this or -Data.
 
 ```yaml
 Type: String
-Parameter Sets: ByFile, ByFileWithPrivateKey
-Aliases: FullName
+Parameter Sets: ByFileWithPrivateKey, ByFile
+Aliases:
 
 Required: True
 Position: Named
@@ -110,8 +94,24 @@ Provide either this or -Path.
 
 ```yaml
 Type: String
-Parameter Sets: ByDataWithPrivateKey, ByData
+Parameter Sets: ByData, ByDataWithPrivateKey
 Aliases: CertificateData
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -PolicyPath
+Policy path to import the certificate to.
+\ved\policy is prepended if not provided.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
 
 Required: True
 Position: Named
@@ -132,7 +132,7 @@ Finally, if none of the above are found, the serial number is used.
 ```yaml
 Type: String
 Parameter Sets: (All)
-Aliases:
+Aliases: FullName
 
 Required: False
 Position: Named
@@ -179,13 +179,13 @@ You can either provide a String, SecureString, or PSCredential.
 
 ```yaml
 Type: PSObject
-Parameter Sets: ByFile
+Parameter Sets: ByData
 Aliases:
 
 Required: False
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -197,7 +197,19 @@ Aliases:
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+```yaml
+Type: PSObject
+Parameter Sets: ByFile
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -209,19 +221,7 @@ Aliases:
 Required: True
 Position: Named
 Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
-```yaml
-Type: PSObject
-Parameter Sets: ByData
-Aliases:
-
-Required: False
-Position: Named
-Default value: None
-Accept pipeline input: False
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -233,6 +233,21 @@ Only import the certificate when no Certificate object exists with a past, prese
 If a match is found between the Certificate object and imported certificate, activate the certificate with the most current 'Valid From' date.
 Archive the unused certificate, even if it is the imported certificate, to the History tab.
 See https://docs.venafi.com/Docs/currentSDK/TopNav/Content/CA/c-CA-Import-ReconciliationRules-tpp.php for a flowchart of the reconciliation algorithm.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Force
+Force the policy path to be created if it doesn't exist
 
 ```yaml
 Type: SwitchParameter
@@ -265,7 +280,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-Return a TppObject representing the newly imported object.
+Return the newly imported object.
 
 ```yaml
 Type: SwitchParameter
