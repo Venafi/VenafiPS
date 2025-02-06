@@ -32,7 +32,7 @@ VenafiPS is published to the PowerShell Gallery.  The most recent version is lis
 ### Additional Modules
 
 - If running on Windows with PowerShell v5, multithreading is supported with [Microsoft.PowerShell.ThreadJob](https://github.com/PowerShell/ThreadJob), a Microsoft PowerShell module.  Install this for increased performance on the functions that support it.  Version 2.1.0 has been tested.
-- There are a few TLSPC functions which require Sodium encryption.  These functions require the PSSodium module be installed from the PowerShell Gallery.  Also for those functions, on Windows, the latest C++ runtime must be installed.  Version 0.4.2 has been tested.
+- There are a few TLSPC functions which require Sodium encryption.  These functions require the PSSodium module be installed from the PowerShell Gallery manually or use `-Force` to have it automatically installed.  Also for those functions, on Windows, the latest C++ runtime must be installed.  Version 0.4.2 has been tested.
 
 ## Usage
 
