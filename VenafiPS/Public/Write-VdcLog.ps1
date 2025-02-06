@@ -129,6 +129,7 @@ function Write-VdcLog {
         [int] $Value2,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

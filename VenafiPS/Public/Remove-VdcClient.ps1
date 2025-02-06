@@ -58,6 +58,7 @@ function Remove-VdcClient {
         [switch] $RemoveAssociatedDevice,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

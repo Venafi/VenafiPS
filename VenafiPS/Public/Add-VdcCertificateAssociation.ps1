@@ -88,6 +88,7 @@ function Add-VdcCertificateAssociation {
         [switch] $PushCertificate,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

@@ -41,6 +41,7 @@ function Find-VdcEngine {
         [String] $Pattern,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

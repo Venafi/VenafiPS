@@ -95,6 +95,7 @@ function New-VcApplication {
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -160,7 +161,6 @@ function New-VcApplication {
         }
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
             UriRoot       = 'outagedetection/v1'
             UriLeaf       = 'applications'

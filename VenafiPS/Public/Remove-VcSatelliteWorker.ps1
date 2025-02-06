@@ -42,6 +42,7 @@ function Remove-VcSatelliteWorker {
         [guid] $ID,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

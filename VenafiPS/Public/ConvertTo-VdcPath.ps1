@@ -38,6 +38,7 @@ function ConvertTo-VdcPath {
         [switch] $IncludeType,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

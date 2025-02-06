@@ -377,6 +377,7 @@ function Find-VdcCertificate {
         [Switch] $CountOnly,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -392,7 +393,6 @@ function Find-VdcCertificate {
                 Offset = 0
             }
             FullResponse = $true
-            VenafiSession = $VenafiSession
         }
 
         if ($PSCmdlet.PagingParameters.First -ne [uint64]::MaxValue -and $PSCmdlet.PagingParameters.First -le 1000) {

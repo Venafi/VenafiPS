@@ -146,6 +146,7 @@ function Invoke-VcCertificateAction {
         [hashtable] $AdditionalParameters,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -372,7 +373,10 @@ function Invoke-VcCertificateAction {
                 $params.UriLeaf = "certificates/deletion"
 
                 if ( $PSCmdlet.ShouldProcess('TLSPC', ('Delete {0} certificate(s) in batches of {1}' -f $allCerts.Count, $BatchSize) ) ) {
+
+                    # only retired certs can be deleted, product requirement
                     $null = $allCerts | Invoke-VcCertificateAction -Retire -BatchSize $BatchSize -Confirm:$false
+                    
                     $allCerts | Select-VenBatch -Activity 'Deleting certificates' -BatchSize $BatchSize -BatchType 'string' -TotalCount $allCerts.Count | ForEach-Object {
                         $params.Body = @{"certificateIds" = $_ }
 

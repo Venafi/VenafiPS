@@ -66,6 +66,7 @@ function Get-VdcEngineFolder {
         [switch] $All,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

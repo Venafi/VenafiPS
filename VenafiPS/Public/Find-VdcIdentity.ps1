@@ -71,6 +71,7 @@ function Find-VdcIdentity {
         [Switch] $IncludeDistributionGroups,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

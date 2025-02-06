@@ -72,6 +72,7 @@ function Remove-VdcEngineFolder {
         [String[]] $EnginePath,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

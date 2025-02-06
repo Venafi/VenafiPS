@@ -65,6 +65,7 @@ function Invoke-VenafiParallel {
         [string] $ProgressTitle = 'Performing action',
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
 
     )
@@ -80,21 +81,7 @@ function Invoke-VenafiParallel {
             }
         }
 
-        if ( $VenafiSession ) {
-            # session provided directly, use it
-        }
-        elseif ( $script:VenafiSession ) {
-            $VenafiSession = $script:VenafiSession
-        }
-        elseif ($script:VenafiSessionNested) {
-            $VenafiSession = $script:VenafiSessionNested
-        }
-        elseif ( $env:VDC_TOKEN ) {
-            $VenafiSession = $env:VDC_TOKEN
-        }
-        elseif ( $env:VC_KEY ) {
-            $VenafiSession = $env:VC_KEY
-        }
+        $VenafiSession = Get-VenafiSession
     }
 
     process {
@@ -106,7 +93,7 @@ function Invoke-VenafiParallel {
 
         # throttle to 1 = no parallel
         if ( $ThrottleLimit -le 1 ) {
-            # ensure no $using: vars given not threaded and not needed
+            # remove $using: from vars, not threaded and not supported
             $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
             return
         }
@@ -125,6 +112,9 @@ function Invoke-VenafiParallel {
 
             # bring in verbose preference from calling ps session
             $VerbosePreference = $using:VerbosePreference
+
+            # bring in debug preference from calling ps session
+            $DebugPreference = $using:DebugPreference
         }
 
 

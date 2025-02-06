@@ -85,6 +85,7 @@ function Invoke-VcWorkflow {
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

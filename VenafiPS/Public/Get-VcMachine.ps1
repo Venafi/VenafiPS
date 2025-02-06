@@ -112,6 +112,7 @@
         [switch] $IncludeConnectionDetail,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

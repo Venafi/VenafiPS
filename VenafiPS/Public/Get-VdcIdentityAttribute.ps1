@@ -56,6 +56,7 @@ function Get-VdcIdentityAttribute {
         [string[]] $Attribute,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

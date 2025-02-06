@@ -78,6 +78,7 @@ function Move-VdcObject {
         [String] $TargetPath,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

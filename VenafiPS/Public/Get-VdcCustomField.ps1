@@ -60,6 +60,7 @@ function Get-VdcCustomField {
         [string] $Class,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

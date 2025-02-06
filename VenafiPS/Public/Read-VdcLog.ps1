@@ -130,6 +130,7 @@ function Read-VdcLog {
         [int] $First,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -138,7 +139,6 @@ function Read-VdcLog {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Get'
             UriLeaf       = 'Log/'
             Body          = @{ }

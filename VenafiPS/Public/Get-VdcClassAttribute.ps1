@@ -21,6 +21,7 @@ function Get-VdcClassAttribute {
         [string] $ClassName,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -35,7 +36,6 @@ function Get-VdcClassAttribute {
         Write-Verbose "Processing $ClassName"
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
             UriLeaf       = 'configschema/class'
             Body          = @{

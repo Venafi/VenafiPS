@@ -84,6 +84,7 @@ function Get-VcUser {
         [Switch] $All,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

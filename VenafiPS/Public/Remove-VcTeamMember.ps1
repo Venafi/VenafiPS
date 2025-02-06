@@ -47,6 +47,7 @@
         [string[]] $Member,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

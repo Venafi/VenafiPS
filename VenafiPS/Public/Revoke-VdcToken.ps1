@@ -102,7 +102,8 @@ function Revoke-VdcToken {
         [switch] $Force,
 
         [Parameter(ParameterSetName = 'Session')]
-        [psobject] $VenafiSession = $script:VenafiSession
+        [ValidateNotNullOrEmpty()]
+        [psobject] $VenafiSession
     )
 
     begin {
@@ -119,8 +120,8 @@ function Revoke-VdcToken {
 
         switch ($PsCmdlet.ParameterSetName) {
             'Session' {
-                $params.VenafiSession = $VenafiSession
-                $target = $VenafiSession.Server
+                $params.VenafiSession = (Get-VenafiSession)
+                $target = $params.VenafiSession.Server
             }
 
             'AccessToken' {

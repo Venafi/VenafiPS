@@ -76,6 +76,7 @@ function Test-VdcObject {
         [Switch] $ExistOnly,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

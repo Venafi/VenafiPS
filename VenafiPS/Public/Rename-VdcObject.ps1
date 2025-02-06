@@ -63,6 +63,7 @@ function Rename-VdcObject {
         [String] $NewPath,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

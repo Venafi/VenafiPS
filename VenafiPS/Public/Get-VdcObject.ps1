@@ -58,6 +58,7 @@ function Get-VdcObject {
         [guid[]] $Guid,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -68,13 +69,13 @@ function Get-VdcObject {
     process {
 
         if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
-            $Path | ConvertTo-VdcFullPath | ForEach-Object {
-                ConvertTo-VdcObject -Path $_
+            foreach ($p in $Path) {
+                ConvertTo-VdcObject -Path ($p | ConvertTo-VdcFullPath)
             }
         }
         else {
-            $Guid | ForEach-Object {
-                ConvertTo-VdcObject -Guid $_
+            foreach ($g in $Guid) {
+                ConvertTo-VdcObject -Guid $g
             }
         }
     }

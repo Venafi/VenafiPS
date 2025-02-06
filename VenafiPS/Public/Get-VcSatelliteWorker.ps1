@@ -64,6 +64,7 @@ function Get-VcSatelliteWorker {
         [string] $VSatellite,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

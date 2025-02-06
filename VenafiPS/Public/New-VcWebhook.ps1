@@ -100,6 +100,7 @@ function New-VcWebhook {
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -126,7 +127,6 @@ function New-VcWebhook {
     process {
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Post'
             UriRoot       = 'v1'
             UriLeaf       = 'connectors'

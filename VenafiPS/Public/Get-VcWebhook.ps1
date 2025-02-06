@@ -68,6 +68,7 @@
         [switch] $All,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

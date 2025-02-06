@@ -77,6 +77,7 @@ function Remove-VdcPermission {
         [string[]] $IdentityId,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

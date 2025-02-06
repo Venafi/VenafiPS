@@ -80,6 +80,7 @@ function Remove-VdcCertificate {
         [int32] $ThrottleLimit = 100,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -100,6 +101,7 @@ function Remove-VdcCertificate {
     end {
 
         Invoke-VenafiParallel -InputObject $allCerts -ScriptBlock {
+            
             $guid = $PSItem | ConvertTo-VdcGuid -ErrorAction SilentlyContinue
             if ( -not $guid ) {
                 Write-Error "'$PSItem' is not a valid path"
@@ -114,6 +116,6 @@ function Remove-VdcCertificate {
             }
 
             $null = Invoke-VenafiRestMethod -Method Delete -UriLeaf "Certificates/$guid"
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Deleting certificates' -VenafiSession $VenafiSession
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Deleting certificates'
     }
 }

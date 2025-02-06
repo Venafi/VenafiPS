@@ -140,6 +140,7 @@ function Export-VcCertificate {
         [switch] $Force,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 
@@ -365,7 +366,6 @@ function Export-VcCertificate {
             ScriptBlock   = $sb
             ThrottleLimit = $ThrottleLimit
             ProgressTitle = 'Exporting certificates'
-            VenafiSession = $VenafiSession
         }
         Invoke-VenafiParallel @invokeParams
     }

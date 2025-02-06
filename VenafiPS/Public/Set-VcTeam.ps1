@@ -114,6 +114,7 @@
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [Alias('Key')]
         [psobject] $VenafiSession
     )
@@ -122,7 +123,6 @@
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{
-            VenafiSession = $VenafiSession
             Method        = 'Patch'
             Body          = @{}
         }

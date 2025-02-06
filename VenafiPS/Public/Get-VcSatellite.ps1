@@ -81,6 +81,7 @@
         [switch] $IncludeWorkers,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
 

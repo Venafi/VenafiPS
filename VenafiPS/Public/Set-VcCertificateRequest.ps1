@@ -90,6 +90,7 @@
         [switch] $PassThru,
 
         [Parameter()]
+        [ValidateNotNullOrEmpty()]
         [Alias('Key')]
         [psobject] $VenafiSession
     )

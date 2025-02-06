@@ -9,7 +9,7 @@ function Invoke-VcGraphQL {
 
     param (
         [Parameter(ParameterSetName = 'Session')]
-        [AllowNull()]
+        [ValidateNotNullOrEmpty()]
         [Alias('Key', 'AccessToken')]
         [psobject] $VenafiSession,
 
@@ -58,24 +58,7 @@ function Invoke-VcGraphQL {
 
     if ( $PSCmdLet.ParameterSetName -eq 'Session' ) {
 
-        if ( $env:VC_KEY ) {
-            $VenafiSession = $env:VC_KEY
-            Write-Verbose 'Using TLSPC key environment variable'
-        }
-        elseif ( $PSBoundParameters.VenafiSession ) {
-            Write-Verbose 'Using session provided'
-        }
-        elseif ($script:VenafiSessionNested) {
-            $VenafiSession = $script:VenafiSessionNested
-            Write-Verbose 'Using nested session'
-        }
-        elseif ( $script:VenafiSession ) {
-            $VenafiSession = $script:VenafiSession
-            Write-Verbose 'Using script session'
-        }
-        else {
-            throw 'Please run New-VenafiSession or provide a TLSPC key or TLSPDC token.'
-        }
+        $VenafiSession = Get-VenafiSession
 
         switch ($VenafiSession.GetType().Name) {
             'PSCustomObject' {
@@ -102,7 +85,7 @@ function Invoke-VcGraphQL {
             }
 
             Default {
-                throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a TLSPC key or TLSPDC token."
+                throw "Unknown session '$VenafiSession'.  Please run New-VenafiSession or provide a TLSPC key."
             }
         }
 
