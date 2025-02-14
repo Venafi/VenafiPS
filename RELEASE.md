@@ -1,6 +1,2 @@
-- Add `Get-VenafiSession` to centralize session management.  For nested and/or piped functions, pull the session from the call stack.
-- Add _PolicyPath_ to `Export-VdcCertificate` output and `Import-VdcCertificate -PolicyPath`.  This allows the imported certificate to be created in the same policy folder.  This could be used to synchronize across environments for example.  The addition of `Import-VdcCertificate -Force` will cause a policy path to be created if it does not already exist; policy subfolders are supported as well.
-- Add `Import-VcCertificate` blocklist functionality.  Override the blocklist by default and honor the blocklist if the environment variable _VC_ENABLE_BLOCKLIST_ is set to true.
-- Fix VC import failure with a large number of keystores, [#322](https://github.com/Venafi/VenafiPS/issues/322)
-- Hide _dekEncryptedPassword_ from verbose output
-- Remove _Filename_ from `Export-VdcCertificate` when outputting data and not writing to a file
+- Add support for TLSPC au region
+- Add `Invoke-VenafiRestMethod -VcRegion` to target a specific region for one-off queries when -VenafiSession is an api key
