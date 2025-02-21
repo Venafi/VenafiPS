@@ -3,6 +3,9 @@ function Invoke-VcGraphQL {
     .SYNOPSIS
     Execute a GraphQL query against the Venafi Cloud API
 
+    .NOTES
+    Currently no eu or au region support when providing an api key directly
+    Use a session from New-VenafiSession
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'Session')]
@@ -71,17 +74,8 @@ function Invoke-VcGraphQL {
 
             'String' {
                 $auth = $VenafiSession
-
-                if ( $env:VC_SERVER ) {
-                    $Server = $env:VC_SERVER
-                }
-                else {
-                    # default to US region
-                    $Server = ($script:VcRegions).'us'
-                }
-                if ( $Server -notlike 'https://*') {
-                    $Server = 'https://{0}' -f $Server
-                }
+                # TODO: defaults to US, add other region support
+                $Server = ($script:VcRegions).'us'
             }
 
             Default {

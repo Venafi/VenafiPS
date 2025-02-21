@@ -66,6 +66,10 @@ function Invoke-VcWorkflow {
 
     .OUTPUTS
     pscustomobject
+
+    .NOTES
+    Currently no eu or au region support when providing an api key directly
+    Use a session from New-VenafiSession
     #>
 
 
@@ -116,14 +120,8 @@ function Invoke-VcWorkflow {
                     $WS.Options.SetRequestHeader("tppl-api-key", $VenafiSession.Key.GetNetworkCredential().password)
                 }
                 else {
-                    $VcRegions | ConvertTo-Json | Write-Verbose
-                    if ( $env:VC_SERVER ) {
-                        $server = $env:VC_SERVER
-                    }
-                    else {
-                        # default to US region
-                        $server = ($script:VcRegions).'us'
-                    }
+                    # TODO: defaults to US, add other region support
+                    $server = ($script:VcRegions).'us'
                     $server = $server.Replace('https://', '')
                     $WS.Options.SetRequestHeader("tppl-api-key", $VenafiSession)
                 }
