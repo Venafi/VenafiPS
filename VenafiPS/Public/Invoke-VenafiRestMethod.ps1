@@ -23,6 +23,9 @@ function Invoke-VenafiRestMethod {
     .PARAMETER Body
     Optional body to pass to the endpoint
 
+    .PARAMETER VcRegion
+    TLSPC region to target.  Only supported if VenafiSession is an api key otherwise the comes from VenafiSession directly.
+
     .INPUTS
     None
 
@@ -73,6 +76,17 @@ function Invoke-VenafiRestMethod {
         [String] $UriLeaf,
 
         [Parameter()]
+        [ValidateScript(
+            {
+                if ( $_ -notin ($script:VcRegions).Keys ) {
+                    throw ('{0} is not a valid region.  Valid regions include {1}.' -f $_, (($script:VcRegions).Keys -join ','))
+                }
+                $true
+            }
+        )]
+        [string] $VcRegion = 'us',
+
+        [Parameter()]
         [hashtable] $Header,
 
         [Parameter()]
@@ -120,16 +134,9 @@ function Invoke-VenafiRestMethod {
                 $auth = $VenafiSession
 
                 if ( Test-IsGuid($VenafiSession) ) {
-                    if ( $env:VC_SERVER ) {
-                        $Server = $env:VC_SERVER
-                    }
-                    else {
-                        # default to US region
-                        $Server = ($script:VcRegions).'us'
-                    }
-                    if ( $Server -notlike 'https://*') {
-                        $Server = 'https://{0}' -f $Server
-                    }
+                    # if we were provided a key directly and not a full session, determine which region to contact
+                    
+                    $Server = ($script:VcRegions).$VcRegion
                     $platform = 'VC'
                 }
                 else {
