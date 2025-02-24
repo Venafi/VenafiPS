@@ -1,3 +1,7 @@
+## 6.8.1
+- Add support for TLSPC au region
+- Add `Invoke-VenafiRestMethod -VcRegion` to target a specific region for one-off queries when -VenafiSession is an api key
+
 ## 6.8.0
 - Add `Get-VenafiSession` to centralize session management.  For nested and/or piped functions, pull the session from the call stack.
 - Add _PolicyPath_ to `Export-VdcCertificate` output and `Import-VdcCertificate -PolicyPath`.  This allows the imported certificate to be created in the same policy folder.  This could be used to synchronize across environments for example.  The addition of `Import-VdcCertificate -Force` will cause a policy path to be created if it does not already exist; policy subfolders are supported as well.
@@ -738,6 +742,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

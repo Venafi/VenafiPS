@@ -8,16 +8,16 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 ### Session (Default)
 ```
 Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot <String>] [-UriLeaf <String>]
- [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-VcRegion <String>] [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-TimeoutSec <Int32>]
+ [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### URL
 ```
 Invoke-VenafiRestMethod -Server <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
- [-Method <String>] [-UriRoot <String>] [-UriLeaf <String>] [-Header <Hashtable>] [-Body <Hashtable>]
- [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+ [-Method <String>] [-UriRoot <String>] [-UriLeaf <String>] [-VcRegion <String>] [-Header <Hashtable>]
+ [-Body <Hashtable>] [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -143,6 +143,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -VcRegion
+TLSPC region to target. 
+Only supported if VenafiSession is an api key otherwise the comes from VenafiSession directly.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: Us
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

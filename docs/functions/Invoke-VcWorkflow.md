@@ -151,5 +151,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ### pscustomobject
 ## NOTES
+Currently no eu or au region support when providing an api key directly
+Use a session from New-VenafiSession
 
 ## RELATED LINKS
