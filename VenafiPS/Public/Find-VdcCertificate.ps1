@@ -98,6 +98,9 @@ function Find-VdcCertificate {
     .PARAMETER IsWildcard
     Only include wilcard certificates
 
+    .PARAMETER IsExpired
+    Only include expired certificates
+
     .PARAMETER NetworkValidationEnabled
     Only include certificates with network validation enabled or disabled.
 
@@ -155,7 +158,12 @@ function Find-VdcCertificate {
     Find first 1000 certificates
 
     .EXAMPLE
-    Find-VdcCertificate -ExpireBefore [datetime]'2018-01-01'
+    Find-VdcCertificate -IsExpired
+
+    Find expired certificates
+
+    .EXAMPLE
+    Find-VdcCertificate -ExpireBefore '2018-01-01'
 
     Find certificates expiring before a certain date
 
@@ -331,6 +339,9 @@ function Find-VdcCertificate {
         [switch] $IsWildcard,
 
         [Parameter()]
+        [switch] $IsExpired,
+
+        [Parameter()]
         [bool] $NetworkValidationEnabled,
 
         [Parameter()]
@@ -410,167 +421,129 @@ function Find-VdcCertificate {
         switch ($PSBoundParameters.Keys) {
             'CreatedDate' {
                 $params.Body.Add( 'CreatedOn', ($CreatedDate | ConvertTo-UtcIso8601) )
-                break
             }
             'CreatedBefore' {
                 $params.Body.Add( 'CreatedOnLess', ($CreatedBefore | ConvertTo-UtcIso8601) )
-                break
             }
             'CreatedAfter' {
                 $params.Body.Add( 'CreatedOnGreater', ($CreatedAfter | ConvertTo-UtcIso8601) )
-                break
             }
             'CertificateType' {
                 $params.Body.Add( 'CertificateType', $CertificateType -join ',' )
-                break
             }
             'Country' {
                 $params.Body.Add( 'C', $Country )
-                break
             }
             'CommonName' {
                 $params.Body.Add( 'CN', $CommonName )
-                break
             }
             'Issuer' {
                 $params.Body.Add( 'Issuer', '"{0}"' -f $Issuer )
-                break
             }
             'KeyAlgorithm' {
                 $params.Body.Add( 'KeyAlgorithm', $KeyAlgorithm -join ',' )
-                break
             }
             'KeySize' {
                 $params.Body.Add( 'KeySize', $KeySize -join ',' )
-                break
             }
             'KeySizeGreaterThan' {
                 $params.Body.Add( 'KeySizeGreater', $KeySizeGreaterThan )
-                break
             }
             'KeySizeLessThan' {
                 $params.Body.Add( 'KeySizeLess', $KeySizeLessThan )
-                break
             }
             'Locale' {
                 $params.Body.Add( 'L', $Locale -join ',' )
-                break
             }
             'Organization' {
                 $params.Body.Add( 'O', $Organization -join ',' )
-                break
             }
             'OrganizationUnit' {
                 $params.Body.Add( 'OU', $OrganizationUnit -join ',' )
-                break
             }
             'State' {
                 $params.Body.Add( 'S', $State -join ',' )
-                break
             }
             'SanDns' {
                 $params.Body.Add( 'SAN-DNS', $SanDns )
-                break
             }
             'SanEmail' {
                 $params.Body.Add( 'SAN-Email', $SanEmail )
-                break
             }
             'SanIP' {
                 $params.Body.Add( 'SAN-IP', $SanIP )
-                break
             }
             'SanUpn' {
                 $params.Body.Add( 'SAN-UPN', $SanUpn )
-                break
             }
             'SanUri' {
                 $params.Body.Add( 'SAN-URI', $SanUri )
-                break
             }
             'SerialNumber' {
                 $params.Body.Add( 'Serial', $SerialNumber )
-                break
             }
             'SignatureAlgorithm' {
                 $params.Body.Add( 'SignatureAlgorithm', $SignatureAlgorithm -join ',' )
-                break
             }
             'Thumbprint' {
                 $params.Body.Add( 'Thumbprint', $Thumbprint )
-                break
             }
             'IssueDateAfter' {
                 $params.Body.Add( 'ValidFromGreater', ($IssueDateAfter | ConvertTo-UtcIso8601) )
-                break
             }
             'IssueDateBefore' {
                 $params.Body.Add( 'ValidFromLess', ($IssueDateBefore | ConvertTo-UtcIso8601) )
-                break
             }
             'IssueDate' {
                 $params.Body.Add( 'ValidFrom', ($IssueDate | ConvertTo-UtcIso8601) )
-                break
             }
             'ExpireDate' {
                 $params.Body.Add( 'ValidTo', ($ExpireDate | ConvertTo-UtcIso8601) )
-                break
             }
             'ExpireAfter' {
                 $params.Body.Add( 'ValidToGreater', ($ExpireAfter | ConvertTo-UtcIso8601) )
-                break
             }
             'ExpireBefore' {
                 $params.Body.Add( 'ValidToLess', ($ExpireBefore | ConvertTo-UtcIso8601) )
-                break
             }
             'Enabled' {
                 $params.Body.Add( 'Disabled', [int] (-not $Enabled) )
-                break
             }
             'InError' {
                 $params.Body.Add( 'InError', [int]$InError.IsPresent )
-                break
             }
             'IsSelfSigned' {
                 $params.Body.Add( 'IsSelfSigned', [int] $IsSelfSigned.IsPresent )
-                break
             }
             'IsWildcard' {
                 $params.Body.Add( 'IsWildcard', [int] $IsWildcard.IsPresent )
-                break
+            }
+            'IsExpired' {
+                $params.Body.Add( 'ValidToLess', ((Get-Date) | ConvertTo-UtcIso8601) )
             }
             'NetworkValidationEnabled' {
                 $params.Body.Add( 'NetworkValidationDisabled', [int] (-not $NetworkValidationEnabled) )
-                break
             }
             'ManagementType' {
                 $params.Body.Add( 'ManagementType', $ManagementType -join ',' )
-                break
             }
             'PendingWorkflow' {
                 $params.Body.Add( 'PendingWorkflow', '')
-                break
             }
             'Stage' {
                 $params.Body.Add( 'Stage', ($Stage | ForEach-Object { [TppCertificateStage]::$_.value__ }) -join ',' )
-                break
             }
             'StageGreaterThan' {
                 $params.Body.Add( 'StageGreater', [TppCertificateStage]::$StageGreaterThan.value__ )
-                break
             }
             'StageLessThan' {
                 $params.Body.Add( 'StageLess', [TppCertificateStage]::$StageLessThan.value__ )
-                break
             }
             'ValidationEnabled' {
                 $params.Body.Add( 'ValidationDisabled', [int] (-not $ValidationEnabled) )
-                break
             }
             'ValidationState' {
                 $params.Body.Add( 'ValidationState', $ValidationState -join ',' )
-                break
             }
         }
     }
@@ -582,7 +555,12 @@ function Find-VdcCertificate {
         }
         elseif ( $PSBoundParameters.ContainsKey('Guid') ) {
             # guid provided, get path
-            $thisPath = $Guid | ConvertTo-VdcPath
+            $pathObject = ConvertTo-VdcObject -Guid $Guid
+            if ( $pathObject.TypeName -ne 'Policy' ) {
+                throw [System.Management.Automation.PSArgumentOutOfRangeException]::new('Guid', $pathObject.TypeName, 'Must be a Policy')
+                return
+            }
+            $thisPath = $pathObject.Path
         }
 
         if ( $thisPath ) {
