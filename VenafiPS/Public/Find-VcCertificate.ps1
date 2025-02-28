@@ -299,7 +299,7 @@ function Find-VcCertificate {
         'e' = {
             if ( $ApplicationDetail ) {
                 foreach ($thisAppId in $_.applicationIds) {
-                    $thisApp = $apps | Where-Object { $_.applicationId -eq $thisAppId }
+                    $thisApp = $apps | Where-Object applicationId -eq $thisAppId
                     if ( -not $thisApp ) {
                         $thisApp = Get-VcApplication -ID $thisAppId | Select-Object -Property * -ExcludeProperty ownerIdsAndTypes, ownership
                         $apps.Add($thisApp)
@@ -319,7 +319,7 @@ function Find-VcCertificate {
 
                 # this scriptblock requires ?ownershipTree=true be part of the url
                 foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {
-                    $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                    $thisOwnerDetail = $appOwners | Where-Object id -eq $thisOwner
                     if ( -not $thisOwnerDetail ) {
                         $thisOwnerDetail = Get-VcIdentity -ID $thisOwner | Select-Object firstName, lastName, emailAddress,
                         @{
@@ -346,7 +346,7 @@ function Find-VcCertificate {
                 }
 
                 foreach ($thisOwner in $_.ownership.owningContainers.owningTeams) {
-                    $thisOwnerDetail = $appOwners | Where-Object { $_.id -eq $thisOwner }
+                    $thisOwnerDetail = $appOwners | Where-Object id -eq $thisOwner
                     if ( -not $thisOwnerDetail ) {
                         $thisOwnerDetail = Get-VcTeam -ID $thisOwner | Select-Object name, role, members,
                         @{

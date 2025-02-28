@@ -185,7 +185,7 @@ function Find-VcObject {
 
     if ( $PSBoundParameters.ContainsKey('SavedSearchName') ) {
         # get saved search data and update payload
-        $thisSavedSearch = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'savedsearches' | Select-Object -ExpandProperty savedSearchInfo | Where-Object { $_.name -eq $SavedSearchName }
+        $thisSavedSearch = Invoke-VenafiRestMethod -UriRoot 'outagedetection/v1' -UriLeaf 'savedsearches' | Select-Object -ExpandProperty savedSearchInfo | Where-Object name -eq $SavedSearchName
         if ( $thisSavedSearch ) {
             $body.expression = $thisSavedSearch.searchDetails.expression
             $body.ordering = $thisSavedSearch.searchDetails.ordering

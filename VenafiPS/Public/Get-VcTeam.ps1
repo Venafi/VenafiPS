@@ -80,7 +80,7 @@
             }
             else {
                 # assume team name
-                $response = Invoke-VenafiRestMethod -UriLeaf 'teams' | Where-Object { $_.name -eq $Team }
+                $response = Invoke-VenafiRestMethod -UriLeaf 'teams' | Where-Object name -eq $Team
             }
         }
 

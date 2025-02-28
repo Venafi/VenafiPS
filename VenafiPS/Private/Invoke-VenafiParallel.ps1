@@ -70,91 +70,91 @@ function Invoke-VenafiParallel {
 
     )
 
-    begin {
+    if (-not $InputObject) { return }
 
-        if (-not $InputObject) { return }
-
-        # if ThreadJob module is not available, throttle to 1 so multithreading isn't used
-        if ( $PSVersionTable.PSVersion.Major -eq 5 ) {
-            if ( -not $script:ThreadJobAvailable ) {
-                $ThrottleLimit = 1
-            }
+    # if ThreadJob module is not available, throttle to 1 so multithreading isn't used
+    if ( $PSVersionTable.PSVersion.Major -eq 5 ) {
+        if ( -not $script:ThreadJobAvailable ) {
+            $ThrottleLimit = 1
         }
-
-        $VenafiSession = Get-VenafiSession
     }
 
-    process {
+    # no need for parallel processing overhead if just processing 1 item
+    if ( $InputObject.Count -eq 1 ) {
+        $ThrottleLimit = 1
+    }
+    
+    # throttle to 1 = no parallel
+    if ( $ThrottleLimit -le 1 ) {
+        # remove $using: from vars, not threaded and not supported
+        $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
+        return
+    }
+    
+    # parallel processing from here down
+
+    $VenafiSession = Get-VenafiSession
+    
+    $starterSb = {
+
+        # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
+        # import via path instead of just module name to support non-standard paths, eg. development work
+
+        # ParallelImportPath is set during module import
+        Import-Module $using:script:ParallelImportPath -Force
+
+        # bring in the venafi session from the calling ps session
+        $script:VenafiSession = $using:VenafiSession
+
+        # bring in verbose preference from calling ps session
+        $VerbosePreference = $using:VerbosePreference
+
+        # bring in debug preference from calling ps session
+        $DebugPreference = $using:DebugPreference
     }
 
-    end {
 
-        if (-not $InputObject) { return }
+    if ( $PSVersionTable.PSVersion.Major -eq 5 ) {
+        # Start-ThreadJob does not have any child jobs for some reason so there will be no progress and just exist
+        $sb = ([ScriptBlock]::Create($starterSb.ToString() + '$using:InputObject | % { ' + $ScriptBlock.ToString() + '}'))
+        return Start-ThreadJob -ScriptBlock $sb -ThrottleLimit $ThrottleLimit | Receive-Job -Wait -AutoRemoveJob
+    }
+    else {
+        # PS7
+        $sb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
 
-        # throttle to 1 = no parallel
-        if ( $ThrottleLimit -le 1 ) {
-            # remove $using: from vars, not threaded and not supported
-            $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
-            return
-        }
-
-        # parallel processing from here down
-        $starterSb = {
-
-            # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
-            # import via path instead of just module name to support non-standard paths, eg. development work
-
-            # ParallelImportPath is set during module import
-            Import-Module $using:script:ParallelImportPath -Force
-
-            # bring in the venafi session from the calling ps session
-            $script:VenafiSession = $using:VenafiSession
-
-            # bring in verbose preference from calling ps session
-            $VerbosePreference = $using:VerbosePreference
-
-            # bring in debug preference from calling ps session
-            $DebugPreference = $using:DebugPreference
-        }
-
-
-        if ( $PSVersionTable.PSVersion.Major -eq 5 ) {
-            # Start-ThreadJob does not have any child jobs for some reason so there will be no progress and just exist
-            $sb = ([ScriptBlock]::Create($starterSb.ToString() + '$using:InputObject | % { ' + $ScriptBlock.ToString() + '}'))
-            return Start-ThreadJob -ScriptBlock $sb -ThrottleLimit $ThrottleLimit | Receive-Job -Wait -AutoRemoveJob
+        if ( $ProgressPreference -ne 'Continue' ) {
+            # no progress, arguably faster
+            return $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $sb | Receive-Job -Wait -AutoRemoveJob
         }
         else {
-            $sb = ([ScriptBlock]::Create($starterSb.ToString() + $ScriptBlock.ToString()))
 
-            # no progress, arguably faster
-            if ( $ProgressPreference -ne 'Continue' ) {
-                return $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $sb | Receive-Job -Wait -AutoRemoveJob
+            Write-Progress -Activity $ProgressTitle -Status "Initializing..."
+        
+            $job = $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $sb
+        
+            if ( -not $job.ChildJobs ) {
+                return
             }
+        
+            $childJobs = $job.ChildJobs
+            $childJobsCount = $childJobs.Count
+        
+            do {
+                Start-Sleep -Milliseconds 100
+        
+                $completedJobs = $childJobs | Where-Object State -in 'Completed', 'Failed', 'Stopped'
+        
+                # get latest job info
+                $job | Receive-Job
+        
+                [int] $percent = ($completedJobs.Count / $childJobsCount) * 100
+                Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
+        
+            } while ($completedJobs.Count -lt $childJobsCount)
+        
+            Write-Progress -Completed -Activity 'done'
         }
-
-        Write-Progress -Activity $ProgressTitle -Status "Initializing..."
-
-        $job = $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $sb
-
-        if ( -not $job.ChildJobs ) {
-            return
-        }
-
-        do {
-
-            # let threads run
-            Start-Sleep -Seconds 0.1
-
-            $completedJobsCount = $job.ChildJobs.Where({ $_.State -notin 'NotStarted', 'Running' }).Count
-
-            # get latest job info
-            $job | Receive-Job
-
-            [int] $percent = ($completedJobsCount / $job.ChildJobs.Count) * 100
-            Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
-
-        } while ($completedJobsCount -lt $job.ChildJobs.Count)
-
-        Write-Progress -Completed -Activity 'done'
     }
+
 }
