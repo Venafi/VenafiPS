@@ -4,7 +4,7 @@ function Get-VdcObject {
     Get object information
 
     .DESCRIPTION
-    Return object information by either path or guid.  This will return a TppObject which can be used with many other functions.
+    Return object information by either path or guid.  This will return a standard object which can be used with many other functions.
 
     .PARAMETER Path
     The full path to the object.

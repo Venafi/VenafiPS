@@ -53,23 +53,12 @@
     }
 
     process {
-        if ( $PSCmdlet.ShouldProcess($ID, "Delete certificate") ) {
-            $allObjects.Add($ID)
-        }
+        $allObjects.Add($ID)
     }
 
     end {
-
-        # handle certs differently since you send them all in 1 call
-        # and parallel functionality not needed
-        $params = @{
-            Method  = 'Post'
-            UriRoot = 'outagedetection/v1'
-            UriLeaf = 'certificates/deletion'
-            Body    = @{
-                certificateIds = $allObjects
-            }
-        }
-        $null = Invoke-VenafiRestMethod @params
+        # this function is just a placeholder for a standard named function
+        # all the logic is in Invoke-VcCertificateAction
+        $allObjects | Invoke-VcCertificateAction -Delete -Confirm:$ConfirmPreference
     }
 }
