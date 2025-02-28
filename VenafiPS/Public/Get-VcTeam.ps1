@@ -52,7 +52,7 @@
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
         [Alias('teamID', 'owningTeam', 'owningTeams', 'owningTeamId', 'ownedTeams', 'ID')]
-        [string[]] $Team,
+        [string] $Team,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
@@ -80,7 +80,7 @@
             }
             else {
                 # assume team name
-                $response = Invoke-VenafiRestMethod -UriLeaf 'teams' | Where-Object name -eq $Team
+                $response = Invoke-VenafiRestMethod -UriLeaf 'teams' | Select-Object -ExpandProperty teams | Where-Object name -eq $Team
             }
         }
 
