@@ -249,7 +249,7 @@
         }
 
         if ( $Path ) {
-            $thisGuid = $Path | ConvertTo-VdcGuid
+            $thisGuid = $Path | ConvertTo-VdcObject | Select-Object -ExpandProperty Guid
         }
         else {
             $thisGuid = $Guid

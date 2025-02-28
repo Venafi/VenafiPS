@@ -102,7 +102,7 @@ function Remove-VdcCertificate {
 
         Invoke-VenafiParallel -InputObject $allCerts -ScriptBlock {
             
-            $guid = $PSItem | ConvertTo-VdcGuid -ErrorAction SilentlyContinue
+            $guid = $PSItem | ConvertTo-VdcObject -ErrorAction SilentlyContinue | Select-Object -ExpandProperty Guid
             if ( -not $guid ) {
                 Write-Error "'$PSItem' is not a valid path"
                 return
