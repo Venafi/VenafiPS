@@ -312,6 +312,9 @@ function New-VenafiSession {
         [Alias('VaultVaasKeyName')]
         [string] $VaultVcKeyName,
 
+        [Parameter(ParameterSetName = 'RefreshSession')]
+        [switch] $RefreshSession,
+        
         [Parameter()]
         [Int32] $TimeoutSec = 0,
 
@@ -379,10 +382,29 @@ function New-VenafiSession {
     # if ( $PSCmdlet.ShouldProcess($Server, 'New session') ) {
     Switch ($PsCmdlet.ParameterSetName)	{
 
+        'RefreshSession' {
+            if ( -not $script:VenafiSession ) {
+                throw 'No existing session to refresh'
+            }
+
+            $sessToken = $script:VenafiSession.Token
+            if ( -not $sessToken -or -not $sessToken.Server -or -not $sessToken.RefreshToken -or -not $sessToken.ClientId ) {
+                throw 'In order to refresh an existing session, it must have a Server, RefreshToken, and ClientId.'
+            }
+
+            $refreshParams = @{
+                Server               = $sessToken.Server
+                RefreshToken         = $sessToken.RefreshToken
+                ClientId             = $sessToken.ClientId
+                SkipCertificateCheck = $script:VenafiSession.SkipCertificateCheck
+            }
+            
+            New-VenafiSession @refreshParams
+            return
+        }
+
         { $_ -in 'KeyCredential', 'KeyIntegrated' } {
-
             Write-Warning 'Key-based authentication has been deprecated.  Get started with token authentication today, https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php.'
-
         }
 
         { $_ -in 'TokenOAuth', 'TokenIntegrated', 'TokenCertificate', 'TokenJwt' } {
@@ -460,8 +482,9 @@ function New-VenafiSession {
 
         'RefreshToken' {
             $params = @{
-                AuthServer = $authServerUrl
-                ClientId   = $ClientId
+                AuthServer           = $authServerUrl
+                ClientId             = $ClientId
+                SkipCertificateCheck = $SkipCertificateCheck
             }
             $params.RefreshToken = if ( $RefreshToken -is [string] ) { New-Object System.Management.Automation.PSCredential('RefreshToken', ($RefreshToken | ConvertTo-SecureString -AsPlainText -Force)) }
             elseif ($RefreshToken -is [pscredential]) { $RefreshToken }

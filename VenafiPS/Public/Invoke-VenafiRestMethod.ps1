@@ -264,7 +264,13 @@ function Invoke-VenafiRestMethod {
     $ProgressPreference = 'SilentlyContinue'
 
     try {
-        $verboseOutput = $($response = Invoke-WebRequest @params -ErrorAction Stop) 4>&1
+        if ( $FullResponse ) {
+            $response = Invoke-WebRequest @params -ErrorAction Stop
+        }
+        else {
+            $response = Invoke-RestMethod @params -ErrorAction Stop
+        }
+        $verboseOutput = $response 4>&1
         $verboseOutput.Message | Write-VerboseWithSecret
     }
     catch {
@@ -331,17 +337,5 @@ function Invoke-VenafiRestMethod {
         $ProgressPreference = $oldProgressPreference
     }
 
-    if ( $FullResponse ) {
-        $response
-    }
-    else {
-        if ( $response.Content ) {
-            try {
-                $response.Content | ConvertFrom-Json
-            }
-            catch {
-                throw ('Invalid JSON response {0}' -f $response.Content)
-            }
-        }
-    }
+    $response
 }

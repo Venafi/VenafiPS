@@ -53,6 +53,7 @@ function ConvertTo-VdcGuid {
     )
 
     begin {
+        Write-Warning 'ConvertTo-VdcGuid to be deprecated.  Use Get-VdcObject instead.'
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $params = @{

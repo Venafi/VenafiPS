@@ -33,17 +33,70 @@ function ConvertTo-VdcObject {
             }
 
             'Path' {
+                $params = @{
+                    Method  = 'Post'
+                    UriLeaf = 'config/DnToGuid'
+                    Body    = @{
+                        ObjectDN = $Path
+                    }
+                }
+                $response = Invoke-VenafiRestMethod @params
+
+                switch ($response.Result) {
+                    1 {
+                        # success
+                        $thisGuid = $response.Guid
+                        $thisTypeName = $response.ClassName
+                    }
+        
+                    7 {
+                        throw [System.UnauthorizedAccessException]::new($response.Error)
+                    }
+        
+                    400 {
+                        throw [System.Management.Automation.ItemNotFoundException]::new($response.Error)
+                    }
+        
+                    Default {
+                        throw $response.Error
+                    }
+                }
+        
                 $thisPath = $Path
-                $info = $Path | ConvertTo-VdcGuid -IncludeType
-                $thisGuid = $info.Guid
-                $thisTypeName = $info.TypeName
             }
 
             'Guid' {
+                $params = @{
+                    Method     = 'Post'
+                    UriLeaf    = 'config/GuidToDN'
+                    Body       = @{
+                        ObjectGUID = "{$Guid}"
+                    }
+                }
+        
+                $response = Invoke-VenafiRestMethod @params
+
+                switch ($response.Result) {
+                    1 {
+                        # success
+                        $thisPath = $response.ObjectDN
+                        $thisTypeName = $response.ClassName
+                    }
+        
+                    7 {
+                        throw [System.UnauthorizedAccessException]::new($response.Error)
+                    }
+        
+                    400 {
+                        throw [System.Management.Automation.ItemNotFoundException]::new($response.Error)
+                    }
+        
+                    Default {
+                        throw $response.Error
+                    }
+                }
+
                 $thisGuid = $Guid
-                $info = ConvertTo-VdcPath -Guid $Guid -IncludeType
-                $thisPath = $info.Path
-                $thisTypeName = $info.TypeName
             }
 
             Default {
@@ -56,7 +109,7 @@ function ConvertTo-VdcObject {
         $out = [pscustomobject]@{
             Path     = $thisPath.Replace('\\', '\')
             TypeName = $thisTypeName
-            Guid     = $thisGuid
+            Guid     = [Guid] $thisGuid
             Name     = $thisPath.Split('\')[-1]
         }
 

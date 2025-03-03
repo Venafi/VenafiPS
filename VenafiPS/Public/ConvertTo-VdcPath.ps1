@@ -43,6 +43,7 @@ function ConvertTo-VdcPath {
     )
 
     begin {
+        Write-Warning 'ConvertTo-VdcPath to be deprecated.  Use Get-VdcObject instead.'
 
         Test-VenafiSession $PSCmdlet.MyInvocation
 

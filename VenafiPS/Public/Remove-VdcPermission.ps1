@@ -102,7 +102,7 @@ function Remove-VdcPermission {
 
         foreach ($thisInputObject in $inputObject) {
             if ( $PSCmdLet.ParameterSetName -eq 'ByPath' ) {
-                $thisGuid = $thisInputObject | ConvertTo-VdcGuid
+                $thisGuid = $thisInputObject | ConvertTo-VdcObject | Select-Object -ExpandProperty Guid
             } else {
                 $thisGuid = $thisInputObject
             }

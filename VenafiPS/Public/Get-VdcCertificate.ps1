@@ -128,7 +128,7 @@
 
             if ( $PSItem -like '\ved*' ) {
                 # a path was provided, get the guid
-                $thisGuid = ConvertTo-VdcGuid -Path $PSItem
+                $thisGuid = (ConvertTo-VdcObject -Path $PSItem).Guid
             } else {
                 $thisGuid = ([guid] $PSItem).ToString()
             }

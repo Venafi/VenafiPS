@@ -6,14 +6,8 @@ function Get-VdcWorkflowTicket {
     .DESCRIPTION
     Get details about workflow tickets associated with a certificate.
 
-    .PARAMETER InputObject
-    TppObject which represents a certificate object
-
     .PARAMETER Path
     Path to the certificate
-
-    .PARAMETER Guid
-    Certificate guid
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -22,7 +16,7 @@ function Get-VdcWorkflowTicket {
     If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
-    InputObject, Path, or Guid
+    Path
 
     .OUTPUTS
     PSCustomObject with the following properties:
