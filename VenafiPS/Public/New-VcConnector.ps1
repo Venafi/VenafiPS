@@ -33,7 +33,7 @@ function New-VcConnector {
     .EXAMPLE
     New-VcConnector -ManifestPath '/tmp/manifest.json'
 
-    Create a new connector from a full manifest
+    Create a new connector from a manifest which already contains deployment information
 
     .EXAMPLE
     New-VcConnector -ManifestPath '/tmp/manifest.json' -PassThru
@@ -85,7 +85,16 @@ function New-VcConnector {
 
     process {
 
-        $manifestObject = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
+        $json = Get-Content -Path $ManifestPath -Raw
+
+        $manifestObject = if ($PSVersionTable.PSVersion.Major -lt 6) {
+            $hashtable = @{}
+            (ConvertFrom-Json $json).psobject.properties | ForEach-Object { $hashtable[$_.Name] = $_.Value }
+            $hashtable
+        }
+        else {
+            $json | ConvertFrom-Json -AsHashtable
+        }
 
         if ( $PSCmdlet.ParameterSetName -eq 'FromSimulator' ) {
 
