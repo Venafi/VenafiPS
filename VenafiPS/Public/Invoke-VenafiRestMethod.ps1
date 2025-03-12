@@ -227,11 +227,11 @@ function Invoke-VenafiRestMethod {
         $paramsToWrite = $params.Clone()
         $paramsToWrite.Body = $preJsonBody
         $paramsToWrite | Write-VerboseWithSecret
-        Write-Debug -Message ($paramsToWrite | ConvertTo-Json -Depth 5)
+        Write-Debug -Message ($paramsToWrite | ConvertTo-Json -Depth 10)
     }
     else {
         $params | Write-VerboseWithSecret
-        Write-Debug -Message ($params | ConvertTo-Json -Depth 5)
+        Write-Debug -Message ($params | ConvertTo-Json -Depth 10)
     }
 
     # ConvertTo-Json, used in Write-VerboseWithSecret, has an issue with certificates
