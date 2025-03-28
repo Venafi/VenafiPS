@@ -1,7 +1,7 @@
 
 $ModuleName = 'VenafiPS'
 $ModulePath = "$PSScriptRoot/../VenafiPS/VenafiPS.psd1"
-Remove-Module $ModuleName
+Remove-Module $ModuleName -ErrorAction SilentlyContinue
 Import-Module $ModulePath -Force
 
 Mock -CommandName 'Get-VenafiSession' -MockWith {
