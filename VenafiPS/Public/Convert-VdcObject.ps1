@@ -27,18 +27,21 @@ function Convert-VdcObject {
     Path
 
     .OUTPUTS
-    TppObject, if -PassThru provided
+    pscustomobject, if -PassThru provided
 
     .EXAMPLE
     Convert-VdcObject -Path '\ved\policy\' -Class 'X509 Device Certificate'
+
     Convert an object to a different type
 
     .EXAMPLE
     Convert-VdcObject -Path '\ved\policy\device\app' -Class 'CAPI' -PassThru | Set-VdcAttribute -Attribute @{'Driver Name'='appcapi'}
+
     Convert an object to a different type, return the updated object and update attributes
 
     .EXAMPLE
     Find-VdcObject -Class Basic | Convert-VdcObject -Class 'capi' -PassThru | Set-VdcAttribute -Attribute @{'Driver Name'='appcapi'}
+    
     Convert multiple objects to a different type, return the updated objects and update attributes
 
     .LINK

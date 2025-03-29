@@ -6,7 +6,7 @@
     .DESCRIPTION
     Update name, role, and/or user matching rules for existing teams.
 
-    .PARAMETER ID
+    .PARAMETER Team
     Team ID or name
 
     .PARAMETER Name
@@ -101,7 +101,7 @@
                         $true
                     }
                     else {
-                        throw "NewUserMatchingRule is an array of hashtables where each hashtable must contain keys 'ClaimName', 'Operator', and 'ClaimValue'."
+                        throw "UserMatchingRule is an array of hashtables where each hashtable must contain keys 'ClaimName', 'Operator', and 'ClaimValue'."
                     }
                 }
             })]

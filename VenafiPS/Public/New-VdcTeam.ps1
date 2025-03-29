@@ -26,6 +26,9 @@
     .PARAMETER Description
     Team description or purpose.
 
+    .PARAMETER PassThru
+    Send back details on the newly created team
+    
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.

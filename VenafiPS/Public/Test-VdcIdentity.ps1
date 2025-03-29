@@ -6,7 +6,7 @@ function Test-VdcIdentity {
     .DESCRIPTION
     Provided with a prefixed universal id, find out if an identity exists.
 
-    .PARAMETER Identity
+    .PARAMETER ID
     The id that represents the user or group.
 
     .PARAMETER ExistOnly

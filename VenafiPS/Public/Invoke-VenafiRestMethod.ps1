@@ -26,6 +26,27 @@ function Invoke-VenafiRestMethod {
     .PARAMETER VcRegion
     TLSPC region to target.  Only supported if VenafiSession is an api key otherwise the comes from VenafiSession directly.
 
+    .PARAMETER Server
+    Server or url to access vedsdk, venafi.company.com or https://venafi.company.com.
+
+    .PARAMETER UseDefaultCredential
+    Use Windows Integrated authentication
+
+    .PARAMETER Certificate
+    Certificate for TLSPDC token-based authentication
+
+    .PARAMETER UriRoot
+    Path between the server and endpoint.
+
+    .PARAMETER FullResponse
+    Provide the full response including headers as opposed to just the response content
+
+    .PARAMETER TimeoutSec
+    Connection timeout.  Default to 0, no timeout.
+
+    .PARAMETER SkipCertificateCheck
+    Skip certificate checking, eg. self signed certificate on server
+
     .INPUTS
     None
 

@@ -10,6 +10,9 @@ function Remove-VdcPermission {
     .PARAMETER Path
     Full path to an object.  You can also pipe in a TppObject
 
+    .PARAMETER Guid
+    Guid that represents an object
+    
     .PARAMETER IdentityId
     Prefixed Universal Id of the user or group to have their permissions removed
 

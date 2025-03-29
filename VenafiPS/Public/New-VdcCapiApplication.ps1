@@ -22,7 +22,7 @@ function New-VdcCapiApplication {
     .PARAMETER FriendlyName
     The Friendly Name that helps to uniquely identify the certificate after it has been installed in the Windows CAPI store
 
-    .PARAMETER Descripion
+    .PARAMETER Description
     Application description
 
     .PARAMETER WinRmPort

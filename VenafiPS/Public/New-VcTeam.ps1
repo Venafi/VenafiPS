@@ -26,6 +26,9 @@
     Each rule should be of the format @('claim name', 'operator', 'value')
     where operator can be equals, not_equals, contains, not_contains, starts_with, or ends_with.
 
+    .PARAMETER PassThru
+    Send back details on the newly created team
+    
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.

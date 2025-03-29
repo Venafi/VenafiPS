@@ -77,6 +77,12 @@ function Find-VdcCertificate {
     .PARAMETER IssueDate
     Find certificates by the date of issue.
 
+    .PARAMETER IssueDateAfter
+    Find certificates issued after a certain date
+
+    .PARAMETER IssueDateBefore
+    Find certificates issued before a certain date
+
     .PARAMETER ExpireDate
     Find certificates by expiration date.
 
@@ -150,7 +156,7 @@ function Find-VdcCertificate {
     Path
 
     .OUTPUTS
-    TppObject, Int when CountOnly provided
+    pscustomobject, Int when CountOnly provided
 
     .EXAMPLE
     Find-VdcCertificate

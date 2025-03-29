@@ -9,6 +9,9 @@ function ConvertTo-VdcGuid {
     .PARAMETER Path
     DN path representing an object
 
+    .PARAMETER IncludeType
+    Include the object type in the response
+    
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.

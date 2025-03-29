@@ -39,22 +39,6 @@ function New-VenafiSession {
     You can either provide a String, SecureString, or PSCredential.
     If providing a credential, the username is not used.
 
-    .PARAMETER VaultAccessTokenName
-    Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
-    This value can be provided standalone or with credentials.  First time use requires it to be provided with credentials to retrieve the access token to populate the vault.
-    With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
-
-    .PARAMETER RefreshToken
-    Provide an existing refresh token to create a session.
-    You can either provide a String, SecureString, or PSCredential.
-    If providing a credential, the username is not used.
-
-    .PARAMETER VaultRefreshTokenName
-    Name of the SecretManagement vault entry for the refresh token; the name of the vault must be VenafiPS.
-    This value can be provided standalone or with credentials.  Each time this is used, a new access and refresh token will be obtained.
-    First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
-    With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
-
     .PARAMETER Jwt
     JSON web token.
     Available in TLSPDC v22.4 and later.
@@ -63,11 +47,31 @@ function New-VenafiSession {
     .PARAMETER Certificate
     Certificate for TLSPDC token-based authentication
 
+    .PARAMETER RefreshToken
+    Provide an existing refresh token to create a session.
+    You can either provide a String, SecureString, or PSCredential.
+    If providing a credential, the username is not used.
+
+    .PARAMETER VaultAccessTokenName
+    Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
+    This value can be provided standalone or with credentials.  First time use requires it to be provided with credentials to retrieve the access token to populate the vault.
+    With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
+
+    .PARAMETER VaultRefreshTokenName
+    Name of the SecretManagement vault entry for the refresh token; the name of the vault must be VenafiPS.
+    This value can be provided standalone or with credentials.  Each time this is used, a new access and refresh token will be obtained.
+    First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
+    With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
+
     .PARAMETER AuthServer
     If you host your authentication service, vedauth, is on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
     If AuthServer is not provided, the value provided for Server will be used.
     If just the server name is provided, https:// will be appended.
 
+    .PARAMETER RefreshSession
+    Obtain a new access token from the refresh token.
+    Requires an existing module scoped $VenafiSession.
+    
     .PARAMETER VcKey
     Api key from your TLSPC instance.  The api key can be found under your user profile->preferences.
     You can either provide a String, SecureString, or PSCredential.

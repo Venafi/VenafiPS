@@ -13,6 +13,7 @@ function Export-VdcVaultObject {
 
     .PARAMETER OutPath
     Folder path to save the certificate/key to.  The name of the file will be determined automatically.
+    If not provided, details will be provided to the pipeline.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -24,7 +25,17 @@ function Export-VdcVaultObject {
     ID
 
     .OUTPUTS
-    PSCustomObject if unhandled type, otherwise saves the object to a file
+    PSCustomObject
+
+    .EXAMPLE
+    Export-VdcVaultObject -ID 12345
+
+    Get vault object details
+
+    .EXAMPLE
+    Find-VdcObject -Path '\VED\Intermediate and Root Certificates\Trusted Root Certification Authorities' | Get-VdcAttribute -Attribute 'Certificate Vault Id' | Export-VdcVaultObject
+
+    Get intermediate or root certificates via vault
 
     .EXAMPLE
     Export-VdcVaultObject -ID 12345 -OutPath 'c:\temp'
