@@ -69,15 +69,12 @@ function Write-VdcLog {
 
     #>
 
-    [CmdletBinding(SupportsShouldProcess, DefaultParameterSetName = 'DefaultGroup')]
+    [CmdletBinding(SupportsShouldProcess)]
     [Alias('Write-TppLog')]
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName = 'DefaultGroup')]
-        [string] $EventGroup,
-
-        [Parameter(Mandatory, ParameterSetName = 'CustomGroup')]
+        [Parameter(Mandatory)]
         [ValidateScript({
             if ( $_ -match '^0[1-2]\d\d$' ) {
                 $true
@@ -132,10 +129,6 @@ function Write-VdcLog {
         [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
-
-    if ( $PSCmdlet.ParameterSetName -eq 'DefaultGroup' ) {
-        throw 'Writing to built-in event groups is no longer supported by Venafi.  You can write to custom event groups.  -EventGroup will be deprecated in a future release.'
-    }
 
     Test-VenafiSession $PSCmdlet.MyInvocation
 
