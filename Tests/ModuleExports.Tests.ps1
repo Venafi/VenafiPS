@@ -1,8 +1,8 @@
 BeforeAll {
-    Remove-Module 'VenafiPS' -Force -ErrorAction SilentlyContinue
-    $moduleInfo = Import-Module -Name './VenafiPS/VenafiPS.psd1' -Force -PassThru | Where-Object { $_.name -eq 'VenafiPS' }
+    . $PSScriptRoot/ModuleCommon.ps1
+    $moduleInfo = Get-Module -Name $ModuleName
 }
-Describe 'ExportedFunctions' {
+Describe "$ModuleName Sanity Tests - Exported Functions" -Tags 'Module' {
     BeforeAll {
         $ps1FileNames = Get-ChildItem -Path "$($moduleInfo | Where-Object{$_.name -eq 'venafips'} | Select-Object -exp modulebase)\Public\*.ps1" -Exclude *tests.ps1, *profile.ps1 | Select-Object -ExpandProperty BaseName
 
