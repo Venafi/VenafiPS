@@ -71,6 +71,7 @@ function Search-VdcHistory {
         [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
+    Write-Warning 'Search-VdcHistory is now deprecated'
 
     Test-VenafiSession $PSCmdlet.MyInvocation
 
