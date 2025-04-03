@@ -9,9 +9,9 @@ Mock -CommandName 'Get-VenafiSession' -MockWith {
         SkipCertificateCheck = $false
         Key                  = New-Object System.Management.Automation.PSCredential('VcKey', ('c7afbda6-0ae4-43b2-b775-42ab2940ba9e' | ConvertTo-SecureString -AsPlainText -Force))
         User                 = @{
-            userId                       = '67d2583d-01ae-405b-bac3-1640c1177211'
+            userId                       = 'f6afeb44-3edc-435b-9c2a-da61524af8ed'
             username                     = 'greg.brownstein@cyberark.com'
-            companyId                    = '09b24f81-b22b-11ea-91f3-ebd6dea5452e'
+            companyId                    = '810646a6-9600-4850-a89d-989ec69d9792'
             firstname                    = 'Greg'
             lastname                     = 'Brownstein'
             emailAddress                 = 'ggreg.brownstein@cyberark.com'
@@ -26,8 +26,8 @@ Mock -CommandName 'Get-VenafiSession' -MockWith {
             forceLocalPasswordExpiration = $false
             firstLoginDate               = (Get-Date)
             creationDate                 = (Get-Date)
-            ownedTeams                   = '{59920180-a3e2-11ec-8dcd-3fcbf84c7da7, 2ff7b010-a967-11ec-86d1-6374f196212d, f397c880-a6cd-11ec-98c8-fb6d4b26eea3, 895f9650-a709-11ec-98c8-fb6d4b26eea3…}'
-            memberedTeams                = '{59920180-a3e2-11ec-8dcd-3fcbf84c7da7}'
+            ownedTeams                   = '{cd7650f5-f54b-473f-9aba-e6f769ad60b7}'
+            memberedTeams                = '{cd7650f5-f54b-473f-9aba-e6f769ad60b7}'
             disabled                     = $false
             signupAttributes             = $null
         }
