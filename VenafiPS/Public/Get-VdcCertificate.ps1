@@ -138,7 +138,7 @@
 
             $response = Invoke-VenafiRestMethod @params
 
-            if ( $IncludePreviousVersions ) {
+            if ( $using:IncludePreviousVersions ) {
                 $params.UriLeaf = [System.Web.HttpUtility]::UrlEncode("certificates/{$thisGuid}/PreviousVersions")
                 $params.Body = @{}
 

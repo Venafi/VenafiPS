@@ -4,11 +4,10 @@ function Find-VdcVaultId {
     Find vault IDs in the secret store
 
     .DESCRIPTION
-    Find vault IDs in the secret store by their attributes and associated values
+    Find vault IDs in the secret store associated to an existing object.
 
-    .PARAMETER Attribute
-    Name and value to search.
-    See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php for more details.
+    .PARAMETER Path
+    Path of the object
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -17,14 +16,16 @@ function Find-VdcVaultId {
     If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
-    Attribute
+    Path
 
     .OUTPUTS
     String
 
     .EXAMPLE
-    Find-VdcVaultId -Attribute @{'Serial'='0812E11D213DE8E07890BCC1234567'}
-    Find a vault id
+    Find-VdcVaultId -Path '\ved\policy\awesomeobject.cyberark.com'
+    
+    Find the vault IDs associated with an object.
+    For certificates with historical references, the vault IDs will 
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcVaultId/
@@ -32,18 +33,14 @@ function Find-VdcVaultId {
     .LINK
     https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcVaultId.ps1
 
-    .LINK
-    https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php
-
     #>
 
     [CmdletBinding()]
-    [Alias('Find-TppVaultId')]
 
     param (
 
-        [Parameter(Mandatory, ValueFromPipeline)]
-        [hashtable] $Attribute,
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [string] $Path,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -55,36 +52,17 @@ function Find-VdcVaultId {
 
         $params = @{
 
-            Method        = 'Post'
-            UriLeaf       = 'SecretStore/LookupByAssociation'
-            Body          = @{}
+            Method  = 'Post'
+            UriLeaf = 'SecretStore/LookupByOwner'
+            Body    = @{
+                'Namespace' = 'config'
+            }
         }
     }
 
     process {
 
-        $thisKey = "$($Attribute.Keys[0])"
-        $thisValue = "$($Attribute.Values[0])"
-
-        switch ($thisKey) {
-
-            { $_ -in 'Certificate Type', 'Key Size', 'Parent ID', 'Template Major Version' } {
-                $type = 'IntValue'
-            }
-
-            { $_ -in 'Create Date', 'Revocation Check Date', 'Revocation Date', 'ValidFrom', 'ValidTo' } {
-                $type = 'ValueDate'
-            }
-
-            Default {
-                $type = 'StringValue'
-            }
-        }
-
-        $params.Body = @{
-            'Name' = $thisKey
-            $type  = $thisValue
-        }
+        $params.Body.Owner = $Path
 
         $response = Invoke-VenafiRestMethod @params
 

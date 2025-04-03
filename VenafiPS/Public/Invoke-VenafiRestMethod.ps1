@@ -291,6 +291,7 @@ function Invoke-VenafiRestMethod {
         else {
             $response = Invoke-RestMethod @params -ErrorAction Stop
         }
+        try { if ($DebugPreference -eq 'Continue') { $response | ConvertTo-Json -Depth 10 | Write-Debug } } catch {}
         $verboseOutput = $response 4>&1
         $verboseOutput.Message | Write-VerboseWithSecret
     }

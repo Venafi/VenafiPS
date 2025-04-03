@@ -71,7 +71,7 @@ function Search-VdcHistory {
         [ValidateNotNullOrEmpty()]
         [psobject] $VenafiSession
     )
-    Write-Warning 'Search-VdcHistory is now deprecated'
+    Write-Warning 'Search-VdcHistory is now deprecated.  To find vault IDs for historical certificates, use Get-VdcCertificate -IncludePreviousVersions.  To export those certificates, pipe to Export-VdcVaultObject.'
 
     Test-VenafiSession $PSCmdlet.MyInvocation
 

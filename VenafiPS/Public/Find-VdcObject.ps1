@@ -13,7 +13,7 @@ function Find-VdcObject {
     1 or more classes/types to search for
 
     .PARAMETER Pattern
-    Filter against object paths.
+    By default, object filter to apply to Path.
     If the Attribute parameter is provided, this will filter against an object's attribute/custom field values instead of the path.
 
     Follow the below rules:
@@ -45,7 +45,7 @@ function Find-VdcObject {
     Path
 
     .OUTPUTS
-    TppObject
+    pscustomobject
 
     .EXAMPLE
     Find-VdcObject
@@ -53,34 +53,42 @@ function Find-VdcObject {
 
     .EXAMPLE
     Find-VdcObject -Path '\VED\Policy\certificates'
+
     Get all objects in the root of a specific folder
 
     .EXAMPLE
     Find-VdcObject -Path '\VED\Policy\My Folder' -Recursive
+    
     Get all objects in a folder and subfolders
 
     .EXAMPLE
     Find-VdcObject -Path '\VED\Policy' -Pattern '*test*'
+    
     Get items in a specific folder filtering the path
 
     .EXAMPLE
     Find-VdcObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
+    
     Get objects of a specific type
 
     .EXAMPLE
     Find-VdcObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
+    
     Get all objects of a specific type where the path is of a specific pattern
 
     .EXAMPLE
     Find-VdcObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
+    
     Get objects for multiple types
 
     .EXAMPLE
     Find-VdcObject -Pattern '*f5*'
+    
     Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
 
     .EXAMPLE
     Find-VdcObject -Attribute 'Description' -Pattern 'awesome'
+    
     Find objects where the specific attribute matches the pattern
 
     .EXAMPLE
@@ -88,6 +96,11 @@ function Find-VdcObject {
 
     Find objects where a custom field value matches the pattern.
     By default, the attribute will be checked against the current list of custom fields.
+
+    .EXAMPLE
+    Find-VdcObject -Attribute 'Description' -Pattern 'venafips' -Class 'X509 Server Certificate'
+
+    Find objects of a specific type where the specific attribute matches the pattern
 
     .EXAMPLE
     Find-VdcObject -Attribute 'Description' -Pattern 'duplicate' -NoLookup
@@ -131,6 +144,7 @@ function Find-VdcObject {
         [String] $Pattern,
 
         [Parameter(Mandatory, ParameterSetName = 'FindByClass')]
+        [Parameter(ParameterSetName = 'FindByAttribute')]
         [ValidateNotNullOrEmpty()]
         [Alias('TypeName')]
         [String[]] $Class,
@@ -155,7 +169,8 @@ function Find-VdcObject {
     )
 
     begin {
-        Test-VenafiSession $PSCmdlet.MyInvocation
+        # needed for access to the custom fields
+        $sess = Get-VenafiSession
     }
 
     process {
@@ -171,7 +186,7 @@ function Find-VdcObject {
 
             'FindByAttribute' {
 
-                $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $Attribute[0] -or $_.Guid -eq $Attribute[0] }
+                $customField = $sess.CustomField | Where-Object { $_.Label -eq $Attribute[0] -or $_.Guid -eq $Attribute[0] }
 
                 # if attribute isn't a custom field or user doesn't want to perform a cf lookup for a conflicting attrib/cf name, perform standard find object
                 if ( $NoLookup -or (-not $customField) ) {
@@ -220,7 +235,7 @@ function Find-VdcObject {
             $params.Body.Recursive = 'true'
         }
 
-        if ( $PSBoundParameters.ContainsKey('Class') ) {
+        if ( $PSCmdlet.ParameterSetName -eq 'FindByClass' ) {
             # the rest api doesn't have the ability to search for multiple classes and path at the same time
             # loop through classes to get around this
             $params.Body.Class = ''
@@ -241,13 +256,19 @@ function Find-VdcObject {
         }
         else {
             $response = Invoke-VenafiRestMethod @params
-
+            
             # success for cf lookup is 0, all others are config calls and success is 1
             if ( $response.Result -in 0, 1 ) {
                 $objects = $response.Objects
             }
             else {
                 Write-Error $response.Error
+            }
+            
+            # there are no apis to search for a specific type and attribute at the same time
+            # filter here before sending back the results
+            if ( $PSCmdlet.ParameterSetName -eq 'FindByAttribute' ) {
+                $objects = $objects | Where-Object TypeName -In $Class
             }
         }
 
