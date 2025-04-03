@@ -53,7 +53,7 @@ function Export-VdcVaultObject {
 
     param (
 
-        [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [Alias('VaultId', 'Certificate Vault Id', 'PreviousVersions')]
         [psobject] $ID,
 
@@ -81,7 +81,13 @@ function Export-VdcVaultObject {
     process {
 
         foreach ($thisId in $ID) {
-            $vaultId = if ( $thisId.VaultId ) { $thisId.VaultId } else { $thisId }
+            $vaultId = if ( $thisId.VaultId ) {
+                $thisId.VaultId
+            }
+            else {
+                $thisId
+            }
+            
             $response = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'SecretStore/Retrieve' -Body @{ 'VaultID' = $vaultId }
     
             if ( $response.Result -ne 0 ) {

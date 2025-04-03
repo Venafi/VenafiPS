@@ -67,7 +67,10 @@ function Find-VdcVaultId {
         $response = Invoke-VenafiRestMethod @params
 
         if ( $response.Result -eq 0 ) {
-            $response.VaultIDs
+            [pscustomobject]@{
+                'Path'    = $Path
+                'VaultId' = $response.VaultIDs
+            }
         }
         else {
             throw ('Secret store search failed with error code {0}' -f $response.Result)
