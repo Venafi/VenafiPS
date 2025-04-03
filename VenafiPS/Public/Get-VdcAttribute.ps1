@@ -23,8 +23,9 @@ function Get-VdcAttribute {
     .PARAMETER Class
     Get policy attributes instead of object attributes.
     Provide the class name to retrieve the value(s) for.
-    If unsure of the class name, add the value through the TLSPDC UI and go to Support->Policy Attributes to find it.
     The Attribute property of the return object will contain the path where the policy was applied.
+    
+    If unsure of the class name, add the value through the TLSPDC UI and go to Support->Policy Attributes to find it.
 
     .PARAMETER All
     Get all object attributes or policy attributes.
@@ -42,7 +43,6 @@ function Get-VdcAttribute {
     Limit the number of threads when running in parallel; the default is 100.
     Setting the value to 1 will disable multithreading.
     On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
-
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -223,7 +223,7 @@ function Get-VdcAttribute {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        Test-VenafiSession $PSCmdlet.MyInvocation
+        $sess = Get-VenafiSession
 
         $newAttribute = $Attribute
         if ( $All -and $Class ) {
@@ -310,11 +310,11 @@ function Get-VdcAttribute {
 
             if ( -not $using:NoLookup ) {
                 # parallel lookup
-                $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+                $customField = $sess.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
 
                 if ( -not $customField ) {
                     # sequential lookup
-                    $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+                    $customField = $sess.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
                 }
 
                 if ( $customField ) {
@@ -467,11 +467,11 @@ function Get-VdcAttribute {
 
                 if ( -not $using:NoLookup ) {
                     # parallel lookup
-                    $customField = $VenafiSession.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+                    $customField = $sess.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
 
                     if ( -not $customField ) {
                         # sequential lookup
-                        $customField = $VenafiSessionNested.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
+                        $customField = $sess.CustomField | Where-Object { $_.Label -eq $thisAttribute -or $_.Guid -eq $thisAttribute }
                     }
 
                     if ( $customField ) {
