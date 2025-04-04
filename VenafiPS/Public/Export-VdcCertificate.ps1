@@ -9,8 +9,8 @@ function Export-VdcCertificate {
     .PARAMETER Path
     Full path to the certificate
 
-    .PARAMETER Base64
-    Provide output in Base64 format.  This is the default if no format is provided.
+    .PARAMETER X509
+    Provide output in X509 Base64 format.  This is the default if no format is provided.
 
     .PARAMETER Pkcs7
     Provide output in PKCS #7 format
@@ -80,7 +80,7 @@ function Export-VdcCertificate {
     .EXAMPLE
     Export-VdcCertificate -Path '\ved\policy\mycert.com'
 
-    Get certificate data in Base64 format, the default
+    Get certificate data in X509 format, the default
 
     .EXAMPLE
     $cert | Export-VdcCertificate -'PKCS7' -OutPath 'c:\temp'
@@ -109,7 +109,7 @@ function Export-VdcCertificate {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'Base64')]
+    [CmdletBinding(DefaultParameterSetName = 'X509')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Converting to a secure string, its already plaintext')]
 
     param (
@@ -118,8 +118,9 @@ function Export-VdcCertificate {
         [Alias('id')]
         [string] $Path,
 
-        [Parameter(ParameterSetName = 'Base64')]
-        [switch] $Base64,
+        [Parameter(ParameterSetName = 'X509')]
+        [Alias('Base64')]
+        [switch] $X509,
 
         [Parameter(Mandatory, ParameterSetName = 'Pkcs7')]
         [switch] $Pkcs7,
@@ -152,14 +153,14 @@ function Export-VdcCertificate {
         [Alias('SecurePassword')]
         [psobject] $PrivateKeyPassword,
 
-        [Parameter(ParameterSetName = 'Base64')]
+        [Parameter(ParameterSetName = 'X509')]
         [Parameter(ParameterSetName = 'Pkcs7')]
         [Parameter(ParameterSetName = 'Pkcs8')]
         [Parameter(ParameterSetName = 'Pkcs12')]
         [Parameter(ParameterSetName = 'Jks')]
         [switch] $IncludeChain,
 
-        [Parameter(ParameterSetName = 'Base64')]
+        [Parameter(ParameterSetName = 'X509')]
         [Parameter(ParameterSetName = 'Pkcs12')]
         [Parameter(Mandatory, ParameterSetName = 'Jks')]
         [string] $FriendlyName,

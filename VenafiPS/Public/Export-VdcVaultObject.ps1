@@ -95,12 +95,14 @@ function Export-VdcVaultObject {
                 return
             }
     
-            $ext = $format = $null
+            $ext = $format = $header = $footer = $null
     
             switch ( $response.VaultType ) {
                 { $_ -in 2, 1073741826 } {
                     $ext = 'cer'
-                    $format = 'Base64'
+                    $format = 'X509'
+                    $header = '-----BEGIN CERTIFICATE-----'
+                    $footer = '-----END CERTIFICATE-----'
                 }
     
                 { $_ -in 4, 1073741828 } {
@@ -115,11 +117,15 @@ function Export-VdcVaultObject {
                 { $_ -in 256, 1073742080 } {
                     $ext = 'key'
                     $format = 'PKCS8'
+                    $header = '-----BEGIN PRIVATE KEY-----'
+                    $footer = '-----END PRIVATE KEY-----'
                 }
 
                 { $_ -in 512, 1073742336 } {
                     $ext = 'csr'
                     $format = 'PKCS10'
+                    $header = '-----BEGIN CERTIFICATE REQUEST-----'
+                    $footer = '-----END CERTIFICATE REQUEST-----'
                 }
 
                 default {
@@ -130,9 +136,16 @@ function Export-VdcVaultObject {
             if ( $OutPath ) {
                 if ( $ext ) {
     
-                    $outFile = Join-Path -Path (Resolve-Path -Path $OutPath) -ChildPath ('{0}.{1}' -f $ID, $ext)
-                    $bytes = [Convert]::FromBase64String($response.Base64Data)
-                    [IO.File]::WriteAllBytes($outFile, $bytes)
+                    $outFile = Join-Path -Path (Resolve-Path -Path $OutPath) -ChildPath ('{0}.{1}' -f $vaultId, $ext)
+                    if ($header) {
+                        # output text file
+                        "{0}`r`n{1}`r`n{2}" -f $header, $response.Base64Data, $footer | Out-File -FilePath $outFile -Encoding ascii
+                    }
+                    else {
+                        # output bytes
+                        $bytes = [Convert]::FromBase64String($response.Base64Data)
+                        [IO.File]::WriteAllBytes($outFile, $bytes)
+                    }
         
                     Write-Verbose "Saved $outFile"
                 }
@@ -142,9 +155,15 @@ function Export-VdcVaultObject {
                 }
             }
             else {
+                $data = if ($header) {
+                    "{0}`r`n{1}`r`n{2}" -f $header, $response.Base64Data, $footer
+                }
+                else {
+                    $response.Base64Data
+                }
                 [pscustomobject]@{
                     VaultId = $vaultId
-                    Data    = $response.Base64Data
+                    Data    = $data
                     Format  = $format
                     TypeId  = $response.VaultType
                 }
