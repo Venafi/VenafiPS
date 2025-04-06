@@ -123,21 +123,21 @@ function Export-VdcCertificate {
 
     param (
 
-        [Parameter(Mandatory, ParameterSetName='X509ByPath', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='Pkcs7ByPath', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='Pkcs8ByPath', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='DerByPath', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='Pkcs12ByPath', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='JksByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'X509ByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs7ByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs8ByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'DerByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12ByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'JksByPath', ValueFromPipelineByPropertyName)]
         [Alias('id')]
         [string] $Path,
 
-        [Parameter(Mandatory, ParameterSetName='X509ByVault', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='Pkcs7ByVault', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='Pkcs8ByVault', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='DerByVault', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='Pkcs12ByVault', ValueFromPipelineByPropertyName)]
-        [Parameter(Mandatory, ParameterSetName='JksByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'X509ByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs7ByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs8ByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'DerByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12ByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'JksByVault', ValueFromPipelineByPropertyName)]
         [Alias('Certificate Vault Id', 'PreviousVersions')]
         [psobject] $VaultId,
 
@@ -322,18 +322,33 @@ function Export-VdcCertificate {
                         # it could be we just don't have a private key so get just the cert
                         $thisBody.IncludePrivateKey = $false
                         $thisBody.Password = $null
-                        $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+                        if ( $isByPath ) {
+                            $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+                        }
+                        else {
+                            $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf ('certificates/retrieve/{0}' -f $thisBody.VaultId) -Body $thisBody
+                        }
                     }
                     else {
                         throw $_
                     }
                 }
                 catch {
-                    return [pscustomobject]@{
-                        'Path'            = $thisBody.CertificateDN
-                        'Error'           = $_
-                        'CertificateData' = $null
+                    if ( $isByPath ) {
+                        return [pscustomobject]@{
+                            'Path'            = $thisBody.CertificateDN
+                            'Error'           = $_
+                            'CertificateData' = $null
+                        }
                     }
+                    else {
+                        return [pscustomobject]@{
+                            'VaultId'         = $thisBody.VaultId
+                            'Error'           = $_
+                            'CertificateData' = $null
+                        }
+                    }
+    
                 }
             }
 
