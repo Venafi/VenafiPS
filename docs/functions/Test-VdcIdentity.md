@@ -32,7 +32,7 @@ Retrieve existence for only one identity, returns boolean
 ## PARAMETERS
 
 ### -ID
-{{ Fill ID Description }}
+The id that represents the user or group.
 
 ```yaml
 Type: String[]

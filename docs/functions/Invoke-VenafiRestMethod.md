@@ -57,7 +57,7 @@ Accept wildcard characters: False
 ```
 
 ### -Server
-{{ Fill Server Description }}
+Server or url to access vedsdk, venafi.company.com or https://venafi.company.com.
 
 ```yaml
 Type: String
@@ -72,7 +72,7 @@ Accept wildcard characters: False
 ```
 
 ### -UseDefaultCredential
-{{ Fill UseDefaultCredential Description }}
+Use Windows Integrated authentication
 
 ```yaml
 Type: SwitchParameter
@@ -87,7 +87,7 @@ Accept wildcard characters: False
 ```
 
 ### -Certificate
-{{ Fill Certificate Description }}
+Certificate for TLSPDC token-based authentication
 
 ```yaml
 Type: X509Certificate
@@ -117,7 +117,7 @@ Accept wildcard characters: False
 ```
 
 ### -UriRoot
-{{ Fill UriRoot Description }}
+Path between the server and endpoint.
 
 ```yaml
 Type: String
@@ -195,7 +195,7 @@ Accept wildcard characters: False
 ```
 
 ### -FullResponse
-{{ Fill FullResponse Description }}
+Provide the full response including headers as opposed to just the response content
 
 ```yaml
 Type: SwitchParameter
@@ -210,7 +210,8 @@ Accept wildcard characters: False
 ```
 
 ### -TimeoutSec
-{{ Fill TimeoutSec Description }}
+Connection timeout. 
+Default to 0, no timeout.
 
 ```yaml
 Type: Int32
@@ -225,7 +226,8 @@ Accept wildcard characters: False
 ```
 
 ### -SkipCertificateCheck
-{{ Fill SkipCertificateCheck Description }}
+Skip certificate checking, eg.
+self signed certificate on server
 
 ```yaml
 Type: SwitchParameter

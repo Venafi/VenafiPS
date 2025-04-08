@@ -45,7 +45,10 @@ Accept wildcard characters: False
 ```
 
 ### -ThrottleLimit
-{{ Fill ThrottleLimit Description }}
+Limit the number of threads when running in parallel; the default is 100.
+Setting the value to 1 will disable multithreading.
+On PS v5 the ThreadJob module is required. 
+If not found, multithreading will be disabled.
 
 ```yaml
 Type: Int32

@@ -22,12 +22,12 @@ Find machines
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+Find-VcMachine
 ```
 
-{{ Add example description here }}
+Get all machines
 
 ## PARAMETERS
 

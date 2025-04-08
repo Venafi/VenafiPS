@@ -67,7 +67,7 @@ Update many teams
 ## PARAMETERS
 
 ### -Team
-{{ Fill Team Description }}
+Team ID or name
 
 ```yaml
 Type: String

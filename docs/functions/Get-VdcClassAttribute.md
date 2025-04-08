@@ -18,13 +18,14 @@ List all attributes for a specified class, helpful for validation or to pass to 
 ### EXAMPLE 1
 ```
 Get-VdcClassAttribute -ClassName 'X509 Server Certificate'
-Get all attributes for the specified class
 ```
+
+Get all attributes for the specified class
 
 ## PARAMETERS
 
 ### -ClassName
-{{ Fill ClassName Description }}
+Class name to retrieve attributes for
 
 ```yaml
 Type: String
@@ -39,7 +40,10 @@ Accept wildcard characters: False
 ```
 
 ### -VenafiSession
-{{ Fill VenafiSession Description }}
+Authentication for the function.
+The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+A TLSPDC token can also be provided.
+If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
 ```yaml
 Type: PSObject

@@ -5,20 +5,12 @@ Write entries to the TLSPDC log
 
 ## SYNTAX
 
-### DefaultGroup (Default)
 ```
-Write-VdcLog -EventGroup <String> -EventId <String> -Component <String> [-Severity <TppEventSeverity>]
- [-SourceIp <IPAddress>] [-ComponentID <Int32>] [-ComponentSubsystem <String>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
-```
-
-### CustomGroup
-```
-Write-VdcLog -CustomEventGroup <String> -EventId <String> -Component <String> [-Severity <TppEventSeverity>]
- [-SourceIp <IPAddress>] [-ComponentID <Int32>] [-ComponentSubsystem <String>] [-Text1 <String>]
- [-Text2 <String>] [-Value1 <Int32>] [-Value2 <Int32>] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Write-VdcLog [-CustomEventGroup] <String> [-EventId] <String> [-Component] <String>
+ [[-Severity] <TppEventSeverity>] [[-SourceIp] <IPAddress>] [[-ComponentID] <Int32>]
+ [[-ComponentSubsystem] <String>] [[-Text1] <String>] [[-Text2] <String>] [[-Value1] <Int32>]
+ [[-Value2] <Int32>] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -36,31 +28,16 @@ Log an event to a custom group
 
 ## PARAMETERS
 
-### -EventGroup
-{{ Fill EventGroup Description }}
-
-```yaml
-Type: String
-Parameter Sets: DefaultGroup
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -CustomEventGroup
 ID containing hex values between 0100-0299 referring to the created custom group.
 
 ```yaml
 Type: String
-Parameter Sets: CustomGroup
+Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: Named
+Position: 1
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -76,7 +53,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: Named
+Position: 2
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -91,7 +68,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: Named
+Position: 3
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -107,7 +84,7 @@ Aliases:
 Accepted values: Emergency, Alert, Critical, Error, Warning, Notice, Info, Debug
 
 Required: False
-Position: Named
+Position: 4
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -122,7 +99,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 5
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -137,7 +114,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 6
 Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -152,7 +129,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 7
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -168,7 +145,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 8
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -184,7 +161,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 9
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -200,7 +177,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 10
 Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -216,7 +193,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 11
 Default value: 0
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -234,7 +211,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: Named
+Position: 12
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

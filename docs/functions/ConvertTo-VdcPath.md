@@ -38,7 +38,7 @@ Accept wildcard characters: False
 ```
 
 ### -IncludeType
-{{ Fill IncludeType Description }}
+Include the object type in the response
 
 ```yaml
 Type: SwitchParameter

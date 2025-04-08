@@ -54,7 +54,7 @@ Accept wildcard characters: False
 ```
 
 ### -Guid
-{{ Fill Guid Description }}
+Guid that represents an object
 
 ```yaml
 Type: Guid[]

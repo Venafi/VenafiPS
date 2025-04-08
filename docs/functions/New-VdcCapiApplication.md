@@ -132,7 +132,7 @@ Accept wildcard characters: False
 ```
 
 ### -Description
-{{ Fill Description Description }}
+Application description
 
 ```yaml
 Type: String

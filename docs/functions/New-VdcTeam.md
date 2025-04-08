@@ -149,7 +149,7 @@ Accept wildcard characters: False
 ```
 
 ### -PassThru
-{{ Fill PassThru Description }}
+Send back details on the newly created team
 
 ```yaml
 Type: SwitchParameter

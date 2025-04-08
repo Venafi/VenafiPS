@@ -25,8 +25,8 @@ Find-VdcObject [-Path <String>] [-Pattern <String>] -Class <String[]> [-Recursiv
 
 ### FindByAttribute
 ```
-Find-VdcObject -Pattern <String> -Attribute <String[]> [-NoLookup] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Find-VdcObject -Pattern <String> [-Class <String[]>] -Attribute <String[]> [-NoLookup]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -43,50 +43,59 @@ Get all objects recursively starting from \ved\policy
 ### EXAMPLE 2
 ```
 Find-VdcObject -Path '\VED\Policy\certificates'
-Get all objects in the root of a specific folder
 ```
+
+Get all objects in the root of a specific folder
 
 ### EXAMPLE 3
 ```
 Find-VdcObject -Path '\VED\Policy\My Folder' -Recursive
-Get all objects in a folder and subfolders
 ```
+
+Get all objects in a folder and subfolders
 
 ### EXAMPLE 4
 ```
 Find-VdcObject -Path '\VED\Policy' -Pattern '*test*'
-Get items in a specific folder filtering the path
 ```
+
+Get items in a specific folder filtering the path
 
 ### EXAMPLE 5
 ```
 Find-VdcObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
-Get objects of a specific type
 ```
+
+Get objects of a specific type
 
 ### EXAMPLE 6
 ```
 Find-VdcObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-Get all objects of a specific type where the path is of a specific pattern
 ```
+
+Get all objects of a specific type where the path is of a specific pattern
 
 ### EXAMPLE 7
 ```
 Find-VdcObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-Get objects for multiple types
 ```
+
+Get objects for multiple types
 
 ### EXAMPLE 8
 ```
 Find-VdcObject -Pattern '*f5*'
-Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
 ```
+
+Find objects with the specific name. 
+All objects under \ved\policy (the default) will be searched.
 
 ### EXAMPLE 9
 ```
 Find-VdcObject -Attribute 'Description' -Pattern 'awesome'
-Find objects where the specific attribute matches the pattern
 ```
+
+Find objects where the specific attribute matches the pattern
 
 ### EXAMPLE 10
 ```
@@ -97,6 +106,13 @@ Find objects where a custom field value matches the pattern.
 By default, the attribute will be checked against the current list of custom fields.
 
 ### EXAMPLE 11
+```
+Find-VdcObject -Attribute 'Description' -Pattern 'venafips' -Class 'X509 Server Certificate'
+```
+
+Find objects of a specific type where the specific attribute matches the pattern
+
+### EXAMPLE 12
 ```
 Find-VdcObject -Attribute 'Description' -Pattern 'duplicate' -NoLookup
 ```
@@ -123,7 +139,7 @@ Accept wildcard characters: False
 ```
 
 ### -Pattern
-Filter against object paths.
+By default, object filter to apply to Path.
 If the Attribute parameter is provided, this will filter against an object's attribute/custom field values instead of the path.
 
 Follow the below rules:
@@ -167,6 +183,18 @@ Parameter Sets: FindByClass
 Aliases: TypeName
 
 Required: True
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+```yaml
+Type: String[]
+Parameter Sets: FindByAttribute
+Aliases: TypeName
+
+Required: False
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -264,7 +292,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Path
 ## OUTPUTS
 
-### TppObject
+### pscustomobject
 ## NOTES
 
 ## RELATED LINKS

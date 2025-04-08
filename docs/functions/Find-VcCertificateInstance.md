@@ -23,12 +23,12 @@ Find certificate requests
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+Find-VcCertificateInstance
 ```
 
-{{ Add example description here }}
+Get all instancese
 
 ## PARAMETERS
 

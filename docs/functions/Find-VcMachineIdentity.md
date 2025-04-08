@@ -22,12 +22,12 @@ Find machine identities
 
 ## EXAMPLES
 
-### Example 1
-```powershell
-PS C:\> {{ Add example code here }}
+### EXAMPLE 1
+```
+Find-VcMachineIdentity
 ```
 
-{{ Add example description here }}
+Get all machine identities
 
 ## PARAMETERS
 

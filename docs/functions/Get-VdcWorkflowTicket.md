@@ -82,7 +82,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### InputObject, Path, or Guid
+### Path
 ## OUTPUTS
 
 ### PSCustomObject with the following properties:

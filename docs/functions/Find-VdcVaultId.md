@@ -6,36 +6,37 @@ Find vault IDs in the secret store
 ## SYNTAX
 
 ```
-Find-VdcVaultId [-Attribute] <Hashtable> [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>]
+Find-VdcVaultId [-Path] <String> [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Find vault IDs in the secret store by their attributes and associated values
+Find vault IDs in the secret store associated to an existing object.
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Find-VdcVaultId -Attribute @{'Serial'='0812E11D213DE8E07890BCC1234567'}
-Find a vault id
+Find-VdcVaultId -Path '\ved\policy\awesomeobject.cyberark.com'
 ```
+
+Find the vault IDs associated with an object.
+For certificates with historical references, the vault IDs will
 
 ## PARAMETERS
 
-### -Attribute
-Name and value to search.
-See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php for more details.
+### -Path
+Path of the object
 
 ```yaml
-Type: Hashtable
+Type: String
 Parameter Sets: (All)
 Aliases:
 
 Required: True
 Position: 1
 Default value: None
-Accept pipeline input: True (ByValue)
+Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
@@ -77,7 +78,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Attribute
+### Path
 ## OUTPUTS
 
 ### String
@@ -88,6 +89,4 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 [http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcVaultId/](http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcVaultId/)
 
 [https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcVaultId.ps1](https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VdcVaultId.ps1)
-
-[https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/r-SDK-POST-Secretstore-lookupbyassociation.php)
 

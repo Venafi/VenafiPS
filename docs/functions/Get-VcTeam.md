@@ -7,7 +7,7 @@ Get team info
 
 ### ID
 ```
-Get-VcTeam [-Team] <String[]> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+Get-VcTeam [-Team] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -49,7 +49,7 @@ Get info for all teams
 Team name or guid.
 
 ```yaml
-Type: String[]
+Type: String
 Parameter Sets: ID
 Aliases: teamID, owningTeam, owningTeams, owningTeamId, ownedTeams, ID
 

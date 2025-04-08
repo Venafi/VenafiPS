@@ -14,7 +14,7 @@ Find-VdcCertificate [[-Path] <String>] [[-Guid] <Guid>] [-Recursive] [[-Country]
  [[-SerialNumber] <String>] [[-SignatureAlgorithm] <String>] [[-Thumbprint] <String>] [[-IssueDate] <DateTime>]
  [[-IssueDateAfter] <DateTime>] [[-IssueDateBefore] <DateTime>] [[-ExpireDate] <DateTime>]
  [[-ExpireAfter] <DateTime>] [[-ExpireBefore] <DateTime>] [-Enabled] [-InError] [-IsSelfSigned] [-IsWildcard]
- [[-NetworkValidationEnabled] <Boolean>] [[-CreatedDate] <DateTime>] [[-CreatedAfter] <DateTime>]
+ [-IsExpired] [[-NetworkValidationEnabled] <Boolean>] [[-CreatedDate] <DateTime>] [[-CreatedAfter] <DateTime>]
  [[-CreatedBefore] <DateTime>] [[-CertificateType] <String[]>] [[-ManagementType] <TppManagementType[]>]
  [-PendingWorkflow] [[-Stage] <TppCertificateStage[]>] [[-StageGreaterThan] <TppCertificateStage>]
  [[-StageLessThan] <TppCertificateStage>] [-ValidationEnabled] [[-ValidationState] <String[]>] [-CountOnly]
@@ -38,61 +38,68 @@ Find first 1000 certificates
 
 ### EXAMPLE 2
 ```
-Find-VdcCertificate -ExpireBefore [datetime]'2018-01-01'
+Find-VdcCertificate -IsExpired
+```
+
+Find expired certificates
+
+### EXAMPLE 3
+```
+Find-VdcCertificate -ExpireBefore '2018-01-01'
 ```
 
 Find certificates expiring before a certain date
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 Find-VdcCertificate -ExpireBefore "2018-01-01" -First 5
 ```
 
 Find 5 certificates expiring before a certain date
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 Find-VdcCertificate -ExpireBefore "2018-01-01" -First 5 -Skip 2
 ```
 
 Find 5 certificates expiring before a certain date, starting at the 3rd certificate found.
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 Find-VdcCertificate -Path '\VED\Policy\My Policy'
 ```
 
 Find certificates in a specific path
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 Find-VdcCertificate -Issuer 'CN=Example Root CA, O=Venafi,Inc., L=Salt Lake City, S=Utah, C=US'
 ```
 
 Find certificates by issuer
 
-### EXAMPLE 7
+### EXAMPLE 8
 ```
 Find-VdcCertificate -Path '\VED\Policy\My Policy' -Recursive
 ```
 
 Find certificates in a specific path and all subfolders
 
-### EXAMPLE 8
+### EXAMPLE 9
 ```
 Find-VdcCertificate | Get-VdcCertificate
 ```
 
 Get detailed certificate info
 
-### EXAMPLE 9
+### EXAMPLE 10
 ```
 Find-VdcCertificate -ExpireBefore "2019-09-01" | Invoke-VdcCertificateAction -Renew
 ```
 
 Renew all certificates expiring before a certain date
 
-### EXAMPLE 10
+### EXAMPLE 11
 ```
 Find-VdcCertificate -First 500
 ```
@@ -450,7 +457,7 @@ Accept wildcard characters: False
 ```
 
 ### -IssueDateAfter
-{{ Fill IssueDateAfter Description }}
+Find certificates issued after a certain date
 
 ```yaml
 Type: DateTime
@@ -465,7 +472,7 @@ Accept wildcard characters: False
 ```
 
 ### -IssueDateBefore
-{{ Fill IssueDateBefore Description }}
+Find certificates issued before a certain date
 
 ```yaml
 Type: DateTime
@@ -571,6 +578,21 @@ Accept wildcard characters: False
 
 ### -IsWildcard
 Only include wilcard certificates
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IsExpired
+Only include expired certificates
 
 ```yaml
 Type: SwitchParameter
@@ -874,7 +896,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 ### Path
 ## OUTPUTS
 
-### TppObject, Int when CountOnly provided
+### pscustomobject, Int when CountOnly provided
 ## NOTES
 
 ## RELATED LINKS

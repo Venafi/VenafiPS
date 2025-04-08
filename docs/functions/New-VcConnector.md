@@ -27,7 +27,7 @@ Create a new machine, CA, TPP, or credential connector
 New-VcConnector -ManifestPath '/tmp/manifest.json'
 ```
 
-Create a new connector from a full manifest
+Create a new connector from a manifest which already contains deployment information
 
 ### EXAMPLE 2
 ```

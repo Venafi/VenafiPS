@@ -19,7 +19,7 @@ Get-VdcObject -Guid <Guid[]> [-VenafiSession <PSObject>] [-ProgressAction <Actio
 
 ## DESCRIPTION
 Return object information by either path or guid. 
-This will return a TppObject which can be used with many other functions.
+This will return a standard object which can be used with many other functions.
 
 ## EXAMPLES
 

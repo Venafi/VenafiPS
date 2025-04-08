@@ -86,6 +86,12 @@ New-VenafiSession -VaultVcKeyName <String> [-TimeoutSec <Int32>] [-PassThru]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
+### RefreshSession
+```
+New-VenafiSession [-RefreshSession] [-TimeoutSec <Int32>] [-PassThru] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
+```
+
 ## DESCRIPTION
 Authenticate a user and create a new session with which future calls can be made.
 Key based username/password and windows integrated are supported as well as token-based integrated, oauth, and certificate.
@@ -500,6 +506,22 @@ Aliases: VaultVaasKeyName
 Required: True
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -RefreshSession
+Obtain a new access token from the refresh token.
+Requires an existing module scoped $VenafiSession.
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: RefreshSession
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

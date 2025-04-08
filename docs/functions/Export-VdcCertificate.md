@@ -5,47 +5,87 @@ Export certificate data from TLSPDC
 
 ## SYNTAX
 
-### Base64 (Default)
+### X509ByPath (Default)
 ```
-Export-VdcCertificate -Path <String> [-Base64] [-IncludeChain] [-FriendlyName <String>] [-OutPath <String>]
+Export-VdcCertificate -Path <String> [-X509] [-IncludeChain] [-FriendlyName <String>] [-OutPath <String>]
  [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### Pkcs7
-```
-Export-VdcCertificate -Path <String> [-Pkcs7] [-IncludeChain] [-OutPath <String>] [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
-```
-
-### Pkcs8
-```
-Export-VdcCertificate -Path <String> [-Pkcs8] [-PrivateKeyPassword <PSObject>] [-IncludeChain]
- [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
-```
-
-### Der
-```
-Export-VdcCertificate -Path <String> [-Der] [-OutPath <String>] [-ThrottleLimit <Int32>]
- [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
-```
-
-### Pkcs12
-```
-Export-VdcCertificate -Path <String> [-Pkcs12] -PrivateKeyPassword <PSObject> [-IncludeChain]
- [-FriendlyName <String>] [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
-```
-
-### Jks
+### JksByPath
 ```
 Export-VdcCertificate -Path <String> [-Jks] [-PrivateKeyPassword <PSObject>] [-IncludeChain]
  -FriendlyName <String> -KeystorePassword <PSObject> [-OutPath <String>] [-ThrottleLimit <Int32>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
+### Pkcs12ByPath
+```
+Export-VdcCertificate -Path <String> [-Pkcs12] -PrivateKeyPassword <PSObject> [-IncludeChain]
+ [-FriendlyName <String>] [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### DerByPath
+```
+Export-VdcCertificate -Path <String> [-Der] [-OutPath <String>] [-ThrottleLimit <Int32>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### Pkcs8ByPath
+```
+Export-VdcCertificate -Path <String> [-Pkcs8] [-PrivateKeyPassword <PSObject>] [-IncludeChain]
+ [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
+```
+
+### Pkcs7ByPath
+```
+Export-VdcCertificate -Path <String> [-Pkcs7] [-IncludeChain] [-OutPath <String>] [-ThrottleLimit <Int32>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### JksByVault
+```
+Export-VdcCertificate -VaultId <PSObject> [-Jks] [-PrivateKeyPassword <PSObject>] [-IncludeChain]
+ -FriendlyName <String> -KeystorePassword <PSObject> [-OutPath <String>] [-ThrottleLimit <Int32>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### Pkcs12ByVault
+```
+Export-VdcCertificate -VaultId <PSObject> [-Pkcs12] -PrivateKeyPassword <PSObject> [-IncludeChain]
+ [-FriendlyName <String>] [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### DerByVault
+```
+Export-VdcCertificate -VaultId <PSObject> [-Der] [-OutPath <String>] [-ThrottleLimit <Int32>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### Pkcs8ByVault
+```
+Export-VdcCertificate -VaultId <PSObject> [-Pkcs8] [-PrivateKeyPassword <PSObject>] [-IncludeChain]
+ [-OutPath <String>] [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
+```
+
+### Pkcs7ByVault
+```
+Export-VdcCertificate -VaultId <PSObject> [-Pkcs7] [-IncludeChain] [-OutPath <String>] [-ThrottleLimit <Int32>]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
+### X509ByVault
+```
+Export-VdcCertificate -VaultId <PSObject> [-X509] [-IncludeChain] [-FriendlyName <String>] [-OutPath <String>]
+ [-ThrottleLimit <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
 ## DESCRIPTION
-Export certificate data
+Export certificate data including certificate, key, and chain.
+Export certificates by path or vault id, the latter is helpful for historical certificates.
 
 ## EXAMPLES
 
@@ -54,38 +94,45 @@ Export certificate data
 Export-VdcCertificate -Path '\ved\policy\mycert.com'
 ```
 
-Get certificate data in Base64 format, the default
+Get certificate data in X509 format, the default
 
 ### EXAMPLE 2
 ```
-$cert | Export-VdcCertificate -'PKCS7' -OutPath 'c:\temp'
+$cert | Export-VdcCertificate -PKCS7 -OutPath 'c:\temp'
 ```
 
 Get certificate data in a specific format and save to a file
 
 ### EXAMPLE 3
 ```
-$cert | Export-VdcCertificate -'PKCS7' -IncludeChain
+$cert | Export-VdcCertificate -PKCS7 -IncludeChain
 ```
 
 Get one or more certificates with the certificate chain included
 
 ### EXAMPLE 4
 ```
-$cert | Export-VdcCertificate -'PKCS12' -PrivateKeyPassword 'mySecretPassword!'
+$cert | Export-VdcCertificate -PKCS12 -PrivateKeyPassword 'mySecretPassword!'
 ```
 
 Get one or more certificates with private key included
 
 ### EXAMPLE 5
 ```
-$cert | Export-VdcCertificate -'PKCS8' -PrivateKeyPassword 'mySecretPassword!' -OutPath '~/temp'
+Export-VdcCertificate -VaultId 12345 -PKCS12 -PrivateKeyPassword 'mySecretPassword!'
+```
+
+Export certificate and private key from the vault
+
+### EXAMPLE 6
+```
+$cert | Export-VdcCertificate -PKCS8 -PrivateKeyPassword 'mySecretPassword!' -OutPath '~/temp'
 ```
 
 Save certificate info to a file. 
 PKCS8 with private key will save 3 files, .pem (cert+key), .pem.cer (cert only), and .pem.key (key only)
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 $cert | Export-VdcCertificate -Jks -FriendlyName 'MyFriendlyName' -KeystorePassword $cred.password
 ```
@@ -99,7 +146,7 @@ Full path to the certificate
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: X509ByPath, JksByPath, Pkcs12ByPath, DerByPath, Pkcs8ByPath, Pkcs7ByPath
 Aliases: id
 
 Required: True
@@ -109,14 +156,29 @@ Accept pipeline input: True (ByPropertyName)
 Accept wildcard characters: False
 ```
 
-### -Base64
-Provide output in Base64 format. 
+### -VaultId
+Vault ID to the certificate
+
+```yaml
+Type: PSObject
+Parameter Sets: JksByVault, Pkcs12ByVault, DerByVault, Pkcs8ByVault, Pkcs7ByVault, X509ByVault
+Aliases: Certificate Vault Id, PreviousVersions
+
+Required: True
+Position: Named
+Default value: None
+Accept pipeline input: True (ByPropertyName)
+Accept wildcard characters: False
+```
+
+### -X509
+Provide output in X509 Base64 format. 
 This is the default if no format is provided.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Base64
-Aliases:
+Parameter Sets: X509ByPath, X509ByVault
+Aliases: Base64
 
 Required: False
 Position: Named
@@ -130,7 +192,7 @@ Provide output in PKCS #7 format
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Pkcs7
+Parameter Sets: Pkcs7ByPath, Pkcs7ByVault
 Aliases:
 
 Required: True
@@ -145,7 +207,7 @@ Provide output in PKCS #8 format
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Pkcs8
+Parameter Sets: Pkcs8ByPath, Pkcs8ByVault
 Aliases:
 
 Required: True
@@ -160,7 +222,7 @@ Provide output in DER format
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Der
+Parameter Sets: DerByPath, DerByVault
 Aliases:
 
 Required: True
@@ -176,7 +238,7 @@ Requires a value for PrivateKeyPassword.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Pkcs12
+Parameter Sets: Pkcs12ByPath, Pkcs12ByVault
 Aliases:
 
 Required: True
@@ -192,7 +254,7 @@ Requires a value for FriendlyName.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Jks
+Parameter Sets: JksByPath, JksByVault
 Aliases:
 
 Required: True
@@ -215,7 +277,7 @@ You must adhere to the following rules:
 
 ```yaml
 Type: PSObject
-Parameter Sets: Pkcs8, Jks
+Parameter Sets: JksByPath, Pkcs8ByPath, JksByVault, Pkcs8ByVault
 Aliases: SecurePassword
 
 Required: False
@@ -227,7 +289,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: PSObject
-Parameter Sets: Pkcs12
+Parameter Sets: Pkcs12ByPath, Pkcs12ByVault
 Aliases: SecurePassword
 
 Required: True
@@ -243,7 +305,7 @@ The end entity will be first and the root last.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: Base64, Pkcs7, Pkcs8, Pkcs12, Jks
+Parameter Sets: X509ByPath, JksByPath, Pkcs12ByPath, Pkcs8ByPath, Pkcs7ByPath, JksByVault, Pkcs12ByVault, Pkcs8ByVault, Pkcs7ByVault, X509ByVault
 Aliases:
 
 Required: False
@@ -260,7 +322,7 @@ Required when exporting JKS.
 
 ```yaml
 Type: String
-Parameter Sets: Base64, Pkcs12
+Parameter Sets: X509ByPath, Pkcs12ByPath, Pkcs12ByVault, X509ByVault
 Aliases:
 
 Required: False
@@ -272,7 +334,7 @@ Accept wildcard characters: False
 
 ```yaml
 Type: String
-Parameter Sets: Jks
+Parameter Sets: JksByPath, JksByVault
 Aliases:
 
 Required: True
@@ -295,7 +357,7 @@ You must adhere to the following rules:
 
 ```yaml
 Type: PSObject
-Parameter Sets: Jks
+Parameter Sets: JksByPath, JksByVault
 Aliases:
 
 Required: True
@@ -377,7 +439,7 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### Path
+### Path, VaultId
 ## OUTPUTS
 
 ### PSCustomObject
