@@ -47,7 +47,8 @@ jobs:
       - name: Lint with PSScriptAnalyzer
         shell: pwsh
         run: |
-          Invoke-ScriptAnalyzer -Path ./VenafiPS -Recurse -Outvariable issues
+          # https://github.com/PowerShell/PSScriptAnalyzer/issues/1867
+          Invoke-ScriptAnalyzer -Path ./VenafiPS -Recurse -Outvariable issues -Verbose
           if ($null -eq $issues) {
               Write-Output "No issues found by PSScriptAnalyzer."
           } else {
