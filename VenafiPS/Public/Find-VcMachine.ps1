@@ -34,6 +34,11 @@ function Find-VcMachine {
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPC key can also provided.
 
+    .EXAMPLE
+    Find-VcMachine
+
+    Get all machines
+    
     .OUTPUTS
 
     #>
@@ -95,3 +100,4 @@ function Find-VcMachine {
     Find-VcObject @params
 
 }
+

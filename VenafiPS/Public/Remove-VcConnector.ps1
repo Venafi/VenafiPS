@@ -1,4 +1,4 @@
-﻿function Remove-VcConnector {
+function Remove-VcConnector {
     <#
     .SYNOPSIS
     Remove a connector
@@ -57,3 +57,5 @@
         }
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿function Get-VdcCertificate {
+function Get-VdcCertificate {
     <#
     .SYNOPSIS
     Get certificate information
@@ -29,7 +29,6 @@
     Limit the number of threads when running in parallel; the default is 100.
     Setting the value to 1 will disable multithreading.
     On PS v5 the ThreadJob module is required.  If not found, multithreading will be disabled.
-
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -139,7 +138,7 @@
 
             $response = Invoke-VenafiRestMethod @params
 
-            if ( $IncludePreviousVersions ) {
+            if ( $using:IncludePreviousVersions ) {
                 $params.UriLeaf = [System.Web.HttpUtility]::UrlEncode("certificates/{$thisGuid}/PreviousVersions")
                 $params.Body = @{}
 
@@ -206,3 +205,5 @@
         } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Getting certificates'
     }
 }
+
+

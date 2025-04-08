@@ -1,4 +1,4 @@
-﻿function New-VcTeam {
+function New-VcTeam {
     <#
     .SYNOPSIS
     Create a new team
@@ -25,6 +25,9 @@
     If more than 1 rule is configured, they must all be met for a user to meet the criteria.
     Each rule should be of the format @('claim name', 'operator', 'value')
     where operator can be equals, not_equals, contains, not_contains, starts_with, or ends_with.
+
+    .PARAMETER PassThru
+    Send back details on the newly created team
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -135,3 +138,5 @@
         }
     }
 }
+
+

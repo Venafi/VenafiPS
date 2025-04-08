@@ -118,3 +118,4 @@ function Get-VcUser {
         $response | Select-Object @{'n' = 'userId'; 'e' = { $_.id } }, * -ExcludeProperty id
     }
 }
+

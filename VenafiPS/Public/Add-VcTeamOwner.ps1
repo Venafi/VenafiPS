@@ -1,4 +1,4 @@
-﻿function Add-VcTeamOwner {
+function Add-VcTeamOwner {
     <#
     .SYNOPSIS
     Add owners to a team
@@ -63,3 +63,5 @@
         $null = Invoke-VenafiRestMethod @params
     }
 }
+
+

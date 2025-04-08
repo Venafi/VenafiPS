@@ -31,6 +31,11 @@ function Find-VcCertificateRequest {
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPC key can also provided.
 
+    .EXAMPLE
+    Find-VcCertificateRequest
+
+    Get all certificate requests
+
     .OUTPUTS
 
     #>
@@ -87,3 +92,4 @@ function Find-VcCertificateRequest {
     Find-VcObject @params
 
 }
+

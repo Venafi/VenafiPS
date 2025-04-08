@@ -26,6 +26,27 @@ function Invoke-VenafiRestMethod {
     .PARAMETER VcRegion
     TLSPC region to target.  Only supported if VenafiSession is an api key otherwise the comes from VenafiSession directly.
 
+    .PARAMETER Server
+    Server or url to access vedsdk, venafi.company.com or https://venafi.company.com.
+
+    .PARAMETER UseDefaultCredential
+    Use Windows Integrated authentication
+
+    .PARAMETER Certificate
+    Certificate for TLSPDC token-based authentication
+
+    .PARAMETER UriRoot
+    Path between the server and endpoint.
+
+    .PARAMETER FullResponse
+    Provide the full response including headers as opposed to just the response content
+
+    .PARAMETER TimeoutSec
+    Connection timeout.  Default to 0, no timeout.
+
+    .PARAMETER SkipCertificateCheck
+    Skip certificate checking, eg. self signed certificate on server
+
     .INPUTS
     None
 
@@ -135,7 +156,7 @@ function Invoke-VenafiRestMethod {
 
                 if ( Test-IsGuid($VenafiSession) ) {
                     # if we were provided a key directly and not a full session, determine which region to contact
-                    
+
                     $Server = ($script:VcRegions).$VcRegion
                     $platform = 'VC'
                 }
@@ -270,6 +291,7 @@ function Invoke-VenafiRestMethod {
         else {
             $response = Invoke-RestMethod @params -ErrorAction Stop
         }
+        try { if ($DebugPreference -eq 'Continue') { $response | ConvertTo-Json -Depth 10 | Write-Debug } } catch {}
         $verboseOutput = $response 4>&1
         $verboseOutput.Message | Write-VerboseWithSecret
     }
@@ -339,3 +361,4 @@ function Invoke-VenafiRestMethod {
 
     $response
 }
+

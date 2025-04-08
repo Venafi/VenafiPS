@@ -1,4 +1,4 @@
-﻿function Get-VcTeam {
+function Get-VcTeam {
     <#
     .SYNOPSIS
     Get team info
@@ -92,3 +92,4 @@
         }
     }
 }
+

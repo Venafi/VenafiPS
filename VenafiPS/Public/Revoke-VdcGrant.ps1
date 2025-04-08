@@ -64,9 +64,9 @@ function Revoke-VdcGrant {
 
     begin {
 
-        Test-VenafiSession $PSCmdlet.MyInvocation
+        $sess = Get-VenafiSession
 
-        if ( $VenafiSessionNested.Version -lt [Version]::new('22', '3', '0') ) {
+        if ( $sess.Version -lt [Version]::new('22', '3', '0') ) {
             throw 'Revoke-VdcGrant is available on TLSPDC v22.3 and greater'
         }
 
@@ -95,12 +95,12 @@ function Revoke-VdcGrant {
 
                     401 {
                         if ( $response.Error.error -eq 'insufficient_rights' ) {
-                            throw 'The token user account does not have sufficient permissions for this request.  You must be an administrator or OAuth administrator.'
+                            throw [System.UnauthorizedAccessException]::new('The token user account does not have sufficient permissions for this request.  You must be an administrator or OAuth administrator.')
                         }
                     }
 
                     403 {
-                        throw 'The access token provided does not have the admin:delete scope.  Create a new token with this scope and try again.'
+                        throw [System.UnauthorizedAccessException]::new('The access token provided does not have the admin:delete scope.  Create a new token with this scope and try again.')
                     }
 
                     Default {
@@ -111,3 +111,4 @@ function Revoke-VdcGrant {
         }
     }
 }
+

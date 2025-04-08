@@ -4,13 +4,17 @@ function Export-VdcCertificate {
     Export certificate data from TLSPDC
 
     .DESCRIPTION
-    Export certificate data
+    Export certificate data including certificate, key, and chain.
+    Export certificates by path or vault id, the latter is helpful for historical certificates.
 
     .PARAMETER Path
     Full path to the certificate
 
-    .PARAMETER Base64
-    Provide output in Base64 format.  This is the default if no format is provided.
+    .PARAMETER VaultId
+    Vault ID to the certificate
+
+    .PARAMETER X509
+    Provide output in X509 Base64 format.  This is the default if no format is provided.
 
     .PARAMETER Pkcs7
     Provide output in PKCS #7 format
@@ -72,7 +76,7 @@ function Export-VdcCertificate {
     If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
-    Path
+    Path, VaultId
 
     .OUTPUTS
     PSCustomObject
@@ -80,25 +84,30 @@ function Export-VdcCertificate {
     .EXAMPLE
     Export-VdcCertificate -Path '\ved\policy\mycert.com'
 
-    Get certificate data in Base64 format, the default
+    Get certificate data in X509 format, the default
 
     .EXAMPLE
-    $cert | Export-VdcCertificate -'PKCS7' -OutPath 'c:\temp'
+    $cert | Export-VdcCertificate -PKCS7 -OutPath 'c:\temp'
 
     Get certificate data in a specific format and save to a file
 
     .EXAMPLE
-    $cert | Export-VdcCertificate -'PKCS7' -IncludeChain
+    $cert | Export-VdcCertificate -PKCS7 -IncludeChain
 
     Get one or more certificates with the certificate chain included
 
     .EXAMPLE
-    $cert | Export-VdcCertificate -'PKCS12' -PrivateKeyPassword 'mySecretPassword!'
+    $cert | Export-VdcCertificate -PKCS12 -PrivateKeyPassword 'mySecretPassword!'
 
     Get one or more certificates with private key included
 
     .EXAMPLE
-    $cert | Export-VdcCertificate -'PKCS8' -PrivateKeyPassword 'mySecretPassword!' -OutPath '~/temp'
+    Export-VdcCertificate -VaultId 12345 -PKCS12 -PrivateKeyPassword 'mySecretPassword!'
+
+    Export certificate and private key from the vault
+
+    .EXAMPLE
+    $cert | Export-VdcCertificate -PKCS8 -PrivateKeyPassword 'mySecretPassword!' -OutPath '~/temp'
 
     Save certificate info to a file.  PKCS8 with private key will save 3 files, .pem (cert+key), .pem.cer (cert only), and .pem.key (key only)
 
@@ -109,36 +118,60 @@ function Export-VdcCertificate {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'Base64')]
+    [CmdletBinding(DefaultParameterSetName = 'X509ByPath')]
     [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Converting to a secure string, its already plaintext')]
 
     param (
 
-        [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'X509ByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs7ByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs8ByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'DerByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12ByPath', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'JksByPath', ValueFromPipelineByPropertyName)]
         [Alias('id')]
         [string] $Path,
 
-        [Parameter(ParameterSetName = 'Base64')]
-        [switch] $Base64,
+        [Parameter(Mandatory, ParameterSetName = 'X509ByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs7ByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs8ByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'DerByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12ByVault', ValueFromPipelineByPropertyName)]
+        [Parameter(Mandatory, ParameterSetName = 'JksByVault', ValueFromPipelineByPropertyName)]
+        [Alias('Certificate Vault Id', 'PreviousVersions')]
+        [psobject] $VaultId,
 
-        [Parameter(Mandatory, ParameterSetName = 'Pkcs7')]
+        [Parameter(ParameterSetName = 'X509ByPath')]
+        [Parameter(ParameterSetName = 'X509ByVault')]
+        [Alias('Base64')]
+        [switch] $X509,
+
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs7ByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs7ByVault')]
         [switch] $Pkcs7,
 
-        [Parameter(Mandatory, ParameterSetName = 'Pkcs8')]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs8ByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs8ByVault')]
         [switch] $Pkcs8,
 
-        [Parameter(Mandatory, ParameterSetName = 'Der')]
+        [Parameter(Mandatory, ParameterSetName = 'DerByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'DerByVault')]
         [switch] $Der,
 
-        [Parameter(Mandatory, ParameterSetName = 'Pkcs12')]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12ByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12ByVault')]
         [switch] $Pkcs12,
 
-        [Parameter(Mandatory, ParameterSetName = 'Jks')]
+        [Parameter(Mandatory, ParameterSetName = 'JksByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'JksByVault')]
         [switch] $Jks,
 
-        [Parameter(ParameterSetName = 'Pkcs8')]
-        [Parameter(Mandatory, ParameterSetName = 'Pkcs12')]
-        [Parameter(ParameterSetName = 'Jks')]
+        [Parameter(ParameterSetName = 'Pkcs8ByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12ByPath')]
+        [Parameter(ParameterSetName = 'JksByPath')]
+        [Parameter(ParameterSetName = 'Pkcs8ByVault')]
+        [Parameter(Mandatory, ParameterSetName = 'Pkcs12ByVault')]
+        [Parameter(ParameterSetName = 'JksByVault')]
         [ValidateScript(
             {
                 if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
@@ -152,19 +185,28 @@ function Export-VdcCertificate {
         [Alias('SecurePassword')]
         [psobject] $PrivateKeyPassword,
 
-        [Parameter(ParameterSetName = 'Base64')]
-        [Parameter(ParameterSetName = 'Pkcs7')]
-        [Parameter(ParameterSetName = 'Pkcs8')]
-        [Parameter(ParameterSetName = 'Pkcs12')]
-        [Parameter(ParameterSetName = 'Jks')]
+        [Parameter(ParameterSetName = 'X509ByPath')]
+        [Parameter(ParameterSetName = 'Pkcs7ByPath')]
+        [Parameter(ParameterSetName = 'Pkcs8ByPath')]
+        [Parameter(ParameterSetName = 'Pkcs12ByPath')]
+        [Parameter(ParameterSetName = 'JksByPath')]
+        [Parameter(ParameterSetName = 'X509ByVault')]
+        [Parameter(ParameterSetName = 'Pkcs7ByVault')]
+        [Parameter(ParameterSetName = 'Pkcs8ByVault')]
+        [Parameter(ParameterSetName = 'Pkcs12ByVault')]
+        [Parameter(ParameterSetName = 'JksByVault')]
         [switch] $IncludeChain,
 
-        [Parameter(ParameterSetName = 'Base64')]
-        [Parameter(ParameterSetName = 'Pkcs12')]
-        [Parameter(Mandatory, ParameterSetName = 'Jks')]
+        [Parameter(ParameterSetName = 'X509ByPath')]
+        [Parameter(ParameterSetName = 'Pkcs12ByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'JksByPath')]
+        [Parameter(ParameterSetName = 'X509ByVault')]
+        [Parameter(ParameterSetName = 'Pkcs12ByVault')]
+        [Parameter(Mandatory, ParameterSetName = 'JksByVault')]
         [string] $FriendlyName,
 
-        [Parameter(Mandatory, ParameterSetName = 'Jks')]
+        [Parameter(Mandatory, ParameterSetName = 'JksByPath')]
+        [Parameter(Mandatory, ParameterSetName = 'JksByVault')]
         [ValidateScript(
             {
                 if ( $_ -is [string] -or $_ -is [securestring] -or $_ -is [pscredential] ) {
@@ -234,18 +276,38 @@ function Export-VdcCertificate {
     }
 
     process {
-        $body.CertificateDN = ($Path | ConvertTo-VdcFullPath)
+        if ( $Path ) {
+            $body.CertificateDN = ($Path | ConvertTo-VdcFullPath)
+            $allCerts.Add($body.Clone())
+        }
+        else {
+            foreach ($thisId in $VaultId) {
+                $body.VaultId = if ( $thisId.VaultId ) {
+                    $thisId.VaultId
+                }
+                else {
+                    $thisId
+                }
+                $allCerts.Add($body.Clone())
+            }
+        }
 
-        $allCerts.Add($body.Clone())
     }
 
     end {
         Invoke-VenafiParallel -InputObject $allCerts -ScriptBlock {
-
             $thisBody = $PSItem
-
+            $outPath = $using:OutPath
+            # foreach ($thisBody in $allCerts) {
+            $isByPath = $null -eq $thisBody.VaultId
+       
             try {
-                $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+                if ( $isByPath ) {
+                    $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+                }
+                else {
+                    $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf ('certificates/retrieve/{0}' -f $thisBody.VaultId) -Body $thisBody
+                }
             }
             catch {
                 try {
@@ -260,25 +322,38 @@ function Export-VdcCertificate {
                         # it could be we just don't have a private key so get just the cert
                         $thisBody.IncludePrivateKey = $false
                         $thisBody.Password = $null
-                        $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
-                    } else {
+                        if ( $isByPath ) {
+                            $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
+                        }
+                        else {
+                            $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf ('certificates/retrieve/{0}' -f $thisBody.VaultId) -Body $thisBody
+                        }
+                    }
+                    else {
                         throw $_
                     }
                 }
                 catch {
-                    return [pscustomobject]@{
-                        'Path'            = $thisBody.CertificateDN
-                        'Error'           = $_
-                        'CertificateData' = $null
+                    if ( $isByPath ) {
+                        return [pscustomobject]@{
+                            'Path'            = $thisBody.CertificateDN
+                            'Error'           = $_
+                            'CertificateData' = $null
+                        }
                     }
+                    else {
+                        return [pscustomobject]@{
+                            'VaultId'         = $thisBody.VaultId
+                            'Error'           = $_
+                            'CertificateData' = $null
+                        }
+                    }
+    
                 }
             }
 
+            # data applicable to both bypath and byvault
             $out = $innerResponse | Select-Object @{
-                n = 'Path'
-                e = { $thisBody.CertificateDN }
-            },
-            @{
                 'n' = 'Format'
                 'e' = {
                     # standardize the format for pkcs8 and pkcs12 across tlspdc and tlspc
@@ -292,12 +367,19 @@ function Export-VdcCertificate {
             @{
                 n = 'Error'
                 e = { $_.Status }
-            }, 
-            @{
-                n = 'PolicyPath'
-                e = { $thisBody.CertificateDN.Substring(0, $thisBody.CertificateDN.LastIndexOf('\')) }
-            },
-            CertificateData
+            }
+
+            # add path/vault specific data
+            if ( $isByPath ) {
+                $out | Add-Member @{
+                    Path            = $thisBody.CertificateDN
+                    PolicyPath      = $thisBody.CertificateDN.Substring(0, $thisBody.CertificateDN.LastIndexOf('\'))
+                    CertificateData = $innerResponse.CertificateData
+                }
+            }
+            else {
+                $out | Add-Member @{ 'VaultId' = $thisBody.VaultId }
+            }
 
             if ( $innerResponse.CertificateData ) {
 
@@ -305,7 +387,7 @@ function Export-VdcCertificate {
                     $splitData = Split-CertificateData -InputObject $innerResponse.CertificateData
                 }
 
-                if ( $using:OutPath ) {
+                if ( $outPath ) {
 
                     $out = $out | Select-Object -Property * -ExcludeProperty CertificateData
 
@@ -380,3 +462,5 @@ function Export-VdcCertificate {
         } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Exporting certificates'
     }
 }
+
+

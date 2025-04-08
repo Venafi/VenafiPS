@@ -195,3 +195,4 @@ function Read-VdcLog {
         Select-Object -Property @{'n' = 'EventId'; 'e' = { '{0:x8}' -f $_.Id } }, *
     }
 }
+

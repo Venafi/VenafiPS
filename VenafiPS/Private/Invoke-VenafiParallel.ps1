@@ -44,7 +44,7 @@ function Invoke-VenafiParallel {
     .NOTES
     In your ScriptBlock:
     - Use either $PSItem or $_ to reference the current input object
-    - Remember hashtables are reference types so be sure to clone if 'using' from parent
+    - Remember, hashtables are reference types so be sure to clone if 'using' from parent
 
     #>
 
@@ -83,18 +83,18 @@ function Invoke-VenafiParallel {
     if ( $InputObject.Count -eq 1 ) {
         $ThrottleLimit = 1
     }
-    
+
     # throttle to 1 = no parallel
     if ( $ThrottleLimit -le 1 ) {
         # remove $using: from vars, not threaded and not supported
         $InputObject | ForEach-Object -Process ([ScriptBlock]::Create(($ScriptBlock.ToString() -ireplace [regex]::Escape('$using:'), '$')))
         return
     }
-    
+
     # parallel processing from here down
 
     $VenafiSession = Get-VenafiSession
-    
+
     $starterSb = {
 
         # need to import module until https://github.com/PowerShell/PowerShell/issues/12240 is complete
@@ -130,31 +130,32 @@ function Invoke-VenafiParallel {
         else {
 
             Write-Progress -Activity $ProgressTitle -Status "Initializing..."
-        
+
             $job = $InputObject | Foreach-Object -AsJob -ThrottleLimit $ThrottleLimit -Parallel $sb
-        
+
             if ( -not $job.ChildJobs ) {
                 return
             }
-        
+
             $childJobs = $job.ChildJobs
             $childJobsCount = $childJobs.Count
-        
+
             do {
                 Start-Sleep -Milliseconds 100
-        
+
                 $completedJobs = $childJobs | Where-Object State -in 'Completed', 'Failed', 'Stopped'
-        
+
                 # get latest job info
                 $job | Receive-Job
-        
+
                 [int] $percent = ($completedJobs.Count / $childJobsCount) * 100
                 Write-Progress -Activity $ProgressTitle -Status "$percent% complete" -PercentComplete $percent
-        
+
             } while ($completedJobs.Count -lt $childJobsCount)
-        
+
             Write-Progress -Completed -Activity 'done'
         }
     }
 
 }
+

@@ -381,3 +381,4 @@ function Find-VcCertificate {
         'e' = { $_.issuerOU[0] }
     } -ExcludeProperty applicationIds, instances, totalInstanceCount, ownership, issuerCN, issuerOU
 }
+

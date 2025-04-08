@@ -58,3 +58,4 @@ function Get-VdcSystemStatus {
         Throw ("Getting the system status failed with the following error: {0}.  Ensure you have read rights to the engine root." -f $_)
     }
 }
+

@@ -1,16 +1,30 @@
 function Get-VdcClassAttribute {
     <#
     .SYNOPSIS
-        List all attributes for a specified class
+    List all attributes for a specified class
+
     .DESCRIPTION
-        List all attributes for a specified class, helpful for validation or to pass to Get-VdcAttribute
+    List all attributes for a specified class, helpful for validation or to pass to Get-VdcAttribute
+    
+    .PARAMETER ClassName
+    Class name to retrieve attributes for
+
+    .PARAMETER VenafiSession
+    Authentication for the function.
+    The value defaults to the script session object $VenafiSession created by New-VenafiSession.
+    A TLSPDC token can also be provided.
+    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
+        
     .EXAMPLE
-        Get-VdcClassAttribute -ClassName 'X509 Server Certificate'
-        Get all attributes for the specified class
+    Get-VdcClassAttribute -ClassName 'X509 Server Certificate'
+
+    Get all attributes for the specified class
+
     .INPUTS
-        ClassName
+    ClassName
+
     .OUTPUTS
-        PSCustomObject
+    PSCustomObject
     #>
 
     [CmdletBinding()]
@@ -36,9 +50,9 @@ function Get-VdcClassAttribute {
         Write-Verbose "Processing $ClassName"
 
         $params = @{
-            Method        = 'Post'
-            UriLeaf       = 'configschema/class'
-            Body          = @{
+            Method  = 'Post'
+            UriLeaf = 'configschema/class'
+            Body    = @{
                 'Class' = $ClassName
             }
         }
@@ -65,3 +79,5 @@ function Get-VdcClassAttribute {
         $allAttributes | Sort-Object -Property 'Name', 'Class' -Unique
     }
 }
+
+

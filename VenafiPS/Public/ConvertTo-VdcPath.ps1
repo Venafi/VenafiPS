@@ -9,6 +9,9 @@ function ConvertTo-VdcPath {
     .PARAMETER Guid
     Guid type, [guid] 'xyxyxyxy-xyxy-xyxy-xyxy-xyxyxyxyxyxy'
 
+    .PARAMETER IncludeType
+    Include the object type in the response
+    
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -77,3 +80,4 @@ function ConvertTo-VdcPath {
         }
     }
 }
+

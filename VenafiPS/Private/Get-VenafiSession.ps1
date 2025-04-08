@@ -38,7 +38,7 @@ function Get-VenafiSession {
         if ( $sess.Token.Expires -and $sess.Token.Expires -lt (Get-Date).ToUniversalTime() ) {
             throw 'TLSPDC token has expired.  Execute New-VenafiSession and rerun your command.'
         }
-        
+
         $sess
     }
 }

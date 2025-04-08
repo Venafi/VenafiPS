@@ -39,22 +39,6 @@ function New-VenafiSession {
     You can either provide a String, SecureString, or PSCredential.
     If providing a credential, the username is not used.
 
-    .PARAMETER VaultAccessTokenName
-    Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
-    This value can be provided standalone or with credentials.  First time use requires it to be provided with credentials to retrieve the access token to populate the vault.
-    With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
-
-    .PARAMETER RefreshToken
-    Provide an existing refresh token to create a session.
-    You can either provide a String, SecureString, or PSCredential.
-    If providing a credential, the username is not used.
-
-    .PARAMETER VaultRefreshTokenName
-    Name of the SecretManagement vault entry for the refresh token; the name of the vault must be VenafiPS.
-    This value can be provided standalone or with credentials.  Each time this is used, a new access and refresh token will be obtained.
-    First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
-    With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
-
     .PARAMETER Jwt
     JSON web token.
     Available in TLSPDC v22.4 and later.
@@ -63,10 +47,30 @@ function New-VenafiSession {
     .PARAMETER Certificate
     Certificate for TLSPDC token-based authentication
 
+    .PARAMETER RefreshToken
+    Provide an existing refresh token to create a session.
+    You can either provide a String, SecureString, or PSCredential.
+    If providing a credential, the username is not used.
+
+    .PARAMETER VaultAccessTokenName
+    Name of the SecretManagement vault entry for the access token; the name of the vault must be VenafiPS.
+    This value can be provided standalone or with credentials.  First time use requires it to be provided with credentials to retrieve the access token to populate the vault.
+    With subsequent uses, it can be provided standalone and the access token will be retrieved without the need for credentials.
+
+    .PARAMETER VaultRefreshTokenName
+    Name of the SecretManagement vault entry for the refresh token; the name of the vault must be VenafiPS.
+    This value can be provided standalone or with credentials.  Each time this is used, a new access and refresh token will be obtained.
+    First time use requires it to be provided with credentials to retrieve the refresh token and populate the vault.
+    With subsequent uses, it can be provided standalone and the refresh token will be retrieved without the need for credentials.
+
     .PARAMETER AuthServer
     If you host your authentication service, vedauth, is on a separate server than vedsdk, use this parameter to specify the url eg., venafi.company.com or https://venafi.company.com.
     If AuthServer is not provided, the value provided for Server will be used.
     If just the server name is provided, https:// will be appended.
+
+    .PARAMETER RefreshSession
+    Obtain a new access token from the refresh token.
+    Requires an existing module scoped $VenafiSession.
 
     .PARAMETER VcKey
     Api key from your TLSPC instance.  The api key can be found under your user profile->preferences.
@@ -98,22 +102,22 @@ function New-VenafiSession {
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
-    
+
     Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -Credential $cred -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
-    
+
     Create token-based session
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -Certificate $myCert -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
-    
+
     Create token-based session using a client certificate
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -AuthServer tppauth.mycompany.com -ClientId VenafiPS-MyApp -Credential $cred
-    
+
     Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 
     .EXAMPLE
@@ -123,32 +127,32 @@ function New-VenafiSession {
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -AccessToken $accessCred
-    
+
     Create session using an access token obtained outside this module
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -RefreshToken $refreshCred -ClientId VenafiPS-MyApp
-    
+
     Create session using a refresh token
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -RefreshToken $refreshCred -ClientId VenafiPS-MyApp -VaultRefreshTokenName TppRefresh
-    
+
     Create session using a refresh token and store the newly created refresh token in the vault
 
     .EXAMPLE
     New-VenafiSession -VcKey $cred
-    
+
     Create session against TLSPC
 
     .EXAMPLE
     New-VenafiSession -VcKey $cred -VcRegion 'eu'
-    
+
     Create session against TLSPC in EU region
 
     .EXAMPLE
     New-VenafiSession -VaultVcKeyName vaas-key
-    
+
     Create session against TLSPC with a key stored in a vault
 
     .LINK
@@ -314,7 +318,7 @@ function New-VenafiSession {
 
         [Parameter(ParameterSetName = 'RefreshSession')]
         [switch] $RefreshSession,
-        
+
         [Parameter()]
         [Int32] $TimeoutSec = 0,
 
@@ -398,7 +402,7 @@ function New-VenafiSession {
                 ClientId             = $sessToken.ClientId
                 SkipCertificateCheck = $script:VenafiSession.SkipCertificateCheck
             }
-            
+
             New-VenafiSession @refreshParams
             return
         }
@@ -620,3 +624,5 @@ function New-VenafiSession {
         $Script:VenafiSession = $newSession
     }
 }
+
+

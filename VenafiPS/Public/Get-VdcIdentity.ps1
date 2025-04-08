@@ -178,3 +178,4 @@ function Get-VdcIdentity {
         }
     }
 }
+

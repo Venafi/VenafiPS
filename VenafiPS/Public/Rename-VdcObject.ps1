@@ -85,3 +85,4 @@ function Rename-VdcObject {
         throw $response.Error
     }
 }
+

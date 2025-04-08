@@ -59,3 +59,4 @@ function Remove-VcSatelliteWorker {
     end {
     }
 }
+

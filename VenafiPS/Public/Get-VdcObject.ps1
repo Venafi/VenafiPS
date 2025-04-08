@@ -80,3 +80,4 @@ function Get-VdcObject {
         }
     }
 }
+

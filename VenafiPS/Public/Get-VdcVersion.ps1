@@ -58,3 +58,5 @@ function Get-VdcVersion {
         Throw ("Getting the version failed with the following error: {0}.  This feature was introduced in v18.3." -f $_)
     }
 }
+
+

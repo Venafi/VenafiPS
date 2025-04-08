@@ -1,4 +1,4 @@
-﻿function Get-VcApplication {
+function Get-VcApplication {
     <#
     .SYNOPSIS
     Get application info
@@ -119,3 +119,4 @@
         }
     }
 }
+

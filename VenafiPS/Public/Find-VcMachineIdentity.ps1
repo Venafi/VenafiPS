@@ -28,6 +28,11 @@ function Find-VcMachineIdentity {
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
     A TLSPC key can also provided.
 
+    .EXAMPLE
+    Find-VcMachineIdentity
+
+    Get all machine identities
+    
     .OUTPUTS
     pscustomobject
     #>
@@ -80,3 +85,4 @@ function Find-VcMachineIdentity {
 
     Find-VcObject @params
 }
+

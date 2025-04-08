@@ -47,14 +47,19 @@ jobs:
       - name: Lint with PSScriptAnalyzer
         shell: pwsh
         run: |
-          Invoke-ScriptAnalyzer -Path ./VenafiPS -Recurse -Outvariable issues
-          $issues | ConvertTo-Json -Depth 2 | Set-Content -Path '${{ github.workspace }}/pssa.json'
-          $errors   = $issues.Where({$_.Severity -eq 'Error'})
-          $warnings = $issues.Where({$_.Severity -eq 'Warning'})
-          if ($errors) {
-              Write-Error "There were $($errors.Count) errors and $($warnings.Count) warnings total." -ErrorAction Stop
+          # https://github.com/PowerShell/PSScriptAnalyzer/issues/1867
+          Invoke-ScriptAnalyzer -Path ./VenafiPS -Recurse -Outvariable issues -Verbose
+          if ($null -eq $issues) {
+              Write-Output "No issues found by PSScriptAnalyzer."
           } else {
-              Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
+            $issues | ConvertTo-Json -Depth 2 | Set-Content -Path '${{ github.workspace }}/pssa.json'
+            $errors   = $issues.Where({$_.Severity -eq 'Error'})
+            $warnings = $issues.Where({$_.Severity -eq 'Warning'})
+            if ($errors) {
+                Write-Error "There were $($errors.Count) errors and $($warnings.Count) warnings total." -ErrorAction Stop
+            } else {
+                Write-Output "There were $($errors.Count) errors and $($warnings.Count) warnings total."
+            }
           }
       - name: Upload test results
         uses: actions/upload-artifact@main

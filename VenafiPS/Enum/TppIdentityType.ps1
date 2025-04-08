@@ -3,3 +3,4 @@ enum TppIdentityType {
     SecurityGroups = 2
     DistributionGroups = 8
 }
+

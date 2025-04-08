@@ -1,4 +1,4 @@
-﻿function Get-VcMachineIdentity {
+function Get-VcMachineIdentity {
     <#
     .SYNOPSIS
     Get machine identities
@@ -104,3 +104,5 @@
         }
     }
 }
+
+

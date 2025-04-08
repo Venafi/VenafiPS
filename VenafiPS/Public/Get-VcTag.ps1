@@ -1,4 +1,4 @@
-﻿function Get-VcTag {
+function Get-VcTag {
     <#
     .SYNOPSIS
     Get tags from TLSPC
@@ -75,3 +75,5 @@
         }
     }
 }
+
+

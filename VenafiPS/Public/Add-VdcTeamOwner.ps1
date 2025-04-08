@@ -1,4 +1,4 @@
-﻿function Add-VdcTeamOwner {
+function Add-VdcTeamOwner {
     <#
     .SYNOPSIS
     Add owners to a team
@@ -78,3 +78,5 @@
         $null = Invoke-VenafiRestMethod @params
     }
 }
+
+
