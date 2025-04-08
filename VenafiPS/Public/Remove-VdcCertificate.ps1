@@ -119,3 +119,5 @@ function Remove-VdcCertificate {
         } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Deleting certificates'
     }
 }
+
+

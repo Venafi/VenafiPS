@@ -136,3 +136,4 @@ function Find-VcLog {
 
     Find-VcObject @params
 }
+

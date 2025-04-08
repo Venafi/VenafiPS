@@ -1,4 +1,4 @@
-﻿function Remove-VcWebhook {
+function Remove-VcWebhook {
     <#
     .SYNOPSIS
     Remove a webhook
@@ -64,3 +64,5 @@
         } -ThrottleLimit $ThrottleLimit
     }
 }
+
+

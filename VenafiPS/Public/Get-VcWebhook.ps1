@@ -1,4 +1,4 @@
-﻿function Get-VcWebhook {
+function Get-VcWebhook {
     <#
     .SYNOPSIS
     Get webhook info
@@ -106,3 +106,5 @@
         }
     }
 }
+
+

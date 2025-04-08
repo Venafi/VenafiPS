@@ -1,4 +1,4 @@
-﻿function Remove-VcIssuingTemplate {
+function Remove-VcIssuingTemplate {
     <#
     .SYNOPSIS
     Remove a issuing template
@@ -64,3 +64,5 @@
         } -ThrottleLimit $ThrottleLimit
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿function Remove-VcMachine {
+function Remove-VcMachine {
     <#
     .SYNOPSIS
     Remove a machine
@@ -64,3 +64,5 @@
         } -ThrottleLimit $ThrottleLimit
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿function Get-VcIssuingTemplate {
+function Get-VcIssuingTemplate {
     <#
     .SYNOPSIS
     Get issuing template info
@@ -130,3 +130,4 @@
         }
     }
 }
+

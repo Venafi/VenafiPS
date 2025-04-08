@@ -634,3 +634,4 @@ function Find-VdcCertificate {
         }
     }
 }
+

@@ -112,3 +112,4 @@ function Remove-VdcObject {
         } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Removing objects'
     }
 }
+

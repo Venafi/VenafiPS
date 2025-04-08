@@ -1,4 +1,4 @@
-﻿function Get-VcMachine {
+function Get-VcMachine {
     <#
     .SYNOPSIS
     Get machine details
@@ -160,3 +160,5 @@
         }
     }
 }
+
+

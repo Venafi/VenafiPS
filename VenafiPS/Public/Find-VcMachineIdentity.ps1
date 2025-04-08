@@ -85,3 +85,4 @@ function Find-VcMachineIdentity {
 
     Find-VcObject @params
 }
+

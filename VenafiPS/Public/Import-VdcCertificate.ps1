@@ -111,13 +111,13 @@ function Import-VdcCertificate {
                 }
             })]
         [String] $Path,
-        
+
         [Parameter(Mandatory, ParameterSetName = 'ByData', ValueFromPipelineByPropertyName)]
         [Parameter(Mandatory, ParameterSetName = 'ByDataWithPrivateKey', ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [Alias('CertificateData')]
         [String] $Data,
-        
+
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
         [ValidateNotNullOrEmpty()]
         [String] $PolicyPath,
@@ -174,14 +174,14 @@ function Import-VdcCertificate {
 
         Test-VenafiSession $PSCmdlet.MyInvocation
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
-        
+
         if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {
             $updatedAttribute = @($EnrollmentAttribute.GetEnumerator() | ForEach-Object { @{'Name' = $_.name; 'Value' = $_.value } })
         }
     }
 
     process {
-    
+
         Write-Debug ('paramset={0}' -f $PSCmdlet.ParameterSetName)
 
         $params = @{
@@ -189,19 +189,19 @@ function Import-VdcCertificate {
             UriLeaf = 'certificates/import'
             Body    = @{}
         }
-    
+
         if ( $PSBoundParameters.ContainsKey('EnrollmentAttribute') ) {
             $params.Body.CASpecificAttributes = $updatedAttribute
         }
-    
+
         if ( $Reconcile ) {
             $params.Body.Reconcile = 'true'
         }
-    
+
         if ( $PSBoundParameters.ContainsKey('Name') ) {
             $params.Body.ObjectName = $Name
         }
-    
+
         if ( $PSBoundParameters.ContainsKey('PrivateKey') ) {
             $params.Body.PrivateKeyData = $PrivateKey
         }
@@ -277,3 +277,5 @@ function Import-VdcCertificate {
         } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Importing certificates'
     }
 }
+
+

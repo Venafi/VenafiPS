@@ -1,4 +1,4 @@
-﻿function Remove-VcCertificate {
+function Remove-VcCertificate {
     <#
     .SYNOPSIS
     Remove a certificate
@@ -62,3 +62,5 @@
         $allObjects | Invoke-VcCertificateAction -Delete -Confirm:$ConfirmPreference
     }
 }
+
+

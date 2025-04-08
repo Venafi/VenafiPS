@@ -1,4 +1,4 @@
-﻿function New-VdcTeam {
+function New-VdcTeam {
     <#
     .SYNOPSIS
     Create a new team
@@ -166,3 +166,5 @@
         }
     }
 }
+
+

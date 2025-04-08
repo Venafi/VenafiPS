@@ -1,4 +1,4 @@
-﻿function Set-VcConnector {
+function Set-VcConnector {
     <#
     .SYNOPSIS
     Update an existing connector
@@ -148,3 +148,5 @@
         }
     }
 }
+
+

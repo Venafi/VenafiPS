@@ -1,4 +1,4 @@
-﻿function Remove-VcApplication {
+function Remove-VcApplication {
     <#
     .SYNOPSIS
     Remove a application
@@ -64,3 +64,5 @@
         } -ThrottleLimit $ThrottleLimit
     }
 }
+
+

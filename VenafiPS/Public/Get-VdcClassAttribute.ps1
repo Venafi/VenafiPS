@@ -79,3 +79,5 @@ function Get-VdcClassAttribute {
         $allAttributes | Sort-Object -Property 'Name', 'Class' -Unique
     }
 }
+
+

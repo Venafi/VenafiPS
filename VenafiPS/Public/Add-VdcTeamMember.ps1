@@ -1,4 +1,4 @@
-﻿function Add-VdcTeamMember {
+function Add-VdcTeamMember {
     <#
     .SYNOPSIS
     Add members to a team
@@ -79,3 +79,5 @@
         $null = Invoke-VenafiRestMethod @params
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿function Remove-VcTag {
+function Remove-VcTag {
     <#
     .SYNOPSIS
     Remove a tag
@@ -64,3 +64,5 @@
         } -ThrottleLimit $ThrottleLimit
     }
 }
+
+

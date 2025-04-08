@@ -1,4 +1,4 @@
-﻿function Get-VcCertificate {
+function Get-VcCertificate {
     <#
     .SYNOPSIS
     Get certificate information
@@ -174,3 +174,5 @@
         * -ExcludeProperty Id, applicationIds, instances, totalInstanceCount, ownership
     }
 }
+
+

@@ -100,3 +100,4 @@ function Find-VcMachine {
     Find-VcObject @params
 
 }
+

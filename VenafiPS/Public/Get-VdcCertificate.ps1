@@ -1,4 +1,4 @@
-﻿function Get-VdcCertificate {
+function Get-VdcCertificate {
     <#
     .SYNOPSIS
     Get certificate information
@@ -205,3 +205,5 @@
         } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Getting certificates'
     }
 }
+
+

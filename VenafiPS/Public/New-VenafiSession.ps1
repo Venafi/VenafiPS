@@ -71,7 +71,7 @@ function New-VenafiSession {
     .PARAMETER RefreshSession
     Obtain a new access token from the refresh token.
     Requires an existing module scoped $VenafiSession.
-    
+
     .PARAMETER VcKey
     Api key from your TLSPC instance.  The api key can be found under your user profile->preferences.
     You can either provide a String, SecureString, or PSCredential.
@@ -102,22 +102,22 @@ function New-VenafiSession {
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
-    
+
     Create token-based session using Windows Integrated authentication with a certain scope and privilege restriction
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -Credential $cred -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
-    
+
     Create token-based session
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -Certificate $myCert -ClientId VenafiPS-MyApp -Scope @{'certificate'='manage'}
-    
+
     Create token-based session using a client certificate
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -AuthServer tppauth.mycompany.com -ClientId VenafiPS-MyApp -Credential $cred
-    
+
     Create token-based session using oauth authentication where the vedauth and vedsdk are hosted on different servers
 
     .EXAMPLE
@@ -127,32 +127,32 @@ function New-VenafiSession {
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -AccessToken $accessCred
-    
+
     Create session using an access token obtained outside this module
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -RefreshToken $refreshCred -ClientId VenafiPS-MyApp
-    
+
     Create session using a refresh token
 
     .EXAMPLE
     New-VenafiSession -Server venafi.mycompany.com -RefreshToken $refreshCred -ClientId VenafiPS-MyApp -VaultRefreshTokenName TppRefresh
-    
+
     Create session using a refresh token and store the newly created refresh token in the vault
 
     .EXAMPLE
     New-VenafiSession -VcKey $cred
-    
+
     Create session against TLSPC
 
     .EXAMPLE
     New-VenafiSession -VcKey $cred -VcRegion 'eu'
-    
+
     Create session against TLSPC in EU region
 
     .EXAMPLE
     New-VenafiSession -VaultVcKeyName vaas-key
-    
+
     Create session against TLSPC with a key stored in a vault
 
     .LINK
@@ -318,7 +318,7 @@ function New-VenafiSession {
 
         [Parameter(ParameterSetName = 'RefreshSession')]
         [switch] $RefreshSession,
-        
+
         [Parameter()]
         [Int32] $TimeoutSec = 0,
 
@@ -402,7 +402,7 @@ function New-VenafiSession {
                 ClientId             = $sessToken.ClientId
                 SkipCertificateCheck = $script:VenafiSession.SkipCertificateCheck
             }
-            
+
             New-VenafiSession @refreshParams
             return
         }
@@ -624,3 +624,5 @@ function New-VenafiSession {
         $Script:VenafiSession = $newSession
     }
 }
+
+

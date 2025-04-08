@@ -107,3 +107,4 @@ function Get-VcSatelliteWorker {
         @{'n' = 'vsatelliteId'; 'e' = { $_.edgeInstanceId } }, * -ExcludeProperty Id, edgeInstanceId
     }
 }
+

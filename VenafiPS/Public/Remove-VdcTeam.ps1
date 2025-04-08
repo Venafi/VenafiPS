@@ -1,4 +1,4 @@
-﻿function Remove-VdcTeam {
+function Remove-VdcTeam {
     <#
     .SYNOPSIS
     Remove a team
@@ -72,3 +72,5 @@
 
     }
 }
+
+

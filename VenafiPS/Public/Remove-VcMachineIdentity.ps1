@@ -1,4 +1,4 @@
-﻿function Remove-VcMachineIdentity {
+function Remove-VcMachineIdentity {
     <#
     .SYNOPSIS
     Remove a machine identity
@@ -64,3 +64,5 @@
         } -ThrottleLimit $ThrottleLimit
     }
 }
+
+

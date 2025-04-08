@@ -26,7 +26,7 @@ function Test-VenafiSession {
         # moving the functionality into Get-VenafiSession which will be called by
         # the Invoke functions
         return
-        
+
         if ( (Get-PSCallStack).Count -gt 3 -and -not $InvocationInfo.BoundParameters['VenafiSession'] ) {
             # nested function, no need to continue testing session since it was already done
             return
@@ -38,7 +38,7 @@ function Test-VenafiSession {
         elseif ($InvocationInfo.MyCommand -match '-Vdc') {
             'VDC'
         }
-        
+
         if ( $InvocationInfo.BoundParameters['VenafiSession'] ) {
             $VenafiSession = $InvocationInfo.BoundParameters['VenafiSession']
         }
@@ -75,7 +75,7 @@ function Test-VenafiSession {
                         throw 'TLSPDC token has expired.  Execute New-VenafiSession and rerun your command.'
                     }
                 }
-    
+
                 # don't perform .Validate as we do above since this
                 # isn't the class, it's a converted pscustomobject
                 # for Invoke-VenafiParallel usage

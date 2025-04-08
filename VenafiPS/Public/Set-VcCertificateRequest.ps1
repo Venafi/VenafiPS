@@ -1,4 +1,4 @@
-﻿function Set-VcCertificateRequest {
+function Set-VcCertificateRequest {
     <#
     .SYNOPSIS
     Update an existing application
@@ -134,3 +134,4 @@
         }
     }
 }
+

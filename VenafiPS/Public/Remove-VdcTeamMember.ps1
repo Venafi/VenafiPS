@@ -1,4 +1,4 @@
-﻿function Remove-VdcTeamMember {
+function Remove-VdcTeamMember {
     <#
     .SYNOPSIS
     Remove team member
@@ -85,3 +85,5 @@
         }
     }
 }
+
+

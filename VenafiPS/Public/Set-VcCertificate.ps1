@@ -1,4 +1,4 @@
-﻿function Set-VcCertificate {
+function Set-VcCertificate {
     <#
     .SYNOPSIS
     Update a certificate
@@ -186,3 +186,5 @@
         }
     }
 }
+
+

@@ -1,4 +1,4 @@
-﻿function Get-VdcPermission {
+function Get-VdcPermission {
     <#
     .SYNOPSIS
     Get permissions for TLSPDC objects
@@ -315,3 +315,5 @@
         }
     }
 }
+
+

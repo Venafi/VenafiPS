@@ -1,4 +1,4 @@
-﻿function Remove-VdcTeamOwner {
+function Remove-VdcTeamOwner {
     <#
     .SYNOPSIS
     Remove team owner
@@ -91,3 +91,5 @@
         }
     }
 }
+
+

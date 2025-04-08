@@ -156,7 +156,7 @@ function Invoke-VenafiRestMethod {
 
                 if ( Test-IsGuid($VenafiSession) ) {
                     # if we were provided a key directly and not a full session, determine which region to contact
-                    
+
                     $Server = ($script:VcRegions).$VcRegion
                     $platform = 'VC'
                 }
@@ -361,3 +361,4 @@ function Invoke-VenafiRestMethod {
 
     $response
 }
+

@@ -1,4 +1,4 @@
-﻿function Remove-VcTeam {
+function Remove-VcTeam {
     <#
     .SYNOPSIS
     Remove a team
@@ -64,3 +64,5 @@
         } -ThrottleLimit $ThrottleLimit
     }
 }
+
+

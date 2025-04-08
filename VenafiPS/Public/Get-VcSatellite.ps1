@@ -1,4 +1,4 @@
-﻿function Get-VcSatellite {
+function Get-VcSatellite {
     <#
     .SYNOPSIS
     Get VSatellite info
@@ -136,3 +136,4 @@
         }
     }
 }
+

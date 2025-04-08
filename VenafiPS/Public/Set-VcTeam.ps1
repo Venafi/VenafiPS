@@ -1,4 +1,4 @@
-﻿function Set-VcTeam {
+function Set-VcTeam {
     <#
     .SYNOPSIS
     Update an existing team
@@ -163,3 +163,5 @@
         }
     }
 }
+
+

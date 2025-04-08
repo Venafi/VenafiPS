@@ -106,3 +106,4 @@ function Find-VcCertificateInstance {
 
     Find-VcObject @params
 }
+

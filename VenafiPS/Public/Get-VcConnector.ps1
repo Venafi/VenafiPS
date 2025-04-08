@@ -1,4 +1,4 @@
-﻿function Get-VcConnector {
+function Get-VcConnector {
     <#
     .SYNOPSIS
     Get connector info
@@ -87,3 +87,4 @@
         }
     }
 }
+

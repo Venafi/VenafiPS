@@ -1,4 +1,4 @@
-﻿function Set-VdcPermission {
+function Set-VdcPermission {
     <#
     .SYNOPSIS
     Set explicit permissions for TLSPDC objects
@@ -332,3 +332,5 @@
         }
     }
 }
+
+
