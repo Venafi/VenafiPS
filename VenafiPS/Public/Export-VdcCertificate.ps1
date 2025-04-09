@@ -245,31 +245,26 @@ function Export-VdcCertificate {
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
 
         $body = @{ Format = 'Base64' }
-        switch ($PSCmdlet.ParameterSetName) {
+        switch ($PSBoundParameters.Keys) {
             'Pkcs7' { $body.Format = 'PKCS #7' }
             'Pkcs8' { $body.Format = 'Base64 (PKCS#8)' }
             'Pkcs12' { $body.Format = 'PKCS #12' }
             'Der' { $body.Format = 'DER' }
             'Jks' { $body.Format = 'JKS' }
-        }
-
-        $body.IncludePrivateKey = $PSBoundParameters.ContainsKey('PrivateKeyPassword')
-
-        if ( $body.IncludePrivateKey ) {
-            $body.Password = $PrivateKeyPassword | ConvertTo-PlaintextString
-        }
-
-        if ( $PSBoundParameters.ContainsKey('KeystorePassword') ) {
-            $body.Format = 'JKS'
-            $body.KeystorePassword = $KeystorePassword | ConvertTo-PlaintextString
-        }
-
-        if ( $PSBoundParameters.ContainsKey('FriendlyName') ) {
-            $body.FriendlyName = $FriendlyName
-        }
-
-        if ($IncludeChain) {
-            $body.IncludeChain = $true
+            'PrivateKeyPassword' {
+                $body.IncludePrivateKey = $true
+                $body.Password = $PrivateKeyPassword | ConvertTo-PlaintextString
+            }
+            'KeystorePassword' {
+                $body.Format = 'JKS'
+                $body.KeystorePassword = $KeystorePassword | ConvertTo-PlaintextString
+            }
+            'FriendlyName' {
+                $body.FriendlyName = $FriendlyName
+            }
+            'IncludeChain' {
+                $body.IncludeChain = $true
+            }
         }
 
         $body | Write-VerboseWithSecret
@@ -300,7 +295,7 @@ function Export-VdcCertificate {
             $outPath = $using:OutPath
             # foreach ($thisBody in $allCerts) {
             $isByPath = $null -eq $thisBody.VaultId
-       
+
             try {
                 if ( $isByPath ) {
                     $innerResponse = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'certificates/retrieve' -Body $thisBody
@@ -348,7 +343,7 @@ function Export-VdcCertificate {
                             'CertificateData' = $null
                         }
                     }
-    
+
                 }
             }
 
