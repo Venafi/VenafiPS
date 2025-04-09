@@ -353,6 +353,7 @@ function Export-VdcCertificate {
                 'e' = {
                     # standardize the format for pkcs8 and pkcs12 across tlspdc and tlspc
                     switch ($thisBody.Format) {
+                        'Base64' { 'X509' }
                         'Base64 (PKCS#8)' { 'PKCS8' }
                         'PKCS #12' { 'PKCS12' }
                         Default { $_ }
