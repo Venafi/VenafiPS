@@ -1,3 +1,6 @@
+## 6.9.1
+- Fix [#329](https://github.com/Venafi/VenafiPS/issues/329), parameter set name unavailable
+
 ## 6.9.0
 - Add `New-VenafiSession -RefreshSession` to retrieve a new access token from the current session refresh token
 - Add `Find-VdcCertificate -IsExpired` for an easy way to find expired certificates on TLSPDC
@@ -757,6 +760,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
