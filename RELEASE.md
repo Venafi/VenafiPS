@@ -1,12 +1,1 @@
-- Add `New-VenafiSession -RefreshSession` to retrieve a new access token from the current session refresh token
-- Add `Find-VdcCertificate -IsExpired` for an easy way to find expired certificates on TLSPDC
-- Standardized VDC object creation/conversion with `Get-VdcObject`.  `ConvertTo-VdcPath` and `ConvertTo-VdcGuid` to be deprecated.
-- Add unit test for function help and resolve the issues
-- Update `Find-VdcVaultId` to retrieve via object path
-- Update `Find-VdcVaultId` to output via pipeline by default.  Providing `-OutPath` will remain unchanged.
-- New pipeline options from `Find-VdcVaultId` and `Get-VdcCertificate -IncludePreviousVersions` to `Export-VdcVaultObject`, the latter will export all historical certificates
-- Add `Export-VdcCertificate -VaultId` for exporting any certificate via vault id.  If exporting historical certificates and would like the associated key, this is the preferred approach.
-- Add `Find-VdcObject -Class` when using `-Attribute -Pattern` to filter attribute searches by a specific class/type
-- Fix error in `New-VcConnector` causing manifest import to fail
-- Performance updates to Invoke-VenafiRestMethod, Invoke-VenafiParallel, and more
-- `Search-VdcHistory` to be deprecated.
+- Fix [#329](https://github.com/Venafi/VenafiPS/issues/329), parameter set name unavailable
