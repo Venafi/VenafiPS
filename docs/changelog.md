@@ -1,3 +1,6 @@
+## 6.9.2
+- Fix [#332](https://github.com/Venafi/VenafiPS/issues/332), incorrect response when Class is null
+
 ## 6.9.1
 - Fix [#329](https://github.com/Venafi/VenafiPS/issues/329), parameter set name unavailable
 
@@ -760,6 +763,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 
