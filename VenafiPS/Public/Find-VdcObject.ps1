@@ -58,37 +58,37 @@ function Find-VdcObject {
 
     .EXAMPLE
     Find-VdcObject -Path '\VED\Policy\My Folder' -Recursive
-    
+
     Get all objects in a folder and subfolders
 
     .EXAMPLE
     Find-VdcObject -Path '\VED\Policy' -Pattern '*test*'
-    
+
     Get items in a specific folder filtering the path
 
     .EXAMPLE
     Find-VdcObject -Class 'capi' -Path '\ved\policy\installations' -Recursive
-    
+
     Get objects of a specific type
 
     .EXAMPLE
     Find-VdcObject -Class 'capi' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-    
+
     Get all objects of a specific type where the path is of a specific pattern
 
     .EXAMPLE
     Find-VdcObject -Class 'capi', 'iis6' -Pattern '*test*' -Path '\ved\policy\installations' -Recursive
-    
+
     Get objects for multiple types
 
     .EXAMPLE
     Find-VdcObject -Pattern '*f5*'
-    
+
     Find objects with the specific name.  All objects under \ved\policy (the default) will be searched.
 
     .EXAMPLE
     Find-VdcObject -Attribute 'Description' -Pattern 'awesome'
-    
+
     Find objects where the specific attribute matches the pattern
 
     .EXAMPLE
@@ -256,7 +256,7 @@ function Find-VdcObject {
         }
         else {
             $response = Invoke-VenafiRestMethod @params
-            
+
             # success for cf lookup is 0, all others are config calls and success is 1
             if ( $response.Result -in 0, 1 ) {
                 $objects = $response.Objects
@@ -264,10 +264,10 @@ function Find-VdcObject {
             else {
                 Write-Error $response.Error
             }
-            
+
             # there are no apis to search for a specific type and attribute at the same time
             # filter here before sending back the results
-            if ( $PSCmdlet.ParameterSetName -eq 'FindByAttribute' ) {
+            if ( $PSCmdlet.ParameterSetName -eq 'FindByAttribute' -and $Class ) {
                 $objects = $objects | Where-Object TypeName -In $Class
             }
         }

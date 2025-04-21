@@ -1,1 +1,1 @@
-- Fix [#329](https://github.com/Venafi/VenafiPS/issues/329), parameter set name unavailable
+- Fix [#332](https://github.com/Venafi/VenafiPS/issues/332), incorrect response when Class is null
