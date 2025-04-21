@@ -360,6 +360,7 @@ function Export-VdcCertificate {
                     }
                 }
             },
+            CertificateData,
             @{
                 n = 'Error'
                 e = { $_.Status }
@@ -370,7 +371,6 @@ function Export-VdcCertificate {
                 $out | Add-Member @{
                     Path            = $thisBody.CertificateDN
                     PolicyPath      = $thisBody.CertificateDN.Substring(0, $thisBody.CertificateDN.LastIndexOf('\'))
-                    CertificateData = $innerResponse.CertificateData
                 }
             }
             else {
