@@ -1,50 +1,57 @@
-# Get-VcCertificate
+# Get-VcCertificateRequest
 
 ## SYNOPSIS
-Get certificate information
+Get certificate request details
 
 ## SYNTAX
 
-### Id (Default)
+### ID (Default)
 ```
-Get-VcCertificate [-Certificate] <String> [-IncludeVaasOwner] [-VenafiSession <PSObject>]
+Get-VcCertificateRequest [-CertificateRequest] <String> [-VenafiSession <PSObject>]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcCertificate [-All] [-IncludeVaasOwner] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+Get-VcCertificateRequest [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
 ## DESCRIPTION
-Get certificate information, either all available to the api key provided or by id or zone.
+Get certificate request details including status, csr, creation date, etc
 
 ## EXAMPLES
 
 ### EXAMPLE 1
 ```
-Get-VdcCertificate -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
+Get-VcCertificateRequest -CertificateRequest '9719975f-6e06-4d4b-82b9-bd829e5528f0'
 ```
 
-Get certificate info for a specific cert
+Get single certificate request
 
 ### EXAMPLE 2
 ```
-Get-VdcCertificate -All
+Find-VcCertificateRequest -Status ISSUED | Get-VcCertificateRequest
 ```
 
-Get certificate info for all certs
+Get certificate request details from a search
+
+### EXAMPLE 3
+```
+Get-VcCertificateRequest -All
+```
+
+Get all certificate requests
 
 ## PARAMETERS
 
-### -Certificate
-Certificate identifier, the ID or certificate name.
+### -CertificateRequest
+Certificate Request ID
 
 ```yaml
 Type: String
-Parameter Sets: Id
-Aliases: certificateId, ID
+Parameter Sets: ID
+Aliases: certificateRequestId, ID
 
 Required: True
 Position: 1
@@ -54,7 +61,7 @@ Accept wildcard characters: False
 ```
 
 ### -All
-Retrieve all certificates
+Get all certificate requests
 
 ```yaml
 Type: SwitchParameter
@@ -68,25 +75,10 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IncludeVaasOwner
-Retrieve extended application owner info
-
-```yaml
-Type: SwitchParameter
-Parameter Sets: (All)
-Aliases:
-
-Required: False
-Position: Named
-Default value: False
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TLSPC key can also be provided.
+A TLSPC key can also provided.
 
 ```yaml
 Type: PSObject
@@ -120,10 +112,9 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## INPUTS
 
-### ID
+### CertificateRequest
 ## OUTPUTS
 
-### PSCustomObject
 ## NOTES
 
 ## RELATED LINKS

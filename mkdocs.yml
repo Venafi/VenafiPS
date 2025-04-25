@@ -54,6 +54,7 @@ nav:
     - Find-VdcVaultId: functions/Find-VdcVaultId.md
     - Get-VcApplication: functions/Get-VcApplication.md
     - Get-VcCertificate: functions/Get-VcCertificate.md
+    - Get-VcCertificateRequest: functions/Get-VcCertificateRequest.md
     - Get-VcConnector: functions/Get-VcConnector.md
     - Get-VcIssuingTemplate: functions/Get-VcIssuingTemplate.md
     - Get-VcMachine: functions/Get-VcMachine.md
