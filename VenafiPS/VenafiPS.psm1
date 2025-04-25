@@ -78,34 +78,33 @@ $vcGenericArgCompleterSb = {
     switch ($objectType) {
         'Application' {
             if ( -not $script:vcApplication ) {
-                $script:vcApplication = Get-VcData -Type Application | Sort-Object -Property name
-                # $script:vcApplication = Get-VcApplication -All | Sort-Object -Property name
+                $script:vcApplication = Get-VcApplication -All | Sort-Object -Property name
             }
-            $script:vcApplication | Where-Object { $_.name -like "$wordToComplete*" } | ForEach-Object { "'$($_.name)'" }
+            $script:vcApplication | Where-Object name -like "$wordToComplete*" | ForEach-Object { "'$($_.name)'" }
         }
 
         'MachineType' {
             if ( -not $script:vcMachineType ) {
                 $script:vcMachineType = Invoke-VenafiRestMethod -UriLeaf 'plugins?pluginType=MACHINE' |
-                Select-Object -ExpandProperty machineTypes |
-                Select-Object -Property @{'n' = 'machineTypeId'; 'e' = { $_.Id } }, * -ExcludeProperty id |
-                Sort-Object -Property machineType
+                    Select-Object -ExpandProperty machineTypes |
+                    Select-Object -Property @{'n' = 'machineTypeId'; 'e' = { $_.Id } }, * -ExcludeProperty id |
+                    Sort-Object -Property machineType
             }
-            $script:vcMachineType | Where-Object { $_.name -like "$wordToComplete*" } | ForEach-Object { "'$($_.machineType)'" }
+            $script:vcMachineType | Where-Object name -like "$wordToComplete*" | ForEach-Object { "'$($_.machineType)'" }
         }
 
         'IssuingTemplate' {
             if ( -not $script:vcIssuingTemplate ) {
                 $script:vcIssuingTemplate = Get-VcIssuingTemplate -All | Sort-Object -Property name
             }
-            $script:vcIssuingTemplate | Where-Object { $_.name -like "$wordToComplete*" } | ForEach-Object { "'$($_.name)'" }
+            $script:vcIssuingTemplate | Where-Object name -like "$wordToComplete*" | ForEach-Object { "'$($_.name)'" }
         }
 
         'VSatellite' {
             if ( -not $script:vcVSatellite ) {
                 $script:vcVSatellite = Get-VcSatellite -All | Sort-Object -Property name
             }
-            $script:vcVSatellite | Where-Object { $_.name -like "$wordToComplete*" } | ForEach-Object { "'$($_.name)'" }
+            $script:vcVSatellite | Where-Object name -like "$wordToComplete*" | ForEach-Object { "'$($_.name)'" }
         }
 
         'Certificate' {
@@ -117,8 +116,8 @@ $vcGenericArgCompleterSb = {
     }
 }
 
-'Application', 'MachineType', 'VSatellite', 'Certificate' | ForEach-Object {
-    Register-ArgumentCompleter -CommandName '*-Vc*' -ParameterName $_ -ScriptBlock $vcGenericArgCompleterSb
+'Application', 'MachineType', 'VSatellite', 'Certificate', 'IssuingTemplate' | ForEach-Object {
+    Register-ArgumentCompleter -ParameterName $_ -ScriptBlock $vcGenericArgCompleterSb
 }
 
 $vdcPathArgCompleterSb = {
