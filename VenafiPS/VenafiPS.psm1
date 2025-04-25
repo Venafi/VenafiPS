@@ -10,6 +10,7 @@ $script:VcRegions = @{
     'us' = 'https://api.venafi.cloud'
     'eu' = 'https://api.eu.venafi.cloud'
     'au' = 'https://api.au.venafi.cloud'
+    'uk' = 'https://api.uk.venafi.cloud'
 }
 $Script:VenafiSession = $null
 $script:ThreadJobAvailable = ($null -ne (Get-Module -Name Microsoft.PowerShell.ThreadJob -ListAvailable))
