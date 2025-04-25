@@ -6,7 +6,7 @@ function Get-VcCertificate {
     .DESCRIPTION
     Get certificate information, either all available to the api key provided or by id or zone.
 
-    .PARAMETER ID
+    .PARAMETER Certificate
     Certificate identifier, the ID or certificate name.
 
     .PARAMETER All
