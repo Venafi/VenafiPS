@@ -1,1 +1,3 @@
-- Fix [#332](https://github.com/Venafi/VenafiPS/issues/332), incorrect response when Class is null
+- Add support to VC for UK region
+- Add `Get-VcCertificateRequest` to retrieve certificate request details including csr
+- Tab-ahead fixes for `-Application` and `-IssuingTemplate` parameters

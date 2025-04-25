@@ -6,7 +6,7 @@ function Get-VcCertificate {
     .DESCRIPTION
     Get certificate information, either all available to the api key provided or by id or zone.
 
-    .PARAMETER ID
+    .PARAMETER Certificate
     Certificate identifier, the ID or certificate name.
 
     .PARAMETER All
@@ -42,8 +42,8 @@ function Get-VcCertificate {
     param (
 
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('certificateId')]
-        [string] $ID,
+        [Alias('certificateId', 'ID')]
+        [string] $Certificate,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [Switch] $All,
@@ -75,12 +75,12 @@ function Get-VcCertificate {
             UriLeaf = "certificates/"
         }
 
-        if ( Test-IsGuid($ID) ) {
-            $params.UriLeaf += $ID
+        if ( Test-IsGuid($Certificate) ) {
+            $params.UriLeaf += $Certificate
         }
         else {
             $findParams = @{
-                Filter           = @('certificateName', 'eq', $ID)
+                Filter           = @('certificateName', 'eq', $Certificate)
                 IncludeVaasOwner = $IncludeVaasOwner
             }
             return (Find-VcCertificate @findParams | Get-VcCertificate)
