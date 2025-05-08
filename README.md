@@ -1,8 +1,8 @@
 <p align="center">
-  <img src="images/full-venafi-logo.png" alt="Venafi"/>
+  <img src="images/cybr-mis.jpeg" alt="CyberArk"/>
 </p>
 
-# VenafiPS - Automate your Venafi TLS Protect Datacenter and Cloud platforms!
+# VenafiPS - Automate your CyberArk Certificate Manager (Venafi TLS Protect) Self-Hosted and SaaS platforms!
 
 [![Testing](https://github.com/Venafi/VenafiPS/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Venafi/VenafiPS/actions/workflows/ci.yml)
 [![Deployment](https://github.com/Venafi/VenafiPS/actions/workflows/cd.yml/badge.svg?branch=main)](https://github.com/Venafi/VenafiPS/actions/workflows/cd.yml)
