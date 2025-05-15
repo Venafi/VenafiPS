@@ -96,7 +96,7 @@ Only applicable to Delete.
 
 ### EXAMPLE 7
 ```
-Find-VcObject -Type Certificate -Filter @('certificateStatus','eq','retired') | Invoke-VcCertificateAction -Delete -BatchSize 100
+Find-VcCertificate -Status RETIRED | Invoke-VcCertificateAction -Delete -BatchSize 100
 ```
 
 Search for all retired certificates and delete them using a non default batch size of 100
