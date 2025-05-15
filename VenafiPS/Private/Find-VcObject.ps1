@@ -73,10 +73,7 @@ function Find-VcObject {
     Advanced filtering of results.  This filter will find log entries by 1 of 2 people within the last month.
 
     .LINK
-    http://VenafiPS.readthedocs.io/en/latest/functions/Find-VcObject/
-
-    .LINK
-    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Public/Find-VcObject.ps1
+    https://github.com/Venafi/VenafiPS/blob/main/VenafiPS/Private/Find-VcObject.ps1
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'All')]

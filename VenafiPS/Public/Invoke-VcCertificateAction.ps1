@@ -90,7 +90,7 @@ function Invoke-VcCertificateAction {
     Perform an action bypassing the confirmation prompt.  Only applicable to Delete.
 
     .EXAMPLE
-    Find-VcObject -Type Certificate -Filter @('certificateStatus','eq','retired') | Invoke-VcCertificateAction -Delete -BatchSize 100
+    Find-VcCertificate -Status RETIRED | Invoke-VcCertificateAction -Delete -BatchSize 100
 
     Search for all retired certificates and delete them using a non default batch size of 100
 
@@ -269,7 +269,7 @@ function Invoke-VcCertificateAction {
                     $out | Add-Member @{
                         'renew'         = $renewResponse
                         'certificateID' = $newCertId
-                    }   
+                    }
 
                     if ( $Provision ) {
                         Write-Verbose "Renew was successful, now provisioning certificate ID $newCertId"
@@ -376,7 +376,7 @@ function Invoke-VcCertificateAction {
 
                     # only retired certs can be deleted, product requirement
                     $null = $allCerts | Invoke-VcCertificateAction -Retire -BatchSize $BatchSize -Confirm:$false
-                    
+
                     $allCerts | Select-VenBatch -Activity 'Deleting certificates' -BatchSize $BatchSize -BatchType 'string' -TotalCount $allCerts.Count | ForEach-Object {
                         $params.Body = @{"certificateIds" = $_ }
 
