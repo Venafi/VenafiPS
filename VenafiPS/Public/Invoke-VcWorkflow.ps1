@@ -48,7 +48,7 @@ function Invoke-VcWorkflow {
     Trigger test connection, but it failed
 
     .EXAMPLE
-    Find-VcObject -Type MachineIdentity -Filter @('and', @('certificateValidityEnd', 'lt', (get-date).AddDays(30)), @('certificateValidityEnd', 'gt', (get-date))) | ForEach-Object {
+    Find-VcMachineIdentity -Filter @('and', @('certificateValidityEnd', 'lt', (get-date).AddDays(30)), @('certificateValidityEnd', 'gt', (get-date))) | ForEach-Object {
         $renewResult = $_ | Invoke-VenafiCertificateAction -Renew
         # optionally add renew validation
         $_ | Invoke-VcWorkflow -Workflow 'Provision'
