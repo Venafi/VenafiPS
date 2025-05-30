@@ -14,11 +14,8 @@ function New-VcCertificate {
     The template must be associated with the provided Application.
     If the application has only one template, this parameter is optional.
 
-    .PARAMETER Csr
-    CSR in PKCS#10 format which conforms to the rules of the issuing template
-
     .PARAMETER CommonName
-    Common name (CN)
+    Common name (CN).  Required if not providing a CSR.
 
     .PARAMETER Organization
     The Organization field for the certificate Subject DN
@@ -35,6 +32,9 @@ function New-VcCertificate {
     .PARAMETER Country
     The Country field for the certificate Subject DN
 
+    .PARAMETER Csr
+    CSR in PKCS#10 format which conforms to the rules of the issuing template
+
     .PARAMETER SanDns
     One or more subject alternative name dns entries
 
@@ -50,6 +50,9 @@ function New-VcCertificate {
     .PARAMETER ValidUntil
     Date at which the certificate becomes invalid.
     The day and hour will be set and not to the minute level.
+
+    .PARAMETER Tag
+    One or more tags to assign to the certificate at creation.
 
     .PARAMETER PassThru
     Return the certificate request.
@@ -72,9 +75,15 @@ function New-VcCertificate {
     Create certificate
 
     .EXAMPLE
+    New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -Tag 'tag1','tag2:value'
+
+    Create certificate and associate 1 or more tags
+
+    .EXAMPLE
     New-VcCertificate -Application 'MyApp' -CommonName 'app.mycert.com'
 
-    Create certificate with the template associated with the application
+    Create certificate with the template associated with the application.
+    This only works when only 1 template is associated with an application.
 
     .EXAMPLE
     New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
@@ -94,14 +103,14 @@ function New-VcCertificate {
     .EXAMPLE
     New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
 
-    Create certificate with a CSR
+    Create certificate by providing a CSR
 
     .LINK
-    https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificate%20Request/certificaterequests_create
+    https://developer.venafi.com/tlsprotectcloud/reference/certificaterequests_create
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'Ask', SupportsShouldProcess)]
+    [CmdletBinding(DefaultParameterSetName = 'ASK', SupportsShouldProcess)]
     [Alias('New-VaasCertificate')]
 
     param (
@@ -112,32 +121,36 @@ function New-VcCertificate {
         [Parameter()]
         [String] $IssuingTemplate,
 
-        [Parameter(ParameterSetName = 'Csr', Mandatory)]
-        [string] $Csr,
-
-        [Parameter(ParameterSetName = 'Ask', Mandatory)]
+        [Parameter(ParameterSetName = 'ASK', Mandatory)]
         [ValidateNotNullOrEmpty()]
         [String] $CommonName,
 
-        [Parameter(ParameterSetName = 'Ask')]
+        [Parameter(ParameterSetName = 'ASK')]
         [ValidateNotNullOrEmpty()]
         [String] $Organization,
 
-        [Parameter(ParameterSetName = 'Ask')]
+        [Parameter(ParameterSetName = 'ASK')]
         [ValidateNotNullOrEmpty()]
         [String[]] $OrganizationalUnit,
 
-        [Parameter(ParameterSetName = 'Ask')]
+        [Parameter(ParameterSetName = 'ASK')]
         [ValidateNotNullOrEmpty()]
         [String] $City,
 
-        [Parameter(ParameterSetName = 'Ask')]
+        [Parameter(ParameterSetName = 'ASK')]
         [ValidateNotNullOrEmpty()]
         [String] $State,
 
-        [Parameter(ParameterSetName = 'Ask')]
+        [Parameter(ParameterSetName = 'ASK')]
         [ValidateNotNullOrEmpty()]
         [String] $Country,
+
+        [Parameter(ParameterSetName = 'CSR', Mandatory)]
+        [string] $Csr,
+
+        # [Parameter(ParameterSetName = 'ExistingCSR', Mandatory, ValueFromPipelineByPropertyName)]
+        # [Alias('certificateId', 'ID')]
+        # [string] $Certificate,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -168,6 +181,10 @@ function New-VcCertificate {
             }
         )]
         [DateTime] $ValidUntil,
+
+        [Parameter()]
+        [ValidateNotNullOrEmpty()]
+        [String[]] $Tag,
 
         [Parameter()]
         [switch] $PassThru,
@@ -223,6 +240,9 @@ function New-VcCertificate {
             # end date not provided, use default from template
             $validity = $thisTemplate.product.validityPeriod
         }
+    }
+
+    process {
 
         $params = @{
 
@@ -230,43 +250,78 @@ function New-VcCertificate {
             UriRoot = 'outagedetection/v1'
             UriLeaf = 'certificaterequests'
             Body    = @{
-                isVaaSGenerated              = $true
+                isVaaSGenerated              = $PSCmdlet.ParameterSetName -eq 'Ask'
                 applicationId                = $thisApp.applicationId
                 certificateIssuingTemplateId = $thisTemplate.issuingTemplateId
                 validityPeriod               = $validity
+                reuseCSR                     = $false
             }
         }
 
-        if ( $PSCmdlet.ParameterSetName -eq 'Ask' ) {
-            $params.Body.csrAttributes = @{}
-        }
-        else {
-            $params.Body.certificateSigningRequest = $Csr
+        switch ($PSCmdlet.ParameterSetName) {
+            'ASK' {
+                $params.Body.csrAttributes = @{
+                    commonName = $CommonName
+                }
+                $target = $CommonName
+
+                if ( $PSBoundParameters.ContainsKey('Organization') ) {
+                    $params.Body.csrAttributes.organization = $Organization
+                }
+
+                if ( $PSBoundParameters.ContainsKey('OrganizationalUnit') ) {
+                    $params.Body.csrAttributes.organizationalUnits = @($OrganizationalUnit)
+                }
+
+                if ( $PSBoundParameters.ContainsKey('City') ) {
+                    $params.Body.csrAttributes.locality = $City
+                }
+
+                if ( $PSBoundParameters.ContainsKey('State') ) {
+                    $params.Body.csrAttributes.state = $State
+                }
+
+                if ( $PSBoundParameters.ContainsKey('Country') ) {
+                    $params.Body.csrAttributes.country = $Country
+                }
+            }
+
+            'CSR' {
+                $params.Body.certificateSigningRequest = $Csr
+                $target = 'CSR'
+            }
+
+            'ExistingCSR' {
+                $params.Body.reuseCSR = $true
+
+                if ( Test-IsGuid($Certificate) ) {
+                    $params.Body.existingCertificateId = $Certificate
+                }
+                else {
+                    $findCerts = Find-VcCertificate -Name $Certificate -VersionType CURRENT -Status ACTIVE
+                    if ( $findCerts ) {
+                        $c = @($findCerts).Count
+                        if ($c -gt 1) {
+                            throw [System.Management.Automation.InvalidOperationException]::new("Expected only one Active and Current certificate, but found $c")
+                        }
+                        # we only found 1 cert
+                        $params.Body.existingCertificateId = $findCerts.certificateId
+                    }
+                    else {
+                        throw [System.Management.Automation.ItemNotFoundException]::new("An Active and Current certificate named $Certificate could not be found")
+                    }
+                }
+
+                $target = 'Existing CSR'
+            }
         }
 
-        if ( $PSBoundParameters.ContainsKey('Organization') ) {
-            $params.Body.csrAttributes.organization = $Organization
-        }
-
-        if ( $PSBoundParameters.ContainsKey('OrganizationalUnit') ) {
-            $params.Body.csrAttributes.organizationalUnits = @($OrganizationalUnit)
-        }
-
-        if ( $PSBoundParameters.ContainsKey('City') ) {
-            $params.Body.csrAttributes.locality = $City
-        }
-
-        if ( $PSBoundParameters.ContainsKey('State') ) {
-            $params.Body.csrAttributes.state = $State
-        }
-
-        if ( $PSBoundParameters.ContainsKey('Country') ) {
-            $params.Body.csrAttributes.country = $Country
-        }
+        # common fields between ASK and CSR
 
         if ( $SanDns -or $SanEmail -or $SanIP -or $SanUri ) {
             $params.Body.csrAttributes.subjectAlternativeNamesByType = @{}
         }
+
         if ( $PSBoundParameters.ContainsKey('SanDns') ) {
             $params.Body.csrAttributes.subjectAlternativeNamesByType.dnsNames = @($SanDns)
         }
@@ -282,16 +337,9 @@ function New-VcCertificate {
         if ( $PSBoundParameters.ContainsKey('SanUri') ) {
             $params.Body.csrAttributes.subjectAlternativeNamesByType.uniformResourceIdentifiers = @($SanUri)
         }
-    }
 
-    process {
-
-        if ( $PSCmdlet.ParameterSetName -eq 'Ask' ) {
-            $params.Body.csrAttributes.commonName = $CommonName
-            $target = $CommonName
-        }
-        else {
-            $target = 'CSR'
+        if ($PSBoundParameters.ContainsKey('Tag')) {
+            $params.Body.tags = @($Tag)
         }
 
         if ( $PSCmdlet.ShouldProcess("$target", 'New certificate request') ) {
