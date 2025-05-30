@@ -35,11 +35,6 @@ function New-VcCertificate {
     .PARAMETER Csr
     CSR in PKCS#10 format which conforms to the rules of the issuing template
 
-    .PARAMETER Certificate
-    Create a new certificate request from an existing CSR.
-    Provide the certificate ID or name.
-    If providing the name, only an Active and Current certificate will be used.
-
     .PARAMETER SanDns
     One or more subject alternative name dns entries
 
@@ -110,11 +105,6 @@ function New-VcCertificate {
 
     Create certificate by providing a CSR
 
-    .EXAMPLE
-    New-VcCertificate -Application 'MyApp' -Certificate 'app.mycert.com'
-
-    Create certificate utilizing an existing CSR from a prior certificate request
-
     .LINK
     https://developer.venafi.com/tlsprotectcloud/reference/certificaterequests_create
 
@@ -158,9 +148,9 @@ function New-VcCertificate {
         [Parameter(ParameterSetName = 'CSR', Mandatory)]
         [string] $Csr,
 
-        [Parameter(ParameterSetName = 'ExistingCSR', Mandatory, ValueFromPipelineByPropertyName)]
-        [Alias('certificateId', 'ID')]
-        [string] $Certificate,
+        # [Parameter(ParameterSetName = 'ExistingCSR', Mandatory, ValueFromPipelineByPropertyName)]
+        # [Alias('certificateId', 'ID')]
+        # [string] $Certificate,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
