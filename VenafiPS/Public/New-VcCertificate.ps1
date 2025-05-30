@@ -4,7 +4,7 @@ function New-VcCertificate {
     Create certificate request
 
     .DESCRIPTION
-    Create certificate request from automated secure keypair details, CSR, or existing CSR from a prior certificate request.
+    Create certificate request from automated secure keypair details or CSR
 
     .PARAMETER Application
     Application name or id to associate this certificate with.
