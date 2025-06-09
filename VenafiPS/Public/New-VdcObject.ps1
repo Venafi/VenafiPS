@@ -5,6 +5,7 @@ function New-VdcObject {
 
     .DESCRIPTION
     Generic use function to create a new object if a specific function hasn't been created yet for the class.
+    This can also be used to duplicate an existing object.
 
     .PARAMETER Path
     Full path, including name, for the object to be created.
@@ -17,6 +18,11 @@ function New-VdcObject {
     .PARAMETER Attribute
     Hashtable with initial values for the new object.
     These will be specific to the object class being created.
+
+    .PARAMETER SourcePath
+    Provide this path when you want to duplicate an existing object.
+    This will be the path of the source object and Path will be the destination.
+    All attributes which have been set on this object will be copied to the new one.
 
     .PARAMETER PushCertificate
     If creating an application object, you can optionally push the certificate once the creation is complete.
@@ -54,6 +60,11 @@ function New-VdcObject {
 
     Create a new Basic application and associate it to a device and certificate
 
+    .EXAMPLE
+    New-VdcObject -Path 'certificates\duplicate.company.com' -SourcePath 'certificates\original.company.com'
+
+    Create a duplicate object with all attributes from the original being copied over
+
     .INPUTS
     none
 
@@ -77,7 +88,7 @@ function New-VdcObject {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'NonApplicationObject', SupportsShouldProcess)]
+    [CmdletBinding(DefaultParameterSetName = 'NonDup', SupportsShouldProcess)]
     [Alias('New-TppObject')]
 
     param (
@@ -85,12 +96,15 @@ function New-VdcObject {
         [ValidateNotNullOrEmpty()]
         [string] $Path,
 
-        [Parameter(Mandatory)]
+        [Parameter(Mandatory, ParameterSetName = 'NonDup')]
         [String] $Class,
 
-        [Parameter()]
+        [Parameter(ParameterSetName = 'NonDup')]
         [ValidateNotNullOrEmpty()]
         [Hashtable] $Attribute,
+
+        [Parameter(ParameterSetName = 'Dup')]
+        [string] $SourcePath,
 
         [Parameter()]
         [Alias('ProvisionCertificate')]
@@ -116,13 +130,30 @@ function New-VdcObject {
     $newPath = $Path | ConvertTo-VdcFullPath
 
     $params = @{
-
-        Method        = 'Post'
-        UriLeaf       = 'config/create'
-        Body          = @{
+        Method  = 'Post'
+        UriLeaf = 'config/create'
+        Body    = @{
             ObjectDN = $newPath
-            Class    = $Class
         }
+    }
+
+    if ( $SourcePath ) {
+        $fullSourcePath = $SourcePath | ConvertTo-VdcFullPath
+
+        $o = Get-VdcObject -Path $fullSourcePath
+        $oa = $o | Get-VdcAttribute -All
+        $h = @{}
+        foreach ($a in $oa.Attribute) {
+            if (![string]::IsNullOrEmpty($a.Value)) {
+                $h[$a.Name] = $a.Value
+            }
+        }
+
+        $params.Class = $o.TypeName
+        $params.Attribute = $h
+    }
+    else {
+        $params.Body.Class = $Class
     }
 
     if ( $PSBoundParameters.ContainsKey('Attribute') ) {
@@ -133,7 +164,7 @@ function New-VdcObject {
         $params.Body.Add('NameAttributeList', $updatedAttribute)
     }
 
-    if ( $PSCmdlet.ShouldProcess($newPath, ('Create {0} Object' -f $Class)) ) {
+    if ( $PSCmdlet.ShouldProcess($newPath, ('Create {0} Object' -f $params.Body.Class)) ) {
 
         $retryCount = 0
         do {
@@ -155,7 +186,8 @@ function New-VdcObject {
                     if ( $Class -in 'Policy', 'Device' ) {
                         if ( -not $Force ) {
                             throw "Part of the path $newPath does not exist.  Use -Force to create the missing policy folders."
-                        } else {
+                        }
+                        else {
 
                             $pathSplit = $newPath.Split('\')
 
@@ -170,7 +202,8 @@ function New-VdcObject {
 
                             $retryCreate = $true
                         }
-                    } else {
+                    }
+                    else {
                         throw "Part of path $newPath does not exist."
                     }
                 }
