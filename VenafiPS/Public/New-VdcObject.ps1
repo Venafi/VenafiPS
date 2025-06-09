@@ -25,6 +25,8 @@ function New-VdcObject {
     All attributes which have been set on this object will be copied to the new one.
     Retrieving all existing attributes will take some time.
 
+    Not recommended for duplicating certificates.
+
     .PARAMETER PushCertificate
     If creating an application object, you can optionally push the certificate once the creation is complete.
     Only available if a 'Certificate' key containing the certificate path is provided for Attribute.
