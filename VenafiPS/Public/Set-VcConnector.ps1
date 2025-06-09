@@ -100,7 +100,11 @@ function Set-VcConnector {
         switch ($PSCmdLet.ParameterSetName) {
             'Manifest' {
                 $manifestObject = Get-Content -Path $ManifestPath -Raw | ConvertFrom-Json
-                $manifest = $manifestObject.manifest
+                $manifest = if ( $manifestObject.manifest ) {
+                    $manifestObject.manifest
+                } else {
+                    $manifestObject
+                }
 
                 # if connector is provided, update that specific one
                 # if not, use the name from the manifest to find the existing connector id
