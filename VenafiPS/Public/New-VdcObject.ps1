@@ -23,6 +23,7 @@ function New-VdcObject {
     Provide this path when you want to duplicate an existing object.
     This will be the path of the source object and Path will be the destination.
     All attributes which have been set on this object will be copied to the new one.
+    Retrieving all existing attributes will take some time.
 
     .PARAMETER PushCertificate
     If creating an application object, you can optionally push the certificate once the creation is complete.
@@ -142,15 +143,15 @@ function New-VdcObject {
 
         $o = Get-VdcObject -Path $fullSourcePath
         $oa = $o | Get-VdcAttribute -All
-        $h = @{}
-        foreach ($a in $oa.Attribute) {
+
+        $attribs = foreach ($a in $oa.Attribute) {
             if (![string]::IsNullOrEmpty($a.Value)) {
-                $h[$a.Name] = $a.Value
+                @{'Name' = $a.name; 'Value' = $a.value }
             }
         }
 
-        $params.Class = $o.TypeName
-        $params.Attribute = $h
+        $params.Body.Class = $o.TypeName
+        $params.Body.NameAttributeList = @($attribs)
     }
     else {
         $params.Body.Class = $Class
