@@ -48,20 +48,20 @@ function ConvertTo-VdcObject {
                         $thisGuid = $response.Guid
                         $thisTypeName = $response.ClassName
                     }
-        
+
                     7 {
                         throw [System.UnauthorizedAccessException]::new($response.Error)
                     }
-        
+
                     400 {
                         throw [System.Management.Automation.ItemNotFoundException]::new($response.Error)
                     }
-        
+
                     Default {
                         throw $response.Error
                     }
                 }
-        
+
                 $thisPath = $Path
             }
 
@@ -73,7 +73,7 @@ function ConvertTo-VdcObject {
                         ObjectGUID = "{$Guid}"
                     }
                 }
-        
+
                 $response = Invoke-VenafiRestMethod @params
 
                 switch ($response.Result) {
@@ -82,15 +82,15 @@ function ConvertTo-VdcObject {
                         $thisPath = $response.ObjectDN
                         $thisTypeName = $response.ClassName
                     }
-        
+
                     7 {
                         throw [System.UnauthorizedAccessException]::new($response.Error)
                     }
-        
+
                     400 {
                         throw [System.Management.Automation.ItemNotFoundException]::new($response.Error)
                     }
-        
+
                     Default {
                         throw $response.Error
                     }
@@ -106,15 +106,15 @@ function ConvertTo-VdcObject {
             }
         }
 
+        $thisPath = $thisPath.Replace('\\', '\')
+        $thisName = $thisPath.Split('\')[-1]
         $out = [pscustomobject]@{
-            Path     = $thisPath.Replace('\\', '\')
+            Path     = $thisPath
             TypeName = $thisTypeName
             Guid     = [Guid] $thisGuid
-            Name     = $thisPath.Split('\')[-1]
+            Name     = $thisName
+            ParentPath = $thisPath.Substring(0, $thisPath.LastIndexOf("\$($thisName)"))
         }
-
-        $out | Add-Member @{'ParentPath' = $out.Path.Substring(0, $out.Path.LastIndexOf("\$($out.Name)")) }
-        $out | Add-Member -MemberType ScriptMethod -Name ToString -Value { $out.Path } -Force
         $out
     }
 }
