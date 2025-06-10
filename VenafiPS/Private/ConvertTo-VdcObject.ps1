@@ -106,15 +106,16 @@ function ConvertTo-VdcObject {
             }
         }
 
+        $thisPath = $thisPath.Replace('\\', '\')
+        $thisName = $thisPath.Split('\')[-1]
         $out = [pscustomobject]@{
-            Path     = $thisPath.Replace('\\', '\')
+            Path     = $thisPath
             TypeName = $thisTypeName
             Guid     = [Guid] $thisGuid
-            Name     = $thisPath.Split('\')[-1]
+            Name     = $thisName
+            ParentPath = $thisPath.Substring(0, $thisPath.LastIndexOf("\$($thisName)"))
         }
 
-        $out | Add-Member @{'ParentPath' = $out.Path.Substring(0, $out.Path.LastIndexOf("\$($out.Name)")) }
-        $out | Add-Member -MemberType ScriptMethod -Name ToString -Value { $out.Path } -Force
         $out
     }
 }
