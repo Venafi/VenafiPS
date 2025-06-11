@@ -200,7 +200,7 @@ function New-VcMachine {
             }
         }
 
-        $ownerId = Get-VcData -InputObject $Owner -Type 'Team'
+        $ownerId = Get-VcData -InputObject $Owner -Type 'Team' -FailOnMultiple
         if ( -not $ownerId ) {
             Write-Error "'$Owner' is not a valid team id or name"
             return

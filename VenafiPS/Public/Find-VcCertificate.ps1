@@ -24,8 +24,8 @@ function Find-VcCertificate {
     .PARAMETER IsExpired
     Search for only expired certificates.
     This will search for only certificates that are expired including active, retired, current, old, etc.
-    Be sure to use other parameters if you want to filter even further.
-    
+    Use -IsExpired:$false for certificates that are NOT expired.
+
     .PARAMETER Status
     Search by one or more certificate statuses.  Valid values include ACTIVE, RETIRED, and DELETED.
 
@@ -262,8 +262,13 @@ function Find-VcCertificate {
                 'Fingerprint' { $null = $newFilter.Add(@('fingerprint', 'EQ', $Fingerprint)) }
                 'IsSelfSigned' { $null = $newFilter.Add(@('selfSigned', 'EQ', $IsSelfSigned.IsPresent.ToString())) }
                 'IsExpired' {
-                    $null = $newFilter.Add(@('validityEnd', 'LTE', (Get-Date)))
-                    $params.Order = @{'validityEnd' = 'desc' }
+                    if ( $IsExpired.IsPresent ) {
+                        $null = $newFilter.Add(@('validityEnd', 'LT', (Get-Date)))
+                        $params.Order = @{'validityEnd' = 'desc' }
+                    } else {
+                        $null = $newFilter.Add(@('validityEnd', 'GTE', (Get-Date)))
+                        $params.Order = @{'validityEnd' = 'asc' }
+                    }
                 }
                 'VersionType' { $null = $newFilter.Add(@('versionType', 'MATCH', $VersionType)) }
                 'Status' {
