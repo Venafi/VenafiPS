@@ -105,7 +105,7 @@ function Invoke-VcWorkflow {
     end {
 
         Invoke-VenafiParallel -InputObject $allIDs -ScriptBlock {
-
+            # $allIDs | ForEach-Object {
             $thisID = $PSItem
             $workflow = $using:Workflow
             $thisWebSocketID = (New-Guid).Guid
@@ -115,15 +115,16 @@ function Invoke-VcWorkflow {
                 $WS = New-Object System.Net.WebSockets.ClientWebSocket
                 $CT = New-Object System.Threading.CancellationToken
 
-                if ( $VenafiSession -is [PSCustomObject] ) {
-                    $server = $VenafiSession.Server.Replace('https://', '')
-                    $WS.Options.SetRequestHeader("tppl-api-key", $VenafiSession.Key.GetNetworkCredential().password)
+                if ( $script:VenafiSession -is [PSCustomObject] ) {
+                    $server = $script:VenafiSession.Server.Replace('https://', '')
+                    $WS.Options.SetRequestHeader("tppl-api-key", $script:VenafiSession.Key.GetNetworkCredential().password)
                 }
                 else {
                     # TODO: defaults to US, add other region support
+                    # for other regions, create a session first
                     $server = ($script:VcRegions).'us'
                     $server = $server.Replace('https://', '')
-                    $WS.Options.SetRequestHeader("tppl-api-key", $VenafiSession)
+                    $WS.Options.SetRequestHeader("tppl-api-key", $script:VenafiSession)
                 }
                 $URL = 'wss://{0}/ws/notificationclients/{1}' -f $server, $thisWebSocketID
 
@@ -214,7 +215,8 @@ function Invoke-VcWorkflow {
                     $WS.Dispose()
                 }
             }
-        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Invoking workflow'
+            # } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Invoking workflow'
+        }
     }
 }
 
