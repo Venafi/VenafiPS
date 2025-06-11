@@ -525,7 +525,11 @@ function Find-VdcCertificate {
                 $params.Body.Add( 'IsWildcard', [int] $IsWildcard.IsPresent )
             }
             'IsExpired' {
-                $params.Body.Add( 'ValidToLess', ((Get-Date) | ConvertTo-UtcIso8601) )
+                if ( $IsExpired.IsPresent ) {
+                    $params.Body.Add( 'ValidToLess', ((Get-Date) | ConvertTo-UtcIso8601) )
+                } else {
+                    $params.Body.Add( 'ValidToGreater', ((Get-Date) | ConvertTo-UtcIso8601) )
+                }
             }
             'NetworkValidationEnabled' {
                 $params.Body.Add( 'NetworkValidationDisabled', [int] (-not $NetworkValidationEnabled) )
