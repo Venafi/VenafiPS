@@ -5,20 +5,21 @@ Create certificate request
 
 ## SYNTAX
 
-### Ask (Default)
+### ASK (Default)
 ```
 New-VcCertificate -Application <String> [-IssuingTemplate <String>] -CommonName <String>
  [-Organization <String>] [-OrganizationalUnit <String[]>] [-City <String>] [-State <String>]
  [-Country <String>] [-SanDns <String[]>] [-SanIP <String[]>] [-SanUri <String[]>] [-SanEmail <String[]>]
- [-ValidUntil <DateTime>] [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-ValidUntil <DateTime>] [-Tag <String[]>] [-PassThru] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
-### Csr
+### CSR
 ```
 New-VcCertificate -Application <String> [-IssuingTemplate <String>] -Csr <String> [-SanDns <String[]>]
- [-SanIP <String[]>] [-SanUri <String[]>] [-SanEmail <String[]>] [-ValidUntil <DateTime>] [-PassThru]
- [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+ [-SanIP <String[]>] [-SanUri <String[]>] [-SanEmail <String[]>] [-ValidUntil <DateTime>] [-Tag <String[]>]
+ [-PassThru] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -35,38 +36,46 @@ Create certificate
 
 ### EXAMPLE 2
 ```
+New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -Tag 'tag1','tag2:value'
+```
+
+Create certificate and associate 1 or more tags
+
+### EXAMPLE 3
+```
 New-VcCertificate -Application 'MyApp' -CommonName 'app.mycert.com'
 ```
 
-Create certificate with the template associated with the application
+Create certificate with the template associated with the application.
+This only works when only 1 template is associated with an application.
 
-### EXAMPLE 3
+### EXAMPLE 4
 ```
 New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -SanIP '1.2.3.4'
 ```
 
 Create certificate with optional SAN data
 
-### EXAMPLE 4
+### EXAMPLE 5
 ```
 New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -ValidUntil (Get-Date).AddMonths(6)
 ```
 
 Create certificate with specific validity
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -CommonName 'app.mycert.com' -PassThru
 ```
 
 Create certificate and return the created object
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 New-VcCertificate -Application 'MyApp' -IssuingTemplate 'MSCA - 1 year' -Csr "-----BEGIN CERTIFICATE REQUEST-----\nMIICYzCCAUsCAQAwHj....BoiNIqtVQxFsfT+\n-----END CERTIFICATE REQUEST-----\n"
 ```
 
-Create certificate with a CSR
+Create certificate by providing a CSR
 
 ## PARAMETERS
 
@@ -102,27 +111,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -Csr
-CSR in PKCS#10 format which conforms to the rules of the issuing template
-
-```yaml
-Type: String
-Parameter Sets: Csr
-Aliases:
-
-Required: True
-Position: Named
-Default value: None
-Accept pipeline input: False
-Accept wildcard characters: False
-```
-
 ### -CommonName
-Common name (CN)
+Common name (CN). 
+Required if not providing a CSR.
 
 ```yaml
 Type: String
-Parameter Sets: Ask
+Parameter Sets: ASK
 Aliases:
 
 Required: True
@@ -137,7 +132,7 @@ The Organization field for the certificate Subject DN
 
 ```yaml
 Type: String
-Parameter Sets: Ask
+Parameter Sets: ASK
 Aliases:
 
 Required: False
@@ -152,7 +147,7 @@ One or more departments or divisions within the organization that is responsible
 
 ```yaml
 Type: String[]
-Parameter Sets: Ask
+Parameter Sets: ASK
 Aliases:
 
 Required: False
@@ -167,7 +162,7 @@ The City/Locality field for the certificate Subject DN
 
 ```yaml
 Type: String
-Parameter Sets: Ask
+Parameter Sets: ASK
 Aliases:
 
 Required: False
@@ -182,7 +177,7 @@ The State field for the certificate Subject DN
 
 ```yaml
 Type: String
-Parameter Sets: Ask
+Parameter Sets: ASK
 Aliases:
 
 Required: False
@@ -197,10 +192,25 @@ The Country field for the certificate Subject DN
 
 ```yaml
 Type: String
-Parameter Sets: Ask
+Parameter Sets: ASK
 Aliases:
 
 Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Csr
+CSR in PKCS#10 format which conforms to the rules of the issuing template
+
+```yaml
+Type: String
+Parameter Sets: CSR
+Aliases:
+
+Required: True
 Position: Named
 Default value: None
 Accept pipeline input: False
@@ -273,6 +283,21 @@ The day and hour will be set and not to the minute level.
 
 ```yaml
 Type: DateTime
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Tag
+One or more tags to assign to the certificate at creation.
+
+```yaml
+Type: String[]
 Parameter Sets: (All)
 Aliases:
 
@@ -375,5 +400,5 @@ This cmdlet supports the common parameters: -Debug, -ErrorAction, -ErrorVariable
 
 ## RELATED LINKS
 
-[https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificate%20Request/certificaterequests_create](https://api.venafi.cloud/webjars/swagger-ui/index.html?urls.primaryName=outagedetection-service#/Certificate%20Request/certificaterequests_create)
+[https://developer.venafi.com/tlsprotectcloud/reference/certificaterequests_create](https://developer.venafi.com/tlsprotectcloud/reference/certificaterequests_create)
 

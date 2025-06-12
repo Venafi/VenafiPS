@@ -18,6 +18,7 @@ Get-VcApplication [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPre
 
 ## DESCRIPTION
 Get 1 or more applications.
+Application level renewal configurations are included.
 
 ## EXAMPLES
 
@@ -27,7 +28,11 @@ Get-VcApplication -Application 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2'
 ```
 
 applicationId              : 96fc9310-67ec-11eb-a8a7-794fe75a8e6f
-certificateIssuingTemplate : @{Name=MyTemplate; id=7fb6af20-b22e-11ea-9a24-930fb5d2b247}
+issuingTemplate            : @{Name=MyTemplate; id=7fb6af20-b22e-11ea-9a24-930fb5d2b247}
+autoRenew                  : True
+autoProvision              : True
+renewalWindowInherit       : False
+renewalWindowDays          : 15
 companyId                  : 09b24f81-b22b-11ea-91f3-ebd6dea5452e
 name                       : myapp
 description                :

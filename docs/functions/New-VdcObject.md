@@ -5,14 +5,21 @@ Create a new object
 
 ## SYNTAX
 
+### NonDup (Default)
 ```
-New-VdcObject [-Path] <String> [-Class] <String> [[-Attribute] <Hashtable>] [-PushCertificate] [-Force]
- [-PassThru] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm]
- [<CommonParameters>]
+New-VdcObject -Path <String> -Class <String> [-Attribute <Hashtable>] [-PushCertificate] [-Force] [-PassThru]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+```
+
+### Dup
+```
+New-VdcObject -Path <String> [-SourcePath <String>] [-PushCertificate] [-Force] [-PassThru]
+ [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
 Generic use function to create a new object if a specific function hasn't been created yet for the class.
+This can also be used to duplicate an existing object.
 
 ## EXAMPLES
 
@@ -44,6 +51,13 @@ New-VdcObject -Path '\VED\Policy\Test Device\App' -Class 'Basic' -Attribute @{'D
 
 Create a new Basic application and associate it to a device and certificate
 
+### EXAMPLE 5
+```
+New-VdcObject -Path 'certificates\duplicate.company.com' -SourcePath 'certificates\original.company.com'
+```
+
+Create a duplicate object with all attributes from the original being copied over
+
 ## PARAMETERS
 
 ### -Path
@@ -56,7 +70,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: True
-Position: 1
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -68,11 +82,11 @@ See https://docs.venafi.com/Docs/current/TopNav/Content/SDK/WebSDK/SchemaReferen
 
 ```yaml
 Type: String
-Parameter Sets: (All)
+Parameter Sets: NonDup
 Aliases:
 
 Required: True
-Position: 2
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -84,11 +98,31 @@ These will be specific to the object class being created.
 
 ```yaml
 Type: Hashtable
-Parameter Sets: (All)
+Parameter Sets: NonDup
 Aliases:
 
 Required: False
-Position: 3
+Position: Named
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -SourcePath
+Provide this path when you want to duplicate an existing object.
+This will be the path of the source object and Path will be the destination.
+All attributes which have been set on this object will be copied to the new one.
+Retrieving all existing attributes will take some time.
+
+Not recommended for duplicating certificates.
+
+```yaml
+Type: String
+Parameter Sets: Dup
+Aliases:
+
+Required: False
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
@@ -152,7 +186,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 4
+Position: Named
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

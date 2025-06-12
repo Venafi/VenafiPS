@@ -1,3 +1,14 @@
+## 6.10.0
+- Add support for tags during certificate creation with `New-VcCertificate -Tag`, [#337](https://github.com/Venafi/VenafiPS/issues/337)
+- Performance enhancement for `ConvertTo-VdcObject` which decreased Windows Powershell runtimes for `Find-VdcObject` and all other functions that use it, [#342](https://github.com/Venafi/VenafiPS/issues/342)
+- Add `-IsExpired:$false` for both `Find-VdcCertificate` and `Find-VcCertificate` to find all certificates that are not expired
+- Add renewal configuration to `Get-VcApplication`
+- Fix issue with `Invoke-VcWorkflow` where $VenafiSession was not getting picked up properly
+- Ensure only 1 team matches Owner when using `New-VcMachine -Owner` and the value is a name.  This is needed as the product allows multiple teams with the same name.
+- Create duplicate objects with `New-VdcObject -SourcePath`.  **Not recommended for certificates**.  [#343](https://github.com/Venafi/VenafiPS/issues/343)
+- Allow manifests of different formats to be provided to `Set-VcConnector`
+
+
 ## 6.9.4
 - Help cleanup for Find-VcObject references
 
@@ -771,6 +782,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

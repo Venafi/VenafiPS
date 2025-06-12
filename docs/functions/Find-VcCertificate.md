@@ -177,7 +177,7 @@ Accept wildcard characters: False
 ### -IsExpired
 Search for only expired certificates.
 This will search for only certificates that are expired including active, retired, current, old, etc.
-Be sure to use other parameters if you want to filter even further.
+Use -IsExpired:$false for certificates that are NOT expired.
 
 ```yaml
 Type: SwitchParameter
