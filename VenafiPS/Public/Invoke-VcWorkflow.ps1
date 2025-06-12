@@ -215,8 +215,7 @@ function Invoke-VcWorkflow {
                     $WS.Dispose()
                 }
             }
-            # } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Invoking workflow'
-        }
+        } -ThrottleLimit $ThrottleLimit -ProgressTitle 'Invoking workflow'
     }
 }
 
