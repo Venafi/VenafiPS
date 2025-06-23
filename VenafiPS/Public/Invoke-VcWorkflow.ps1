@@ -105,9 +105,9 @@ function Invoke-VcWorkflow {
     end {
 
         Invoke-VenafiParallel -InputObject $allIDs -ScriptBlock {
+            $workflow = $using:Workflow
             # $allIDs | ForEach-Object {
             $thisID = $PSItem
-            $workflow = $using:Workflow
             $thisWebSocketID = (New-Guid).Guid
 
             try {
@@ -136,7 +136,7 @@ function Invoke-VcWorkflow {
                 }
 
                 Write-Verbose "Connecting to $($URL)..."
-                $Size = 2048
+                $Size = 8192
                 $Array = [byte[]] @(, 0) * $Size
 
                 #Send Starting Request
@@ -204,7 +204,12 @@ function Invoke-VcWorkflow {
 
                 if ( $responseObj.data.result -ne $true ) {
                     $out.Success = $false
-                    $out | Add-Member @{'Error' = $responseObj.data.result.message }
+                    try {
+                        $out | Add-Member @{'Error' = $responseObj.data.result.message | ConvertFrom-Json }
+                    }
+                    catch {
+                        $out | Add-Member @{'Error' = $responseObj.data.result.message }
+                    }
                 }
 
                 $out
