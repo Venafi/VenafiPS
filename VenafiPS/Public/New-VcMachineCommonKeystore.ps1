@@ -197,7 +197,7 @@ function New-VcMachineCommonKeystore {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $allMachines = [System.Collections.Generic.List[pscustomobject]]::new()
-        $machineTypeId = Get-VcData -InputObject 'Common KeyStore (PEM, JKS, PKCS#12)' -Type 'MachinePlugin'
+        $machineTypeId = Get-VcData -InputObject 'Common KeyStore (PEM, JKS, PKCS#12)' -Type 'Plugin'
 
         Initialize-PSSodium -Force:$Force
     }

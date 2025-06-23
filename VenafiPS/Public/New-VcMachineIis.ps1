@@ -175,7 +175,7 @@ function New-VcMachineIis {
         Test-VenafiSession $PSCmdlet.MyInvocation
 
         $allMachines = [System.Collections.Generic.List[pscustomobject]]::new()
-        $machineTypeId = Get-VcData -InputObject 'Microsoft IIS' -Type 'MachinePlugin'
+        $machineTypeId = Get-VcData -InputObject 'Microsoft IIS' -Type 'Plugin'
 
         Initialize-PSSodium -Force:$Force
     }

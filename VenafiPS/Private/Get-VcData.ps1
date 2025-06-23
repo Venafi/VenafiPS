@@ -2,7 +2,7 @@ function Get-VcData {
 
     <#
     .SYNOPSIS
-        Helper function to get data from Venafi Cloud
+        Helper function to get data from Venafi
     #>
 
 
@@ -16,7 +16,7 @@ function Get-VcData {
         [string] $InputObject,
 
         [parameter(Mandatory)]
-        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'MachinePlugin', 'CaPlugin', 'TppPlugin', 'Credential', 'Algorithm')]
+        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'Plugin', 'Credential', 'Algorithm')]
         [string] $Type,
 
         [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
@@ -117,15 +117,15 @@ function Get-VcData {
                 break
             }
 
-            { $_ -match 'Plugin$' } {
-                # for machine, ca, tpp, etc plugins
-                $pluginType = $_.Replace('Plugin', '').ToUpper()
+            'Plugin' {
+                if ( -not $script:vcPlugin -or $Reload ) {
+                    $script:vcPlugin = Invoke-VenafiRestMethod -UriLeaf "plugins" |
+                        Select-Object -ExpandProperty plugins |
+                        Select-Object -Property @{'n' = 'pluginId'; 'e' = { $_.Id } }, * -ExcludeProperty id
+                }
 
-                $allObject = Invoke-VenafiRestMethod -UriLeaf "plugins?pluginType=$pluginType" |
-                    Select-Object -ExpandProperty plugins |
-                    Select-Object -Property @{'n' = ('{0}Id' -f $Type); 'e' = { $_.Id } }, * -ExcludeProperty id
-
-                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.('{0}Id' -f $Type) }
+                $allObject = $script:vcPlugin
+                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.pluginId }
                 break
             }
 

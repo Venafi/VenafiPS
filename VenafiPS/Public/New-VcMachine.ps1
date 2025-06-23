@@ -189,7 +189,7 @@ function New-VcMachine {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        $thisMachineType = Get-VcData -InputObject $MachineType -Type 'MachinePlugin' -Object
+        $thisMachineType = Get-VcData -InputObject $MachineType -Type 'Plugin' -Object
         if ( -not $thisMachineType ) {
             Write-Error "'$MachineType' is not a valid machine type id or name"
             return
@@ -260,7 +260,7 @@ function New-VcMachine {
             name              = $Name
             edgeInstanceId    = $thisEdgeInstanceId
             dekId             = $thisDekId
-            pluginId          = $thisMachineType.machinePluginId
+            pluginId          = $thisMachineType.pluginId
             owningTeamId      = $ownerId
             connectionDetails = $thisConnectionDetail
         }
