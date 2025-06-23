@@ -6,15 +6,17 @@ function Get-VcData {
     #>
 
 
-    [CmdletBinding(DefaultParameterSetName = 'ID')]
+    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [Alias('Get-VdcData')]
+
     param (
-        [parameter(ValueFromPipeline, ParameterSetName = 'ID', Position = '0')]
-        [parameter(ValueFromPipeline, ParameterSetName = 'Name', Position = '0')]
-        [parameter(ValueFromPipeline, ParameterSetName = 'Object', Position = '0')]
+        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ID', Position = '0')]
+        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name', Position = '0')]
+        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Object', Position = '0')]
         [string] $InputObject,
 
         [parameter(Mandatory)]
-        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'MachinePlugin', 'CaPlugin', 'TppPlugin')]
+        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'MachinePlugin', 'CaPlugin', 'TppPlugin', 'Credential', 'Algorithm')]
         [string] $Type,
 
         [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
@@ -27,6 +29,9 @@ function Get-VcData {
         [switch] $First,
 
         [parameter()]
+        [switch] $Reload,
+
+        [parameter()]
         [switch] $FailOnMultiple,
 
         [parameter()]
@@ -35,6 +40,12 @@ function Get-VcData {
 
     begin {
         $idNameQuery = 'query MyQuery {{ {0} {{ nodes {{ id name }} }} }}'
+        $platform = if ( $MyInvocation.InvocationName -eq 'Get-VdcData' ) {
+            'vdc'
+        }
+        else {
+            'vc'
+        }
     }
 
     process {
@@ -58,12 +69,18 @@ function Get-VcData {
             # object or first
             switch ($Type) {
                 'Application' {
-                    $allObject = Get-VcApplication -All
+                    if ( -not $script:vcApplication -or $Reload ) {
+                        $script:vcApplication = Get-VcApplication -All | Sort-Object -Property name
+                    }
+                    $allObject = $script:vcApplication
                     $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.applicationId }
                     break
                 }
                 'Team' {
-                    $allObject = Get-VcTeam -All | Sort-Object -Property name
+                    if ( -not $script:vcTeam -or $Reload ) {
+                        $script:vcTeam = Get-VcTeam -All | Sort-Object -Property name
+                    }
+                    $allObject = $script:vcTeam
                     $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.teamId }
                     break
                 }
@@ -72,24 +89,41 @@ function Get-VcData {
 
         switch ($Type) {
             'VSatellite' {
-                $allObject = Get-VcSatellite -All | Where-Object { $_.edgeStatus -eq 'ACTIVE' } | Sort-Object -Property name
+                if ( -not $script:vcSatellite -or $Reload ) {
+                    $script:vcSatellite = Get-VcSatellite -All | Sort-Object -Property name
+                }
+                $allObject = $script:vcSatellite
                 $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.vsatelliteId }
                 break
             }
 
             'IssuingTemplate' {
-                $allObject = Get-VcIssuingTemplate -All | Sort-Object -Property name
+                if ( -not $script:vcIssuingTemplate -or $Reload ) {
+                    $script:vcIssuingTemplate = Get-VcIssuingTemplate -All | Sort-Object -Property name
+                }
+                $allObject = $script:vcIssuingTemplate
                 $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.issuingTemplateId }
+                break
+            }
+
+            'Credential' {
+                if ( -not $script:vcCredential -or $Reload ) {
+                    $script:vcCredential = Invoke-VenafiRestMethod -UriLeaf "credentials" |
+                        Select-Object -ExpandProperty credentials |
+                        Select-Object -Property @{'n' = 'credentialId'; 'e' = { $_.Id } }, * -ExcludeProperty id
+                }
+                $allObject = $script:vcCredential
+                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.credentialId }
                 break
             }
 
             { $_ -match 'Plugin$' } {
                 # for machine, ca, tpp, etc plugins
                 $pluginType = $_.Replace('Plugin', '').ToUpper()
-                
+
                 $allObject = Invoke-VenafiRestMethod -UriLeaf "plugins?pluginType=$pluginType" |
-                Select-Object -ExpandProperty plugins |
-                Select-Object -Property @{'n' = ('{0}Id' -f $Type); 'e' = { $_.Id } }, * -ExcludeProperty id
+                    Select-Object -ExpandProperty plugins |
+                    Select-Object -Property @{'n' = ('{0}Id' -f $Type); 'e' = { $_.Id } }, * -ExcludeProperty id
 
                 $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.('{0}Id' -f $Type) }
                 break
@@ -115,7 +149,7 @@ function Get-VcData {
                         $tagName = $InputObject
                     }
                     $tag = Invoke-VenafiRestMethod -UriLeaf "tags/$tagName" |
-                    Select-Object -Property @{'n' = 'tagId'; 'e' = { $_.Id } }, @{'n' = 'values'; 'e' = { $null } }, * -ExcludeProperty id
+                        Select-Object -Property @{'n' = 'tagId'; 'e' = { $_.Id } }, @{'n' = 'values'; 'e' = { $null } }, * -ExcludeProperty id
 
                     if ( $tag ) {
                         $values = Invoke-VenafiRestMethod -UriLeaf "tags/$($tag.name)/values"
@@ -151,7 +185,7 @@ function Get-VcData {
         else {
             $allObject
         }
-        
+
         if ( $FailOnMultiple -and @($returnObject).Count -gt 1 ) {
             throw "Multiple $Type found"
         }
@@ -195,6 +229,11 @@ function Get-VcData {
 
             'First' {
                 $returnObject | Select-Object -First 1
+                break
+            }
+
+            'All' {
+                $returnObject
                 break
             }
         }

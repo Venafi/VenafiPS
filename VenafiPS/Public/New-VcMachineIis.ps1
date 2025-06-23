@@ -27,6 +27,7 @@ function New-VcMachineIis {
 
     .PARAMETER Credential
     Username/password to access the machine
+    Alternatively, you can provide the name or id of a shared credential, eg. CyberArk, HashiCorp, etc.
 
     .PARAMETER Port
     Optional WinRM port.  The default is 5985.
@@ -125,7 +126,7 @@ function New-VcMachineIis {
         [string] $Hostname,
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [pscredential] $Credential,
+        [psobject] $Credential,
 
         [Parameter(ValueFromPipelineByPropertyName)]
         [string[]] $Tag,
@@ -189,50 +190,59 @@ function New-VcMachineIis {
             }
         }
         else {
-            $vSat = Get-VcData -Type 'VSatellite' -First
+            $vSat = Get-VcData -Type 'VSatellite' | Where-Object edgeStatus -eq 'ACTIVE' | Select-Object -First 1
             if ( -not $vSat ) {
                 throw "An active VSatellite could not be found"
             }
         }
 
-        $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
-        $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
+        $connectionDetail = @{
+            hostnameOrAddress = if ($Hostname) { $Hostname } else { $Name }
+            credentialType    = 'local'
+        }
+
+        if ( $Credential -is [pscredential] ) {
+
+            $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
+            $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
+
+            $connectionDetail.username = $userEnc
+            $connectionDetail.password = $pwEnc
+        }
+        else {
+            # if not a pscredential, assume a string and it will be a shared credential name/id
+            $credentialId = Get-VcData -InputObject $Credential -Type 'Credential' -FailOnNotFound -FailOnMultiple
+            $connectionDetail.credentialId = $credentialId
+            $connectionDetail.credentialType = 'shared'
+        }
 
         switch ($PSCmdlet.ParameterSetName) {
             'WinrmBasic' {
-                $connectionDetails = @{
-                    hostnameOrAddress  = if ($Hostname) { $Hostname } else { $Name }
-                    authenticationType = "basic"
-                    credentialType     = 'local'
-                    username           = $userEnc
-                    password           = $pwEnc
-                }
+                $connectionDetail.authenticationType = 'basic'
             }
 
             'WinrmKerberos' {
-                $connectionDetails = @{
-                    hostnameOrAddress  = if ($Hostname) { $Hostname } else { $Name }
-                    authenticationType = 'kerberos'
-                    credentialType     = 'local'
-                    username           = $userEnc
-                    password           = $pwEnc
-                    kerberos           = @{
-                        domain                = "$DomainName"
-                        keyDistributionCenter = "$KeyDistributionCenter"
-                        servicePrincipalName  = "$SPN"
-                    }
+                $connectionDetail.authenticationType = 'kerberos'
+                $connectionDetail.kerberos = @{
+                    domain                = "$DomainName"
+                    keyDistributionCenter = "$KeyDistributionCenter"
+                    servicePrincipalName  = "$SPN"
                 }
             }
         }
 
+        if ( $Port -or $UseTls ) {
+            $connectionDetail.protocolWinRm = @{}
+        }
+
         if ( $Port ) {
-            $connectionDetails.protocolWinRm.port = $Port
+            $connectionDetail.protocolWinRm.port = $Port
         }
 
         if ( $UseTls ) {
-            $connectionDetails.protocolWinRm.https = $true
+            $connectionDetail.protocolWinRm.https = $true
             if ( $SkipCertificateCheck ) {
-                $connectionDetails.protocolWinRm.skipTlsVerify = $true
+                $connectionDetail.protocolWinRm.skipTlsVerify = $true
             }
         }
 
@@ -242,7 +252,7 @@ function New-VcMachineIis {
             VSatellite       = $vSat.vsatelliteId
             DekID            = $vSat.encryptionKeyId
             Owner            = $Owner
-            ConnectionDetail = $connectionDetails
+            ConnectionDetail = $connectionDetail
         }
 
         if ( $Tag ) {

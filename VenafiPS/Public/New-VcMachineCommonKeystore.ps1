@@ -47,6 +47,7 @@ function New-VcMachineCommonKeystore {
     .PARAMETER Credential
     Username/password to access the machine.
     If using key-based authentication over SSH, set the password to the private key.
+    Alternatively, you can provide the name or id of a shared credential, eg. CyberArk, HashiCorp, etc.
 
     .PARAMETER Port
     Optional SSH/WinRM port.
@@ -133,7 +134,7 @@ function New-VcMachineCommonKeystore {
         [string] $Hostname,
 
         [Parameter(Mandatory, ValueFromPipelineByPropertyName)]
-        [pscredential] $Credential,
+        [psobject] $Credential,
 
         [Parameter(ValueFromPipelineByPropertyName)]
         [string[]] $Tag,
@@ -211,86 +212,94 @@ function New-VcMachineCommonKeystore {
             }
         }
         else {
-            $vSat = Get-VcData -Type 'VSatellite' -First
+            $vSat = Get-VcData -Type 'VSatellite' | Where-Object edgeStatus -eq 'ACTIVE' | Select-Object -First 1
             if ( -not $vSat ) {
                 throw "An active VSatellite could not be found"
             }
         }
 
-        $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
-        $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
+        $credDetail = if ( $Credential -is [pscredential] ) {
+
+            $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
+            $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
+
+            @{
+                username       = $userEnc
+                password       = $pwEnc
+                credentialType = 'local'
+            }
+        }
+        else {
+            # if not a pscredential, assume a string and it will be a shared credential name/id
+            $credentialId = Get-VcData -InputObject $Credential -Type 'Credential' -FailOnNotFound -FailOnMultiple
+            @{
+                credentialId   = $credentialId
+                credentialType = 'shared'
+            }
+        }
 
         switch ($PSCmdlet.ParameterSetName) {
             'SshPassword' {
-                $connectionDetails = @{
+                $connectionDetail = @{
                     protocol    = 'ssh2'
                     protocolSsh = @{
                         hostnameOrAddress = if ($Hostname) { $Hostname } else { $Name }
                         sshAuthentication = 'password'
-                        sshPassword       = @{
-                            credentialType = 'local'
-                            username       = $userEnc
-                            password       = $pwEnc
-                        }
+                        sshPassword       = $credDetail
                     }
                 }
             }
 
             'SshKey' {
-                $connectionDetails = @{
+                $connectionDetail = @{
                     protocol    = 'ssh2'
                     protocolSsh = @{
                         hostnameOrAddress = if ($Hostname) { $Hostname } else { $Name }
                         sshAuthentication = "key"
-                        sshPrivateKey     = @{
-                            credentialType = 'local'
-                            username       = $userEnc
-                            privateKey     = $pwEnc
-                        }
+                        sshPrivateKey     = $credDetail
                     }
                 }
             }
 
             'WinrmBasic' {
-                $connectionDetails = @{
+                $connectionDetail = @{
                     protocol      = 'winrm2'
                     protocolWinRm = @{
                         hostnameOrAddress  = if ($Hostname) { $Hostname } else { $Name }
                         authenticationType = "basic"
-                        credentialType     = 'local'
-                        username           = $userEnc
-                        password           = $pwEnc
-                    }
+                    } + $credDetail
                 }
             }
 
             'WinrmKerberos' {
-                $connectionDetails = @{
+                $connectionDetail = @{
                     protocol      = 'winrm2'
                     protocolWinRm = @{
                         hostnameOrAddress  = if ($Hostname) { $Hostname } else { $Name }
                         authenticationType = 'kerberos'
-                        credentialType     = 'local'
-                        username           = $userEnc
-                        password           = $pwEnc
                         kerberos           = @{
                             domain                = "$DomainName"
                             keyDistributionCenter = "$KeyDistributionCenter"
                             servicePrincipalName  = "$SPN"
                         }
-                    }
+                    } + $credDetail
                 }
             }
         }
 
         if ( $Port ) {
-            $connectionDetails.protocolWinRm.port = $Port
+            if ( $PSCmdlet.ParameterSetName -match '^Ssh' ) {
+                $connectionDetail.protocolSsh.port = $Port
+            }
+            else {
+                $connectionDetail.protocolWinRm.port = $Port
+            }
         }
 
         if ( $UseTls ) {
-            $connectionDetails.protocolWinRm.https = $true
+            $connectionDetail.protocolWinRm.https = $true
             if ( $SkipCertificateCheck ) {
-                $connectionDetails.protocolWinRm.skipTlsVerify = $true
+                $connectionDetail.protocolWinRm.skipTlsVerify = $true
             }
         }
 
@@ -300,7 +309,7 @@ function New-VcMachineCommonKeystore {
             VSatellite       = $vSat.vsatelliteId
             DekID            = $vSat.encryptionKeyId
             Owner            = $Owner
-            ConnectionDetail = $connectionDetails
+            ConnectionDetail = $connectionDetail
         }
 
         if ( $Tag ) {
