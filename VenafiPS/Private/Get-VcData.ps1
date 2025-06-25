@@ -2,7 +2,7 @@ function Get-VcData {
 
     <#
     .SYNOPSIS
-        Helper function to get data from Venafi Cloud
+        Helper function to get data from Venafi
     #>
 
 
@@ -12,13 +12,13 @@ function Get-VcData {
     [Alias('Get-VdcData')]
 
     param (
-        [parameter(ValueFromPipeline, ParameterSetName = 'ID', Position = '0')]
-        [parameter(ValueFromPipeline, ParameterSetName = 'Name', Position = '0')]
-        [parameter(ValueFromPipeline, ParameterSetName = 'Object', Position = '0')]
+        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'ID', Position = '0')]
+        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name', Position = '0')]
+        [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Object', Position = '0')]
         [string] $InputObject,
 
         [parameter(Mandatory)]
-        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'MachinePlugin', 'CaPlugin', 'TppPlugin')]
+        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'Plugin', 'Credential', 'Algorithm')]
         [string] $Type,
 
         [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
@@ -31,6 +31,9 @@ function Get-VcData {
         [switch] $First,
 
         [parameter()]
+        [switch] $Reload,
+
+        [parameter()]
         [switch] $FailOnMultiple,
 
         [parameter()]
@@ -39,6 +42,12 @@ function Get-VcData {
 
     begin {
         $idNameQuery = 'query MyQuery {{ {0} {{ nodes {{ id name }} }} }}'
+        $platform = if ( $MyInvocation.InvocationName -eq 'Get-VdcData' ) {
+            'vdc'
+        }
+        else {
+            'vc'
+        }
     }
 
     process {
@@ -265,6 +274,11 @@ function Get-VcData {
 
             'First' {
                 $returnObject | Select-Object -First 1
+                break
+            }
+
+            'All' {
+                $returnObject
                 break
             }
         }

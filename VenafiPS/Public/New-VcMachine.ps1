@@ -32,7 +32,8 @@ function New-VcMachine {
     If this is to be the same value as -Name, this parameter can be ommitted.
 
     .PARAMETER Credential
-    Username/password to access the machine
+    Username/password to access the machine.
+    Alternatively, you can provide the name or id of a shared credential, eg. CyberArk, HashiCorp, etc.
 
     .PARAMETER Port
     Optional port.  The default value will depend on the machine type.
@@ -147,7 +148,7 @@ function New-VcMachine {
         [string] $Hostname,
 
         [Parameter(Mandatory, ParameterSetName = 'BasicMachine', ValueFromPipelineByPropertyName)]
-        [pscredential] $Credential,
+        [psobject] $Credential,
 
         [Parameter(ParameterSetName = 'BasicMachine', ValueFromPipelineByPropertyName)]
         [string] $Port,
@@ -188,7 +189,7 @@ function New-VcMachine {
 
         Write-Verbose $PSCmdlet.ParameterSetName
 
-        $thisMachineType = Get-VcData -InputObject $MachineType -Type 'MachinePlugin' -Object
+        $thisMachineType = Get-VcData -InputObject $MachineType -Type 'Plugin' -Object
         if ( -not $thisMachineType ) {
             Write-Error "'$MachineType' is not a valid machine type id or name"
             return
@@ -213,6 +214,14 @@ function New-VcMachine {
         }
         else {
 
+            $thisConnectionDetail = @{
+                hostnameOrAddress = if ($Hostname) { $Hostname } else { $Name }
+            }
+
+            if ( $Port ) {
+                $thisConnectionDetail.port = $Port
+            }
+
             if ( $VSatellite ) {
                 $vSat = Get-VcData -InputObject $VSatellite -Type 'VSatellite' -Object
                 if ( -not $vSat ) {
@@ -221,7 +230,7 @@ function New-VcMachine {
                 }
             }
             else {
-                $vSat = Get-VcData -Type 'VSatellite' -First
+                $vSat = Get-VcData -Type 'VSatellite' | Where-Object edgeStatus -eq 'ACTIVE' | Select-Object -First 1
                 if ( -not $vSat ) {
                     Write-Error "An active VSatellite could not be found"
                     return
@@ -231,17 +240,19 @@ function New-VcMachine {
             $thisEdgeInstanceId = $vSat.vsatelliteId
             $thisDekId = $vSat.encryptionKeyId
 
-            $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
-            $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
+            if ( $Credential -is [pscredential] ) {
 
-            $thisConnectionDetail = @{
-                hostnameOrAddress = if ($Hostname) { $Hostname } else { $Name }
-                username          = $userEnc
-                password          = $pwEnc
+                $userEnc = ConvertTo-SodiumEncryptedString -text $Credential.UserName -PublicKey $vSat.encryptionKey
+                $pwEnc = ConvertTo-SodiumEncryptedString -text $Credential.GetNetworkCredential().Password -PublicKey $vSat.encryptionKey
+
+                $thisConnectionDetail.username = $userEnc
+                $thisConnectionDetail.password = $pwEnc
             }
-
-            if ( $Port ) {
-                $thisConnectionDetail.port = $Port
+            else {
+                # if not a pscredential, assume a string and it will be a shared credential name/id
+                $credentialId = Get-VcData -InputObject $Credential -Type 'Credential' -FailOnNotFound -FailOnMultiple
+                $thisConnectionDetail.credentialId = $credentialId
+                $thisConnectionDetail.credentialType = 'shared'
             }
         }
 
@@ -249,7 +260,7 @@ function New-VcMachine {
             name              = $Name
             edgeInstanceId    = $thisEdgeInstanceId
             dekId             = $thisDekId
-            pluginId          = $thisMachineType.machinePluginId
+            pluginId          = $thisMachineType.pluginId
             owningTeamId      = $ownerId
             connectionDetails = $thisConnectionDetail
         }
