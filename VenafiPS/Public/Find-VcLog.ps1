@@ -17,11 +17,11 @@ function Find-VcLog {
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
 
-    .PARAMETER Name
-    Activity name to find via regex match
-
     .PARAMETER Type
-    Activity type
+    Activity type, tab completion supported
+
+    .PARAMETER Name
+    Activity name to find via regex match, tab completion supported
 
     .PARAMETER Message
     Look anywhere in the message for the string provided
@@ -96,7 +96,7 @@ function Find-VcLog {
         [string] $Message,
 
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
 
         [parameter()]
         [psobject[]] $Order,

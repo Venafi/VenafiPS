@@ -209,7 +209,7 @@ function Find-VcCertificate {
         [string] $Issuer,
 
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
 
         [Parameter(ParameterSetName = 'All')]
         [Parameter(ParameterSetName = 'Filter')]

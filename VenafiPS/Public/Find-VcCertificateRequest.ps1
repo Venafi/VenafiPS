@@ -52,7 +52,7 @@ function Find-VcCertificateRequest {
         [int] $KeyLength,
 
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
 
         [parameter()]
         [psobject[]] $Order,

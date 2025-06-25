@@ -38,7 +38,8 @@ function Get-VcTag {
     param (
 
         [Parameter(Mandatory, ParameterSetName = 'ID', ValueFromPipelineByPropertyName, Position = 0)]
-        [string] $Name,
+        [Alias('Name')]
+        [string] $Tag,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
@@ -59,8 +60,8 @@ function Get-VcTag {
             $response = Invoke-VenafiRestMethod -UriLeaf 'tags' | Select-Object -ExpandProperty tags
         }
         else {
-            $response = Invoke-VenafiRestMethod -UriLeaf "tags/$Name"
-            $values = Invoke-VenafiRestMethod -UriLeaf "tags/$Name/values" | Select-Object -ExpandProperty values
+            $response = Invoke-VenafiRestMethod -UriLeaf "tags/$Tag"
+            $values = Invoke-VenafiRestMethod -UriLeaf "tags/$Tag/values" | Select-Object -ExpandProperty values
         }
 
         if ( $response ) {
@@ -71,7 +72,7 @@ function Get-VcTag {
                     $thisId = $_.id
                     , @(($values | Where-Object { $_.tagId -eq $thisId }).value)
                 }
-            }, * -ExcludeProperty id, name
+            }
         }
     }
 }

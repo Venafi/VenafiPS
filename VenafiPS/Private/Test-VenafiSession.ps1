@@ -38,6 +38,9 @@ function Test-VenafiSession {
         elseif ($InvocationInfo.MyCommand -match '-Vdc') {
             'VDC'
         }
+        else {
+            throw 'Venafi Platform, VC or VDC, could not be determined'
+        }
 
         if ( $InvocationInfo.BoundParameters['VenafiSession'] ) {
             $VenafiSession = $InvocationInfo.BoundParameters['VenafiSession']
@@ -84,26 +87,8 @@ function Test-VenafiSession {
 
             'String' {
 
-                if ( Test-IsGuid($VenafiSession) ) {
+                # key or token provided directly, not via New-VenafiSession
 
-                    Write-Verbose 'Session is VC key'
-
-                    if ( $Platform -and $Platform -notmatch '^VC$' ) {
-                        throw "This function or parameter set is only accessible for $Platform"
-                    }
-                }
-                else {
-
-                    # TLSPDC access token
-                    Write-Verbose 'Session is VDC token'
-                    if ( $Platform -and $Platform -notmatch '^VDC' ) {
-                        throw "This function or parameter set is only accessible for $Platform"
-                    }
-                    # get server from environment variable
-                    if ( -not $env:VDC_SERVER ) {
-                        throw 'TLSPDC token provided, but VDC_SERVER environment variable was not found'
-                    }
-                }
                 break
             }
 

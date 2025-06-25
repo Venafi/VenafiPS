@@ -12,15 +12,13 @@ function Remove-VdcPermission {
 
     .PARAMETER Guid
     Guid that represents an object
-    
+
     .PARAMETER IdentityId
     Prefixed Universal Id of the user or group to have their permissions removed
 
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     Path, Guid, IdentityId
