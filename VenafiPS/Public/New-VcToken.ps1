@@ -47,6 +47,7 @@ function New-VcToken {
     #>
 
     [CmdletBinding(DefaultParameterSetName = 'ScriptSession')]
+    [Diagnostics.CodeAnalysis.SuppressMessageAttribute('PSAvoidUsingConvertToSecureStringWithPlainText', '', Justification = 'Converting to a secure string, its already plaintext')]
     [OutputType([PSCustomObject])]
 
     param (
