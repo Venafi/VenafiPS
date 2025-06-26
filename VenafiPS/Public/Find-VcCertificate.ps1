@@ -156,63 +156,65 @@ function Find-VcCertificate {
     This will make additional api calls and will increase the response time.
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [CmdletBinding(DefaultParameterSetName = 'SimpleFilter')]
 
     param (
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string] $Name,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [int32] $KeyLength,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string] $Serial,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string] $Fingerprint,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [switch] $IsSelfSigned,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [switch] $IsExpired,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [ValidateSet('ACTIVE', 'RETIRED', 'DELETED')]
         [string[]] $Status,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [datetime] $ExpireBefore,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [datetime] $ExpireAfter,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [ValidateSet('CURRENT', 'OLD')]
         [Alias('Version')]
         [string] $VersionType,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string] $SanDns,
 
-        [Parameter(ParameterSetName = 'All')]
-        [string] $Application,
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [string[]] $Application,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string[]] $Tag,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string] $CN,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string] $Issuer,
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [switch] $IncludeAny,
+
+        [Parameter(Mandatory, ParameterSetName = 'AdvancedFilter')]
         [System.Collections.Generic.List[object]] $Filter,
 
-        [Parameter(ParameterSetName = 'All')]
-        [Parameter(ParameterSetName = 'Filter')]
+        [Parameter()]
         [psobject[]] $Order,
 
         [parameter(Mandatory, ParameterSetName = 'SavedSearch')]
@@ -246,14 +248,20 @@ function Find-VcCertificate {
     if ( $Order ) { $params.Order = $Order }
 
     switch ($PSCmdlet.ParameterSetName) {
-        'Filter' {
+        'AdvancedFilter' {
             $params.Filter = $Filter
             break
         }
 
-        'All' {
+        'SimpleFilter' {
             $newFilter = [System.Collections.Generic.List[object]]::new()
-            $newFilter.Add('AND')
+            # Use OR or AND based on IncludeAny parameter
+            if ($IncludeAny) {
+                $newFilter.Add('OR')
+            }
+            else {
+                $newFilter.Add('AND')
+            }
 
             switch ($PSBoundParameters.Keys) {
                 'Name' { $null = $newFilter.Add(@('certificateName', 'FIND', $Name)) }
@@ -265,7 +273,8 @@ function Find-VcCertificate {
                     if ( $IsExpired.IsPresent ) {
                         $null = $newFilter.Add(@('validityEnd', 'LT', (Get-Date)))
                         $params.Order = @{'validityEnd' = 'desc' }
-                    } else {
+                    }
+                    else {
                         $null = $newFilter.Add(@('validityEnd', 'GTE', (Get-Date)))
                         $params.Order = @{'validityEnd' = 'asc' }
                     }
@@ -279,10 +288,7 @@ function Find-VcCertificate {
                 'SanDns' { $null = $newFilter.Add(@('subjectAlternativeNameDns', 'FIND', $SanDns)) }
                 'CN' { $null = $newFilter.Add(@('subjectCN', 'FIND', $CN)) }
                 'Issuer' { $null = $newFilter.Add(@('issuerCN', 'FIND', $Issuer)) }
-                'Application' {
-                    $appId = Get-VcData -InputObject $Application -Type 'Application' -FailOnNotFound
-                    $newFilter.Add(@('applicationIds', 'MATCH', $appId ))
-                }
+                'Application' { $null = $newFilter.Add(@('applicationId', 'IN', @(($Application | Get-VcData -Type Application)))) }
                 'Tag' {
                     $null = $newFilter.Add(@('tags', 'MATCH', $Tag))
                 }
