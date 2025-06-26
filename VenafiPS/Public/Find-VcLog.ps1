@@ -6,6 +6,29 @@ function Find-VcLog {
     .DESCRIPTION
     Find log entries
 
+    .PARAMETER Type
+    One or more activity type, tab completion supported
+
+    .PARAMETER Name
+    One or more activity name, tab completion supported
+
+    .PARAMETER Message
+    Look anywhere in the message for the string provided
+
+    .PARAMETER DateFrom
+    Filter logs from this date/time.
+    Combine with DateTo for a date range.
+
+    .PARAMETER DateTo
+    Filter logs to this date/time
+    Combine with DateFrom for a date range.
+
+    .PARAMETER Criticality
+    Filter logs by criticality level
+
+    .PARAMETER IncludeAny
+    When using multiple filter parameters (Type, Name, Message, Criticality), combine them with OR logic instead of AND logic
+
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @('operator', @(field, comparison operator, value), @(field2, comparison operator2, value2)).
@@ -16,15 +39,6 @@ function Find-VcLog {
     Array of fields to order on.
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
-
-    .PARAMETER Type
-    Activity type, tab completion supported
-
-    .PARAMETER Name
-    Activity name to find via regex match, tab completion supported
-
-    .PARAMETER Message
-    Look anywhere in the message for the string provided
 
     .PARAMETER First
     Only retrieve this many records
@@ -56,6 +70,16 @@ function Find-VcLog {
     Filter log results by specific value
 
     .EXAMPLE
+    Find-VcLog -DateFrom (Get-Date).AddDays(-7) -Message "certificate"
+
+    Find all logs from the past week containing "certificate" in the message
+
+    .EXAMPLE
+    Find-VcLog -Type 'Authentication' -Message 'failed' -IncludeAny
+
+    Find logs that are either Authentication type OR contain 'failed' in the message
+
+    .EXAMPLE
     Find-VcLog -Filter @('and', @('activityDate', 'gt', (get-date).AddMonths(-1)), @('or', @('message', 'find', 'greg@venafi.com'), @('message', 'find', 'bob@venafi.com')), @('activityType','eq','Authentication'))
 
     Advanced filtering of results.
@@ -82,20 +106,32 @@ function Find-VcLog {
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [CmdletBinding(DefaultParameterSetName = 'SimpleFilter')]
 
     param (
 
-        [Parameter(ParameterSetName = 'All')]
-        [string] $Name,
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [string[]] $Type,
 
-        [Parameter(ParameterSetName = 'All')]
-        [string] $Type,
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [string[]] $Name,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string] $Message,
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [switch] $Critical,
+
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [datetime] $DateFrom,
+
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [datetime] $DateTo,
+
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [switch] $IncludeAny,
+
+        [Parameter(Mandatory, ParameterSetName = 'AdvancedFilter')]
         [System.Collections.Generic.List[object]] $Filter,
 
         [parameter()]
@@ -118,17 +154,28 @@ function Find-VcLog {
 
     if ( $Order ) { $params.Order = $Order }
 
-    if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
+    if ( $PSCmdlet.ParameterSetName -eq 'AdvancedFilter' ) {
         $params.Filter = $Filter
     }
     else {
+        # Build filter based on provided parameters
         $newFilter = [System.Collections.Generic.List[object]]::new()
-        $newFilter.Add('AND')
 
+        # Use OR or AND based on IncludeAny parameter
+        if ($IncludeAny) {
+            $newFilter.Add('OR')
+        } else {
+            $newFilter.Add('AND')
+        }
+
+        # Add simple filters based on parameters
         switch ($PSBoundParameters.Keys) {
-            'Name' { $null = $newFilter.Add(@('activityName', 'FIND', $Name)) }
-            'Type' { $null = $newFilter.Add(@('activityType', 'EQ', $Type)) }
+            'Type' { $null = $newFilter.Add(@('activityType', 'IN', $Type)) }
+            'Name' { $null = $newFilter.Add(@('activityName', 'IN', $Name)) }
             'Message' { $null = $newFilter.Add(@('message', 'FIND', $Message)) }
+            'Critical' { $null = $newFilter.Add(@('criticality', 'IN', @([int]$Critical.IsPresent))) }
+            'DateFrom' { $null = $newFilter.Add(@('activityDate', 'GTE', $DateFrom)) }
+            'DateTo' { $null = $newFilter.Add(@('activityDate', 'LTE', $DateTo)) }
         }
 
         if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
