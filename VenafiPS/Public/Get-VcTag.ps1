@@ -7,7 +7,7 @@ function Get-VcTag {
     Get 1 or all tags.
     Tag values will be provided.
 
-    .PARAMETER Name
+    .PARAMETER Tag
     Tag name
 
     .PARAMETER All
@@ -22,7 +22,7 @@ function Get-VcTag {
     Name
 
     .EXAMPLE
-    Get-VcTag -Name 'MyTag'
+    Get-VcTag -Tag 'MyTag'
 
     Get a single tag
 

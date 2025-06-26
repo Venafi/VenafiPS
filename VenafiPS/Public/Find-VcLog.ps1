@@ -23,8 +23,8 @@ function Find-VcLog {
     Filter logs to this date/time
     Combine with DateFrom for a date range.
 
-    .PARAMETER Criticality
-    Filter logs by criticality level
+    .PARAMETER Critical
+    Filter logs by critical or not.
 
     .PARAMETER IncludeAny
     When using multiple filter parameters (Type, Name, Message, Criticality), combine them with OR logic instead of AND logic

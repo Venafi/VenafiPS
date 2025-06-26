@@ -26,6 +26,10 @@ function Invoke-VenafiRestMethod {
     .PARAMETER VcRegion
     TLSPC region to target.  Only supported if VenafiSession is an api key otherwise the comes from VenafiSession directly.
 
+    .PARAMETER Platform
+    Venafi Platform to target, either VC or VDC.
+    If not provided, the platform will be determined based on the VenafiSession or the calling function name.
+
     .PARAMETER Server
     Server or url to access vedsdk, venafi.company.com or https://venafi.company.com.
 

@@ -82,6 +82,9 @@ function New-VenafiSession {
     .PARAMETER VcRegion
     TLSPC region to connect to, tab-ahead values provided.  Defaults to 'us'.
 
+    .PARAMETER VcEndpoint
+    Token Endpoint URL as shown on the service account details page.
+
     .PARAMETER VaultVcKeyName
     Name of the SecretManagement vault entry for the TLSPC key.
     First time use requires it to be provided with -VcKey to populate the vault.
