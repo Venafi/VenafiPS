@@ -67,7 +67,7 @@ $vcGenericArgCompleterSb = {
             }
             $script:vcApplication | Where-Object name -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
                 $itemText = "'{0}'" -f $_.name
-                $itemDescription = $_.description
+                $itemDescription = if ( $_.description ) { $_.description } else { $itemText }
 
                 [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
             }
@@ -139,10 +139,18 @@ $vcGenericArgCompleterSb = {
                 [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
             }
         }
+
+        'User' {
+            Get-VcData -Type User | Where-Object username -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.username
+                $itemDescription = 'user type: {0}, system roles: {1}' -f $_.userType, $_.systemRoles -join ','
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
     }
 }
 
-'Application', 'MachineType', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Credential', 'Team', 'Owner', 'Tag' | ForEach-Object {
+'Application', 'MachineType', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Credential', 'Team', 'Owner', 'Tag', 'User' | ForEach-Object {
     Register-ArgumentCompleter -CommandName $vcCommands -ParameterName $_ -ScriptBlock $vcGenericArgCompleterSb
 }
 

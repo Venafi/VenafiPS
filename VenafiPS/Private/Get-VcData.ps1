@@ -18,7 +18,7 @@ function Get-VcData {
         [string] $InputObject,
 
         [parameter(Mandatory)]
-        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'Plugin', 'Credential', 'Algorithm')]
+        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'Plugin', 'Credential', 'Algorithm', 'User')]
         [string] $Type,
 
         [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
@@ -173,6 +173,24 @@ function Get-VcData {
                 break
             }
 
+            'User' {
+                if ( -not $script:vcUser ) {
+                    $script:vcUser = Get-VcUser -All | Sort-Object -Property username
+                    $latest = $true
+                }
+
+                $allObject = $script:vcUser
+
+                if ( $InputObject ) {
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.userId, $_.username }
+                    if ( -not $thisObject -and -not $latest ) {
+                        $script:vcUser = Get-VcUser -All | Sort-Object -Property username
+                        $thisObject = $script:vcTag | Where-Object { $InputObject -in $_.userId, $_.username }
+                    }
+                }
+                break
+            }
+
             'Certificate' {
                 $thisObject = Find-VcCertificate -Name $InputObject
                 break
@@ -192,10 +210,10 @@ function Get-VcData {
                 $allObject = $script:vcTag
 
                 if ( $InputObject ) {
-                    $thisObject = $allObject | Where-Object $InputObject -eq $_.tagId
+                    $thisObject = $allObject | Where-Object tagId -eq $InputObject
                     if ( -not $thisObject -and -not $latest ) {
                         $script:vcTag = Get-VcTag -All | Sort-Object -Property tagId
-                        $thisObject = $script:vcTag | Where-Object $InputObject -eq $_.tagId
+                        $thisObject = $script:vcTag | Where-Object tagId -eq $InputObject
                     }
                 }
                 break
