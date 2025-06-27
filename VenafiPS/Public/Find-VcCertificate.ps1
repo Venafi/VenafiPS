@@ -56,6 +56,9 @@ function Find-VcCertificate {
     .PARAMETER Issuer
     Search by issuer name
 
+    .PARAMETER IncludeAny
+    When using multiple filter parameters, combine them with OR logic instead of AND logic
+
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
     Each array should be of the format @(field, comparison operator, value).
