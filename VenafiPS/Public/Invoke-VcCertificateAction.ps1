@@ -265,20 +265,34 @@ function Invoke-VcCertificateAction {
 
                 try {
                     $renewResponse = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
-                    $newCertId = $renewResponse.certificateRequests.certificateIds[0]
-                    $out | Add-Member @{
-                        'renew'         = $renewResponse
-                        'certificateID' = $newCertId
+                    $out | Add-Member @{ renew = $renewResponse.certificateRequests | Select-Object @{
+                            n = 'certificateRequestId'
+                            e = { $_.id }
+                        }, * -ExcludeProperty id
                     }
 
-                    if ( $Provision ) {
-                        Write-Verbose "Renew was successful, now provisioning certificate ID $newCertId"
+                    if ( $renewResponse.certificateRequests.certificateIds ) {
 
-                        # wait a few seconds for machine identities to be reassociated with the new certificate
-                        Start-Sleep -Seconds 5
+                        $newCertId = $renewResponse.certificateRequests.certificateIds[0]
+                        Write-Verbose "Renewal request was successful, certificate ID is $newCertId"
 
-                        $provisionResponse = Invoke-VcCertificateAction -ID $newCertId -Provision
-                        $out | Add-Member @{'provision' = $provisionResponse }
+                        $out | Add-Member @{ 'certificateID' = $newCertId }
+
+                        if ( $Provision ) {
+                            Write-Verbose "Renew was successful, now provisioning certificate ID $newCertId"
+
+                            # wait a few seconds for machine identities to be reassociated with the new certificate
+                            Start-Sleep -Seconds 5
+
+                            $provisionResponse = Invoke-VcCertificateAction -ID $newCertId -Provision
+                            $out | Add-Member @{'provision' = $provisionResponse }
+                        }
+                    }
+                    else {
+                        Write-Verbose "Renewal request was successful, but the certificate hasn't been created yet.  Check the status with Get-VcCertificateRequest."
+                        if ( $Provision ) {
+                            Write-Verbose "Skipping provisioning as the certificate hasn't been created yet"
+                        }
                     }
 
                     $out.success = $true
