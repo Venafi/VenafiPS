@@ -280,11 +280,12 @@ function Invoke-VcCertificateAction {
                         }, * -ExcludeProperty id
                     }
 
-                    if ( $Wait ) {
-                        $status = $renewResponse.certificateRequests.status
+                    if ( $Wait -and $out.renew.status -eq 'REQUESTED' ) {
+
+                        $status = $out.renew.status
                         Write-Verbose "Current renewal status: $status.  Waiting to pass the 'Requested' state"
 
-                        while ( $status -eq 'REQUESTED') {
+                        while ( $status -eq 'REQUESTED' ) {
                             Start-Sleep 1
                             $request = Get-VcCertificateRequest -CertificateRequest $out.renew[0].certificateRequestId
                             $status = $request.status
@@ -295,16 +296,17 @@ function Invoke-VcCertificateAction {
                     }
 
                     if ( $out.renew.certificateIds ) {
-
+                        # cert has been issued
                         $newCertId = $out.renew.certificateIds[0]
                         Write-Verbose "Renewal request was successful, certificate ID is $newCertId"
 
                         $out | Add-Member @{ 'certificateID' = $newCertId }
 
                         if ( $Provision ) {
-                            Write-Verbose "Renew was successful, now provisioning certificate ID $newCertId"
+                            Write-Verbose "Provisioning..."
 
                             # wait a few seconds for machine identities to be reassociated with the new certificate
+                            # TODO: perform a check instead of random sleep
                             Start-Sleep -Seconds 5
 
                             $provisionResponse = Invoke-VcCertificateAction -ID $newCertId -Provision
