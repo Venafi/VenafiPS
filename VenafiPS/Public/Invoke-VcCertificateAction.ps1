@@ -44,6 +44,10 @@ function Invoke-VcCertificateAction {
     Force the operation under certain circumstances.
     - During a renewal, force choosing the first CN in the case of multiple CNs as only 1 is supported.
 
+    .PARAMETER Wait
+    Wait for a long running operation to complete before returning
+    - During a renewal, wait for the certificate to pass the Requested state
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -138,6 +142,9 @@ function Invoke-VcCertificateAction {
         [Parameter(ParameterSetName = 'Delete')]
         [ValidateRange(1, 10000)]
         [int] $BatchSize = 1000,
+
+        [Parameter(ParameterSetName = 'Renew')]
+        [switch] $Wait,
 
         [Parameter(ParameterSetName = 'Renew')]
         [switch] $Force,
@@ -264,16 +271,32 @@ function Invoke-VcCertificateAction {
                 }
 
                 try {
+
                     $renewResponse = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
+
                     $out | Add-Member @{ renew = $renewResponse.certificateRequests | Select-Object @{
                             n = 'certificateRequestId'
                             e = { $_.id }
                         }, * -ExcludeProperty id
                     }
 
-                    if ( $renewResponse.certificateRequests.certificateIds ) {
+                    if ( $Wait ) {
+                        $status = $renewResponse.certificateRequests.status
+                        Write-Verbose "Current renewal status: $status.  Waiting to pass the 'Requested' state"
 
-                        $newCertId = $renewResponse.certificateRequests.certificateIds[0]
+                        while ( $status -eq 'REQUESTED') {
+                            Start-Sleep 1
+                            $request = Get-VcCertificateRequest -CertificateRequest $out.renew[0].certificateRequestId
+                            $status = $request.status
+                            Write-Verbose "Current renewal status: $status"
+                        }
+
+                        $out.renew = $request
+                    }
+
+                    if ( $out.renew.certificateIds ) {
+
+                        $newCertId = $out.renew.certificateIds[0]
                         Write-Verbose "Renewal request was successful, certificate ID is $newCertId"
 
                         $out | Add-Member @{ 'certificateID' = $newCertId }
