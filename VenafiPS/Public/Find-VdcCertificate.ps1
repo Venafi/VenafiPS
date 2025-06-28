@@ -143,14 +143,15 @@ function Find-VdcCertificate {
     .PARAMETER ValidationState
     Find certificates with a validation state of Blank, Success, or Failure.
 
+    .PARAMETER Algorithm
+    Name or OID for the PKIX algorithm, first introduced in v25.1.
+
     .PARAMETER CountOnly
     Return the count of certificates found from the query as opposed to the certificates themselves
 
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -391,6 +392,9 @@ function Find-VdcCertificate {
         [String[]] $ValidationState,
 
         [Parameter()]
+        [string] $Algorithm,
+
+        [Parameter()]
         [Switch] $CountOnly,
 
         [Parameter()]
@@ -554,6 +558,10 @@ function Find-VdcCertificate {
             }
             'ValidationState' {
                 $params.Body.Add( 'ValidationState', $ValidationState -join ',' )
+            }
+
+            'Algorithm' {
+                $params.Body.Add('PkixParameterSet', $Algorithm)
             }
         }
     }

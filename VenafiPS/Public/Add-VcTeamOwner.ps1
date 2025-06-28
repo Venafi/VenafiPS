@@ -58,7 +58,7 @@ function Add-VcTeamOwner {
 
     process {
 
-        $params.UriLeaf = 'teams/{0}/owners' -f (Get-VcData -InputObject $Team -Type 'Team' -FailOnNotFound)
+        $params.UriLeaf = 'teams/{0}/owners' -f (Get-VcData -InputObject $Team -Type 'Team' -FailOnNotFound -FailOnMultiple)
 
         $null = Invoke-VenafiRestMethod @params
     }

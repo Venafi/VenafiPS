@@ -13,27 +13,48 @@ function Get-VenafiSession {
 
         # if a session isn't explicitly provided, fallback to the script scope session variable created with New-VenafiSession
 
-        $venafiSessionNested = (Get-PSCallStack).InvocationInfo.BoundParameters.VenafiSession | Select-Object -First 1
+        $stack = Get-PSCallStack
+        $venafiSessionNested = $stack.InvocationInfo.BoundParameters.VenafiSession | Select-Object -First 1
 
-        if ($venafiSessionNested) {
-            $sess = $venafiSessionNested
+        $sess = if ($venafiSessionNested) {
+            $venafiSessionNested
             Write-Debug 'Using nested session from call stack'
         }
         elseif ( $script:VenafiSession ) {
-            $sess = $script:VenafiSession
+            $script:VenafiSession
             Write-Debug 'Using script session'
         }
-        elseif ( $env:VDC_TOKEN ) {
-            $sess = $env:VDC_TOKEN
-            Write-Debug 'Using TLSPDC token environment variable'
-        }
-        elseif ( $env:VC_KEY ) {
-            $sess = $env:VC_KEY
-            Write-Debug 'Using TLSPC key environment variable'
-        }
+        # elseif ( $env:VDC_TOKEN ) {
+        #     $env:VDC_TOKEN
+        #     Write-Debug 'Using TLSPDC token environment variable'
+        # }
+        # elseif ( $env:VC_KEY ) {
+        #     $env:VC_KEY
+        #     Write-Debug 'Using TLSPC key environment variable'
+        # }
         else {
             throw [System.ArgumentException]::new('Please run New-VenafiSession or provide a TLSPC key or TLSPDC token to -VenafiSession.')
         }
+
+        # find out the platform from the calling function
+        $Platform = if ( $stack[1].Command -match '-Vc' ) {
+            'VC'
+        }
+        elseif ( $stack[1].Command -match '-Vdc') {
+            'VDC'
+        }
+        else {
+            # we don't know the platform, eg. -Venafi functions.  this won't happen often
+            $null
+        }
+
+        # make sure the auth type and url we have match
+        # this keeps folks from calling a vaas function with a token and vice versa
+        # if we don't know the platform, do not fail and allow it to fail later, most likely in Invoke-VenafiRestMethod
+        if ( $Platform -and $Platform -ne $sess.Platform ) {
+            throw "You are attemping to call a $Platform function with an invalid session"
+        }
+
 
         if ( $sess.Token.Expires -and $sess.Token.Expires -lt (Get-Date).ToUniversalTime() ) {
             throw 'TLSPDC token has expired.  Execute New-VenafiSession and rerun your command.'

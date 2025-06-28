@@ -12,7 +12,7 @@ function Get-VcCertificate {
     .PARAMETER All
     Retrieve all certificates
 
-    .PARAMETER IncludeVaasOwner
+    .PARAMETER OwnerDetail
     Retrieve extended application owner info
 
     .PARAMETER VenafiSession
@@ -42,14 +42,15 @@ function Get-VcCertificate {
     param (
 
         [Parameter(ParameterSetName = 'Id', Mandatory, ValueFromPipelineByPropertyName, Position = 0)]
-        [Alias('certificateId', 'ID')]
+        [Alias('certificateId', 'certificateIds', 'ID')]
         [string] $Certificate,
 
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [Switch] $All,
 
         [Parameter()]
-        [switch] $IncludeVaasOwner,
+        [Alias('IncludeVaasOwner')]
+        [switch] $OwnerDetail,
 
         [Parameter()]
         [ValidateNotNullOrEmpty()]
@@ -67,7 +68,7 @@ function Get-VcCertificate {
     process {
 
         if ( $All ) {
-            return (Find-VcCertificate -IncludeVaasOwner:$IncludeVaasOwner)
+            return (Find-VcCertificate -IncludeVaasOwner:$OwnerDetail)
         }
 
         $params = @{
@@ -81,7 +82,7 @@ function Get-VcCertificate {
         else {
             $findParams = @{
                 Filter           = @('certificateName', 'eq', $Certificate)
-                IncludeVaasOwner = $IncludeVaasOwner
+                IncludeVaasOwner = $OwnerDetail
             }
             return (Find-VcCertificate @findParams | Get-VcCertificate)
         }
@@ -114,7 +115,7 @@ function Get-VcCertificate {
         @{
             'n' = 'owner'
             'e' = {
-                if ( $IncludeVaasOwner ) {
+                if ( $OwnerDetail ) {
 
                     # this scriptblock requires ?ownershipTree=true be part of the url
                     foreach ( $thisOwner in $_.ownership.owningContainers.owningUsers ) {

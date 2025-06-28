@@ -7,6 +7,8 @@ function Get-VcData {
 
 
     [CmdletBinding(DefaultParameterSetName = 'All')]
+    # at some point we'll have types that overlap between products
+    # use this alias to differentiate between vc and vdc
     [Alias('Get-VdcData')]
 
     param (
@@ -16,7 +18,7 @@ function Get-VcData {
         [string] $InputObject,
 
         [parameter(Mandatory)]
-        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'Plugin', 'Credential', 'Algorithm')]
+        [ValidateSet('Application', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Team', 'Machine', 'Tag', 'Plugin', 'Credential', 'Algorithm', 'User')]
         [string] $Type,
 
         [parameter(Mandatory, ValueFromPipeline, ParameterSetName = 'Name')]
@@ -50,6 +52,8 @@ function Get-VcData {
 
     process {
 
+        $latest = $false
+
         # if we already have a guid and are just looking for the ID, return it
         if ( $PSCmdlet.ParameterSetName -eq 'ID' -and (Test-IsGuid($InputObject)) ) {
             return $InputObject
@@ -69,7 +73,7 @@ function Get-VcData {
             # object or first
             switch ($Type) {
                 'Application' {
-                    if ( -not $script:vcApplication -or $Reload ) {
+                    if ( -not $script:vcApplication ) {
                         $script:vcApplication = Get-VcApplication -All | Sort-Object -Property name
                     }
                     $allObject = $script:vcApplication
@@ -77,7 +81,7 @@ function Get-VcData {
                     break
                 }
                 'Team' {
-                    if ( -not $script:vcTeam -or $Reload ) {
+                    if ( -not $script:vcTeam ) {
                         $script:vcTeam = Get-VcTeam -All | Sort-Object -Property name
                     }
                     $allObject = $script:vcTeam
@@ -89,43 +93,101 @@ function Get-VcData {
 
         switch ($Type) {
             'VSatellite' {
-                if ( -not $script:vcSatellite -or $Reload ) {
+                if ( -not $script:vcSatellite ) {
                     $script:vcSatellite = Get-VcSatellite -All | Sort-Object -Property name
+                    $latest = $true
                 }
+
                 $allObject = $script:vcSatellite
-                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.vsatelliteId }
+
+                if ( $InputObject ) {
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.vsatelliteId }
+                    if ( -not $thisObject -and -not $latest ) {
+                        $script:vcSatellite = Get-VcSatellite -All | Sort-Object -Property name
+                        $thisObject = $script:vcSatellite | Where-Object { $InputObject -in $_.name, $_.vsatelliteId }
+                    }
+                }
+
                 break
             }
 
             'IssuingTemplate' {
-                if ( -not $script:vcIssuingTemplate -or $Reload ) {
+                if ( -not $script:vcIssuingTemplate ) {
                     $script:vcIssuingTemplate = Get-VcIssuingTemplate -All | Sort-Object -Property name
+                    $latest = $true
                 }
+
                 $allObject = $script:vcIssuingTemplate
-                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.issuingTemplateId }
+
+                if ( $InputObject ) {
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.issuingTemplateId }
+                    if ( -not $thisObject -and -not $latest ) {
+                        $script:vcIssuingTemplate = Get-VcIssuingTemplate -All | Sort-Object -Property name
+                        $thisObject = $script:vcIssuingTemplate | Where-Object { $InputObject -in $_.name, $_.issuingTemplateId }
+                    }
+                }
                 break
             }
 
             'Credential' {
-                if ( -not $script:vcCredential -or $Reload ) {
+                if ( -not $script:vcCredential ) {
                     $script:vcCredential = Invoke-VenafiRestMethod -UriLeaf "credentials" |
                         Select-Object -ExpandProperty credentials |
                         Select-Object -Property @{'n' = 'credentialId'; 'e' = { $_.Id } }, * -ExcludeProperty id
+                    $latest = $true
                 }
+
                 $allObject = $script:vcCredential
-                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.credentialId }
+
+                if ( $InputObject ) {
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.credentialId }
+                    if ( -not $thisObject -and -not $latest ) {
+                        $script:vcCredential = Invoke-VenafiRestMethod -UriLeaf "credentials" |
+                            Select-Object -ExpandProperty credentials |
+                            Select-Object -Property @{'n' = 'credentialId'; 'e' = { $_.Id } }, * -ExcludeProperty id
+                        $thisObject = $script:vcCredential | Where-Object { $InputObject -in $_.name, $_.credentialId }
+                    }
+                }
                 break
             }
 
             'Plugin' {
-                if ( -not $script:vcPlugin -or $Reload ) {
+                if ( -not $script:vcPlugin ) {
                     $script:vcPlugin = Invoke-VenafiRestMethod -UriLeaf "plugins" |
                         Select-Object -ExpandProperty plugins |
                         Select-Object -Property @{'n' = 'pluginId'; 'e' = { $_.Id } }, * -ExcludeProperty id
+                    $latest = $true
                 }
 
                 $allObject = $script:vcPlugin
-                $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.pluginId }
+
+                if ( $InputObject ) {
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.name, $_.pluginId }
+                    if ( -not $thisObject -and -not $latest ) {
+                        $script:vcPlugin = Invoke-VenafiRestMethod -UriLeaf "plugins" |
+                            Select-Object -ExpandProperty plugins |
+                            Select-Object -Property @{'n' = 'pluginId'; 'e' = { $_.Id } }, * -ExcludeProperty id
+                        $thisObject = $script:vcPlugin | Where-Object { $InputObject -in $_.name, $_.pluginId }
+                    }
+                }
+                break
+            }
+
+            'User' {
+                if ( -not $script:vcUser ) {
+                    $script:vcUser = Get-VcUser -All | Sort-Object -Property username
+                    $latest = $true
+                }
+
+                $allObject = $script:vcUser
+
+                if ( $InputObject ) {
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.userId, $_.username }
+                    if ( -not $thisObject -and -not $latest ) {
+                        $script:vcUser = Get-VcUser -All | Sort-Object -Property username
+                        $thisObject = $script:vcTag | Where-Object { $InputObject -in $_.userId, $_.username }
+                    }
+                }
                 break
             }
 
@@ -140,40 +202,41 @@ function Get-VcData {
             }
 
             'Tag' {
-                try {
-
-                    if ( $InputObject.Contains(':') ) {
-                        $tagName, $tagValue = $InputObject.Split(':')
-                    }
-                    else {
-                        $tagName = $InputObject
-                    }
-                    $tag = Invoke-VenafiRestMethod -UriLeaf "tags/$tagName" |
-                        Select-Object -Property @{'n' = 'tagId'; 'e' = { $_.Id } }, @{'n' = 'values'; 'e' = { $null } }, * -ExcludeProperty id
-
-                    if ( $tag ) {
-                        $values = Invoke-VenafiRestMethod -UriLeaf "tags/$($tag.name)/values"
-
-                        if ( $values.values ) {
-                            $tag.values = ($values.values | Select-Object id, @{'n' = 'name'; 'e' = { $_.value } })
-
-                            # make sure the value, if provided, is valid
-                            if ( $tagValue -and $tagValue -notin $tag.values.name ) {
-                                $tag = $null
-                            }
-                        }
-                        else {
-                            if ( $tagValue ) {
-                                # the tag name exists, but the value does not
-                                $tag = $null
-                            }
-                        }
-                    }
-
-                    $thisObject = $tag
+                if ( -not $script:vcTag ) {
+                    $script:vcTag = Get-VcTag -All | Sort-Object -Property tagId
+                    $latest = $true
                 }
-                catch {
-                    $thisObject = $null
+
+                $allObject = $script:vcTag
+
+                if ( $InputObject ) {
+                    $thisObject = $allObject | Where-Object tagId -eq $InputObject
+                    if ( -not $thisObject -and -not $latest ) {
+                        $script:vcTag = Get-VcTag -All | Sort-Object -Property tagId
+                        $thisObject = $script:vcTag | Where-Object tagId -eq $InputObject
+                    }
+                }
+                break
+            }
+
+            'Algorithm' {
+                if ( -not $script:vdcAlgorithm ) {
+                    $script:vdcAlgorithm = Invoke-VenafiRestMethod -UriLeaf 'algorithmselector/getglobalalgorithms' -Method Post -Body @{} |
+                        Select-Object -ExpandProperty Selectors |
+                        Select-Object -Property @{'n' = 'AlgorithmId'; 'e' = { $_.PkixParameterSetOid } }, @{'n' = 'Name'; 'e' = { $_.Algorithm } }, * -ExcludeProperty PkixParameterSetOid, Algorithm
+                    $latest = $true
+                }
+
+                $allObject = $script:vdcAlgorithm
+
+                if ( $InputObject ) {
+                    $thisObject = $allObject | Where-Object { $InputObject -in $_.Name, $_.AlgorithmId }
+                    if ( -not $thisObject -and -not $latest ) {
+                        $script:vdcAlgorithm = Invoke-VenafiRestMethod -UriLeaf 'algorithmselector/getglobalalgorithms' -Method Post -Body @{} |
+                            Select-Object -ExpandProperty Selectors |
+                            Select-Object -Property @{'n' = 'AlgorithmId'; 'e' = { $_.PkixParameterSetOid } }, @{'n' = 'Name'; 'e' = { $_.Algorithm } }, * -ExcludeProperty PkixParameterSetOid, Algorithm
+                        $thisObject = $script:vdcAlgorithm | Where-Object { $InputObject -in $_.Name, $_.AlgorithmId }
+                    }
                 }
                 break
             }

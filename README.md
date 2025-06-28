@@ -44,9 +44,7 @@ Get-Command -Module VenafiPS -Name '*-Vc*' # for TLSPC functions
 
 For TLSPDC, [token based authentication](https://docs.venafi.com/Docs/current/TopNav/Content/SDK/AuthSDK/t-SDKa-Setup-OAuth.php) must be setup and configured.
 
-### Interactive Session
-
-For an interactive session, we want to create a Venafi session which will hold the details needed for future operations.  Start a new PowerShell prompt (even if you have one from the install-module step) and create a new VenafiPS session with:
+We want to create a Venafi session which will hold the details needed for future operations.  Start a new PowerShell prompt (even if you have one from the install-module step) and create a new VenafiPS session with:
 
 ```powershell
 # username/password for TLSPDC.  TLSPC uses any value for username and your api key for the password
@@ -66,10 +64,6 @@ View the help on all the ways you can create a new Venafi session with
 help New-VenafiSession -full
 ```
 To utilize the SecretManagement vault functionality, ensure you [complete the setup below](https://github.com/Venafi/VenafiPS#tokenkey-secret-storage).
-
-### Automated Scenarios
-
-For non-interactive usage including ci/cd, the module can be used without creating a session.  For all functions, you can substitute a VenafiSession object with either a TLSPDC token or TLSPC key, eg. `-VenafiSession 'e9fe8860-a4c5-427f-bece-18204b04ac85'`.  You can also provide these as environment variables, VDC_TOKEN or VC_KEY.  If providing a TLSPDC token, either as the value for -VenafiSession or as an environment variable, a server environment variable, VDC_SERVER, must also be set.
 
 ## TLSPDC Examples
 

@@ -6,12 +6,11 @@ function Add-VcTeamMember {
     .DESCRIPTION
     Add members to a TLSPC team
 
-    .PARAMETER ID
-    Team ID to add to
+    .PARAMETER Team
+    Team ID or name to add to
 
     .PARAMETER Member
     1 or more members to add to the team.
-    This is the unique guid obtained from Get-VcIdentity.
 
     .PARAMETER VenafiSession
     Authentication for the function.
@@ -19,20 +18,13 @@ function Add-VcTeamMember {
     A TLSPC key can also provided.
 
     .INPUTS
-    ID
+    Team
 
     .EXAMPLE
     Add-VcTeamMember -ID 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f2' -Member @('ca7ff555-88d2-4bfc-9efa-2630ac44c1f3', 'ca7ff555-88d2-4bfc-9efa-2630ac44c1f4')
 
     Add members to a TLSPC team
 
-    .EXAMPLE
-    Add-VcTeamMember -ID 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e6}' -Member 'local:{803f332e-7576-4696-a5a2-8ac6be6b14e7}'
-
-    Add members to a TLSPDC team
-
-    .LINK
-    https://api.venafi.cloud/webjars/swagger-ui/index.html#/Teams/addMember
     #>
 
     [CmdletBinding()]
@@ -40,7 +32,7 @@ function Add-VcTeamMember {
 
         [Parameter(Mandatory, ValueFromPipeline, ValueFromPipelineByPropertyName)]
         [Alias('PrefixedUniversal', 'Guid')]
-        [string] $ID,
+        [string] $Team,
 
         [Parameter(Mandatory)]
         [string[]] $Member,
@@ -56,8 +48,10 @@ function Add-VcTeamMember {
 
     process {
 
+        $teamId = $Team | Get-VcData -Type Team -FailOnNotFound -FailOnMultiple
+
         $params.Method = 'Post'
-        $params.UriLeaf = "teams/$ID/members"
+        $params.UriLeaf = "teams/$teamId/members"
         $params.Body = @{
             'members' = @($Member)
         }

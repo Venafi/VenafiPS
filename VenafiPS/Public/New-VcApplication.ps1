@@ -106,9 +106,9 @@ function New-VcApplication {
         # determine if user or team and build the payload
         $ownerHash = foreach ($thisOwner in $Owner) {
 
-            $team = Get-VcTeam -ID $thisOwner -ErrorAction SilentlyContinue
-            if ( $team ) {
-                @{ 'ownerId' = $team.teamId; 'ownerType' = 'TEAM' }
+            $teamId = Get-VcData -Type Team -InputObject $thisOwner
+            if ( $teamId ) {
+                @{ 'ownerId' = $teamId; 'ownerType' = 'TEAM' }
             }
             else {
                 $user = Get-VcIdentity -ID $thisOwner -ErrorAction SilentlyContinue
@@ -124,32 +124,9 @@ function New-VcApplication {
 
         $templateHash = @{}
         foreach ($thisTemplateID in $IssuingTemplate) {
-            $thisTemplate = Get-VcIssuingTemplate -ID $thisTemplateID
-            if ( $thisTemplate ) {
-                $templateHash.Add($thisTemplate.name, $thisTemplate.issuingTemplateId)
-            }
-            else {
-                throw ('Template ID {0} not found' -f $thisTemplateID)
-            }
+            $thisTemplate = Get-VcData -Type IssuingTemplate -InputObject $thisTemplateID -FailOnNotFound -Object
+            $templateHash.Add($thisTemplate.name, $thisTemplate.issuingTemplateId)
         }
-
-        # if ( $PSBoundParameters.ContainsKey('IssuingTemplate') ) {
-        #     $IssuingTemplate.GetEnumerator() | ForEach-Object {
-        #         if ( $_.Value ) {
-        #             $templateHash.Add($_.Value, $_.Key)
-        #         }
-        #         else {
-        #             $thisTemplate = Get-VcIssuingTemplate -ID $_.Key -ErrorAction SilentlyContinue
-        #             if ( $thisTemplate ) {
-        #                 $templateHash.Add($thisTemplate.Name, $_.Key)
-        #             }
-        #             else {
-        #                 Write-Error ('Template ID {0} not found' -f $_.Key)
-        #                 Continue
-        #             }
-        #         }
-        #     }
-        # }
     }
 
     process {
@@ -161,14 +138,14 @@ function New-VcApplication {
         }
 
         $params = @{
-            Method        = 'Post'
-            UriRoot       = 'outagedetection/v1'
-            UriLeaf       = 'applications'
-            Body          = @{
+            Method       = 'Post'
+            UriRoot      = 'outagedetection/v1'
+            UriLeaf      = 'applications'
+            Body         = @{
                 name             = $Name
                 ownerIdsAndTypes = [array] $ownerHash
             }
-            FullResponse  = $true
+            FullResponse = $true
         }
 
         if ( $PSBoundParameters.ContainsKey('Description') ) {
@@ -200,7 +177,7 @@ function New-VcApplication {
                     201 {
                         if ( $PassThru ) {
                             $response.Content | ConvertFrom-Json |
-                            Select-Object -ExpandProperty applications | Select-Object -Property @{'n' = 'applicationId'; 'e' = { $_.id } }, * -ExcludeProperty id
+                                Select-Object -ExpandProperty applications | Select-Object -Property @{'n' = 'applicationId'; 'e' = { $_.id } }, * -ExcludeProperty id
                         }
                     }
 

@@ -146,7 +146,7 @@ function Import-VcCertificate {
 
         $vSat = Get-VcData -Type 'VSatellite' -First
         if ( -not $vSat ) { throw 'No active VSatellites were found' }
-        
+
         if ( $PrivateKeyPassword ) {
             $pkPassString = ConvertTo-PlaintextString -InputObject $PrivateKeyPassword
         }
@@ -154,9 +154,9 @@ function Import-VcCertificate {
         # different api calls for certs with and without keys so maintain them separately for ease of us
         $allCerts = [System.Collections.Generic.List[hashtable]]::new()
         $allNoKeyCerts = [System.Collections.Generic.List[hashtable]]::new()
-        
+
     }
-    
+
     process {
 
         if ( $PSCmdlet.ParameterSetName -eq 'ByFile' ) {
@@ -167,9 +167,9 @@ function Import-VcCertificate {
             else {
                 @($resolvedPath)
             }
-            
+
             foreach ($file in $files) {
-               
+
                 Write-Verbose "Processing $file"
 
                 switch ([System.IO.Path]::GetExtension($file)) {
@@ -206,7 +206,7 @@ function Import-VcCertificate {
                             )
                         }
                     }
-    
+
                     default {
                         Write-Verbose "$file is not a certificate"
                     }
@@ -284,7 +284,7 @@ function Import-VcCertificate {
             # rebuild invoke params as the payload can contain multiple keys at once
             # max 100 certs and keys at a time
             for ($i = 0; $i -lt $allCerts.Count; $i += 100) {
-    
+
                 $params = @{
                     Method  = 'POST'
                     UriRoot = 'outagedetection/v1'
@@ -294,7 +294,7 @@ function Import-VcCertificate {
                         'encryptionKeyId' = $vSat.encryptionKeyId
                     }
                 }
-    
+
                 $keystores = foreach ($thisCert in $allCerts[$i..($i + 99)]) {
                     switch ($thisCert.Format) {
                         'PKCS12' {
@@ -303,7 +303,7 @@ function Import-VcCertificate {
                                 'dekEncryptedPassword' = $dekEncryptedPassword
                             }
                         }
-    
+
                         'PKCS8' {
                             @{
                                 'certificate'                 = $thisCert.CertPem
@@ -313,14 +313,14 @@ function Import-VcCertificate {
                         }
                     }
                 }
-    
+
                 $params.Body.importInformation = @($keystores)
                 $importList.Add($params)
             }
-    
+
             $sb = {
                 $params = $PSItem
-    
+
                 $requestResponse = Invoke-VenafiRestMethod @params
 
                 do {
@@ -338,12 +338,12 @@ function Import-VcCertificate {
                             throw $_
                         }
                     }
-                    
+
                     Start-Sleep 2
                 } until (
                     $jobResponse.status -in 'COMPLETED', 'FAILED'
                 )
-    
+
                 if ( $jobResponse.status -eq 'COMPLETED' ) {
                     $jobResponse.results
                 }
@@ -352,7 +352,7 @@ function Import-VcCertificate {
                     throw 'Import failed'
                 }
             }
-    
+
             $invokeParams = @{
                 InputObject   = $importList
                 ScriptBlock   = $sb
@@ -360,7 +360,7 @@ function Import-VcCertificate {
                 ProgressTitle = 'Importing certificates with private keys'
             }
             $invokeResponse = Invoke-VenafiParallel @invokeParams
-    
+
             $keyOut = $invokeResponse | Select-Object -Property fingerprint, status, reason
         }
 
@@ -374,7 +374,7 @@ function Import-VcCertificate {
             # rebuild invoke params as the payload can contain multiple keys at once
             # max 100 certs and keys at a time
             for ($i = 0; $i -lt $allNoKeyCerts.Count; $i += 100) {
-    
+
                 $params = @{
                     Method  = 'POST'
                     UriRoot = 'outagedetection/v1'
@@ -384,22 +384,22 @@ function Import-VcCertificate {
                         overrideBlocklist = $bl
                     }
                 }
-    
+
                 $importCertPayload = foreach ($thisCert in $allNoKeyCerts[$i..($i + 99)]) {
                     @{
                         'certificate' = $thisCert.CertPem
                     }
                 }
-    
+
                 $params.Body.certificates = @($importCertPayload)
                 $importList.Add($params)
             }
-    
+
             $sb = {
                 $params = $PSItem
                 Invoke-VenafiRestMethod @params
             }
-    
+
             $invokeParams = @{
                 InputObject   = $importList
                 ScriptBlock   = $sb
@@ -407,7 +407,7 @@ function Import-VcCertificate {
                 ProgressTitle = 'Importing certificates without private keys'
             }
             $invokeNoKeyResponse = Invoke-VenafiParallel @invokeParams
-    
+
             $noKeyOut = $invokeNoKeyResponse | Select-Object @{'n' = 'certificate'; 'e' = { $_.certificateInformations | Select-Object id, fingerprint } }, statistics
         }
 
@@ -416,7 +416,7 @@ function Import-VcCertificate {
             $keyOut
         }
         elseif ($noKeyOut -and -not $keyOut) {
-            $noKeyOut     
+            $noKeyOut
         }
         else {
             @{

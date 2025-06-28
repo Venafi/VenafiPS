@@ -38,7 +38,7 @@ function Find-VcMachine {
     Find-VcMachine
 
     Get all machines
-    
+
     .OUTPUTS
 
     #>
@@ -59,7 +59,7 @@ function Find-VcMachine {
         [string] $Status,
 
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
 
         [Parameter()]
         [psobject[]] $Order,

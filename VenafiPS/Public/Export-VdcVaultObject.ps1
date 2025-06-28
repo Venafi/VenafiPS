@@ -18,8 +18,6 @@ function Export-VdcVaultObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     ID
@@ -41,7 +39,7 @@ function Export-VdcVaultObject {
     Get-VdcCertificate -Path 'certificates\www.greg.com' -IncludePreviousVersions | Export-VdcVaultObject
 
     Export historical certificates
-    
+
     .EXAMPLE
     Export-VdcVaultObject -ID 12345 -OutPath 'c:\temp'
 
@@ -87,16 +85,16 @@ function Export-VdcVaultObject {
             else {
                 $thisId
             }
-            
+
             $response = Invoke-VenafiRestMethod -Method 'Post' -UriLeaf 'SecretStore/Retrieve' -Body @{ 'VaultID' = $vaultId }
-    
+
             if ( $response.Result -ne 0 ) {
                 Write-Error "Failed to retrieve vault object with a result code of $($response.Result).  Look up this code at https://docs.venafi.com/Docs/currentSDK/TopNav/Content/SDK/WebSDK/r-SDK-SecretStore-ResultCodes.php."
                 return
             }
-    
+
             $ext = $format = $header = $footer = $null
-    
+
             switch ( $response.VaultType ) {
                 { $_ -in 2, 1073741826 } {
                     $ext = 'cer'
@@ -104,16 +102,16 @@ function Export-VdcVaultObject {
                     $header = '-----BEGIN CERTIFICATE-----'
                     $footer = '-----END CERTIFICATE-----'
                 }
-    
+
                 { $_ -in 4, 1073741828 } {
                     $ext = 'p12'
                     $format = 'PKCS12'
                 }
-    
+
                 { $_ -in 32, 1073741856 } {
                     $format = 'Password'
                 }
-    
+
                 { $_ -in 256, 1073742080 } {
                     $ext = 'key'
                     $format = 'PKCS8'
@@ -132,10 +130,10 @@ function Export-VdcVaultObject {
                     Write-Verbose "Unknown vault type $_"
                 }
             }
-    
+
             if ( $OutPath ) {
                 if ( $ext ) {
-    
+
                     $outFile = Join-Path -Path (Resolve-Path -Path $OutPath) -ChildPath ('{0}.{1}' -f $vaultId, $ext)
                     if ($header) {
                         # output text file
@@ -146,7 +144,7 @@ function Export-VdcVaultObject {
                         $bytes = [Convert]::FromBase64String($response.Base64Data)
                         [IO.File]::WriteAllBytes($outFile, $bytes)
                     }
-        
+
                     Write-Verbose "Saved $outFile"
                 }
                 else {

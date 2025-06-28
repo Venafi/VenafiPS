@@ -12,8 +12,6 @@ function Find-VdcVaultId {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -23,9 +21,9 @@ function Find-VdcVaultId {
 
     .EXAMPLE
     Find-VdcVaultId -Path '\ved\policy\awesomeobject.cyberark.com'
-    
+
     Find the vault IDs associated with an object.
-    For certificates with historical references, the vault IDs will 
+    For certificates with historical references, the vault IDs will
 
     .LINK
     http://VenafiPS.readthedocs.io/en/latest/functions/Find-VdcVaultId/

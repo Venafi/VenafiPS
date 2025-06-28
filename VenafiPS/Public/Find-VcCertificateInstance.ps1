@@ -42,7 +42,7 @@ function Find-VcCertificateInstance {
     Find-VcCertificateInstance
 
     Get all instancese
-    
+
     .OUTPUTS
 
     #>
@@ -65,7 +65,7 @@ function Find-VcCertificateInstance {
         [string] $Status,
 
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
 
         [parameter()]
         [psobject[]] $Order,

@@ -4,7 +4,28 @@ function Find-VcCertificateRequest {
     Find certificate requests
 
     .DESCRIPTION
-    Find certificate requests
+    Find certificate requests via fields directly or provide a string filter
+
+    .PARAMETER Status
+    Request status, one of 'NEW', 'PENDING', 'PENDING_APPROVAL', 'PENDING_FINAL_APPROVAL', 'REJECTED_APPROVAL', 'REQUESTED', 'ISSUED', 'REJECTED', 'CANCELLED', 'REVOKED', 'FAILED', 'DELETED'
+
+    .PARAMETER Application
+    One or more application id or names
+
+    .PARAMETER User
+    One or more owner user id or usernames
+
+    .PARAMETER IssuingTemplate
+    One or more issuing template id or names
+
+    .PARAMETER CreateDateFrom
+    Filter certificate requests from this date/time and forward
+
+    .PARAMETER KeyLength
+    Certificate key length
+
+    .PARAMETER IncludeAny
+    When using multiple filter parameters, combine them with OR logic instead of AND logic
 
     .PARAMETER Filter
     Array or multidimensional array of fields and values to filter on.
@@ -16,12 +37,6 @@ function Find-VcCertificateRequest {
     Array of fields to order on.
     For each item in the array, you can provide a field name by itself; this will default to ascending.
     You can also provide a hashtable with the field name as the key and either asc or desc as the value.
-
-    .PARAMETER Status
-    Request status, one of 'NEW', 'PENDING', 'PENDING_APPROVAL', 'PENDING_FINAL_APPROVAL', 'REJECTED_APPROVAL', 'REQUESTED', 'ISSUED', 'REJECTED', 'CANCELLED', 'REVOKED', 'FAILED', 'DELETED'
-
-    .PARAMETER KeyLength
-    Certificate key length
 
     .PARAMETER First
     Only retrieve this many records
@@ -36,23 +51,43 @@ function Find-VcCertificateRequest {
 
     Get all certificate requests
 
+    .EXAMPLE
+    Find-VcCertificateRequest -Application 'MyApp' -CreateDateFrom (Get-Date).AddDays(-7)
+
+    Find requests for a specific application created in the last 7 days
+
     .OUTPUTS
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [CmdletBinding(DefaultParameterSetName = 'SimpleFilter')]
 
     param (
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [ValidateSet('NEW', 'PENDING', 'PENDING_APPROVAL', 'PENDING_FINAL_APPROVAL', 'REJECTED_APPROVAL', 'REQUESTED', 'ISSUED', 'REJECTED', 'CANCELLED', 'REVOKED', 'FAILED', 'DELETED')]
-        [string] $Status,
+        [string[]] $Status,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [string[]] $Application,
+
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [string[]] $User,
+
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [string[]] $IssuingTemplate,
+
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [int] $KeyLength,
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [datetime] $CreateDateFrom,
+
+        [Parameter(ParameterSetName = 'SimpleFilter')]
+        [switch] $IncludeAny,
+
+        [Parameter(Mandatory, ParameterSetName = 'AdvancedFilter')]
+        [System.Collections.Generic.List[object]] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
@@ -68,22 +103,33 @@ function Find-VcCertificateRequest {
     Test-VenafiSession $PSCmdlet.MyInvocation
 
     $params = @{
-        Type = 'CertificateRequest'
+        Type  = 'CertificateRequest'
         First = $First
     }
 
     if ( $Order ) { $params.Order = $Order }
 
-    if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
+    if ( $PSCmdlet.ParameterSetName -eq 'AdvancedFilter' ) {
         $params.Filter = $Filter
     }
     else {
         $newFilter = [System.Collections.Generic.List[object]]::new()
-        $newFilter.Add('AND')
+        # Use OR or AND based on IncludeAny parameter
+        if ($IncludeAny) {
+            $newFilter.Add('OR')
+        }
+        else {
+            $newFilter.Add('AND')
+        }
+
 
         switch ($PSBoundParameters.Keys) {
-            'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }
+            'Status' { $null = $newFilter.Add(@('status', 'IN', $Status.ToUpper())) }
             'KeyLength' { $null = $newFilter.Add(@('keyLength', 'EQ', $KeyLength.ToString())) }
+            'Application' { $null = $newFilter.Add(@('applicationId', 'IN', @(($Application | Get-VcData -Type Application)))) }
+            'User' { $null = $newFilter.Add(@('certificateOwnerUserId', 'MATCH', @(($User | Get-VcData -Type User)))) }
+            'IssuingTemplate' { $null = $newFilter.Add(@('certificateIssuingTemplateId', 'MATCH', @(($IssuingTemplate | Get-VcData -Type IssuingTemplate)))) }
+            'CreateDateFrom' { $null = $newFilter.Add(@('creationDate', 'GTE', $CreateDateFrom)) }
         }
 
         if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }
