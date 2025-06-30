@@ -79,6 +79,12 @@ function Invoke-VcCertificateAction {
     Find all current certificates issued by i1 and renew them with a different issuer.
 
     .EXAMPLE
+    Find-VcCertificate -Version Current -Name 'mycert' | Invoke-VcCertificateAction -Renew -Wait
+
+    Renew a certificate and wait for it to pass the Requested state (and hopefully Issued).
+    This can be helpful if an Issuer takes a bit to enroll the certificate.
+
+    .EXAMPLE
     Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -Force
 
     Renewals can only support 1 CN assigned to a certificate.  To force this function to renew and automatically select the first CN, use -Force.
