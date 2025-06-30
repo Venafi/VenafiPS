@@ -17,9 +17,9 @@ Find-VdcCertificate [[-Path] <String>] [[-Guid] <Guid>] [-Recursive] [[-Country]
  [-IsExpired] [[-NetworkValidationEnabled] <Boolean>] [[-CreatedDate] <DateTime>] [[-CreatedAfter] <DateTime>]
  [[-CreatedBefore] <DateTime>] [[-CertificateType] <String[]>] [[-ManagementType] <TppManagementType[]>]
  [-PendingWorkflow] [[-Stage] <TppCertificateStage[]>] [[-StageGreaterThan] <TppCertificateStage>]
- [[-StageLessThan] <TppCertificateStage>] [-ValidationEnabled] [[-ValidationState] <String[]>] [-CountOnly]
- [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>] [-IncludeTotalCount] [-Skip <UInt64>]
- [-First <UInt64>] [<CommonParameters>]
+ [[-StageLessThan] <TppCertificateStage>] [-ValidationEnabled] [[-ValidationState] <String[]>]
+ [[-Algorithm] <String>] [-CountOnly] [[-VenafiSession] <PSObject>] [-ProgressAction <ActionPreference>]
+ [-IncludeTotalCount] [-Skip <UInt64>] [-First <UInt64>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -791,6 +791,21 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
+### -Algorithm
+Name or OID for the PKIX algorithm, first introduced in v25.1.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: 38
+Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
 ### -CountOnly
 Return the count of certificates found from the query as opposed to the certificates themselves
 
@@ -809,8 +824,6 @@ Accept wildcard characters: False
 ### -VenafiSession
 Authentication for the function.
 The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-A TLSPDC token can also be provided.
-If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
 ```yaml
 Type: PSObject
@@ -818,7 +831,7 @@ Parameter Sets: (All)
 Aliases:
 
 Required: False
-Position: 38
+Position: 39
 Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False

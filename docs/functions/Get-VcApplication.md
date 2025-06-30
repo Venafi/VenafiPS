@@ -7,13 +7,14 @@ Get application info
 
 ### ID (Default)
 ```
-Get-VcApplication [-Application] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-VcApplication [-Application] <String> [-IncludeConfig] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcApplication [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Get-VcApplication [-IncludeConfig] [-All] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+ [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -64,7 +65,7 @@ Get all applications
 ## PARAMETERS
 
 ### -Application
-Application ID or name
+Application ID or name, tab completion supported
 
 ```yaml
 Type: String
@@ -75,6 +76,21 @@ Required: True
 Position: 1
 Default value: None
 Accept pipeline input: True (ByPropertyName, ByValue)
+Accept wildcard characters: False
+```
+
+### -IncludeConfig
+Include autorenewal configuration
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
+Accept pipeline input: False
 Accept wildcard characters: False
 ```
 

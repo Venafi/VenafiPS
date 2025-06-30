@@ -8,18 +8,17 @@ Create a new IIS machine
 ### WinrmBasic (Default)
 ```
 New-VcMachineIis -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
- -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-Port <Int32>] [-UseTls]
- [-SkipCertificateCheck] [-NoVerify] [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>]
+ -Credential <PSObject> [-Tag <String[]>] [-Status <String>] [-Port <Int32>] [-UseTls] [-SkipCertificateCheck]
+ [-NoVerify] [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### WinrmKerberos
 ```
 New-VcMachineIis -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
- -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-Port <Int32>] [-UseTls]
- [-SkipCertificateCheck] -DomainName <String> -KeyDistributionCenter <String> -SPN <String> [-NoVerify]
- [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+ -Credential <PSObject> [-Tag <String[]>] [-Status <String>] [-Port <Int32>] [-UseTls] [-SkipCertificateCheck]
+ -DomainName <String> -KeyDistributionCenter <String> -SPN <String> [-NoVerify] [-ThrottleLimit <Int32>]
+ [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -124,9 +123,11 @@ Accept wildcard characters: False
 
 ### -Credential
 Username/password to access the machine
+Alternatively, you can provide the name or id of a shared credential, eg.
+CyberArk, HashiCorp, etc.
 
 ```yaml
-Type: PSCredential
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

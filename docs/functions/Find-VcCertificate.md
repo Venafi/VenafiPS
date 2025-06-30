@@ -5,25 +5,26 @@ Find certificates in TLSPC
 
 ## SYNTAX
 
-### All (Default)
+### SimpleFilter (Default)
 ```
 Find-VcCertificate [-Name <String>] [-KeyLength <Int32>] [-Serial <String>] [-Fingerprint <String>]
  [-IsSelfSigned] [-IsExpired] [-Status <String[]>] [-ExpireBefore <DateTime>] [-ExpireAfter <DateTime>]
- [-VersionType <String>] [-SanDns <String>] [-Application <String>] [-Tag <String[]>] [-CN <String>]
- [-Issuer <String>] [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
+ [-VersionType <String>] [-SanDns <String>] [-Application <String[]>] [-Tag <String[]>] [-CN <String>]
+ [-Issuer <String>] [-IncludeAny] [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
  [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
-### Filter
+### AdvancedFilter
 ```
-Find-VcCertificate -Filter <ArrayList> [-Order <PSObject[]>] [-ApplicationDetail] [-OwnerDetail]
- [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Find-VcCertificate -Filter <System.Collections.Generic.List`1[System.Object]> [-Order <PSObject[]>]
+ [-ApplicationDetail] [-OwnerDetail] [-First <Int32>] [-VenafiSession <PSObject>]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### SavedSearch
 ```
-Find-VcCertificate -SavedSearchName <String> [-ApplicationDetail] [-OwnerDetail] [-First <Int32>]
- [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Find-VcCertificate [-Order <PSObject[]>] -SavedSearchName <String> [-ApplicationDetail] [-OwnerDetail]
+ [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -104,7 +105,7 @@ Search for certificates with the name matching part or all of the value
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -119,7 +120,7 @@ Search by certificate key length
 
 ```yaml
 Type: Int32
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -134,7 +135,7 @@ Search by serial number
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -149,7 +150,7 @@ Search by fingerprint
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -164,7 +165,7 @@ Search for only self signed certificates
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -181,7 +182,7 @@ Use -IsExpired:$false for certificates that are NOT expired.
 
 ```yaml
 Type: SwitchParameter
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -197,7 +198,7 @@ Valid values include ACTIVE, RETIRED, and DELETED.
 
 ```yaml
 Type: String[]
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -213,7 +214,7 @@ Use with -ExpireAfter for a defined start and end.
 
 ```yaml
 Type: DateTime
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -229,7 +230,7 @@ Use with -ExpireBefore for a defined start and end.
 
 ```yaml
 Type: DateTime
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -245,7 +246,7 @@ Valid values include CURRENT and OLD.
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases: Version
 
 Required: False
@@ -260,7 +261,7 @@ Search for certificates with SAN DNS matching part or all of the value
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -274,8 +275,8 @@ Accept wildcard characters: False
 Application ID or name that this certificate is associated with
 
 ```yaml
-Type: String
-Parameter Sets: All
+Type: String[]
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -291,7 +292,7 @@ You can specify either just a tag name or name:value.
 
 ```yaml
 Type: String[]
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -306,7 +307,7 @@ Search for certificates where the subject CN matches all of part of the value
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -321,12 +322,27 @@ Search by issuer name
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
 Position: Named
 Default value: None
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -IncludeAny
+When using multiple filter parameters, combine them with OR logic instead of AND logic
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: SimpleFilter
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
@@ -357,8 +373,8 @@ You can also use regex for your search.
 For more info comparison operators, see https://docs.venafi.cloud/api/about-api-search-operators/.
 
 ```yaml
-Type: ArrayList
-Parameter Sets: Filter
+Type: System.Collections.Generic.List`1[System.Object]
+Parameter Sets: AdvancedFilter
 Aliases:
 
 Required: True
@@ -375,7 +391,7 @@ You can also provide a hashtable with the field name as the key and either asc o
 
 ```yaml
 Type: PSObject[]
-Parameter Sets: All, Filter
+Parameter Sets: (All)
 Aliases:
 
 Required: False

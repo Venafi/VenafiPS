@@ -13,8 +13,8 @@ Find-VcMachine [-Name <String>] [-MachineType <String>] [-Status <String>] [-Ord
 
 ### Filter
 ```
-Find-VcMachine -Filter <ArrayList> [-Order <PSObject[]>] [-First <Int32>] [-VenafiSession <PSObject>]
- [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Find-VcMachine -Filter <System.Collections.Generic.List`1[System.Object]> [-Order <PSObject[]>]
+ [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -84,7 +84,7 @@ Nested filters are supported.
 For a complete list of comparison operators, see https://docs.venafi.cloud/api/about-api-search-operators/.
 
 ```yaml
-Type: ArrayList
+Type: System.Collections.Generic.List`1[System.Object]
 Parameter Sets: Filter
 Aliases:
 

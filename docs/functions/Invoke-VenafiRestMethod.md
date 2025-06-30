@@ -8,15 +8,15 @@ Ability to execute REST API calls which don't exist in a dedicated function yet
 ### Session (Default)
 ```
 Invoke-VenafiRestMethod [-VenafiSession <PSObject>] [-Method <String>] [-UriRoot <String>] [-UriLeaf <String>]
- [-VcRegion <String>] [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-TimeoutSec <Int32>]
- [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+ [-VcRegion <String>] [-Platform <String>] [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse]
+ [-TimeoutSec <Int32>] [-SkipCertificateCheck] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### URL
 ```
 Invoke-VenafiRestMethod -Server <String> [-UseDefaultCredential] [-Certificate <X509Certificate>]
- [-Method <String>] [-UriRoot <String>] [-UriLeaf <String>] [-VcRegion <String>] [-Header <Hashtable>]
- [-Body <Hashtable>] [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck]
+ [-Method <String>] [-UriRoot <String>] [-UriLeaf <String>] [-VcRegion <String>] [-Platform <String>]
+ [-Header <Hashtable>] [-Body <Hashtable>] [-FullResponse] [-TimeoutSec <Int32>] [-SkipCertificateCheck]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
@@ -159,6 +159,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: Us
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Platform
+Venafi Platform to target, either VC or VDC.
+If not provided, the platform will be determined based on the VenafiSession or the calling function name.
+
+```yaml
+Type: String
+Parameter Sets: (All)
+Aliases:
+
+Required: False
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

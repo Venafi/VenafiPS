@@ -19,8 +19,9 @@ Invoke-VcCertificateAction -ID <Guid> [-Recover] [-BatchSize <Int32>] [-Addition
 
 ### Renew
 ```
-Invoke-VcCertificateAction -ID <Guid> [-Renew] [-Provision] [-Force] [-AdditionalParameters <Hashtable>]
- [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf] [-Confirm] [<CommonParameters>]
+Invoke-VcCertificateAction -ID <Guid> [-Renew] [-Provision] [-Wait] [-Force]
+ [-AdditionalParameters <Hashtable>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [-WhatIf]
+ [-Confirm] [<CommonParameters>]
 ```
 
 ### Validate
@@ -72,13 +73,21 @@ Find all current certificates issued by i1 and renew them with a different issue
 
 ### EXAMPLE 4
 ```
+Find-VcCertificate -Version Current -Name 'mycert' | Invoke-VcCertificateAction -Renew -Wait
+```
+
+Renew a certificate and wait for it to pass the Requested state (and hopefully Issued).
+This can be helpful if an Issuer takes a bit to enroll the certificate.
+
+### EXAMPLE 5
+```
 Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -Force
 ```
 
 Renewals can only support 1 CN assigned to a certificate. 
 To force this function to renew and automatically select the first CN, use -Force.
 
-### EXAMPLE 5
+### EXAMPLE 6
 ```
 Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete
 ```
@@ -86,7 +95,7 @@ Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete
 Delete a certificate. 
 As only retired certificates can be deleted, it will be retired first.
 
-### EXAMPLE 6
+### EXAMPLE 7
 ```
 Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete -Confirm:$false
 ```
@@ -94,7 +103,7 @@ Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Delete -C
 Perform an action bypassing the confirmation prompt. 
 Only applicable to Delete.
 
-### EXAMPLE 7
+### EXAMPLE 8
 ```
 Find-VcCertificate -Status RETIRED | Invoke-VcCertificateAction -Delete -BatchSize 100
 ```
@@ -237,6 +246,22 @@ Aliases:
 Required: False
 Position: Named
 Default value: 1000
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -Wait
+Wait for a long running operation to complete before returning
+- During a renewal, wait for the certificate to pass the Requested state
+
+```yaml
+Type: SwitchParameter
+Parameter Sets: Renew
+Aliases:
+
+Required: False
+Position: Named
+Default value: False
 Accept pipeline input: False
 Accept wildcard characters: False
 ```

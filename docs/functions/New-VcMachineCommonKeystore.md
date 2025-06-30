@@ -8,7 +8,7 @@ Create a new common keystore machine
 ### SshPassword (Default)
 ```
 New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
- -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-SshPassword] [-Port <Int32>] [-NoVerify]
+ -Credential <PSObject> [-Tag <String[]>] [-Status <String>] [-SshPassword] [-Port <Int32>] [-NoVerify]
  [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
@@ -16,7 +16,7 @@ New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String
 ### SshKey
 ```
 New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
- -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-SshKey] [-Port <Int32>] [-NoVerify]
+ -Credential <PSObject> [-Tag <String[]>] [-Status <String>] [-SshKey] [-Port <Int32>] [-NoVerify]
  [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
@@ -24,7 +24,7 @@ New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String
 ### WinrmBasic
 ```
 New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
- -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-WinrmBasic] [-Port <Int32>] [-UseTls]
+ -Credential <PSObject> [-Tag <String[]>] [-Status <String>] [-WinrmBasic] [-Port <Int32>] [-UseTls]
  [-SkipCertificateCheck] [-NoVerify] [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
@@ -32,7 +32,7 @@ New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String
 ### WinrmKerberos
 ```
 New-VcMachineCommonKeystore -Name <String> [-VSatellite <String>] -Owner <String> [-Hostname <String>]
- -Credential <PSCredential> [-Tag <String[]>] [-Status <String>] [-WinrmKerberos] [-Port <Int32>] [-UseTls]
+ -Credential <PSObject> [-Tag <String[]>] [-Status <String>] [-WinrmKerberos] [-Port <Int32>] [-UseTls]
  [-SkipCertificateCheck] -DomainName <String> -KeyDistributionCenter <String> -SPN <String> [-NoVerify]
  [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
@@ -133,9 +133,11 @@ Accept wildcard characters: False
 ### -Credential
 Username/password to access the machine.
 If using key-based authentication over SSH, set the password to the private key.
+Alternatively, you can provide the name or id of a shared credential, eg.
+CyberArk, HashiCorp, etc.
 
 ```yaml
-Type: PSCredential
+Type: PSObject
 Parameter Sets: (All)
 Aliases:
 

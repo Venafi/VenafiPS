@@ -1,3 +1,17 @@
+## 6.11.0
+- Add token based authentication to VC with `New-VenafiSession -VcEndpoint` and `New-VcToken`.  If the JWT has not expired, but the access token has, `New-VcToken` supports refresh.
+- Caching framework created for many VC objects (and some VDC ones as well).  If a requested item is not found, the cache will try and refresh in case it's been newly created.
+- Enhanced tab completion now utilizing the new caching framework.  A lot more objects are now available via tab completion and will also display a description as well.  For example, VSatellite shows the status and version.  Be sure to set your Tab key functionality with `Set-PSReadlineKeyHandler -Key Tab -Function MenuComplete`
+- Add many direct filters to `Find-VcLog` and `Find-VcCertificateRequest` so -Filter can be used less (since it's cumbersome).  The other Find functions will get similar treatment in time.  If you have specific filters you'd like to add, please submit an enhancement request
+- Add `Find-Vc* -IncludeAny` to OR the direct filters as opposed to AND
+- Add `Find-VdcCertificate -Algorithm` to support the new pkix algorithms introduced in v25.1.  Tab completion is available with full descriptions.  `New-VdcCertificate` and other applicable functions will be updated in time
+- All current VC regions have been added
+- Add support for VC shared credentials with `New-VcMachine -Credential`, `New-VcMachineCommonKeystore -Credential`, and `New-VcMachineIis -Credential`, [#349](https://github.com/Venafi/VenafiPS/issues/349)
+- Fix `Invoke-VcWorkflow` test connection where the configured size of the socket response was not large enough
+- Fix `Invoke-VcCertificateAction` error when the certificate was not issued within the VC timeout
+- Add `Invoke-VcCertificateAction -Renew -Wait` to monitor a renewal for passing the requested state
+
+
 ## 6.10.0
 - Add support for tags during certificate creation with `New-VcCertificate -Tag`, [#337](https://github.com/Venafi/VenafiPS/issues/337)
 - Performance enhancement for `ConvertTo-VdcObject` which decreased Windows Powershell runtimes for `Find-VdcObject` and all other functions that use it, [#342](https://github.com/Venafi/VenafiPS/issues/342)
@@ -782,6 +796,7 @@ This is a major release.  Although every attempt has been made to be backwards c
 - Breaking change: Update New-TppObject to simplify the attributes provided, now just pass a hashtable of object key/value pairs.
 - Better parameter support for New-TppCertificate with Name and CommonName
 - Rename Get-TppLog to Read-TppLog
+
 
 
 

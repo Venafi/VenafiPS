@@ -7,13 +7,13 @@ Get certificate information
 
 ### Id (Default)
 ```
-Get-VcCertificate [-Certificate] <String> [-IncludeVaasOwner] [-VenafiSession <PSObject>]
+Get-VcCertificate [-Certificate] <String> [-OwnerDetail] [-VenafiSession <PSObject>]
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
 ```
-Get-VcCertificate [-All] [-IncludeVaasOwner] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
+Get-VcCertificate [-All] [-OwnerDetail] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
@@ -44,7 +44,7 @@ Certificate identifier, the ID or certificate name.
 ```yaml
 Type: String
 Parameter Sets: Id
-Aliases: certificateId, ID
+Aliases: certificateId, certificateIds, ID
 
 Required: True
 Position: 1
@@ -68,13 +68,13 @@ Accept pipeline input: False
 Accept wildcard characters: False
 ```
 
-### -IncludeVaasOwner
+### -OwnerDetail
 Retrieve extended application owner info
 
 ```yaml
 Type: SwitchParameter
 Parameter Sets: (All)
-Aliases:
+Aliases: IncludeVaasOwner
 
 Required: False
 Position: Named

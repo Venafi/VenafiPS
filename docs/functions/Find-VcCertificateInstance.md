@@ -5,17 +5,17 @@ Find certificate requests
 
 ## SYNTAX
 
-### All (Default)
+### SimpleFilter (Default)
 ```
 Find-VcCertificateInstance [-HostName <String>] [-IpAddress <IPAddress>] [-Port <Int32>] [-Status <String>]
  [-Order <PSObject[]>] [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
 
-### Filter
+### AdvancedFilter
 ```
-Find-VcCertificateInstance -Filter <ArrayList> [-Order <PSObject[]>] [-First <Int32>]
- [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
+Find-VcCertificateInstance -Filter <System.Collections.Generic.List`1[System.Object]> [-Order <PSObject[]>]
+ [-First <Int32>] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ## DESCRIPTION
@@ -37,7 +37,7 @@ Hostname to find via regex match
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -52,7 +52,7 @@ Machine IP Address
 
 ```yaml
 Type: IPAddress
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -67,7 +67,7 @@ Machine port
 
 ```yaml
 Type: Int32
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -82,7 +82,7 @@ Instance status, either IN_USE or SUPERSEDED
 
 ```yaml
 Type: String
-Parameter Sets: All
+Parameter Sets: SimpleFilter
 Aliases:
 
 Required: False
@@ -100,8 +100,8 @@ For a complete list of comparison operators, see https://docs.venafi.cloud/api/a
 To see which fields you can search on, execute Find-VcCertificateInstance -First 1.
 
 ```yaml
-Type: ArrayList
-Parameter Sets: Filter
+Type: System.Collections.Generic.List`1[System.Object]
+Parameter Sets: AdvancedFilter
 Aliases:
 
 Required: True

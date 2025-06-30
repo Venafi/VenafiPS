@@ -7,8 +7,7 @@ Get tags from TLSPC
 
 ### ID
 ```
-Get-VcTag [-Name] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
- [<CommonParameters>]
+Get-VcTag [-Tag] <String> [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
 ### All
@@ -24,7 +23,7 @@ Tag values will be provided.
 
 ### EXAMPLE 1
 ```
-Get-VcTag -Name 'MyTag'
+Get-VcTag -Tag 'MyTag'
 ```
 
 Get a single tag
@@ -38,13 +37,13 @@ Get all tags
 
 ## PARAMETERS
 
-### -Name
+### -Tag
 Tag name
 
 ```yaml
 Type: String
 Parameter Sets: ID
-Aliases:
+Aliases: Name
 
 Required: True
 Position: 1

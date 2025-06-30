@@ -93,6 +93,7 @@ nav:
     - New-VcMachineCommonKeystore: functions/New-VcMachineCommonKeystore.md
     - New-VcMachineIis: functions/New-VcMachineIis.md
     - New-VcTeam: functions/New-VcTeam.md
+    - New-VcToken: functions/New-VcToken.md
     - New-VcWebhook: functions/New-VcWebhook.md
     - New-VdcCapiApplication: functions/New-VdcCapiApplication.md
     - New-VdcCertificate: functions/New-VdcCertificate.md

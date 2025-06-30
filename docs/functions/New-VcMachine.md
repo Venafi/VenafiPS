@@ -15,7 +15,7 @@ New-VcMachine -Name <String> -MachineType <String> -VSatellite <String> -Owner <
 ### BasicMachine
 ```
 New-VcMachine -Name <String> -MachineType <String> [-VSatellite <String>] -Owner <String> [-Tag <String[]>]
- [-Status <String>] [-Hostname <String>] -Credential <PSCredential> [-Port <String>] [-NoVerify]
+ [-Status <String>] [-Hostname <String>] -Credential <PSObject> [-Port <String>] [-NoVerify]
  [-ThrottleLimit <Int32>] [-PassThru] [-Force] [-VenafiSession <PSObject>] [-ProgressAction <ActionPreference>]
  [<CommonParameters>]
 ```
@@ -198,10 +198,12 @@ Accept wildcard characters: False
 ```
 
 ### -Credential
-Username/password to access the machine
+Username/password to access the machine.
+Alternatively, you can provide the name or id of a shared credential, eg.
+CyberArk, HashiCorp, etc.
 
 ```yaml
-Type: PSCredential
+Type: PSObject
 Parameter Sets: BasicMachine
 Aliases:
 

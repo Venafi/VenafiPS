@@ -74,6 +74,12 @@ New-VenafiSession -Server <String> -Credential <PSCredential> [-TimeoutSec <Int3
  [-ProgressAction <ActionPreference>] [<CommonParameters>]
 ```
 
+### VcToken
+```
+New-VenafiSession -Jwt <String> -VcEndpoint <String> [-TimeoutSec <Int32>] [-PassThru]
+ [-ProgressAction <ActionPreference>] [<CommonParameters>]
+```
+
 ### Vc
 ```
 New-VenafiSession -VcKey <PSObject> [-VcRegion <String>] [-VaultVcKeyName <String>] [-TimeoutSec <Int32>]
@@ -342,7 +348,7 @@ Ensure JWT mapping has been configured in VCC, Access Management-\>JWT Mappings.
 
 ```yaml
 Type: String
-Parameter Sets: TokenJwt
+Parameter Sets: TokenJwt, VcToken
 Aliases:
 
 Required: True
@@ -464,8 +470,7 @@ Accept wildcard characters: False
 ```
 
 ### -VcRegion
-TLSPC region to connect to. 
-Valid values are 'us' and 'eu'. 
+TLSPC region to connect to, tab-ahead values provided. 
 Defaults to 'us'.
 
 ```yaml
@@ -476,6 +481,21 @@ Aliases:
 Required: False
 Position: Named
 Default value: Us
+Accept pipeline input: False
+Accept wildcard characters: False
+```
+
+### -VcEndpoint
+Token Endpoint URL as shown on the service account details page.
+
+```yaml
+Type: String
+Parameter Sets: VcToken
+Aliases:
+
+Required: True
+Position: Named
+Default value: None
 Accept pipeline input: False
 Accept wildcard characters: False
 ```
