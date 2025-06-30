@@ -26,6 +26,10 @@ function Invoke-VenafiRestMethod {
     .PARAMETER VcRegion
     TLSPC region to target.  Only supported if VenafiSession is an api key otherwise the comes from VenafiSession directly.
 
+    .PARAMETER Platform
+    Venafi Platform to target, either VC or VDC.
+    If not provided, the platform will be determined based on the VenafiSession or the calling function name.
+
     .PARAMETER Server
     Server or url to access vedsdk, venafi.company.com or https://venafi.company.com.
 
@@ -108,6 +112,10 @@ function Invoke-VenafiRestMethod {
         [string] $VcRegion = 'us',
 
         [Parameter()]
+        [ValidateSet('VC', 'VDC')]
+        [string] $Platform,
+
+        [Parameter()]
         [hashtable] $Header,
 
         [Parameter()]
@@ -122,6 +130,10 @@ function Invoke-VenafiRestMethod {
         [Parameter()]
         [switch] $SkipCertificateCheck
     )
+
+    # VC supports both apiley and token based auth, VDC only token
+
+    $authType = 'token'
 
     $params = @{
         Method          = $Method
@@ -138,13 +150,16 @@ function Invoke-VenafiRestMethod {
         switch ($VenafiSession.GetType().Name) {
             'PSCustomObject' {
                 $Server = $VenafiSession.Server
-                $platform = $VenafiSession.Platform
-                if ( $VenafiSession.Platform -eq 'VC' ) {
+                $thisPlatform = $VenafiSession.Platform
+                if ( $VenafiSession.Key ) {
                     $auth = $VenafiSession.Key.GetNetworkCredential().password
+                    $authType = 'apikey'
+                }
+                elseif ( $VenafiSession.Token ) {
+                    $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
                 }
                 else {
-                    # TLSPDC
-                    $auth = $VenafiSession.Token.AccessToken.GetNetworkCredential().password
+                    throw [System.ArgumentException]::new('Neither an api key or token could be found in VenafiSession')
                 }
                 $SkipCertificateCheck = $VenafiSession.SkipCertificateCheck
                 $params.TimeoutSec = $VenafiSession.TimeoutSec
@@ -158,19 +173,35 @@ function Invoke-VenafiRestMethod {
                     # if we were provided a key directly and not a full session, determine which region to contact
 
                     $Server = ($script:VcRegions).$VcRegion
-                    $platform = 'VC'
+                    $thisPlatform = 'VC'
+                    $authType = 'apikey'
                 }
                 else {
+                    # access token auth for both VC and VDC, determine which one
+                    $thisPlatform = if ( $PSBoundParameters.ContainsKey('Platform') ) {
+                        $Platform
+                    }
+                    elseif ( $MyInvocation.InvocationName -match '-Vdc' ) {
+                        'VDC'
+                    }
+                    elseif ( $MyInvocation.InvocationName -match '-Vc' ) {
+                        'VC'
+                    }
+                    else {
+                        throw 'Venafi Platform, VC or VDC, could not be determined'
+                    }
+
                     # TLSPDC access token
                     # get server from environment variable
-                    if ( -not $env:VDC_SERVER ) {
-                        throw 'VDC_SERVER environment variable was not found'
-                    }
-                    $Server = $env:VDC_SERVER
-                    if ( $Server -notlike 'https://*') {
-                        $Server = 'https://{0}' -f $Server
-                    }
-                    $platform = 'VDC'
+                    # if ( $thisPlatform -eq 'VDC' ) {
+                    #     if ( -not $env:VDC_SERVER ) {
+                    #         throw 'VDC_SERVER environment variable was not found.  When providing an access token directly this is required.'
+                    #     }
+                    #     $Server = $env:VDC_SERVER
+                    #     if ( $Server -notlike 'https://*') {
+                    #         $Server = 'https://{0}' -f $Server
+                    #     }
+                    # }
                 }
             }
 
@@ -179,24 +210,27 @@ function Invoke-VenafiRestMethod {
             }
         }
 
-        # set auth
-        switch ($platform) {
-            'VC' {
+        # set auth header
+        if ( $thisPlatform -eq 'VC' ) {
+            if ( $authType -eq 'token' ) {
+                $allHeaders = @{
+                    'Authorization' = "Bearer $auth"
+                }
+            }
+            else {
                 $allHeaders = @{
                     "tppl-api-key" = $auth
                 }
-                if ( -not $PSBoundParameters.ContainsKey('UriRoot') ) {
-                    $UriRoot = 'v1'
-                }
             }
 
-            'VDC' {
-                $allHeaders = @{
-                    'Authorization' = 'Bearer {0}' -f $auth
-                }
+            if ( -not $PSBoundParameters.ContainsKey('UriRoot') ) {
+                $UriRoot = 'v1'
             }
-
-            Default {}
+        }
+        else {
+            $allHeaders = @{
+                'Authorization' = "Bearer $auth"
+            }
         }
     }
 
@@ -309,7 +343,7 @@ function Invoke-VenafiRestMethod {
                 $permMsg = ''
 
                 # get scope details for tpp
-                if ( $platform -ne 'VC' ) {
+                if ( $thisPlatform -eq 'VDC' ) {
                     $callingFunction = @(Get-PSCallStack)[1].InvocationInfo.MyCommand.Name
                     $callingFunctionScope = ($script:functionConfig).$callingFunction.TppTokenScope
                     if ( $callingFunctionScope ) { $permMsg += "$callingFunction requires a token scope of '$callingFunctionScope'." }

@@ -11,6 +11,8 @@ $script:VcRegions = @{
     'eu' = 'https://api.eu.venafi.cloud'
     'au' = 'https://api.au.venafi.cloud'
     'uk' = 'https://api.uk.venafi.cloud'
+    'sg' = 'https://api.sg.venafi.cloud'
+    'ca' = 'https://api.ca.venafi.cloud'
 }
 $Script:VenafiSession = $null
 $script:ThreadJobAvailable = ($null -ne (Get-Module -Name Microsoft.PowerShell.ThreadJob -ListAvailable))
@@ -18,6 +20,221 @@ $script:DevMode = $script:ModuleVersion -match 'NEW_VERSION'
 $script:ParallelImportPath = $PSCommandPath
 
 Export-ModuleMember -Alias * -Variable VenafiSession -Function *
+
+# ModuleVersion will get updated during the build and this will not run
+# this is only needed during development since all files will be merged into one psm1
+if ( $script:DevMode ) {
+    $folders = @('Enum', 'Classes', 'Public', 'Private')
+    $publicFunction = @()
+
+    foreach ( $folder in $folders) {
+
+        $files = Get-ChildItem -Path "$PSScriptRoot\$folder\*.ps1" -Recurse
+
+        Foreach ( $thisFile in $files ) {
+            Try {
+                Write-Verbose ('dot sourcing {0}' -f $thisFile.FullName)
+                . $thisFile.fullname
+                # if ( $folder -eq 'Public' ) {
+                Export-ModuleMember -Function $thisFile.Basename
+                $publicFunction += $thisFile.BaseName
+                # }
+            }
+            Catch {
+                Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
+            }
+        }
+    }
+}
+
+$moduleCommands = Get-Command -Module VenafiPS | Select-Object -ExpandProperty Name
+$vdcCommands = $moduleCommands | Where-Object { $_ -like '*-Vdc*' }
+$vcCommands = $moduleCommands | Where-Object { $_ -like '*-Vc*' }
+
+$vcGenericArgCompleterSb = {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+    $objectType = $parameterName
+    if ( $parameterName -eq 'ID' ) {
+        # figure out object type based on function name since 'ID' is used in many functions
+
+    }
+
+    switch ($objectType) {
+        'Application' {
+            if ( -not $script:vcApplication ) {
+                $script:vcApplication = Get-VcApplication -All | Sort-Object -Property name
+            }
+            $script:vcApplication | Where-Object name -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.name
+                $itemDescription = if ( $_.description ) { $_.description } else { $itemText }
+
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+
+        'MachineType' {
+            if ( -not $script:vcMachineType ) {
+                $script:vcMachineType = Invoke-VenafiRestMethod -UriLeaf 'plugins?pluginTypes=MACHINE' |
+                    Select-Object -ExpandProperty plugins |
+                    Select-Object -Property @{'n' = 'machineTypeId'; 'e' = { $_.Id } }, * -ExcludeProperty id |
+                    Sort-Object -Property name
+            }
+            $script:vcMachineType | Where-Object name -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.name
+                $itemDescription = 'supports: {0}' -f ($_.workTypes -join ', ')
+
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+
+        'IssuingTemplate' {
+            Get-VcData -Type IssuingTemplate | Where-Object name -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.name
+                $itemDescription = 'product: {0}, validity: {1}' -f $_.product.productName, $_.product.validityPeriod
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+
+        'VSatellite' {
+            Get-VcData -Type VSatellite | Where-Object Name -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.name
+                $itemDescription = 'status: {0}, version: {1}' -f $_.edgeStatus, $_.satelliteVersion
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+
+        'Certificate' {
+            # there might be a ton of certs so ensure they provide at least 3 characters
+            if ( $wordToComplete.Length -ge 3 ) {
+                Find-VcCertificate -Name $wordToComplete | ForEach-Object { "'$($_.certificateName)'" }
+            }
+        }
+
+        'Credential' {
+            Get-VcData -Type Credential | Where-Object name -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.name
+                $itemDescription = 'type: {0}, authentication: {1}' -f $_.cmsType, $_.authType
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+
+        'Tag' {
+            Get-VcData -Type Tag | Where-Object tagId -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.tagId
+                $itemDescription = if ($_.value) {
+                    'values: {0}' -f ($_.value -join ', ')
+                }
+                else {
+                    'no values set'
+                }
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+
+        { $_ -in 'Team', 'Owner' } {
+            Get-VcData -Type Team | Where-Object Name -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.name
+                $itemDescription = 'role: {0}' -f $_.role
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+
+        'User' {
+            Get-VcData -Type User | Where-Object username -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.username
+                $itemDescription = 'user type: {0}, system roles: {1}' -f $_.userType, $_.systemRoles -join ','
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+    }
+}
+
+'Application', 'MachineType', 'VSatellite', 'Certificate', 'IssuingTemplate', 'Credential', 'Team', 'Owner', 'Tag', 'User' | ForEach-Object {
+    Register-ArgumentCompleter -CommandName $vcCommands -ParameterName $_ -ScriptBlock $vcGenericArgCompleterSb
+}
+
+$vdcPathArgCompleterSb = {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+    if ( -not $wordToComplete ) {
+        # if no word provided, default to \ved\policy
+        $wordToComplete = '\VED\Policy\'
+    }
+
+    # if the path starts with ' or ", that will come along for the ride so ensure we trim that first
+    $fullWord = $wordToComplete.Trim("`"'") | ConvertTo-VdcFullPath
+    $leaf = $fullWord.Split('\')[-1]
+    $parent = $fullWord.Substring(0, $fullWord.LastIndexOf("\$leaf"))
+
+    # get items in parent folder
+    $objs = Find-VdcObject -Path $parent
+    $objs | Where-Object { $_.name -like "$leaf*" } | ForEach-Object {
+        $itemText = if ( $_.TypeName -eq 'Policy' ) {
+            "'$($_.Path)\"
+        }
+        else {
+            "'$($_.Path)"
+        }
+        [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $_.TypeName)
+
+    }
+}
+Register-ArgumentCompleter -CommandName $vdcCommands -ParameterName 'Path' -ScriptBlock $vdcPathArgCompleterSb
+
+$vcLogArgCompleterSb = {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+    if ( -not $script:vcActivityType ) {
+        $script:vcActivityType = Invoke-VenafiRestMethod -UriLeaf 'activitytypes' |
+            Select-Object -Property @{'n' = 'type'; 'e' = { $_.key } }, @{'n' = 'name'; 'e' = { $_.values.key } } -ExcludeProperty readableName |
+            Sort-Object -Property type
+    }
+
+    switch ($parameterName) {
+        'Type' {
+            $script:vcActivityType | Where-Object type -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $itemText = "'{0}'" -f $_.type
+                $itemDescription = 'activity names: {0}' -f ($_.name -join ', ')
+                [System.Management.Automation.CompletionResult]::new($itemText, $itemText, 'ParameterValue', $itemDescription)
+            }
+        }
+
+        'Name' {
+            # If Type is provided, filter names for that type only
+            if ($fakeBoundParameters.ContainsKey('Type')) {
+                $typeValue = $fakeBoundParameters['Type'].Trim("'")
+                $names = $script:vcActivityType | Where-Object { $_.type -eq $typeValue } | Select-Object -ExpandProperty name
+            }
+            else {
+                $names = $script:vcActivityType | Select-Object -ExpandProperty name
+            }
+            $names | Where-Object { $_ -like ('{0}*' -f $wordToComplete.Trim("'")) } | ForEach-Object {
+                $itemText = "'{0}'" -f $_
+                [System.Management.Automation.CompletionResult]::new($itemText)
+            }
+        }
+    }
+}
+Register-ArgumentCompleter -CommandName 'Find-VcLog' -ParameterName 'Type' -ScriptBlock $vcLogArgCompleterSb
+Register-ArgumentCompleter -CommandName 'Find-VcLog' -ParameterName 'Name' -ScriptBlock $vcLogArgCompleterSb
+
+$vdcGenericArgCompleterSb = {
+    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
+
+    switch ($parameterName) {
+        'Algorithm' {
+            Get-VdcData -Type Algorithm | Where-Object Name -like ('{0}*' -f $wordToComplete.Trim("'")) | ForEach-Object {
+                $alg = "'{0}'" -f $_.Name
+                [System.Management.Automation.CompletionResult]::new($alg, $alg, 'ParameterValue', $_.Description)
+            }
+        }
+    }
+}
+
+'Algorithm' | ForEach-Object {
+    Register-ArgumentCompleter -CommandName $vdcCommands -ParameterName $_ -ScriptBlock $vdcGenericArgCompleterSb
+}
 
 # vaas fields to ensure the values are upper case
 $script:vaasValuesToUpper = 'certificateStatus', 'signatureAlgorithm', 'signatureHashAlgorithm', 'encryptionType', 'versionType', 'certificateSource', 'deploymentStatus'
@@ -65,86 +282,6 @@ $script:vaasFields = @(
     'activityName',
     'criticality'
 )
-
-$vcGenericArgCompleterSb = {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-    $objectType = $parameterName
-    if ( $parameterName -eq 'ID' ) {
-        # figure out object type based on function name since 'ID' is used in many functions
-
-    }
-
-    switch ($objectType) {
-        'Application' {
-            if ( -not $script:vcApplication ) {
-                $script:vcApplication = Get-VcApplication -All | Sort-Object -Property name
-            }
-            $script:vcApplication | Where-Object name -like "$wordToComplete*" | ForEach-Object { "'$($_.name)'" }
-        }
-
-        'MachineType' {
-            if ( -not $script:vcMachineType ) {
-                $script:vcMachineType = Invoke-VenafiRestMethod -UriLeaf 'plugins?pluginType=MACHINE' |
-                    Select-Object -ExpandProperty machineTypes |
-                    Select-Object -Property @{'n' = 'machineTypeId'; 'e' = { $_.Id } }, * -ExcludeProperty id |
-                    Sort-Object -Property machineType
-            }
-            $script:vcMachineType | Where-Object name -like "$wordToComplete*" | ForEach-Object { "'$($_.machineType)'" }
-        }
-
-        'IssuingTemplate' {
-            if ( -not $script:vcIssuingTemplate ) {
-                $script:vcIssuingTemplate = Get-VcIssuingTemplate -All | Sort-Object -Property name
-            }
-            $script:vcIssuingTemplate | Where-Object name -like "$wordToComplete*" | ForEach-Object { "'$($_.name)'" }
-        }
-
-        'VSatellite' {
-            if ( -not $script:vcVSatellite ) {
-                $script:vcVSatellite = Get-VcSatellite -All | Sort-Object -Property name
-            }
-            $script:vcVSatellite | Where-Object name -like "$wordToComplete*" | ForEach-Object { "'$($_.name)'" }
-        }
-
-        'Certificate' {
-            # there might be a ton of certs so ensure they provide at least 3 characters
-            if ( $wordToComplete.Length -ge 3 ) {
-                Find-VcCertificate -Name $wordToComplete | ForEach-Object { "'$($_.certificateName)'" }
-            }
-        }
-    }
-}
-
-'Application', 'MachineType', 'VSatellite', 'Certificate', 'IssuingTemplate' | ForEach-Object {
-    Register-ArgumentCompleter -ParameterName $_ -ScriptBlock $vcGenericArgCompleterSb
-}
-
-$vdcPathArgCompleterSb = {
-    param($commandName, $parameterName, $wordToComplete, $commandAst, $fakeBoundParameters)
-
-    if ( -not $wordToComplete ) {
-        # if no word provided, default to \ved\policy
-        $wordToComplete = '\VED\Policy\'
-    }
-
-    # if the path starts with ' or ", that will come along for the ride so ensure we trim that first
-    $fullWord = $wordToComplete.Trim("`"'") | ConvertTo-VdcFullPath
-    $leaf = $fullWord.Split('\')[-1]
-    $parent = $fullWord.Substring(0, $fullWord.LastIndexOf("\$leaf"))
-
-    # get items in parent folder
-    $objs = Find-VdcObject -Path $parent
-    $objs | Where-Object { $_.name -like "$leaf*" } | ForEach-Object {
-        if ( $_.TypeName -eq 'Policy' ) {
-            "'$($_.Path)\"
-        }
-        else {
-            "'$($_.Path)"
-        }
-    }
-}
-Register-ArgumentCompleter -CommandName '*-Vdc*' -ParameterName 'Path' -ScriptBlock $vdcPathArgCompleterSb
 
 $script:functionConfig = @{
     'Add-VdcAdaptableHash'             = @{
@@ -418,32 +555,6 @@ $script:functionConfig = @{
     'Write-VdcLog'                     = @{
         'TppVersion'    = ''
         'TppTokenScope' = 'any scope'
-    }
-}
-
-# ModuleVersion will get updated during the build and this will not run
-# this is only needed during development since all files will be merged into one psm1
-if ( $script:DevMode ) {
-    $folders = @('Enum', 'Classes', 'Public', 'Private')
-    $publicFunction = @()
-
-    foreach ( $folder in $folders) {
-
-        $files = Get-ChildItem -Path "$PSScriptRoot\$folder\*.ps1" -Recurse
-
-        Foreach ( $thisFile in $files ) {
-            Try {
-                Write-Verbose ('dot sourcing {0}' -f $thisFile.FullName)
-                . $thisFile.fullname
-                # if ( $folder -eq 'Public' ) {
-                Export-ModuleMember -Function $thisFile.Basename
-                $publicFunction += $thisFile.BaseName
-                # }
-            }
-            Catch {
-                Write-Error ("Failed to import function {0}: {1}" -f $thisFile.fullname, $folder)
-            }
-        }
     }
 }
 

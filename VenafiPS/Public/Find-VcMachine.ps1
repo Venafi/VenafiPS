@@ -38,7 +38,7 @@ function Find-VcMachine {
     Find-VcMachine
 
     Get all machines
-    
+
     .OUTPUTS
 
     #>
@@ -59,7 +59,7 @@ function Find-VcMachine {
         [string] $Status,
 
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
 
         [Parameter()]
         [psobject[]] $Order,
@@ -75,7 +75,7 @@ function Find-VcMachine {
     Test-VenafiSession $PSCmdlet.MyInvocation
 
     $params = @{
-        Type = 'Machine'
+        Type  = 'Machine'
         First = $First
     }
 
@@ -90,7 +90,7 @@ function Find-VcMachine {
 
         switch ($PSBoundParameters.Keys) {
             'Name' { $null = $newFilter.Add(@('machineName', 'FIND', $Name)) }
-            'Type' { $null = $newFilter.Add(@('machineType', 'EQ', $Type)) }
+            'MachineType' { $null = $newFilter.Add(@('pluginName', 'EQ', $MachineType)) }
             'Status' { $null = $newFilter.Add(@('status', 'EQ', $Status.ToUpper())) }
         }
 

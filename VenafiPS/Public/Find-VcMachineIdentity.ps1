@@ -32,7 +32,7 @@ function Find-VcMachineIdentity {
     Find-VcMachineIdentity
 
     Get all machine identities
-    
+
     .OUTPUTS
     pscustomobject
     #>
@@ -46,7 +46,7 @@ function Find-VcMachineIdentity {
         [string[]] $Status,
 
         [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [System.Collections.Generic.List[object]] $Filter,
 
         [parameter()]
         [psobject[]] $Order,

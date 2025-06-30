@@ -8,7 +8,10 @@ function Get-VcApplication {
     Application level renewal configurations are included.
 
     .PARAMETER Application
-    Application ID or name
+    Application ID or name, tab completion supported
+
+    .PARAMETER IncludeConfig
+    Include autorenewal configuration
 
     .PARAMETER All
     Get all applications
@@ -64,6 +67,9 @@ function Get-VcApplication {
         [Alias('applicationId', 'ID')]
         [string] $Application,
 
+        [Parameter()]
+        [switch] $IncludeConfig,
+
         [Parameter(Mandatory, ParameterSetName = 'All')]
         [switch] $All,
 
@@ -113,39 +119,52 @@ function Get-VcApplication {
             $response
         }
 
-        foreach ($app in $applications) {
-            $thisConfig = Invoke-VenafiRestMethod -UriLeaf ('autorenewal/{0}/configuration' -f $app.id)
+        if ( $IncludeConfig ) {
+
+            foreach ($app in $applications) {
+                $thisConfig = Invoke-VenafiRestMethod -UriLeaf ('autorenewal/{0}/configuration' -f $app.id)
+                $app | Select-Object @{'n' = 'applicationId'; 'e' = { $_.Id } },
+                @{
+                    'n' = 'issuingTemplate'
+                    'e' = {
+                        $_.certificateIssuingTemplateAliasIdMap.psobject.Properties | Select-Object @{'n' = 'name'; 'e' = { $_.Name } }, @{'n' = 'issuingTemplateId'; 'e' = { $_.Value } }
+                    }
+                },
+                @{
+                    'n' = 'autoRenew'
+                    'e' = {
+                        $thisConfig.renewalActions.renew
+                    }
+                },
+                @{
+                    'n' = 'autoProvision'
+                    'e' = {
+                        $thisConfig.renewalActions.provision
+                    }
+                },
+                @{
+                    'n' = 'renewalWindowInherit'
+                    'e' = {
+                        $thisConfig.renewalWindow.inherit
+                    }
+                },
+                @{
+                    'n' = 'renewalWindowDays'
+                    'e' = {
+                        $thisConfig.renewalWindow.days
+                    }
+                }, * -ExcludeProperty Id, certificateIssuingTemplateAliasIdMap
+            }
+        }
+        else {
             $applications | Select-Object @{'n' = 'applicationId'; 'e' = { $_.Id } },
             @{
                 'n' = 'issuingTemplate'
                 'e' = {
                     $_.certificateIssuingTemplateAliasIdMap.psobject.Properties | Select-Object @{'n' = 'name'; 'e' = { $_.Name } }, @{'n' = 'issuingTemplateId'; 'e' = { $_.Value } }
                 }
-            },
-            @{
-                'n' = 'autoRenew'
-                'e' = {
-                    $thisConfig.renewalActions.renew
-                }
-            },
-            @{
-                'n' = 'autoProvision'
-                'e' = {
-                    $thisConfig.renewalActions.provision
-                }
-            },
-            @{
-                'n' = 'renewalWindowInherit'
-                'e' = {
-                    $thisConfig.renewalWindow.inherit
-                }
-            },
-            @{
-                'n' = 'renewalWindowDays'
-                'e' = {
-                    $thisConfig.renewalWindow.days
-                }
             }, * -ExcludeProperty Id, certificateIssuingTemplateAliasIdMap
+
         }
     }
 }

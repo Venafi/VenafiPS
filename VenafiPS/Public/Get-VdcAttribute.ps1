@@ -24,7 +24,7 @@ function Get-VdcAttribute {
     Get policy attributes instead of object attributes.
     Provide the class name to retrieve the value(s) for.
     The Attribute property of the return object will contain the path where the policy was applied.
-    
+
     If unsure of the class name, add the value through the TLSPDC UI and go to Support->Policy Attributes to find it.
 
     .PARAMETER All

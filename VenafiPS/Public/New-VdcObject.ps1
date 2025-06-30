@@ -40,8 +40,6 @@ function New-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .EXAMPLE
     New-VdcObject -Path '\VED\Policy\Test Device' -Class 'Device' -Attribute @{'Description'='new device testing'}

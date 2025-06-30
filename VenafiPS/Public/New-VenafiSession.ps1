@@ -39,6 +39,8 @@ function New-VenafiSession {
     You can either provide a String, SecureString, or PSCredential.
     If providing a credential, the username is not used.
 
+    .PARAMETER Endpoint
+
     .PARAMETER Jwt
     JSON web token.
     Available in TLSPDC v22.4 and later.
@@ -78,7 +80,10 @@ function New-VenafiSession {
     If providing a credential, the username is not used.
 
     .PARAMETER VcRegion
-    TLSPC region to connect to.  Valid values are 'us' and 'eu'.  Defaults to 'us'.
+    TLSPC region to connect to, tab-ahead values provided.  Defaults to 'us'.
+
+    .PARAMETER VcEndpoint
+    Token Endpoint URL as shown on the service account details page.
 
     .PARAMETER VaultVcKeyName
     Name of the SecretManagement vault entry for the TLSPC key.
@@ -253,6 +258,7 @@ function New-VenafiSession {
         [psobject] $RefreshToken,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenJwt')]
+        [Parameter(Mandatory, ParameterSetName = 'VcToken')]
         [string] $Jwt,
 
         [Parameter(Mandatory, ParameterSetName = 'TokenCertificate')]
@@ -310,6 +316,9 @@ function New-VenafiSession {
             }
         )]
         [string] $VcRegion = 'us',
+
+        [Parameter(Mandatory, ParameterSetName = 'VcToken')]
+        [string] $VcEndpoint,
 
         [Parameter(ParameterSetName = 'Vc')]
         [Parameter(Mandatory, ParameterSetName = 'VaultVcKey')]
@@ -436,7 +445,16 @@ function New-VenafiSession {
             }
 
             $token = New-VdcToken @params -Verbose:$isVerbose
-            $newSession | Add-Member @{Token = $token }
+            $newSession | Add-Member @{ Token = $token }
+        }
+
+        'VcToken' {
+            # access token via service account for tlspc
+            $newSession.Platform = 'VC'
+            $systemUri = [System.Uri]::new($VcEndpoint)
+            $newSession.Server = 'https://{0}' -f $systemUri.Host
+            $token = New-VcToken -Endpoint $VcEndpoint -Jwt $Jwt -Verbose:$isVerbose
+            $newSession | Add-Member @{ Token = $token }
         }
 
         'AccessToken' {
@@ -581,13 +599,17 @@ function New-VenafiSession {
     }
     else {
 
-        $newSession | Add-Member @{
-            User = (Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession -ErrorAction SilentlyContinue | Select-Object -ExpandProperty user | Select-Object @{
+        # user might not have access to this api, eg. service account
+        $user = Invoke-VenafiRestMethod -UriLeaf 'useraccounts' -VenafiSession $newSession -ErrorAction SilentlyContinue
+        if ( $user ) {
+            $newSession | Add-Member @{
+                User = $user | Select-Object -ExpandProperty user | Select-Object @{
                     'n' = 'userId'
                     'e' = {
                         $_.Id
                     }
-                }, * -ExcludeProperty id)
+                }, * -ExcludeProperty id
+            }
         }
     }
 

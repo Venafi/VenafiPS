@@ -42,30 +42,30 @@ function Find-VcCertificateInstance {
     Find-VcCertificateInstance
 
     Get all instancese
-    
+
     .OUTPUTS
 
     #>
 
-    [CmdletBinding(DefaultParameterSetName = 'All')]
+    [CmdletBinding(DefaultParameterSetName = 'SimpleFilter')]
 
     param (
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [string] $HostName,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [ipaddress] $IpAddress,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [int] $Port,
 
-        [Parameter(ParameterSetName = 'All')]
+        [Parameter(ParameterSetName = 'SimpleFilter')]
         [ValidateSet('IN_USE', 'SUPERSEDED')]
         [string] $Status,
 
-        [Parameter(Mandatory, ParameterSetName = 'Filter')]
-        [System.Collections.ArrayList] $Filter,
+        [Parameter(Mandatory, ParameterSetName = 'AdvancedFilter')]
+        [System.Collections.Generic.List[object]] $Filter,
 
         [parameter()]
         [psobject[]] $Order,
@@ -81,13 +81,13 @@ function Find-VcCertificateInstance {
     Test-VenafiSession $PSCmdlet.MyInvocation
 
     $params = @{
-        Type = 'CertificateInstance'
+        Type  = 'CertificateInstance'
         First = $First
     }
 
     if ( $Order ) { $params.Order = $Order }
 
-    if ( $PSCmdlet.ParameterSetName -eq 'Filter' ) {
+    if ( $PSCmdlet.ParameterSetName -eq 'AdvancedFilter' ) {
         $params.Filter = $Filter
     }
     else {
@@ -95,10 +95,10 @@ function Find-VcCertificateInstance {
         $newFilter.Add('AND')
 
         switch ($PSBoundParameters.Keys) {
-            'HostName' { $null = $newFilter.Add(@('hostname', 'FIND', $HostName)) ; break}
-            'IpAddress' { $null = $newFilter.Add(@('ipAddress', 'EQ', $IpAddress.IPAddressToString)) ; break}
-            'Port' { $null = $newFilter.Add(@('port', 'EQ', $Port.ToString())) ; break}
-            'Status' { $null = $newFilter.Add(@('deploymentStatus', 'EQ', $Status.ToUpper())) ; break}
+            'HostName' { $null = $newFilter.Add(@('hostname', 'FIND', $HostName)) }
+            'IpAddress' { $null = $newFilter.Add(@('ipAddress', 'EQ', $IpAddress.IPAddressToString)) }
+            'Port' { $null = $newFilter.Add(@('port', 'EQ', $Port.ToString())) }
+            'Status' { $null = $newFilter.Add(@('deploymentStatus', 'EQ', $Status.ToUpper())) }
         }
 
         if ( $newFilter.Count -gt 1 ) { $params.Filter = $newFilter }

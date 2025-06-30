@@ -20,8 +20,6 @@ function Convert-VdcObject {
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
-    A TLSPDC token can also be provided.
-    If providing a TLSPDC token, an environment variable named VDC_SERVER must also be set.
 
     .INPUTS
     Path
@@ -41,7 +39,7 @@ function Convert-VdcObject {
 
     .EXAMPLE
     Find-VdcObject -Class Basic | Convert-VdcObject -Class 'capi' -PassThru | Set-VdcAttribute -Attribute @{'Driver Name'='appcapi'}
-    
+
     Convert multiple objects to a different type, return the updated objects and update attributes
 
     .LINK

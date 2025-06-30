@@ -44,6 +44,10 @@ function Invoke-VcCertificateAction {
     Force the operation under certain circumstances.
     - During a renewal, force choosing the first CN in the case of multiple CNs as only 1 is supported.
 
+    .PARAMETER Wait
+    Wait for a long running operation to complete before returning
+    - During a renewal, wait for the certificate to pass the Requested state
+
     .PARAMETER VenafiSession
     Authentication for the function.
     The value defaults to the script session object $VenafiSession created by New-VenafiSession.
@@ -73,6 +77,12 @@ function Invoke-VcCertificateAction {
     Find-VcCertificate -Version CURRENT -Issuer i1 | Invoke-VcCertificateAction -Renew -AdditionalParameters @{'certificateIssuingTemplateId'='10f71a12-daf3-4737-b589-6a9dd1cc5a97'}
 
     Find all current certificates issued by i1 and renew them with a different issuer.
+
+    .EXAMPLE
+    Find-VcCertificate -Version Current -Name 'mycert' | Invoke-VcCertificateAction -Renew -Wait
+
+    Renew a certificate and wait for it to pass the Requested state (and hopefully Issued).
+    This can be helpful if an Issuer takes a bit to enroll the certificate.
 
     .EXAMPLE
     Invoke-VcCertificateAction -ID '3699b03e-ff62-4772-960d-82e53c34bf60' -Renew -Force
@@ -138,6 +148,9 @@ function Invoke-VcCertificateAction {
         [Parameter(ParameterSetName = 'Delete')]
         [ValidateRange(1, 10000)]
         [int] $BatchSize = 1000,
+
+        [Parameter(ParameterSetName = 'Renew')]
+        [switch] $Wait,
 
         [Parameter(ParameterSetName = 'Renew')]
         [switch] $Force,
@@ -264,21 +277,53 @@ function Invoke-VcCertificateAction {
                 }
 
                 try {
+
                     $renewResponse = Invoke-VenafiRestMethod -Method 'Post' -UriRoot 'outagedetection/v1' -UriLeaf 'certificaterequests' -Body $renewParams -ErrorAction Stop
-                    $newCertId = $renewResponse.certificateRequests.certificateIds[0]
-                    $out | Add-Member @{
-                        'renew'         = $renewResponse
-                        'certificateID' = $newCertId
+
+                    $out | Add-Member @{ renew = $renewResponse.certificateRequests | Select-Object @{
+                            n = 'certificateRequestId'
+                            e = { $_.id }
+                        }, * -ExcludeProperty id
                     }
 
-                    if ( $Provision ) {
-                        Write-Verbose "Renew was successful, now provisioning certificate ID $newCertId"
+                    if ( $Wait -and $out.renew.status -eq 'REQUESTED' ) {
 
-                        # wait a few seconds for machine identities to be reassociated with the new certificate
-                        Start-Sleep -Seconds 5
+                        $status = $out.renew.status
+                        Write-Verbose "Current renewal status: $status.  Waiting to pass the 'Requested' state"
 
-                        $provisionResponse = Invoke-VcCertificateAction -ID $newCertId -Provision
-                        $out | Add-Member @{'provision' = $provisionResponse }
+                        while ( $status -eq 'REQUESTED' ) {
+                            Start-Sleep 1
+                            $request = Get-VcCertificateRequest -CertificateRequest $out.renew[0].certificateRequestId
+                            $status = $request.status
+                            Write-Verbose "Current renewal status: $status"
+                        }
+
+                        $out.renew = $request
+                    }
+
+                    if ( $out.renew.certificateIds ) {
+                        # cert has been issued
+                        $newCertId = $out.renew.certificateIds[0]
+                        Write-Verbose "Renewal request was successful, certificate ID is $newCertId"
+
+                        $out | Add-Member @{ 'certificateID' = $newCertId }
+
+                        if ( $Provision ) {
+                            Write-Verbose "Provisioning..."
+
+                            # wait a few seconds for machine identities to be reassociated with the new certificate
+                            # TODO: perform a check instead of random sleep
+                            Start-Sleep -Seconds 5
+
+                            $provisionResponse = Invoke-VcCertificateAction -ID $newCertId -Provision
+                            $out | Add-Member @{'provision' = $provisionResponse }
+                        }
+                    }
+                    else {
+                        Write-Verbose "Renewal request was successful, but the certificate hasn't been created yet.  Check the status with Get-VcCertificateRequest."
+                        if ( $Provision ) {
+                            Write-Verbose "Skipping provisioning as the certificate hasn't been created yet"
+                        }
                     }
 
                     $out.success = $true
