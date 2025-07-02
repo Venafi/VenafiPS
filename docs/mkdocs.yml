@@ -1,13 +1,8 @@
 site_name: VenafiPS
 site_url: https://venafi.github.io/venafips/
 theme:
-  name: material
-  logo: images/v.svg
-  features:
-    - navigation.expand
-  palette:
-    primary: indigo
-edit_uri: ""
+  name: mkdocs
+include_sidebar: true
 nav:
   - Home: '../README.md'
   - Changelog: '../CHANGELOG.md'
