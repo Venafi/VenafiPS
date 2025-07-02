@@ -1,9 +1,8 @@
 site_name: VenafiPS
-site_url: https://github.com/venafi/venafips/
+site_url: https://venafi.github.io/venafips/
 theme:
   name: mkdocs
 include_sidebar: true
 nav:
-  - Home: '../README.md'
-  - Changelog: '../CHANGELOG.md'
+  - Changelog: 'changelog.md'
   - Functions: '/functions/'
