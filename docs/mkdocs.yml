@@ -1,5 +1,5 @@
 site_name: VenafiPS
-site_url: https://venafi.github.io/venafips/
+site_url: https://github.com/venafi/venafips/
 theme:
   name: mkdocs
 include_sidebar: true
