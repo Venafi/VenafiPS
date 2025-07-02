@@ -1,4 +1,5 @@
 site_name: VenafiPS
+site_url: https://venafi.github.io/venafips/
 theme:
   name: material
   logo: images/v.svg
